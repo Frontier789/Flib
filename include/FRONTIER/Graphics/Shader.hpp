@@ -34,7 +34,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Class used to store data about uniform textures
 		/// 
-		/// Uniforms are "global" variables in GLSL
+		/// Uniforms are "global" variables in GLSL   
 		/// they can only be modified by the application (not from shader program)
 		/// 
 		/// This class is used iternally and you shouldn't worry about it
