@@ -1,0 +1,40 @@
+#ifdef FRONTIER_DYNAMIC
+
+    #ifdef FRONTIER_OS_WINDOWS
+
+        #define FRONTIER_API_EXPORT __declspec(dllexport)
+        #define FRONTIER_API_IMPORT __declspec(dllimport)
+
+        #ifdef _MSC_VER
+            #pragma warning(disable : 4251)
+        #endif
+
+    #else
+		
+		#ifdef __GNUC__
+			#if __GNUC__ >= 4
+
+				#define FRONTIER_API_EXPORT __attribute__ ((__visibility__ ("default")))
+				#define FRONTIER_API_IMPORT __attribute__ ((__visibility__ ("default")))
+			
+			#else
+			
+				#define FRONTIER_API_EXPORT
+				#define FRONTIER_API_IMPORT
+				
+			#endif
+        #else
+
+            #define FRONTIER_API_EXPORT
+            #define FRONTIER_API_IMPORT
+
+        #endif
+
+    #endif
+
+#else
+
+    #define FRONTIER_API_EXPORT
+    #define FRONTIER_API_IMPORT
+
+#endif

@@ -1,0 +1,5 @@
+LIBNAME=Win
+COMPILE_GL_HEADER=1
+include frnt.mk
+#all:
+#	@make --no-print-directory -f frnt.mk LIBNAME=Win COMPILE_GL_HEADER=1

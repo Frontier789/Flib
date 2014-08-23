@@ -1,0 +1,5 @@
+LIBNAME=Linux
+COMPILE_GL_HEADER=1
+include frnt.mk
+#all:
+#	@make --no-print-directory -f frnt.mk LIBNAME=Linux COMPILE_GL_HEADER=1

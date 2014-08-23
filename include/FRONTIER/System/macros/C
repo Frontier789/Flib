@@ -1,0 +1,5 @@
+#define C(nnn)  for (std::size_t i=0;i<(nnn);i++)
+#define Cx(nnn) for (std::size_t x=0;x<(nnn);x++)
+#define Cy(nnn) for (std::size_t y=0;y<(nnn);y++)
+#define Cz(nnn) for (std::size_t z=0;z<(nnn);z++)
+#define Cxy(Xnnn,Ynnn) for (std::size_t x=0;x<(Xnnn);x++)  for (std::size_t y=0;y<(Ynnn);y++)
