@@ -80,20 +80,20 @@ namespace fg
 	template<class T>
 	inline Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vector2<T> *pointer,unsigned int stride)
 	{
-		return setAttribPointer(name,2,GlTypeIdentify<T>::value,0,pointer,stride);
+		return setAttribPointer(name,2,priv::GlTypeIdentify<T>::value,0,pointer,stride);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vector3<T> *pointer,unsigned int stride)
 	{
-		return setAttribPointer(name,3,GlTypeIdentify<T>::value,0,pointer,stride);
+		return setAttribPointer(name,3,priv::GlTypeIdentify<T>::value,0,pointer,stride);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride)
 	{
-		return setAttribPointer(name,4,GlTypeIdentify<T>::value,0,pointer,stride);
+		return setAttribPointer(name,4,priv::GlTypeIdentify<T>::value,0,pointer,stride);
 	}
 }

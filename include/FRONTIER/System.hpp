@@ -28,6 +28,7 @@ namespace fm
 #include <FRONTIER/System/Time.hpp>
 #include <FRONTIER/System/Clock.hpp>
 #include <FRONTIER/System/Angle.hpp>
+#include <FRONTIER/System/Polar2.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Vertex.hpp>
 #include <FRONTIER/System/Vector2.hpp>
