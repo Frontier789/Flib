@@ -5,7 +5,7 @@ CXX=g++
 CPPFLAGS+=-Wall -Os -Wfatal-errors -pedantic
 PATHTOROOT=..
 INCLUDE=$(PATHTOROOT)/include
-TARGETDIR=$(PATHTOROOT)/lib$(LIBNAME)
+TARGETDIR=$(PATHTOROOT)\\lib$(LIBNAME)
 SRC=$(PATHTOROOT)/src
 MKDIR=mkdir
 RMDIR=rmdir
@@ -48,13 +48,13 @@ all: $(ALL_TARGETS)
 $(TARGETDIR):
 	$(MKDIR) $(TARGETDIR) 
 $(TARGETDIR)/System:
-	$(MKDIR) $(TARGETDIR)\System
+	$(MKDIR) $(TARGETDIR)\\System
 $(TARGETDIR)/Network:
-	$(MKDIR) $(TARGETDIR)\Network
+	$(MKDIR) $(TARGETDIR)\\Network
 $(TARGETDIR)/Graphics:
-	$(MKDIR) $(TARGETDIR)\Graphics
+	$(MKDIR) $(TARGETDIR)\\Graphics
 $(TARGETDIR)/Graphics/ext:
-	$(MKDIR) $(TARGETDIR)\Graphics\ext
+	$(MKDIR) $(TARGETDIR)\\Graphics\\ext
 
 
 ###

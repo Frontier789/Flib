@@ -2,7 +2,7 @@
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/Config.hpp>
-#include "glExtensionWrap.hpp"
+#include <FRONTIER/OpenGL.hpp>
 namespace fg
 {
 
@@ -54,16 +54,16 @@ namespace fg
 	/// destructors /////////////////////////////////////////////////////////
 	Buffer::~Buffer()
 	{
-		if (glWrap::IsBuffer(getGlId()))
-			glCheck(glWrap::DeleteBuffers(1,&getGlId()));
+		if (glIsBuffer(getGlId()))
+			glCheck(glDeleteBuffers(1,&getGlId()));
 		
 	}
 
 	/// functions /////////////////////////////////////////////////////////
 	void Buffer::init()
 	{
-		if (!glWrap::IsBuffer(getGlId()))
-			glCheck(glWrap::GenBuffers(1,&getGlId()));
+		if (!glIsBuffer(getGlId()))
+			glCheck(glGenBuffers(1,&getGlId()));
 	}
 
 	////////////////////////////////////////////////////////////
@@ -119,22 +119,22 @@ namespace fg
 		
 		int boundBuffer=0;
 		
-		glCheck(glWrap::GetIntegerv(typeToGetBinding(m_type),&boundBuffer));
-		glCheck(glWrap::BindBuffer(m_type,getGlId()));
+		glCheck(glGetIntegerv(typeToGetBinding(m_type),&boundBuffer));
+		glCheck(glBindBuffer(m_type,getGlId()));
 		
-		glWrap::BufferData(m_type,bytesToCopy,data,m_usage);
+		glBufferData(m_type,bytesToCopy,data,m_usage);
 		
-		unsigned int errCode = glWrap::GetError();
+		unsigned int errCode = glGetError();
 		if (errCode)
 		{
 			if (errCode==0x505) ///GL_OUT_OF_MEMORY
 				fg_log << "Error: couldn't set data of the buffer because OpenGL is out of memory" << std::endl;
 			if (errCode==0x500) ///GL_INVALID_ENUM
-				glCheck(glWrap::BufferData(m_type,bytesToCopy,data,getFallBackUsage(m_usage)));
+				glCheck(glBufferData(m_type,bytesToCopy,data,getFallBackUsage(m_usage)));
 		}
 		
 
-		glCheck(glWrap::BindBuffer(m_type,boundBuffer));
+		glCheck(glBindBuffer(m_type,boundBuffer));
 		return *this;
 	}
 
@@ -146,12 +146,12 @@ namespace fg
 			return *this;
 		int boundBuffer=0;
 		
-		glCheck(glWrap::GetIntegerv(typeToGetBinding(m_type),&boundBuffer));
+		glCheck(glGetIntegerv(typeToGetBinding(m_type),&boundBuffer));
 		
-		glCheck(glWrap::BindBuffer(m_type,getGlId()));
-		glCheck(glWrap::BufferSubData(m_type,byteOffset,bytesToCopy,data));
+		glCheck(glBindBuffer(m_type,getGlId()));
+		glCheck(glBufferSubData(m_type,byteOffset,bytesToCopy,data));
 		
-		glCheck(glWrap::BindBuffer(m_type,boundBuffer));
+		glCheck(glBindBuffer(m_type,boundBuffer));
 		
 		return *this;
 	}
@@ -177,7 +177,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	void Buffer::bind(const Buffer *buffer,BufferType targetType)
 	{
-		glCheck(glWrap::BindBuffer(targetType,buffer ? buffer->getGlId() : 0));
+		glCheck(glBindBuffer(targetType,buffer ? buffer->getGlId() : 0));
 	}
 
 	////////////////////////////////////////////////////////////
@@ -196,9 +196,9 @@ namespace fg
 	bool Buffer::isAvailable()
 	{
 		int testBound;
-		glWrap::GetIntegerv(0x8894, ///GL_ARRAY_BUFFER_BINDING
+		glGetIntegerv(0x8894, ///GL_ARRAY_BUFFER_BINDING
 							  &testBound);
-		return (glWrap::GetError()==0x000);
+		return (glGetError()==0x000);
 	}
 
 	////////////////////////////////////////////////////////////

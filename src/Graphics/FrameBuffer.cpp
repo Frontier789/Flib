@@ -92,18 +92,20 @@ namespace fg
 		if (!colorAttachments || !count)
 		{
 			fg_log << "Error: no attachment is specified in framebuffer constructor" << std::endl;
-			return;
+			return false;
 		}
 		
 		ObjectBinder binder(getGlId());
 		C(count)
 			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, (colorAttachments+i)->getGlId(), 0));
+		/*
 		GLenum *DrawBuffers;
 		DrawBuffers = new GLenum[count];
 		C(count)
 			*(DrawBuffers+i) = GL_COLOR_ATTACHMENT0+i;
 		glCheck(glDrawBuffers(count, DrawBuffers));
 		delete[] DrawBuffers;
+		*/
 		return checkFramebufferStatus(this);
 	}
 	
