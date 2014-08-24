@@ -403,28 +403,6 @@ namespace fg
 		return *this;
     }
 
-
-	////////////////////////////////////////////////////////////
-    Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vec2 *pointer,unsigned int stride)
-    {
-    	return setAttribPointer(name,2,GL_FLOAT,GL_TRUE,pointer,stride);
-    }
-
-
-	////////////////////////////////////////////////////////////
-    Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vec3 *pointer,unsigned int stride)
-    {
-    	return setAttribPointer(name,3,GL_FLOAT,GL_TRUE,pointer,stride);
-    }
-
-
-	////////////////////////////////////////////////////////////
-    Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vec4 *pointer,unsigned int stride)
-    {
-    	return setAttribPointer(name,4,GL_FLOAT,GL_TRUE,pointer,stride);
-    }
-
-
 	////////////////////////////////////////////////////////////
     bool Shader::isAvailable()
     {

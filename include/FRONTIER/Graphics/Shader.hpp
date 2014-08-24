@@ -355,7 +355,8 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-        reference setAttribPointer(const std::string &name,const fm::vec2 *pointer,unsigned int stride=0);
+		template<class T>
+        reference setAttribPointer(const std::string &name,const fm::vector2<T> *pointer,unsigned int stride=0);
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec3 attributes
@@ -380,7 +381,8 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-        reference setAttribPointer(const std::string &name,const fm::vec3 *pointer,unsigned int stride=0);
+		template<class T>
+        reference setAttribPointer(const std::string &name,const fm::vector3<T> *pointer,unsigned int stride=0);
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec4 attributes
@@ -405,7 +407,8 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-        reference setAttribPointer(const std::string &name,const fm::vec4 *pointer,unsigned int stride=0);
+		template<class T>
+        reference setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride=0);
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a float uniform
