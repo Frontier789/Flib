@@ -4,7 +4,7 @@
 ////////////////////////////////////////////////////////////
 /// @defgroup Graphics Graphics (OpenGL) module
 ///
-/// This module defines nutin
+/// This module defines OpenGL related classes
 /// 
 ////////////////////////////////////////////////////////////
 
@@ -27,5 +27,6 @@ namespace fg
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>
+#include <FRONTIER/Graphics/FrameBuffer.hpp>
 
 #endif // FRONTIER_GRAPICS_HPP_INCLUDED
