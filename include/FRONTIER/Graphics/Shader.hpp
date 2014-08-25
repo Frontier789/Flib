@@ -648,7 +648,28 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
+		template<fm::MATRIX::StorageOrder storeOrder>
 		reference setUniform(const std::string &name,const fm::mat3 &m);
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of an mat3 uniform
+		/// 
+		/// If the shader program is invalid no error will be prompted
+		/// and the shader program will not be modified
+		///
+		/// if @a name does not 
+		/// correspond to an active uniform in 
+		/// the shader program an error is prompted to 
+		/// fg_log and -1 is returned
+		/// 
+		/// @param name The name of the uniform
+		/// @param m The value of the uniform
+		/// @param storeOrder If RowMajor then the matrix will be transposed before sending
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference setUniform(const std::string &name,const fm::mat3 &m,fm::MATRIX::StorageOrder storeOrder = fm::MATRIX::RowMajor);
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an mat4 uniform
@@ -667,7 +688,28 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
+		template<fm::MATRIX::StorageOrder storeOrder>
 		reference setUniform(const std::string &name,const fm::mat4 &m);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of an mat4 uniform
+		/// 
+		/// If the shader program is invalid no error will be prompted
+		/// and the shader program will not be modified
+		///
+		/// if @a name does not 
+		/// correspond to an active uniform in 
+		/// the shader program an error is prompted to 
+		/// fg_log and -1 is returned
+		/// 
+		/// @param name The name of the uniform
+		/// @param m The value of the uniform
+		/// @param storeOrder If RowMajor then the matrix will be transposed before sending
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference setUniform(const std::string &name,const fm::mat4 &m,fm::MATRIX::StorageOrder storeOrder = fm::MATRIX::RowMajor);
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an sampler2D uniform

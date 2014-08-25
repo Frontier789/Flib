@@ -96,4 +96,18 @@ namespace fg
 	{
 		return setAttribPointer(name,4,priv::GlTypeIdentify<T>::value,0,pointer,stride);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<fm::MATRIX::StorageOrder storeOrder>
+	inline Shader::reference Shader::setUniform(const std::string &name,const fm::mat3 &m)
+	{
+		return setUniform(name,m,storeOrder);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<fm::MATRIX::StorageOrder storeOrder>
+	inline Shader::reference Shader::setUniform(const std::string &name,const fm::mat4 &m)
+	{
+		return setUniform(name,m,storeOrder);
+	}
 }
