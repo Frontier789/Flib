@@ -72,7 +72,6 @@ namespace fg
 	{
 		setColorAttachments(colorAttachments,count);
 		setDepthBuffer(depthBuf);
-		glViewport(0,0,colorAttachments->getSize().w,colorAttachments->getSize().h);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -98,6 +97,7 @@ namespace fg
 		ObjectBinder binder(getGlId());
 		C(count)
 			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, (colorAttachments+i)->getGlId(), 0));
+		glViewport(0,0,colorAttachments->getSize().w,colorAttachments->getSize().h);
 		/*
 		GLenum *DrawBuffers;
 		DrawBuffers = new GLenum[count];
