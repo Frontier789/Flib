@@ -280,9 +280,9 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	typename Image::reference Image::flipHorizontally()
 	{
-		Cx(m_size.w)
-			Cy(m_size.h/2.f)
-				std::swap(m_pixels[x+y*m_size.w],m_pixels[x+(m_size.h-y-1)*m_size.w]);
+		Cx(m_size.w/2.f)
+			Cy(m_size.h)
+				std::swap(m_pixels[x+y*m_size.w],m_pixels[(m_size.w-x-1)+y*m_size.w]);
 		return *this;
 	}
 
@@ -290,9 +290,9 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	typename Image::reference Image::flipVertically()
 	{
-		Cx(m_size.w/2.f)
-			Cy(m_size.h)
-				std::swap(m_pixels[x+y*m_size.w],m_pixels[(m_size.w-x-1)+y*m_size.w]);
+		Cx(m_size.w)
+			Cy(m_size.h/2.f)
+				std::swap(m_pixels[x+y*m_size.w],m_pixels[x+(m_size.h-y-1)*m_size.w]);
 		return *this;
 	}
 
