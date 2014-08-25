@@ -1,7 +1,7 @@
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/Config.hpp>
-#include "glExtensionWrap.hpp"
+#include <FRONTIER/OpenGL.hpp>
 #include <ostream>
 
 namespace fg
@@ -11,7 +11,7 @@ namespace fg
 		/// glCheckError /////////////////////////////////////////////////////////
 		void glCheckError(const char* file, unsigned int line)
 		{
-			unsigned int errorCode = glWrap::GetError();
+			unsigned int errorCode = glGetError();
 
 			if (errorCode)
 			{

@@ -5,11 +5,12 @@ CXX=g++
 CPPFLAGS+=-Wall -Os -Wfatal-errors -pedantic
 PATHTOROOT=..
 INCLUDE=$(PATHTOROOT)/include
-TARGETDIR=$(PATHTOROOT)\\lib$(LIBNAME)
+TARGETDIR=$(PATHTOROOT)/lib$(LIBNAME)
 SRC=$(PATHTOROOT)/src
 MKDIR=mkdir
 RMDIR=rmdir
 AR=ar
+CD=cd
 RM=rm
 
 #lib-system files
@@ -46,16 +47,15 @@ all: $(ALL_TARGETS)
 # Directory_target
 ###
 $(TARGETDIR):
-	$(MKDIR) $(TARGETDIR) 
-$(TARGETDIR)/System:
-	$(MKDIR) $(TARGETDIR)\\System
-$(TARGETDIR)/Network:
-	$(MKDIR) $(TARGETDIR)\\Network
-$(TARGETDIR)/Graphics:
-	$(MKDIR) $(TARGETDIR)\\Graphics
-$(TARGETDIR)/Graphics/ext:
-	$(MKDIR) $(TARGETDIR)\\Graphics\\ext
-
+	$(CD) $(PATHTOROOT); $(MKDIR) lib$(LIBNAME)
+$(TARGETDIR)/System: $(TARGETDIR)
+	$(CD) $(PATHTOROOT); $(CD) lib$(LIBNAME); $(MKDIR) System
+$(TARGETDIR)/Network: $(TARGETDIR)
+	$(CD) $(PATHTOROOT); $(CD) lib$(LIBNAME); $(MKDIR) Network
+$(TARGETDIR)/Graphics: $(TARGETDIR)
+	$(CD) $(PATHTOROOT); $(CD) lib$(LIBNAME); $(MKDIR) Graphics
+$(TARGETDIR)/Graphics/ext: $(TARGETDIR)/Graphics
+	$(CD) $(PATHTOROOT); $(CD) lib$(LIBNAME); $(CD) Graphics; $(MKDIR) ext
 
 ###
 # System_target

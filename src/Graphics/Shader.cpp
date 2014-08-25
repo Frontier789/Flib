@@ -339,8 +339,8 @@ namespace fg
 	CREATE_SET_UNIFORM((const std::string &name,const fm::vec3 &v),glUniform3f(location,v.x,v.y,v.z))
 	CREATE_SET_UNIFORM((const std::string &name,const fm::vec4 &v),glUniform4f(location,v.x,v.y,v.z,v.w))
 	
-	CREATE_SET_UNIFORM((const std::string &name,const fm::mat3 &m),glUniformMatrix3fv(location, 1, GL_TRUE, &m[0][0]))
-	CREATE_SET_UNIFORM((const std::string &name,const fm::mat4 &m),glUniformMatrix4fv(location, 1, GL_TRUE, &m[0][0]))
+	CREATE_SET_UNIFORM((const std::string &name,const fm::mat3 &m),glUniformMatrix3fv(location, 1, GL_FALSE, &(m.transpose())[0][0]))
+	CREATE_SET_UNIFORM((const std::string &name,const fm::mat4 &m),glUniformMatrix4fv(location, 1, GL_FALSE, &(m.transpose())[0][0]))
 
 
 	////////////////////////////////////////////////////////////
