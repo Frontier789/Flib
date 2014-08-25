@@ -126,6 +126,21 @@ namespace fg
 		bool setDepthBuffer(const DepthBuffer &depthBuf);
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Construct the framebuffer from attachments and depth buffer
+		/// 
+		/// If colorAttachments is NULL or count is 0 then an error is prompted to
+		/// fg_log and the framebuffer becomes invalid
+		/// 
+		/// @param colorAttachments A pointer to the textures that will be used as color attachments
+		/// @param count The number of textures in @a colorAttachments
+		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
+		/// 
+		/// @return True if no error is occured
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool create(Texture *colorAttachments,unsigned int count,const DepthBuffer &depthBuf);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Bind a framebuffer for usage
 		/// 
 		/// @param fbo The framebuffer to be bound (can be NULL which means unbind)
