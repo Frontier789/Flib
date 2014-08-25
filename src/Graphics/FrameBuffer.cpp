@@ -70,8 +70,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	FrameBuffer::FrameBuffer(Texture *colorAttachments,unsigned int count,const DepthBuffer &depthBuf) : m_depthBufID(0)
 	{
-		setColorAttachments(colorAttachments,count);
-		setDepthBuffer(depthBuf);
+		create(colorAttachments,count,depthBuf);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -81,6 +80,12 @@ namespace fg
 			glCheck(glDeleteRenderbuffers(1,&m_depthBufID));
 		if (glIsFramebuffer(getGlId())==GL_TRUE)
 			glCheck(glDeleteFramebuffers(1,&getGlId()));
+	}
+
+	////////////////////////////////////////////////////////////
+	bool FrameBuffer::create(Texture *colorAttachments,unsigned int count,const DepthBuffer &depthBuf)
+	{
+		return setColorAttachments(colorAttachments,count) && setDepthBuffer(depthBuf);
 	}
 
 	////////////////////////////////////////////////////////////
