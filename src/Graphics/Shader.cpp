@@ -338,10 +338,53 @@ namespace fg
 	CREATE_SET_UNIFORM((const std::string &name,const fm::vec2 &v),glUniform2f(location,v.x,v.y))
 	CREATE_SET_UNIFORM((const std::string &name,const fm::vec3 &v),glUniform3f(location,v.x,v.y,v.z))
 	CREATE_SET_UNIFORM((const std::string &name,const fm::vec4 &v),glUniform4f(location,v.x,v.y,v.z,v.w))
-	
-	CREATE_SET_UNIFORM((const std::string &name,const fm::mat3 &m),glUniformMatrix3fv(location, 1, GL_FALSE, &(m.transpose())[0][0]))
-	CREATE_SET_UNIFORM((const std::string &name,const fm::mat4 &m),glUniformMatrix4fv(location, 1, GL_FALSE, &(m.transpose())[0][0]))
+	               
+	////////////////////////////////////////////////////////////       
+	Shader::reference Shader::setUniform(const std::string &name,const fm::mat3 &m,fm::MATRIX::StorageOrder storeOrder)
+	{
+		if (getGlId())
+		{
+			int program;
+			glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
+			glCheck(glUseProgram(getGlId()));
 
+			int location = getUniformLocation(name);
+			if (location != -1)
+			{
+				if (storeOrder==fm::MATRIX::RowMajor)
+					glCheck(glUniformMatrix3fv(location, 1, GL_FALSE, &(m.transpose())[0][0]));
+				else
+					glCheck(glUniformMatrix3fv(location, 1, GL_FALSE, &m[0][0]));
+			}
+			
+			glCheck(glUseProgram(program));
+		}
+		return *this;
+	}
+	
+	////////////////////////////////////////////////////////////       
+	Shader::reference Shader::setUniform(const std::string &name,const fm::mat4 &m,fm::MATRIX::StorageOrder storeOrder)
+	{
+		if (getGlId())
+		{
+			int program;
+			glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
+			glCheck(glUseProgram(getGlId()));
+
+			int location = getUniformLocation(name);
+			if (location != -1)
+			{
+				if (storeOrder==fm::MATRIX::RowMajor)
+					glCheck(glUniformMatrix4fv(location, 1, GL_FALSE, &(m.transpose())[0][0]));
+				else
+					glCheck(glUniformMatrix4fv(location, 1, GL_FALSE, &m[0][0]));
+			}
+			
+			glCheck(glUseProgram(program));
+		}
+		return *this;
+	}
+	
 
 	////////////////////////////////////////////////////////////
 	Shader::reference Shader::setUniform(const std::string &name,const Texture &tex)
