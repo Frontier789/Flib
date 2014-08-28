@@ -1,6 +1,7 @@
 #ifndef FRONTIER_VECTOR3_HPP_INCLUDED
 #define FRONTIER_VECTOR3_HPP_INCLUDED
 #define FRONTIER_VECTOR3
+#include <cstddef>
 namespace fm
 {
 	template<class> class vector4;
@@ -626,6 +627,7 @@ namespace fm
 	typedef vector3<float> 		  vec3f;
 	typedef vector3<int>   		  vec3i;
 	typedef vector3<unsigned int> vec3u;
+	typedef vector3<std::size_t>  vec3s;
 
 }
 
