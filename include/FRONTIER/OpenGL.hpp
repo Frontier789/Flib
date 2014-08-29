@@ -1,55 +1,114 @@
 #ifndef FRONTIER_OPENGL_HPP_INCLUDED
 #define FRONTIER_OPENGL_HPP_INCLUDED
+#include <FRONTIER/System/Log.hpp>
 #define FRONTIER_OPENGL
-#include <FRONTIER/Config.hpp>
+
+extern fm::Log OpenGL_log;
 
 //////////////////////////////////
-/// includeing GL headers
+/// It would cause name conflict so we
+/// cannot let neither of gl.h, glew.h, glext.h, gltypes.h and glATI.h
+/// headers to be included before this header
 //////////////////////////////////
-#ifndef GL_GLEXT_PROTOTYPES
-    #define GL_GLEXT_PROTOTYPES
+
+#if defined(__gl_h_) || defined(__GL_H__)
+	#error Attempt to include OpenGL.hpp after including gl.h
 #endif
 
-#if defined(FRONTIER_OS_WINDOWS)
+#if defined(__glew_h__) || defined(__GLEW_H__)
+	#error Attempt to include OpenGL.hpp after including glew.h
+#endif
 
-    #ifdef _MSC_VER
-        #include <windows.h>
-    #endif
+#if defined(__glext_h_) || defined(__GLEXT_H_)
+	#error Attempt to include OpenGL.hpp after including glext.h
+#endif
 
-	#include <FRONTIER/Graphics/GL/gl_comp_4_2.h>
+#if defined(__gltypes_h_)
+	#error Attempt to include OpenGL.hpp after gltypes.h
+#endif
 
-    #include <GL/gl.h>
-    #include <GL/glext.h>
+#if defined(__gl_ATI_h_)
+	#error Attempt to include OpenGL.hpp after including glATI.h
+#endif
 
-#elif defined(FRONTIER_OS_ANDROID)
 
-	#include <GLES/gl.h>
-	#include <GLES/glext.h>
-	#include <android/api-level.h>
+//////////////////////////////////
+/// Prevent name conflict if above headers
+/// included after OpenGL.hpp
+//////////////////////////////////
 
-	#if __ANDROID_API__ >= 8
-		#include <GLES2/gl2.h>
-		#include <GLES2/gl2ext.h>
-	#endif
+#define __glew_h__
+#define __GLEW_H__
+#define __gl_h_
+#define __GL_H__
+#define __glext_h_
+#define __GLEXT_H_
+#define __gltypes_h_
+#define __gl_ATI_h_
 
-#elif defined(FRONTIER_OS_MACOS)
 
-	#include <FRONTIER/Graphics/GL/gl_comp_4_2.h>
+//////////////////////////////////
+/// Advertise defined extensions
+//////////////////////////////////
 
-    #include <OpenGL/gl.h>
-    #include <OpenGL/glext.h>
+#ifndef GL_ARB_vertex_buffer_object
+	#define GL_ARB_vertex_buffer_object 1
+#endif
 
-#elif defined(FRONTIER_OS_LINUX)
+#ifndef GL_ARB_shader_objects
+	#define GL_ARB_shader_objects 1
+#endif
 
-	#include <FRONTIER/Graphics/GL/gl_comp_4_2.h>
+#ifndef GL_EXT_framebuffer_object
+	#define GL_EXT_framebuffer_object 1
+#endif
 
-    #include <GL/gl.h>
-    #include <GL/glext.h>
 
+//////////////////////////////////
+/// Define GL types
+//////////////////////////////////
+#include <cstddef>
+#include <stdint.h>
+typedef unsigned int   GLenum;
+typedef unsigned char  GLboolean;
+typedef unsigned int   GLbitfield;
+typedef void           GLvoid;
+typedef signed char    GLbyte;
+typedef short          GLshort;
+typedef int            GLint;
+typedef unsigned char  GLubyte;
+typedef unsigned short GLushort;
+typedef unsigned int   GLuint;
+typedef int            GLsizei;
+typedef float          GLfloat;
+typedef float          GLclampf;
+typedef double         GLdouble;
+typedef double         GLclampd;
+typedef char           GLchar;
+typedef char           GLcharARB;
+#ifdef __APPLE__
+	typedef void        *GLhandleARB;
 #else
-
-    #error OS not supported!
-
+	typedef unsigned int GLhandleARB;
 #endif
+
+typedef unsigned short GLhalfARB;
+typedef unsigned short GLhalf;
+typedef GLint          GLfixed;
+typedef std::ptrdiff_t GLintptr;
+typedef std::ptrdiff_t GLsizeiptr;
+typedef int64_t        GLint64;
+typedef uint64_t       GLuint64;
+typedef std::ptrdiff_t GLintptrARB;
+typedef std::ptrdiff_t GLsizeiptrARB;
+typedef int64_t        GLint64EXT;
+typedef uint64_t       GLuint64EXT;
+typedef struct __GLsync *GLsync;  
+
+
+#include <FRONTIER/Graphics/GL/GL_VALUES.h>
+#include <FRONTIER/Graphics/GL/GL_FUNCTIONS.h>
+
+
 
 #endif

@@ -32,7 +32,7 @@ ALL_TARGETS  := $(TARGETDIR) $(TARGETDIR)/System $(TARGETDIR)/Graphics $(TARGETD
 
 ifeq ($(COMPILE_GL_HEADER),1)
 	ALL_TARGETS 	   += $(TARGETDIR)/Graphics/ext
-	OBJ_FILES_GRAPHICS += $(TARGETDIR)/Graphics/ext/gl_comp_4_2.o
+	OBJ_FILES_GRAPHICS += $(TARGETDIR)/Graphics/ext/GL_FUNCTIONS.o
 endif
 
 ALL_TARGETS += $(TARGETDIR)/libfrontier-system.a $(TARGETDIR)/libfrontier-graphics.a $(TARGETDIR)/libfrontier-network.a
@@ -87,7 +87,7 @@ $(TARGETDIR)/libfrontier-graphics.a: $(OBJ_FILES_GRAPHICS)
 $(TARGETDIR)/Graphics/%.o: $(SRC)/Graphics/%.cpp
 	$(CXX) $(CPPFLAGS) -I $(INCLUDE) -c $< -o $@ 
 	
-$(TARGETDIR)/Graphics/ext/%.o: $(SRC)/Graphics/GL/%.c
+$(TARGETDIR)/Graphics/ext/%.o: $(SRC)/Graphics/GL/%.cpp
 	$(CXX) $(CPPFLAGS) -I $(INCLUDE) -c $< -o $@
 
 ###
