@@ -1,6 +1,7 @@
 #ifndef FRONTIER_LOG_HPP_INCLUDED
 #define FRONTIER_LOG_HPP_INCLUDED
 #define FRONTIER_LOG
+#include <string>
 namespace std
 {
     template<typename,typename>
@@ -26,14 +27,15 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	class Log
 	{
-		std::ostream *m_os; ///< Pointer to the current target output stream
+		bool m_canRecallLog;   ///< If true, the last log can be accessed through getLastLog
+		bool m_newLog;         ///< Iternal variable
+		std::string m_lastLog; ///< Contains the last sent log
+		std::string m_name;    ///< The name of the log (can be changed)
+		bool m_promptName;     ///< If true then at every time logging @a m_name will be prompted (initially false)
+		std::ostream *m_os;    ///< Pointer to the current target output stream
 	public:
-		typedef std::ostream *value_type;
 		typedef Log &reference;
 		typedef const Log &const_reference;
-		enum {
-			dimensions = 1u ///< Public value indicating the amount of value_type's in the class
-		};
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
@@ -144,6 +146,82 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		reference operator<<(std::ios_base &(*func)(std::ios_base &));
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Find out if anything is logged
+		/// 
+		/// @return True if has log
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool hasLog() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get last logged information
+		/// 
+		/// This function resets the state thus
+		/// Immediately after this hasLog() would return false
+		/// 
+		/// @return The log (empty string if has no log)
+		/// 
+		/////////////////////////////////////////////////////////////
+		std::string getLastLog();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the name of the log
+		/// 
+		/// The initial name is an empty string
+		/// 
+		/// @return The name
+		/// 
+		/////////////////////////////////////////////////////////////
+		const std::string &getName() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the name of the log
+		/// 
+		/// If promptName is set to true
+		/// then before every log this name is prompted
+		/// 
+		/// @param name The new name
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference setName(const std::string &name);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Find out if the object does log its name
+		/// 
+		/// Initially set to false
+		/// 
+		/// @return True if it does
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool doesPromptName() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Change the name prompting behavior
+		/// 
+		/// @param prompt Set true to have the log promt its name when logging
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference promptName(bool prompt=true);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Change logging behavior
+		/// 
+		/// If disabled then hasLog will always return false
+		/// and getLastLog will return empty string
+		/// Default is true
+		/// 
+		/// @param enable Enables or disables log-recall
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference enableLogRecall(bool enable=true);
 	};
 }
 
