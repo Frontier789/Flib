@@ -361,8 +361,8 @@ namespace fg
 						}
 					}
 				}
-			if (success)
-				return true;
+				if (success)
+					return true;
 			}
 			else
 			{
@@ -375,7 +375,10 @@ namespace fg
 			}
 		}
 		else
+		{
 			fg_log << filename << " couldn't be saved because it's empty." << std::endl;
+			return false;
+		}
 
 		fg_log << "Failed to save image \"" << filename << "\"" << std::endl;
 		return false;

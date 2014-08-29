@@ -2,7 +2,6 @@
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/OpenGL.hpp>
-//#include "glExtensionWrap.hpp"
 #include <fstream>
 
 namespace fg
@@ -12,10 +11,14 @@ namespace fg
     {
         unsigned int s = glCreateShader(type);
 		if (!s)
+		{
 			fg_log<<"Couldn't create shader type "<<type<<std::endl;
-		const char *c_text = text.c_str();
-		const int length = text.length();
-		glCheck(glShaderSource(s,1,&c_text,&length));
+			return 0;
+		}
+		std::string s2 = text;
+		const char *c_text = &s2[0];
+		
+		glCheck(glShaderSource(s,1,&c_text,NULL));
 		glCheck(glCompileShader(s));
 		int success;
 		glCheck(glGetShaderiv(s, GL_COMPILE_STATUS, &success));

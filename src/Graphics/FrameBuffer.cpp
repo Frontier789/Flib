@@ -30,12 +30,12 @@ public:
 bool checkFramebufferStatus(fg::FrameBuffer *fbo)
 {
 	unsigned int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (status == 0x8CD6) ///GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT
+	if (status == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
 	{
 		fg::fg_log << "Error: the framebuffer object has a incomplete attachment (invalid size?)" << std::endl;
 		return 0;
 	}
-	if (status == 0x8CDD) ///GL_FRAMEBUFFER_UNSUPPORTED
+	if (status == GL_FRAMEBUFFER_UNSUPPORTED)
 	{
 		fg::fg_log << "Error: FrameBuffers are not supported by implementation of OpenGL." << std::endl;
 		return 0;
