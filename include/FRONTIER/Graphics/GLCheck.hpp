@@ -1,5 +1,6 @@
 #ifndef FRONTIER_GLCHECK_HPP_INCLUDED
 #define FRONTIER_GLCHECK_HPP_INCLUDED
+#include <FRONTIER/System/Log.hpp>
 #include <FRONTIER/Config.hpp>
 #define FRONTIER_GLCHECK
 
@@ -11,12 +12,15 @@
 
 namespace fg
 {
+	extern fm::Log glCheck_log;
+	
 	namespace priv
 	{
 		//////////////////////////////////
 		/// @brief Debug function used to check for OpenGL errors
 		/// 
 		/// This function should be used indirectly by calling glCheck macro
+		/// It outputs to fg::glCheck_log
 		/// 
 		/// @param file The file where the call was made
 		/// @param line The line from the call was made
