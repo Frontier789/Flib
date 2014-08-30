@@ -1,6 +1,6 @@
 LIBNAME=And
 COMPILE_GL_HEADER=1
-CPPFLAGS=-D__ANDROID__
+CPPFLAGS+=-DFRONTIER_OS_ANDROID
 include frnt.mk
 #all:
 #	@make --no-print-directory -f frnt.mk LIBNAME=And COMPILE_GL_HEADER=0
