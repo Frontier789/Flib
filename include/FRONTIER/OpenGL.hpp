@@ -3,7 +3,10 @@
 #include <FRONTIER/System/Log.hpp>
 #define FRONTIER_OPENGL
 
-extern fm::Log OpenGL_log;
+namespace fg
+{
+	extern fm::Log OpenGL_log;
+}
 
 //////////////////////////////////
 /// It would cause name conflict so we

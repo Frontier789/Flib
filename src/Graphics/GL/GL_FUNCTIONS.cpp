@@ -1,12 +1,16 @@
 #include <FRONTIER/OpenGL.hpp>
+#include <FRONTIER/Config.hpp>
 #include <iostream>
 
-fm::Log OpenGL_log = std::cout;
+namespace fg
+{
+	fm::Log OpenGL_log = std::cout;
+}
 
 #include <cstdlib>
 #include <string>
 
-#if defined(__APPLE__)
+#ifdef FRONTIER_OS_MACOS
 	#include <mach-o/dyld.h>
 
 	static void *AppleGLGetProcAddress (const GLubyte *name)
@@ -26,9 +30,9 @@ fm::Log OpenGL_log = std::cout;
 		return symbol ? NSAddressOfSymbol(symbol) : NULL;
 	}
 	#define retrieveProcAddress(name) AppleGLGetProcAddress(name)
-#endif //__APPLE__
+#endif // macOS
 
-#if defined(__sgi) || defined(__sun)
+#if defined(FRONTIER_OS_SOLARIS) || defined(FRONTIER_OS_IRIX)
 	#include <dlfcn.h>
 	#include <stdio.h>
 	
@@ -49,9 +53,9 @@ fm::Log OpenGL_log = std::cout;
 		return dlsym(h, (const char*)name);
 	}
 	#define retrieveProcAddress(name) SunGetProcAddress(name)
-#endif //__sgi || __sun
+#endif //Irix and Solaris
 
-#if defined(__ANDROID__)
+#ifdef FRONTIER_OS_ANDROID
 	#include <dlfcn.h>
 	
 	class SharedObject
@@ -78,7 +82,7 @@ fm::Log OpenGL_log = std::cout;
 			if (!so.load("libGLES_CM.so"))
 				if (!so.load("libGLESv1_CM.so"))
 				{
-					OpenGL_log << "Error: No GLES shared object found" << std::endl;
+					fg::OpenGL_log << "Error: No GLES shared object found" << std::endl;
 					return NULL;
 				}
 		
@@ -101,16 +105,15 @@ fm::Log OpenGL_log = std::cout;
 			delete[] _name;
 			
 			if (!symbol)
-				OpenGL_log << "Error: Couldn't find symbol " << name 
+				fg::OpenGL_log << "Error: Couldn't find symbol " << name 
 						   << " (" << (const char *)dlerror() << ")" <<std::endl;
 		}
 		return (symbol);
 	}
 	#define retrieveProcAddress(name) AndroidGetProcAddress(name)
-#endif //__ANDROID__
+#endif //Android
 
-#if defined(_WIN32)
-
+#ifdef FRONTIER_OS_WINDOWS
 	#include <windows.h>
 
 	#ifdef _MSC_VER
@@ -143,9 +146,9 @@ fm::Log OpenGL_log = std::cout;
 	#define retrieveProcAddress(name) WinGetProcAddress(name)
 #endif
 
-#ifndef retrieveProcAddress // GLX
+#ifndef retrieveProcAddress //other
 	#include <GL/glx.h>
-	#define retrieveProcAddress(name) (*glXGetProcAddressARB)((const GLubyte*)name)
+	#define retrieveProcAddress(name) glXGetProcAddressARB(name)
 #endif
 
 
@@ -153,7 +156,7 @@ static void API_ENTRY _choose_glAccum(GLenum op,GLfloat value)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glAccum");
     if (!gotPtr)
-        OpenGL_log << "Error: glAccum is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glAccum is NULL " << std::endl;
     else
     {
         _ptr_to_glAccum = (void(API_ENTRY*)(GLenum,GLfloat))gotPtr;
@@ -166,7 +169,7 @@ static void API_ENTRY _choose_glActiveShaderProgram(GLuint pipeline,GLuint progr
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glActiveShaderProgram");
     if (!gotPtr)
-        OpenGL_log << "Error: glActiveShaderProgram is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glActiveShaderProgram is NULL " << std::endl;
     else
     {
         _ptr_to_glActiveShaderProgram = (void(API_ENTRY*)(GLuint,GLuint))gotPtr;
@@ -179,7 +182,7 @@ static void API_ENTRY _choose_glActiveTexture(GLenum texture)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glActiveTexture");
     if (!gotPtr)
-        OpenGL_log << "Error: glActiveTexture is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glActiveTexture is NULL " << std::endl;
     else
     {
         _ptr_to_glActiveTexture = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -192,7 +195,7 @@ static void API_ENTRY _choose_glAlphaFunc(GLenum func,GLfloat ref)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glAlphaFunc");
     if (!gotPtr)
-        OpenGL_log << "Error: glAlphaFunc is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glAlphaFunc is NULL " << std::endl;
     else
     {
         _ptr_to_glAlphaFunc = (void(API_ENTRY*)(GLenum,GLfloat))gotPtr;
@@ -205,7 +208,7 @@ static GLboolean API_ENTRY _choose_glAreTexturesResident(GLsizei n,const GLuint*
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glAreTexturesResident");
     if (!gotPtr)
-        OpenGL_log << "Error: glAreTexturesResident is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glAreTexturesResident is NULL " << std::endl;
     else
     {
         _ptr_to_glAreTexturesResident = (GLboolean(API_ENTRY*)(GLsizei,const GLuint*,GLboolean*))gotPtr;
@@ -218,7 +221,7 @@ static void API_ENTRY _choose_glArrayElement(GLint i)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glArrayElement");
     if (!gotPtr)
-        OpenGL_log << "Error: glArrayElement is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glArrayElement is NULL " << std::endl;
     else
     {
         _ptr_to_glArrayElement = (void(API_ENTRY*)(GLint))gotPtr;
@@ -231,7 +234,7 @@ static void API_ENTRY _choose_glAttachObjectARB(GLhandleARB containerObj,GLhandl
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glAttachObjectARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glAttachObjectARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glAttachObjectARB is NULL " << std::endl;
     else
     {
         _ptr_to_glAttachObjectARB = (void(API_ENTRY*)(GLhandleARB,GLhandleARB))gotPtr;
@@ -244,7 +247,7 @@ static void API_ENTRY _choose_glAttachShader(GLuint program,GLuint shader)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glAttachShader");
     if (!gotPtr)
-        OpenGL_log << "Error: glAttachShader is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glAttachShader is NULL " << std::endl;
     else
     {
         _ptr_to_glAttachShader = (void(API_ENTRY*)(GLuint,GLuint))gotPtr;
@@ -257,7 +260,7 @@ static void API_ENTRY _choose_glBegin(GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBegin");
     if (!gotPtr)
-        OpenGL_log << "Error: glBegin is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBegin is NULL " << std::endl;
     else
     {
         _ptr_to_glBegin = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -270,7 +273,7 @@ static void API_ENTRY _choose_glBeginConditionalRender(GLuint id,GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBeginConditionalRender");
     if (!gotPtr)
-        OpenGL_log << "Error: glBeginConditionalRender is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBeginConditionalRender is NULL " << std::endl;
     else
     {
         _ptr_to_glBeginConditionalRender = (void(API_ENTRY*)(GLuint,GLenum))gotPtr;
@@ -283,7 +286,7 @@ static void API_ENTRY _choose_glBeginQuery(GLenum target,GLuint id)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBeginQuery");
     if (!gotPtr)
-        OpenGL_log << "Error: glBeginQuery is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBeginQuery is NULL " << std::endl;
     else
     {
         _ptr_to_glBeginQuery = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -296,7 +299,7 @@ static void API_ENTRY _choose_glBeginQueryIndexed(GLenum target,GLuint index,GLu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBeginQueryIndexed");
     if (!gotPtr)
-        OpenGL_log << "Error: glBeginQueryIndexed is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBeginQueryIndexed is NULL " << std::endl;
     else
     {
         _ptr_to_glBeginQueryIndexed = (void(API_ENTRY*)(GLenum,GLuint,GLuint))gotPtr;
@@ -309,7 +312,7 @@ static void API_ENTRY _choose_glBeginTransformFeedback(GLenum primitiveMode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBeginTransformFeedback");
     if (!gotPtr)
-        OpenGL_log << "Error: glBeginTransformFeedback is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBeginTransformFeedback is NULL " << std::endl;
     else
     {
         _ptr_to_glBeginTransformFeedback = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -322,7 +325,7 @@ static void API_ENTRY _choose_glBindAttribLocation(GLuint program,GLuint index,c
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindAttribLocation");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindAttribLocation is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindAttribLocation is NULL " << std::endl;
     else
     {
         _ptr_to_glBindAttribLocation = (void(API_ENTRY*)(GLuint,GLuint,const GLchar*))gotPtr;
@@ -335,7 +338,7 @@ static void API_ENTRY _choose_glBindBuffer(GLenum target,GLuint buffer)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindBuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindBuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindBuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glBindBuffer = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -348,7 +351,7 @@ static void API_ENTRY _choose_glBindBufferARB(GLenum target,GLuint buffer)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindBufferARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindBufferARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindBufferARB is NULL " << std::endl;
     else
     {
         _ptr_to_glBindBufferARB = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -361,7 +364,7 @@ static void API_ENTRY _choose_glBindBufferBase(GLenum target,GLuint index,GLuint
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindBufferBase");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindBufferBase is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindBufferBase is NULL " << std::endl;
     else
     {
         _ptr_to_glBindBufferBase = (void(API_ENTRY*)(GLenum,GLuint,GLuint))gotPtr;
@@ -374,7 +377,7 @@ static void API_ENTRY _choose_glBindBufferRange(GLenum target,GLuint index,GLuin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindBufferRange");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindBufferRange is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindBufferRange is NULL " << std::endl;
     else
     {
         _ptr_to_glBindBufferRange = (void(API_ENTRY*)(GLenum,GLuint,GLuint,GLintptr,GLsizeiptr))gotPtr;
@@ -387,7 +390,7 @@ static void API_ENTRY _choose_glBindFragDataLocation(GLuint program,GLuint color
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindFragDataLocation");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindFragDataLocation is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindFragDataLocation is NULL " << std::endl;
     else
     {
         _ptr_to_glBindFragDataLocation = (void(API_ENTRY*)(GLuint,GLuint,const GLchar*))gotPtr;
@@ -400,7 +403,7 @@ static void API_ENTRY _choose_glBindFragDataLocationIndexed(GLuint program,GLuin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindFragDataLocationIndexed");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindFragDataLocationIndexed is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindFragDataLocationIndexed is NULL " << std::endl;
     else
     {
         _ptr_to_glBindFragDataLocationIndexed = (void(API_ENTRY*)(GLuint,GLuint,GLuint,const GLchar*))gotPtr;
@@ -413,7 +416,7 @@ static void API_ENTRY _choose_glBindFramebuffer(GLenum target,GLuint framebuffer
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindFramebuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindFramebuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindFramebuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glBindFramebuffer = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -426,7 +429,7 @@ static void API_ENTRY _choose_glBindFramebufferEXT(GLenum target,GLuint framebuf
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindFramebufferEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindFramebufferEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindFramebufferEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glBindFramebufferEXT = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -439,7 +442,7 @@ static void API_ENTRY _choose_glBindImageTexture(GLuint unit,GLuint texture,GLin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindImageTexture");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindImageTexture is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindImageTexture is NULL " << std::endl;
     else
     {
         _ptr_to_glBindImageTexture = (void(API_ENTRY*)(GLuint,GLuint,GLint,GLboolean,GLint,GLenum,GLenum))gotPtr;
@@ -452,7 +455,7 @@ static void API_ENTRY _choose_glBindProgramPipeline(GLuint pipeline)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindProgramPipeline");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindProgramPipeline is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindProgramPipeline is NULL " << std::endl;
     else
     {
         _ptr_to_glBindProgramPipeline = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -465,7 +468,7 @@ static void API_ENTRY _choose_glBindRenderbuffer(GLenum target,GLuint renderbuff
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindRenderbuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindRenderbuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindRenderbuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glBindRenderbuffer = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -478,7 +481,7 @@ static void API_ENTRY _choose_glBindRenderbufferEXT(GLenum target,GLuint renderb
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindRenderbufferEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindRenderbufferEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindRenderbufferEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glBindRenderbufferEXT = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -491,7 +494,7 @@ static void API_ENTRY _choose_glBindSampler(GLuint unit,GLuint sampler)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindSampler");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindSampler is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindSampler is NULL " << std::endl;
     else
     {
         _ptr_to_glBindSampler = (void(API_ENTRY*)(GLuint,GLuint))gotPtr;
@@ -504,7 +507,7 @@ static void API_ENTRY _choose_glBindTexture(GLenum target,GLuint texture)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindTexture");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindTexture is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindTexture is NULL " << std::endl;
     else
     {
         _ptr_to_glBindTexture = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -517,7 +520,7 @@ static void API_ENTRY _choose_glBindTransformFeedback(GLenum target,GLuint id)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindTransformFeedback");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindTransformFeedback is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindTransformFeedback is NULL " << std::endl;
     else
     {
         _ptr_to_glBindTransformFeedback = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -530,7 +533,7 @@ static void API_ENTRY _choose_glBindVertexArray(GLuint ren_array)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindVertexArray");
     if (!gotPtr)
-        OpenGL_log << "Error: glBindVertexArray is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBindVertexArray is NULL " << std::endl;
     else
     {
         _ptr_to_glBindVertexArray = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -543,7 +546,7 @@ static void API_ENTRY _choose_glBitmap(GLsizei width,GLsizei height,GLfloat xori
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBitmap");
     if (!gotPtr)
-        OpenGL_log << "Error: glBitmap is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBitmap is NULL " << std::endl;
     else
     {
         _ptr_to_glBitmap = (void(API_ENTRY*)(GLsizei,GLsizei,GLfloat,GLfloat,GLfloat,GLfloat,const GLubyte*))gotPtr;
@@ -556,7 +559,7 @@ static void API_ENTRY _choose_glBlendColor(GLfloat red,GLfloat green,GLfloat blu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBlendColor");
     if (!gotPtr)
-        OpenGL_log << "Error: glBlendColor is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBlendColor is NULL " << std::endl;
     else
     {
         _ptr_to_glBlendColor = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -569,7 +572,7 @@ static void API_ENTRY _choose_glBlendEquation(GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBlendEquation");
     if (!gotPtr)
-        OpenGL_log << "Error: glBlendEquation is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBlendEquation is NULL " << std::endl;
     else
     {
         _ptr_to_glBlendEquation = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -582,7 +585,7 @@ static void API_ENTRY _choose_glBlendEquationSeparate(GLenum modeRGB,GLenum mode
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBlendEquationSeparate");
     if (!gotPtr)
-        OpenGL_log << "Error: glBlendEquationSeparate is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBlendEquationSeparate is NULL " << std::endl;
     else
     {
         _ptr_to_glBlendEquationSeparate = (void(API_ENTRY*)(GLenum,GLenum))gotPtr;
@@ -595,7 +598,7 @@ static void API_ENTRY _choose_glBlendEquationSeparatei(GLuint buf,GLenum modeRGB
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBlendEquationSeparatei");
     if (!gotPtr)
-        OpenGL_log << "Error: glBlendEquationSeparatei is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBlendEquationSeparatei is NULL " << std::endl;
     else
     {
         _ptr_to_glBlendEquationSeparatei = (void(API_ENTRY*)(GLuint,GLenum,GLenum))gotPtr;
@@ -608,7 +611,7 @@ static void API_ENTRY _choose_glBlendEquationi(GLuint buf,GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBlendEquationi");
     if (!gotPtr)
-        OpenGL_log << "Error: glBlendEquationi is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBlendEquationi is NULL " << std::endl;
     else
     {
         _ptr_to_glBlendEquationi = (void(API_ENTRY*)(GLuint,GLenum))gotPtr;
@@ -621,7 +624,7 @@ static void API_ENTRY _choose_glBlendFunc(GLenum sfactor,GLenum dfactor)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBlendFunc");
     if (!gotPtr)
-        OpenGL_log << "Error: glBlendFunc is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBlendFunc is NULL " << std::endl;
     else
     {
         _ptr_to_glBlendFunc = (void(API_ENTRY*)(GLenum,GLenum))gotPtr;
@@ -634,7 +637,7 @@ static void API_ENTRY _choose_glBlendFuncSeparate(GLenum sfactorRGB,GLenum dfact
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBlendFuncSeparate");
     if (!gotPtr)
-        OpenGL_log << "Error: glBlendFuncSeparate is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBlendFuncSeparate is NULL " << std::endl;
     else
     {
         _ptr_to_glBlendFuncSeparate = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLenum))gotPtr;
@@ -647,7 +650,7 @@ static void API_ENTRY _choose_glBlendFuncSeparatei(GLuint buf,GLenum srcRGB,GLen
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBlendFuncSeparatei");
     if (!gotPtr)
-        OpenGL_log << "Error: glBlendFuncSeparatei is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBlendFuncSeparatei is NULL " << std::endl;
     else
     {
         _ptr_to_glBlendFuncSeparatei = (void(API_ENTRY*)(GLuint,GLenum,GLenum,GLenum,GLenum))gotPtr;
@@ -660,7 +663,7 @@ static void API_ENTRY _choose_glBlendFunci(GLuint buf,GLenum src,GLenum dst)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBlendFunci");
     if (!gotPtr)
-        OpenGL_log << "Error: glBlendFunci is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBlendFunci is NULL " << std::endl;
     else
     {
         _ptr_to_glBlendFunci = (void(API_ENTRY*)(GLuint,GLenum,GLenum))gotPtr;
@@ -673,7 +676,7 @@ static void API_ENTRY _choose_glBlitFramebuffer(GLint srcX0,GLint srcY0,GLint sr
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBlitFramebuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glBlitFramebuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBlitFramebuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glBlitFramebuffer = (void(API_ENTRY*)(GLint,GLint,GLint,GLint,GLint,GLint,GLint,GLint,GLbitfield,GLenum))gotPtr;
@@ -686,7 +689,7 @@ static void API_ENTRY _choose_glBufferData(GLenum target,GLsizeiptr size,const G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBufferData");
     if (!gotPtr)
-        OpenGL_log << "Error: glBufferData is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBufferData is NULL " << std::endl;
     else
     {
         _ptr_to_glBufferData = (void(API_ENTRY*)(GLenum,GLsizeiptr,const GLvoid*,GLenum))gotPtr;
@@ -699,7 +702,7 @@ static void API_ENTRY _choose_glBufferDataARB(GLenum target,GLsizeiptrARB size,c
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBufferDataARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glBufferDataARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBufferDataARB is NULL " << std::endl;
     else
     {
         _ptr_to_glBufferDataARB = (void(API_ENTRY*)(GLenum,GLsizeiptrARB,const GLvoid*,GLenum))gotPtr;
@@ -712,7 +715,7 @@ static void API_ENTRY _choose_glBufferSubData(GLenum target,GLintptr offset,GLsi
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBufferSubData");
     if (!gotPtr)
-        OpenGL_log << "Error: glBufferSubData is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBufferSubData is NULL " << std::endl;
     else
     {
         _ptr_to_glBufferSubData = (void(API_ENTRY*)(GLenum,GLintptr,GLsizeiptr,const GLvoid*))gotPtr;
@@ -725,7 +728,7 @@ static void API_ENTRY _choose_glBufferSubDataARB(GLenum target,GLintptrARB offse
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glBufferSubDataARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glBufferSubDataARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glBufferSubDataARB is NULL " << std::endl;
     else
     {
         _ptr_to_glBufferSubDataARB = (void(API_ENTRY*)(GLenum,GLintptrARB,GLsizeiptrARB,const GLvoid*))gotPtr;
@@ -738,7 +741,7 @@ static void API_ENTRY _choose_glCallList(GLuint list)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCallList");
     if (!gotPtr)
-        OpenGL_log << "Error: glCallList is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCallList is NULL " << std::endl;
     else
     {
         _ptr_to_glCallList = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -751,7 +754,7 @@ static void API_ENTRY _choose_glCallLists(GLsizei n,GLenum type,const GLvoid* li
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCallLists");
     if (!gotPtr)
-        OpenGL_log << "Error: glCallLists is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCallLists is NULL " << std::endl;
     else
     {
         _ptr_to_glCallLists = (void(API_ENTRY*)(GLsizei,GLenum,const GLvoid*))gotPtr;
@@ -764,7 +767,7 @@ static GLenum API_ENTRY _choose_glCheckFramebufferStatus(GLenum target)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCheckFramebufferStatus");
     if (!gotPtr)
-        OpenGL_log << "Error: glCheckFramebufferStatus is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCheckFramebufferStatus is NULL " << std::endl;
     else
     {
         _ptr_to_glCheckFramebufferStatus = (GLenum(API_ENTRY*)(GLenum))gotPtr;
@@ -777,7 +780,7 @@ static GLenum API_ENTRY _choose_glCheckFramebufferStatusEXT(GLenum target)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCheckFramebufferStatusEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glCheckFramebufferStatusEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCheckFramebufferStatusEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glCheckFramebufferStatusEXT = (GLenum(API_ENTRY*)(GLenum))gotPtr;
@@ -790,7 +793,7 @@ static void API_ENTRY _choose_glClampColor(GLenum target,GLenum clamp)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClampColor");
     if (!gotPtr)
-        OpenGL_log << "Error: glClampColor is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClampColor is NULL " << std::endl;
     else
     {
         _ptr_to_glClampColor = (void(API_ENTRY*)(GLenum,GLenum))gotPtr;
@@ -803,7 +806,7 @@ static void API_ENTRY _choose_glClear(GLbitfield mask)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClear");
     if (!gotPtr)
-        OpenGL_log << "Error: glClear is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClear is NULL " << std::endl;
     else
     {
         _ptr_to_glClear = (void(API_ENTRY*)(GLbitfield))gotPtr;
@@ -816,7 +819,7 @@ static void API_ENTRY _choose_glClearAccum(GLfloat red,GLfloat green,GLfloat blu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClearAccum");
     if (!gotPtr)
-        OpenGL_log << "Error: glClearAccum is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClearAccum is NULL " << std::endl;
     else
     {
         _ptr_to_glClearAccum = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -829,7 +832,7 @@ static void API_ENTRY _choose_glClearBufferfi(GLenum buffer,GLint drawbuffer,GLf
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClearBufferfi");
     if (!gotPtr)
-        OpenGL_log << "Error: glClearBufferfi is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClearBufferfi is NULL " << std::endl;
     else
     {
         _ptr_to_glClearBufferfi = (void(API_ENTRY*)(GLenum,GLint,GLfloat,GLint))gotPtr;
@@ -842,7 +845,7 @@ static void API_ENTRY _choose_glClearBufferfv(GLenum buffer,GLint drawbuffer,con
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClearBufferfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glClearBufferfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClearBufferfv is NULL " << std::endl;
     else
     {
         _ptr_to_glClearBufferfv = (void(API_ENTRY*)(GLenum,GLint,const GLfloat*))gotPtr;
@@ -855,7 +858,7 @@ static void API_ENTRY _choose_glClearBufferiv(GLenum buffer,GLint drawbuffer,con
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClearBufferiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glClearBufferiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClearBufferiv is NULL " << std::endl;
     else
     {
         _ptr_to_glClearBufferiv = (void(API_ENTRY*)(GLenum,GLint,const GLint*))gotPtr;
@@ -868,7 +871,7 @@ static void API_ENTRY _choose_glClearBufferuiv(GLenum buffer,GLint drawbuffer,co
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClearBufferuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glClearBufferuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClearBufferuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glClearBufferuiv = (void(API_ENTRY*)(GLenum,GLint,const GLuint*))gotPtr;
@@ -881,7 +884,7 @@ static void API_ENTRY _choose_glClearColor(GLfloat red,GLfloat green,GLfloat blu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClearColor");
     if (!gotPtr)
-        OpenGL_log << "Error: glClearColor is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClearColor is NULL " << std::endl;
     else
     {
         _ptr_to_glClearColor = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -894,7 +897,7 @@ static void API_ENTRY _choose_glClearDepth(GLdouble depth)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClearDepth");
     if (!gotPtr)
-        OpenGL_log << "Error: glClearDepth is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClearDepth is NULL " << std::endl;
     else
     {
         _ptr_to_glClearDepth = (void(API_ENTRY*)(GLdouble))gotPtr;
@@ -907,7 +910,7 @@ static void API_ENTRY _choose_glClearDepthf(GLfloat d)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClearDepthf");
     if (!gotPtr)
-        OpenGL_log << "Error: glClearDepthf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClearDepthf is NULL " << std::endl;
     else
     {
         _ptr_to_glClearDepthf = (void(API_ENTRY*)(GLfloat))gotPtr;
@@ -920,7 +923,7 @@ static void API_ENTRY _choose_glClearIndex(GLfloat c)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClearIndex");
     if (!gotPtr)
-        OpenGL_log << "Error: glClearIndex is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClearIndex is NULL " << std::endl;
     else
     {
         _ptr_to_glClearIndex = (void(API_ENTRY*)(GLfloat))gotPtr;
@@ -933,7 +936,7 @@ static void API_ENTRY _choose_glClearStencil(GLint s)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClearStencil");
     if (!gotPtr)
-        OpenGL_log << "Error: glClearStencil is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClearStencil is NULL " << std::endl;
     else
     {
         _ptr_to_glClearStencil = (void(API_ENTRY*)(GLint))gotPtr;
@@ -946,7 +949,7 @@ static void API_ENTRY _choose_glClientActiveTexture(GLenum texture)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClientActiveTexture");
     if (!gotPtr)
-        OpenGL_log << "Error: glClientActiveTexture is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClientActiveTexture is NULL " << std::endl;
     else
     {
         _ptr_to_glClientActiveTexture = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -959,7 +962,7 @@ static GLenum API_ENTRY _choose_glClientWaitSync(GLsync sync,GLbitfield flags,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClientWaitSync");
     if (!gotPtr)
-        OpenGL_log << "Error: glClientWaitSync is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClientWaitSync is NULL " << std::endl;
     else
     {
         _ptr_to_glClientWaitSync = (GLenum(API_ENTRY*)(GLsync,GLbitfield,GLuint64))gotPtr;
@@ -972,7 +975,7 @@ static void API_ENTRY _choose_glClipPlane(GLenum plane,const GLdouble* equation)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glClipPlane");
     if (!gotPtr)
-        OpenGL_log << "Error: glClipPlane is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glClipPlane is NULL " << std::endl;
     else
     {
         _ptr_to_glClipPlane = (void(API_ENTRY*)(GLenum,const GLdouble*))gotPtr;
@@ -985,7 +988,7 @@ static void API_ENTRY _choose_glColor3b(GLbyte red,GLbyte green,GLbyte blue)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3b");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3b is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3b is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3b = (void(API_ENTRY*)(GLbyte,GLbyte,GLbyte))gotPtr;
@@ -998,7 +1001,7 @@ static void API_ENTRY _choose_glColor3bv(const GLbyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3bv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3bv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3bv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3bv = (void(API_ENTRY*)(const GLbyte*))gotPtr;
@@ -1011,7 +1014,7 @@ static void API_ENTRY _choose_glColor3d(GLdouble red,GLdouble green,GLdouble blu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3d is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3d = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble))gotPtr;
@@ -1024,7 +1027,7 @@ static void API_ENTRY _choose_glColor3dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -1037,7 +1040,7 @@ static void API_ENTRY _choose_glColor3f(GLfloat red,GLfloat green,GLfloat blue)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3f");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3f is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3f = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat))gotPtr;
@@ -1050,7 +1053,7 @@ static void API_ENTRY _choose_glColor3fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -1063,7 +1066,7 @@ static void API_ENTRY _choose_glColor3i(GLint red,GLint green,GLint blue)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3i");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3i is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3i = (void(API_ENTRY*)(GLint,GLint,GLint))gotPtr;
@@ -1076,7 +1079,7 @@ static void API_ENTRY _choose_glColor3iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3iv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -1089,7 +1092,7 @@ static void API_ENTRY _choose_glColor3s(GLshort red,GLshort green,GLshort blue)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3s");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3s is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3s = (void(API_ENTRY*)(GLshort,GLshort,GLshort))gotPtr;
@@ -1102,7 +1105,7 @@ static void API_ENTRY _choose_glColor3sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3sv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -1115,7 +1118,7 @@ static void API_ENTRY _choose_glColor3ub(GLubyte red,GLubyte green,GLubyte blue)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3ub");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3ub is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3ub is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3ub = (void(API_ENTRY*)(GLubyte,GLubyte,GLubyte))gotPtr;
@@ -1128,7 +1131,7 @@ static void API_ENTRY _choose_glColor3ubv(const GLubyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3ubv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3ubv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3ubv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3ubv = (void(API_ENTRY*)(const GLubyte*))gotPtr;
@@ -1141,7 +1144,7 @@ static void API_ENTRY _choose_glColor3ui(GLuint red,GLuint green,GLuint blue)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3ui = (void(API_ENTRY*)(GLuint,GLuint,GLuint))gotPtr;
@@ -1154,7 +1157,7 @@ static void API_ENTRY _choose_glColor3uiv(const GLuint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3uiv = (void(API_ENTRY*)(const GLuint*))gotPtr;
@@ -1167,7 +1170,7 @@ static void API_ENTRY _choose_glColor3us(GLushort red,GLushort green,GLushort bl
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3us");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3us is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3us is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3us = (void(API_ENTRY*)(GLushort,GLushort,GLushort))gotPtr;
@@ -1180,7 +1183,7 @@ static void API_ENTRY _choose_glColor3usv(const GLushort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor3usv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor3usv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor3usv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor3usv = (void(API_ENTRY*)(const GLushort*))gotPtr;
@@ -1193,7 +1196,7 @@ static void API_ENTRY _choose_glColor4b(GLbyte red,GLbyte green,GLbyte blue,GLby
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4b");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4b is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4b is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4b = (void(API_ENTRY*)(GLbyte,GLbyte,GLbyte,GLbyte))gotPtr;
@@ -1206,7 +1209,7 @@ static void API_ENTRY _choose_glColor4bv(const GLbyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4bv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4bv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4bv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4bv = (void(API_ENTRY*)(const GLbyte*))gotPtr;
@@ -1219,7 +1222,7 @@ static void API_ENTRY _choose_glColor4d(GLdouble red,GLdouble green,GLdouble blu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4d");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4d is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4d = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -1232,7 +1235,7 @@ static void API_ENTRY _choose_glColor4dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -1245,7 +1248,7 @@ static void API_ENTRY _choose_glColor4f(GLfloat red,GLfloat green,GLfloat blue,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4f");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4f is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4f = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -1258,7 +1261,7 @@ static void API_ENTRY _choose_glColor4fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -1271,7 +1274,7 @@ static void API_ENTRY _choose_glColor4i(GLint red,GLint green,GLint blue,GLint a
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4i");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4i is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4i = (void(API_ENTRY*)(GLint,GLint,GLint,GLint))gotPtr;
@@ -1284,7 +1287,7 @@ static void API_ENTRY _choose_glColor4iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4iv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -1297,7 +1300,7 @@ static void API_ENTRY _choose_glColor4s(GLshort red,GLshort green,GLshort blue,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4s");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4s is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4s = (void(API_ENTRY*)(GLshort,GLshort,GLshort,GLshort))gotPtr;
@@ -1310,7 +1313,7 @@ static void API_ENTRY _choose_glColor4sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4sv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -1323,7 +1326,7 @@ static void API_ENTRY _choose_glColor4ub(GLubyte red,GLubyte green,GLubyte blue,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4ub");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4ub is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4ub is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4ub = (void(API_ENTRY*)(GLubyte,GLubyte,GLubyte,GLubyte))gotPtr;
@@ -1336,7 +1339,7 @@ static void API_ENTRY _choose_glColor4ubv(const GLubyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4ubv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4ubv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4ubv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4ubv = (void(API_ENTRY*)(const GLubyte*))gotPtr;
@@ -1349,7 +1352,7 @@ static void API_ENTRY _choose_glColor4ui(GLuint red,GLuint green,GLuint blue,GLu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4ui is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4ui = (void(API_ENTRY*)(GLuint,GLuint,GLuint,GLuint))gotPtr;
@@ -1362,7 +1365,7 @@ static void API_ENTRY _choose_glColor4uiv(const GLuint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4uiv = (void(API_ENTRY*)(const GLuint*))gotPtr;
@@ -1375,7 +1378,7 @@ static void API_ENTRY _choose_glColor4us(GLushort red,GLushort green,GLushort bl
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4us");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4us is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4us is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4us = (void(API_ENTRY*)(GLushort,GLushort,GLushort,GLushort))gotPtr;
@@ -1388,7 +1391,7 @@ static void API_ENTRY _choose_glColor4usv(const GLushort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColor4usv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColor4usv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColor4usv is NULL " << std::endl;
     else
     {
         _ptr_to_glColor4usv = (void(API_ENTRY*)(const GLushort*))gotPtr;
@@ -1401,7 +1404,7 @@ static void API_ENTRY _choose_glColorMask(GLboolean red,GLboolean green,GLboolea
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColorMask");
     if (!gotPtr)
-        OpenGL_log << "Error: glColorMask is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColorMask is NULL " << std::endl;
     else
     {
         _ptr_to_glColorMask = (void(API_ENTRY*)(GLboolean,GLboolean,GLboolean,GLboolean))gotPtr;
@@ -1414,7 +1417,7 @@ static void API_ENTRY _choose_glColorMaski(GLuint index,GLboolean r,GLboolean g,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColorMaski");
     if (!gotPtr)
-        OpenGL_log << "Error: glColorMaski is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColorMaski is NULL " << std::endl;
     else
     {
         _ptr_to_glColorMaski = (void(API_ENTRY*)(GLuint,GLboolean,GLboolean,GLboolean,GLboolean))gotPtr;
@@ -1427,7 +1430,7 @@ static void API_ENTRY _choose_glColorMaterial(GLenum face,GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColorMaterial");
     if (!gotPtr)
-        OpenGL_log << "Error: glColorMaterial is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColorMaterial is NULL " << std::endl;
     else
     {
         _ptr_to_glColorMaterial = (void(API_ENTRY*)(GLenum,GLenum))gotPtr;
@@ -1440,7 +1443,7 @@ static void API_ENTRY _choose_glColorP3ui(GLenum type,GLuint color)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColorP3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glColorP3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColorP3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glColorP3ui = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -1453,7 +1456,7 @@ static void API_ENTRY _choose_glColorP3uiv(GLenum type,const GLuint* color)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColorP3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColorP3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColorP3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glColorP3uiv = (void(API_ENTRY*)(GLenum,const GLuint*))gotPtr;
@@ -1466,7 +1469,7 @@ static void API_ENTRY _choose_glColorP4ui(GLenum type,GLuint color)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColorP4ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glColorP4ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColorP4ui is NULL " << std::endl;
     else
     {
         _ptr_to_glColorP4ui = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -1479,7 +1482,7 @@ static void API_ENTRY _choose_glColorP4uiv(GLenum type,const GLuint* color)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColorP4uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glColorP4uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColorP4uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glColorP4uiv = (void(API_ENTRY*)(GLenum,const GLuint*))gotPtr;
@@ -1492,7 +1495,7 @@ static void API_ENTRY _choose_glColorPointer(GLint size,GLenum type,GLsizei stri
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glColorPointer");
     if (!gotPtr)
-        OpenGL_log << "Error: glColorPointer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glColorPointer is NULL " << std::endl;
     else
     {
         _ptr_to_glColorPointer = (void(API_ENTRY*)(GLint,GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -1505,7 +1508,7 @@ static void API_ENTRY _choose_glCompileShader(GLuint shader)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCompileShader");
     if (!gotPtr)
-        OpenGL_log << "Error: glCompileShader is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCompileShader is NULL " << std::endl;
     else
     {
         _ptr_to_glCompileShader = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -1518,7 +1521,7 @@ static void API_ENTRY _choose_glCompileShaderARB(GLhandleARB shaderObj)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCompileShaderARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glCompileShaderARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCompileShaderARB is NULL " << std::endl;
     else
     {
         _ptr_to_glCompileShaderARB = (void(API_ENTRY*)(GLhandleARB))gotPtr;
@@ -1531,7 +1534,7 @@ static void API_ENTRY _choose_glCompressedTexImage1D(GLenum target,GLint level,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCompressedTexImage1D");
     if (!gotPtr)
-        OpenGL_log << "Error: glCompressedTexImage1D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCompressedTexImage1D is NULL " << std::endl;
     else
     {
         _ptr_to_glCompressedTexImage1D = (void(API_ENTRY*)(GLenum,GLint,GLenum,GLsizei,GLint,GLsizei,const GLvoid*))gotPtr;
@@ -1544,7 +1547,7 @@ static void API_ENTRY _choose_glCompressedTexImage2D(GLenum target,GLint level,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCompressedTexImage2D");
     if (!gotPtr)
-        OpenGL_log << "Error: glCompressedTexImage2D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCompressedTexImage2D is NULL " << std::endl;
     else
     {
         _ptr_to_glCompressedTexImage2D = (void(API_ENTRY*)(GLenum,GLint,GLenum,GLsizei,GLsizei,GLint,GLsizei,const GLvoid*))gotPtr;
@@ -1557,7 +1560,7 @@ static void API_ENTRY _choose_glCompressedTexImage3D(GLenum target,GLint level,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCompressedTexImage3D");
     if (!gotPtr)
-        OpenGL_log << "Error: glCompressedTexImage3D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCompressedTexImage3D is NULL " << std::endl;
     else
     {
         _ptr_to_glCompressedTexImage3D = (void(API_ENTRY*)(GLenum,GLint,GLenum,GLsizei,GLsizei,GLsizei,GLint,GLsizei,const GLvoid*))gotPtr;
@@ -1570,7 +1573,7 @@ static void API_ENTRY _choose_glCompressedTexSubImage1D(GLenum target,GLint leve
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCompressedTexSubImage1D");
     if (!gotPtr)
-        OpenGL_log << "Error: glCompressedTexSubImage1D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCompressedTexSubImage1D is NULL " << std::endl;
     else
     {
         _ptr_to_glCompressedTexSubImage1D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLsizei,GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -1583,7 +1586,7 @@ static void API_ENTRY _choose_glCompressedTexSubImage2D(GLenum target,GLint leve
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCompressedTexSubImage2D");
     if (!gotPtr)
-        OpenGL_log << "Error: glCompressedTexSubImage2D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCompressedTexSubImage2D is NULL " << std::endl;
     else
     {
         _ptr_to_glCompressedTexSubImage2D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLint,GLsizei,GLsizei,GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -1596,7 +1599,7 @@ static void API_ENTRY _choose_glCompressedTexSubImage3D(GLenum target,GLint leve
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCompressedTexSubImage3D");
     if (!gotPtr)
-        OpenGL_log << "Error: glCompressedTexSubImage3D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCompressedTexSubImage3D is NULL " << std::endl;
     else
     {
         _ptr_to_glCompressedTexSubImage3D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLint,GLint,GLsizei,GLsizei,GLsizei,GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -1609,7 +1612,7 @@ static void API_ENTRY _choose_glCopyBufferSubData(GLenum readTarget,GLenum write
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCopyBufferSubData");
     if (!gotPtr)
-        OpenGL_log << "Error: glCopyBufferSubData is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCopyBufferSubData is NULL " << std::endl;
     else
     {
         _ptr_to_glCopyBufferSubData = (void(API_ENTRY*)(GLenum,GLenum,GLintptr,GLintptr,GLsizeiptr))gotPtr;
@@ -1622,7 +1625,7 @@ static void API_ENTRY _choose_glCopyPixels(GLint x,GLint y,GLsizei width,GLsizei
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCopyPixels");
     if (!gotPtr)
-        OpenGL_log << "Error: glCopyPixels is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCopyPixels is NULL " << std::endl;
     else
     {
         _ptr_to_glCopyPixels = (void(API_ENTRY*)(GLint,GLint,GLsizei,GLsizei,GLenum))gotPtr;
@@ -1635,7 +1638,7 @@ static void API_ENTRY _choose_glCopyTexImage1D(GLenum target,GLint level,GLenum 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCopyTexImage1D");
     if (!gotPtr)
-        OpenGL_log << "Error: glCopyTexImage1D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCopyTexImage1D is NULL " << std::endl;
     else
     {
         _ptr_to_glCopyTexImage1D = (void(API_ENTRY*)(GLenum,GLint,GLenum,GLint,GLint,GLsizei,GLint))gotPtr;
@@ -1648,7 +1651,7 @@ static void API_ENTRY _choose_glCopyTexImage2D(GLenum target,GLint level,GLenum 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCopyTexImage2D");
     if (!gotPtr)
-        OpenGL_log << "Error: glCopyTexImage2D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCopyTexImage2D is NULL " << std::endl;
     else
     {
         _ptr_to_glCopyTexImage2D = (void(API_ENTRY*)(GLenum,GLint,GLenum,GLint,GLint,GLsizei,GLsizei,GLint))gotPtr;
@@ -1661,7 +1664,7 @@ static void API_ENTRY _choose_glCopyTexSubImage1D(GLenum target,GLint level,GLin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCopyTexSubImage1D");
     if (!gotPtr)
-        OpenGL_log << "Error: glCopyTexSubImage1D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCopyTexSubImage1D is NULL " << std::endl;
     else
     {
         _ptr_to_glCopyTexSubImage1D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLint,GLint,GLsizei))gotPtr;
@@ -1674,7 +1677,7 @@ static void API_ENTRY _choose_glCopyTexSubImage2D(GLenum target,GLint level,GLin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCopyTexSubImage2D");
     if (!gotPtr)
-        OpenGL_log << "Error: glCopyTexSubImage2D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCopyTexSubImage2D is NULL " << std::endl;
     else
     {
         _ptr_to_glCopyTexSubImage2D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLint,GLint,GLint,GLsizei,GLsizei))gotPtr;
@@ -1687,7 +1690,7 @@ static void API_ENTRY _choose_glCopyTexSubImage3D(GLenum target,GLint level,GLin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCopyTexSubImage3D");
     if (!gotPtr)
-        OpenGL_log << "Error: glCopyTexSubImage3D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCopyTexSubImage3D is NULL " << std::endl;
     else
     {
         _ptr_to_glCopyTexSubImage3D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLint,GLint,GLint,GLint,GLsizei,GLsizei))gotPtr;
@@ -1700,7 +1703,7 @@ static GLuint API_ENTRY _choose_glCreateProgram()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCreateProgram");
     if (!gotPtr)
-        OpenGL_log << "Error: glCreateProgram is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCreateProgram is NULL " << std::endl;
     else
     {
         _ptr_to_glCreateProgram = (GLuint(API_ENTRY*)())gotPtr;
@@ -1713,7 +1716,7 @@ static GLhandleARB API_ENTRY _choose_glCreateProgramObjectARB()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCreateProgramObjectARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glCreateProgramObjectARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCreateProgramObjectARB is NULL " << std::endl;
     else
     {
         _ptr_to_glCreateProgramObjectARB = (GLhandleARB(API_ENTRY*)())gotPtr;
@@ -1726,7 +1729,7 @@ static GLuint API_ENTRY _choose_glCreateShader(GLenum type)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCreateShader");
     if (!gotPtr)
-        OpenGL_log << "Error: glCreateShader is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCreateShader is NULL " << std::endl;
     else
     {
         _ptr_to_glCreateShader = (GLuint(API_ENTRY*)(GLenum))gotPtr;
@@ -1739,7 +1742,7 @@ static GLhandleARB API_ENTRY _choose_glCreateShaderObjectARB(GLenum shaderType)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCreateShaderObjectARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glCreateShaderObjectARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCreateShaderObjectARB is NULL " << std::endl;
     else
     {
         _ptr_to_glCreateShaderObjectARB = (GLhandleARB(API_ENTRY*)(GLenum))gotPtr;
@@ -1752,7 +1755,7 @@ static GLuint API_ENTRY _choose_glCreateShaderProgramv(GLenum type,GLsizei count
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCreateShaderProgramv");
     if (!gotPtr)
-        OpenGL_log << "Error: glCreateShaderProgramv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCreateShaderProgramv is NULL " << std::endl;
     else
     {
         _ptr_to_glCreateShaderProgramv = (GLuint(API_ENTRY*)(GLenum,GLsizei,const GLchar*const*))gotPtr;
@@ -1765,7 +1768,7 @@ static void API_ENTRY _choose_glCullFace(GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glCullFace");
     if (!gotPtr)
-        OpenGL_log << "Error: glCullFace is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glCullFace is NULL " << std::endl;
     else
     {
         _ptr_to_glCullFace = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -1778,7 +1781,7 @@ static void API_ENTRY _choose_glDeleteBuffers(GLsizei n,const GLuint* buffers)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteBuffers");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteBuffers is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteBuffers is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteBuffers = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1791,7 +1794,7 @@ static void API_ENTRY _choose_glDeleteBuffersARB(GLsizei n,const GLuint* buffers
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteBuffersARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteBuffersARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteBuffersARB is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteBuffersARB = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1804,7 +1807,7 @@ static void API_ENTRY _choose_glDeleteFramebuffers(GLsizei n,const GLuint* frame
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteFramebuffers");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteFramebuffers is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteFramebuffers is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteFramebuffers = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1817,7 +1820,7 @@ static void API_ENTRY _choose_glDeleteFramebuffersEXT(GLsizei n,const GLuint* fr
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteFramebuffersEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteFramebuffersEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteFramebuffersEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteFramebuffersEXT = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1830,7 +1833,7 @@ static void API_ENTRY _choose_glDeleteLists(GLuint list,GLsizei range)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteLists");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteLists is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteLists is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteLists = (void(API_ENTRY*)(GLuint,GLsizei))gotPtr;
@@ -1843,7 +1846,7 @@ static void API_ENTRY _choose_glDeleteObjectARB(GLhandleARB obj)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteObjectARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteObjectARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteObjectARB is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteObjectARB = (void(API_ENTRY*)(GLhandleARB))gotPtr;
@@ -1856,7 +1859,7 @@ static void API_ENTRY _choose_glDeleteProgram(GLuint program)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteProgram");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteProgram is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteProgram is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteProgram = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -1869,7 +1872,7 @@ static void API_ENTRY _choose_glDeleteProgramPipelines(GLsizei n,const GLuint* p
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteProgramPipelines");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteProgramPipelines is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteProgramPipelines is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteProgramPipelines = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1882,7 +1885,7 @@ static void API_ENTRY _choose_glDeleteQueries(GLsizei n,const GLuint* ids)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteQueries");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteQueries is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteQueries is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteQueries = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1895,7 +1898,7 @@ static void API_ENTRY _choose_glDeleteRenderbuffers(GLsizei n,const GLuint* rend
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteRenderbuffers");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteRenderbuffers is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteRenderbuffers is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteRenderbuffers = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1908,7 +1911,7 @@ static void API_ENTRY _choose_glDeleteRenderbuffersEXT(GLsizei n,const GLuint* r
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteRenderbuffersEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteRenderbuffersEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteRenderbuffersEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteRenderbuffersEXT = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1921,7 +1924,7 @@ static void API_ENTRY _choose_glDeleteSamplers(GLsizei count,const GLuint* sampl
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteSamplers");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteSamplers is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteSamplers is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteSamplers = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1934,7 +1937,7 @@ static void API_ENTRY _choose_glDeleteShader(GLuint shader)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteShader");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteShader is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteShader is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteShader = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -1947,7 +1950,7 @@ static void API_ENTRY _choose_glDeleteSync(GLsync sync)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteSync");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteSync is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteSync is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteSync = (void(API_ENTRY*)(GLsync))gotPtr;
@@ -1960,7 +1963,7 @@ static void API_ENTRY _choose_glDeleteTextures(GLsizei n,const GLuint* textures)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteTextures");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteTextures is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteTextures is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteTextures = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1973,7 +1976,7 @@ static void API_ENTRY _choose_glDeleteTransformFeedbacks(GLsizei n,const GLuint*
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteTransformFeedbacks");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteTransformFeedbacks is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteTransformFeedbacks is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteTransformFeedbacks = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1986,7 +1989,7 @@ static void API_ENTRY _choose_glDeleteVertexArrays(GLsizei n,const GLuint* array
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteVertexArrays");
     if (!gotPtr)
-        OpenGL_log << "Error: glDeleteVertexArrays is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDeleteVertexArrays is NULL " << std::endl;
     else
     {
         _ptr_to_glDeleteVertexArrays = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
@@ -1999,7 +2002,7 @@ static void API_ENTRY _choose_glDepthFunc(GLenum func)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDepthFunc");
     if (!gotPtr)
-        OpenGL_log << "Error: glDepthFunc is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDepthFunc is NULL " << std::endl;
     else
     {
         _ptr_to_glDepthFunc = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -2012,7 +2015,7 @@ static void API_ENTRY _choose_glDepthMask(GLboolean flag)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDepthMask");
     if (!gotPtr)
-        OpenGL_log << "Error: glDepthMask is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDepthMask is NULL " << std::endl;
     else
     {
         _ptr_to_glDepthMask = (void(API_ENTRY*)(GLboolean))gotPtr;
@@ -2025,7 +2028,7 @@ static void API_ENTRY _choose_glDepthRange(GLdouble ren_near,GLdouble ren_far)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDepthRange");
     if (!gotPtr)
-        OpenGL_log << "Error: glDepthRange is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDepthRange is NULL " << std::endl;
     else
     {
         _ptr_to_glDepthRange = (void(API_ENTRY*)(GLdouble,GLdouble))gotPtr;
@@ -2038,7 +2041,7 @@ static void API_ENTRY _choose_glDepthRangeArrayv(GLuint first,GLsizei count,cons
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDepthRangeArrayv");
     if (!gotPtr)
-        OpenGL_log << "Error: glDepthRangeArrayv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDepthRangeArrayv is NULL " << std::endl;
     else
     {
         _ptr_to_glDepthRangeArrayv = (void(API_ENTRY*)(GLuint,GLsizei,const GLdouble*))gotPtr;
@@ -2051,7 +2054,7 @@ static void API_ENTRY _choose_glDepthRangeIndexed(GLuint index,GLdouble n,GLdoub
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDepthRangeIndexed");
     if (!gotPtr)
-        OpenGL_log << "Error: glDepthRangeIndexed is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDepthRangeIndexed is NULL " << std::endl;
     else
     {
         _ptr_to_glDepthRangeIndexed = (void(API_ENTRY*)(GLuint,GLdouble,GLdouble))gotPtr;
@@ -2064,7 +2067,7 @@ static void API_ENTRY _choose_glDepthRangef(GLfloat n,GLfloat f)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDepthRangef");
     if (!gotPtr)
-        OpenGL_log << "Error: glDepthRangef is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDepthRangef is NULL " << std::endl;
     else
     {
         _ptr_to_glDepthRangef = (void(API_ENTRY*)(GLfloat,GLfloat))gotPtr;
@@ -2077,7 +2080,7 @@ static void API_ENTRY _choose_glDetachObjectARB(GLhandleARB containerObj,GLhandl
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDetachObjectARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glDetachObjectARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDetachObjectARB is NULL " << std::endl;
     else
     {
         _ptr_to_glDetachObjectARB = (void(API_ENTRY*)(GLhandleARB,GLhandleARB))gotPtr;
@@ -2090,7 +2093,7 @@ static void API_ENTRY _choose_glDetachShader(GLuint program,GLuint shader)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDetachShader");
     if (!gotPtr)
-        OpenGL_log << "Error: glDetachShader is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDetachShader is NULL " << std::endl;
     else
     {
         _ptr_to_glDetachShader = (void(API_ENTRY*)(GLuint,GLuint))gotPtr;
@@ -2103,7 +2106,7 @@ static void API_ENTRY _choose_glDisable(GLenum cap)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDisable");
     if (!gotPtr)
-        OpenGL_log << "Error: glDisable is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDisable is NULL " << std::endl;
     else
     {
         _ptr_to_glDisable = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -2116,7 +2119,7 @@ static void API_ENTRY _choose_glDisableClientState(GLenum ren_array)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDisableClientState");
     if (!gotPtr)
-        OpenGL_log << "Error: glDisableClientState is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDisableClientState is NULL " << std::endl;
     else
     {
         _ptr_to_glDisableClientState = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -2129,7 +2132,7 @@ static void API_ENTRY _choose_glDisableVertexAttribArray(GLuint index)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDisableVertexAttribArray");
     if (!gotPtr)
-        OpenGL_log << "Error: glDisableVertexAttribArray is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDisableVertexAttribArray is NULL " << std::endl;
     else
     {
         _ptr_to_glDisableVertexAttribArray = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -2142,7 +2145,7 @@ static void API_ENTRY _choose_glDisablei(GLenum target,GLuint index)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDisablei");
     if (!gotPtr)
-        OpenGL_log << "Error: glDisablei is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDisablei is NULL " << std::endl;
     else
     {
         _ptr_to_glDisablei = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -2155,7 +2158,7 @@ static void API_ENTRY _choose_glDrawArrays(GLenum mode,GLint first,GLsizei count
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawArrays");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawArrays is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawArrays is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawArrays = (void(API_ENTRY*)(GLenum,GLint,GLsizei))gotPtr;
@@ -2168,7 +2171,7 @@ static void API_ENTRY _choose_glDrawArraysIndirect(GLenum mode,const GLvoid* ind
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawArraysIndirect");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawArraysIndirect is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawArraysIndirect is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawArraysIndirect = (void(API_ENTRY*)(GLenum,const GLvoid*))gotPtr;
@@ -2181,7 +2184,7 @@ static void API_ENTRY _choose_glDrawArraysInstanced(GLenum mode,GLint first,GLsi
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawArraysInstanced");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawArraysInstanced is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawArraysInstanced is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawArraysInstanced = (void(API_ENTRY*)(GLenum,GLint,GLsizei,GLsizei))gotPtr;
@@ -2194,7 +2197,7 @@ static void API_ENTRY _choose_glDrawArraysInstancedBaseInstance(GLenum mode,GLin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawArraysInstancedBaseInstance");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawArraysInstancedBaseInstance is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawArraysInstancedBaseInstance is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawArraysInstancedBaseInstance = (void(API_ENTRY*)(GLenum,GLint,GLsizei,GLsizei,GLuint))gotPtr;
@@ -2207,7 +2210,7 @@ static void API_ENTRY _choose_glDrawBuffer(GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawBuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawBuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawBuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawBuffer = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -2220,7 +2223,7 @@ static void API_ENTRY _choose_glDrawBuffers(GLsizei n,const GLenum* bufs)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawBuffers");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawBuffers is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawBuffers is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawBuffers = (void(API_ENTRY*)(GLsizei,const GLenum*))gotPtr;
@@ -2233,7 +2236,7 @@ static void API_ENTRY _choose_glDrawElements(GLenum mode,GLsizei count,GLenum ty
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawElements");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawElements is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawElements is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawElements = (void(API_ENTRY*)(GLenum,GLsizei,GLenum,const GLvoid*))gotPtr;
@@ -2246,7 +2249,7 @@ static void API_ENTRY _choose_glDrawElementsBaseVertex(GLenum mode,GLsizei count
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawElementsBaseVertex");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawElementsBaseVertex is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawElementsBaseVertex is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawElementsBaseVertex = (void(API_ENTRY*)(GLenum,GLsizei,GLenum,const GLvoid*,GLint))gotPtr;
@@ -2259,7 +2262,7 @@ static void API_ENTRY _choose_glDrawElementsIndirect(GLenum mode,GLenum type,con
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawElementsIndirect");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawElementsIndirect is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawElementsIndirect is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawElementsIndirect = (void(API_ENTRY*)(GLenum,GLenum,const GLvoid*))gotPtr;
@@ -2272,7 +2275,7 @@ static void API_ENTRY _choose_glDrawElementsInstanced(GLenum mode,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawElementsInstanced");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawElementsInstanced is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawElementsInstanced is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawElementsInstanced = (void(API_ENTRY*)(GLenum,GLsizei,GLenum,const GLvoid*,GLsizei))gotPtr;
@@ -2285,7 +2288,7 @@ static void API_ENTRY _choose_glDrawElementsInstancedBaseInstance(GLenum mode,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawElementsInstancedBaseInstance");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawElementsInstancedBaseInstance is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawElementsInstancedBaseInstance is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawElementsInstancedBaseInstance = (void(API_ENTRY*)(GLenum,GLsizei,GLenum,const void*,GLsizei,GLuint))gotPtr;
@@ -2298,7 +2301,7 @@ static void API_ENTRY _choose_glDrawElementsInstancedBaseVertex(GLenum mode,GLsi
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawElementsInstancedBaseVertex");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawElementsInstancedBaseVertex is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawElementsInstancedBaseVertex is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawElementsInstancedBaseVertex = (void(API_ENTRY*)(GLenum,GLsizei,GLenum,const GLvoid*,GLsizei,GLint))gotPtr;
@@ -2311,7 +2314,7 @@ static void API_ENTRY _choose_glDrawElementsInstancedBaseVertexBaseInstance(GLen
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawElementsInstancedBaseVertexBaseInstance");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawElementsInstancedBaseVertexBaseInstance is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawElementsInstancedBaseVertexBaseInstance is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawElementsInstancedBaseVertexBaseInstance = (void(API_ENTRY*)(GLenum,GLsizei,GLenum,const void*,GLsizei,GLint,GLuint))gotPtr;
@@ -2324,7 +2327,7 @@ static void API_ENTRY _choose_glDrawPixels(GLsizei width,GLsizei height,GLenum f
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawPixels");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawPixels is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawPixels is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawPixels = (void(API_ENTRY*)(GLsizei,GLsizei,GLenum,GLenum,const GLvoid*))gotPtr;
@@ -2337,7 +2340,7 @@ static void API_ENTRY _choose_glDrawRangeElements(GLenum mode,GLuint start,GLuin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawRangeElements");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawRangeElements is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawRangeElements is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawRangeElements = (void(API_ENTRY*)(GLenum,GLuint,GLuint,GLsizei,GLenum,const GLvoid*))gotPtr;
@@ -2350,7 +2353,7 @@ static void API_ENTRY _choose_glDrawRangeElementsBaseVertex(GLenum mode,GLuint s
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawRangeElementsBaseVertex");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawRangeElementsBaseVertex is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawRangeElementsBaseVertex is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawRangeElementsBaseVertex = (void(API_ENTRY*)(GLenum,GLuint,GLuint,GLsizei,GLenum,const GLvoid*,GLint))gotPtr;
@@ -2363,7 +2366,7 @@ static void API_ENTRY _choose_glDrawTransformFeedback(GLenum mode,GLuint id)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawTransformFeedback");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawTransformFeedback is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawTransformFeedback is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawTransformFeedback = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -2376,7 +2379,7 @@ static void API_ENTRY _choose_glDrawTransformFeedbackInstanced(GLenum mode,GLuin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawTransformFeedbackInstanced");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawTransformFeedbackInstanced is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawTransformFeedbackInstanced is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawTransformFeedbackInstanced = (void(API_ENTRY*)(GLenum,GLuint,GLsizei))gotPtr;
@@ -2389,7 +2392,7 @@ static void API_ENTRY _choose_glDrawTransformFeedbackStream(GLenum mode,GLuint i
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawTransformFeedbackStream");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawTransformFeedbackStream is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawTransformFeedbackStream is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawTransformFeedbackStream = (void(API_ENTRY*)(GLenum,GLuint,GLuint))gotPtr;
@@ -2402,7 +2405,7 @@ static void API_ENTRY _choose_glDrawTransformFeedbackStreamInstanced(GLenum mode
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glDrawTransformFeedbackStreamInstanced");
     if (!gotPtr)
-        OpenGL_log << "Error: glDrawTransformFeedbackStreamInstanced is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glDrawTransformFeedbackStreamInstanced is NULL " << std::endl;
     else
     {
         _ptr_to_glDrawTransformFeedbackStreamInstanced = (void(API_ENTRY*)(GLenum,GLuint,GLuint,GLsizei))gotPtr;
@@ -2415,7 +2418,7 @@ static void API_ENTRY _choose_glEdgeFlag(GLboolean flag)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEdgeFlag");
     if (!gotPtr)
-        OpenGL_log << "Error: glEdgeFlag is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEdgeFlag is NULL " << std::endl;
     else
     {
         _ptr_to_glEdgeFlag = (void(API_ENTRY*)(GLboolean))gotPtr;
@@ -2428,7 +2431,7 @@ static void API_ENTRY _choose_glEdgeFlagPointer(GLsizei stride,const GLvoid* poi
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEdgeFlagPointer");
     if (!gotPtr)
-        OpenGL_log << "Error: glEdgeFlagPointer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEdgeFlagPointer is NULL " << std::endl;
     else
     {
         _ptr_to_glEdgeFlagPointer = (void(API_ENTRY*)(GLsizei,const GLvoid*))gotPtr;
@@ -2441,7 +2444,7 @@ static void API_ENTRY _choose_glEdgeFlagv(const GLboolean* flag)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEdgeFlagv");
     if (!gotPtr)
-        OpenGL_log << "Error: glEdgeFlagv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEdgeFlagv is NULL " << std::endl;
     else
     {
         _ptr_to_glEdgeFlagv = (void(API_ENTRY*)(const GLboolean*))gotPtr;
@@ -2454,7 +2457,7 @@ static void API_ENTRY _choose_glEnable(GLenum cap)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEnable");
     if (!gotPtr)
-        OpenGL_log << "Error: glEnable is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEnable is NULL " << std::endl;
     else
     {
         _ptr_to_glEnable = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -2467,7 +2470,7 @@ static void API_ENTRY _choose_glEnableClientState(GLenum ren_array)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEnableClientState");
     if (!gotPtr)
-        OpenGL_log << "Error: glEnableClientState is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEnableClientState is NULL " << std::endl;
     else
     {
         _ptr_to_glEnableClientState = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -2480,7 +2483,7 @@ static void API_ENTRY _choose_glEnableVertexAttribArray(GLuint index)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEnableVertexAttribArray");
     if (!gotPtr)
-        OpenGL_log << "Error: glEnableVertexAttribArray is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEnableVertexAttribArray is NULL " << std::endl;
     else
     {
         _ptr_to_glEnableVertexAttribArray = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -2493,7 +2496,7 @@ static void API_ENTRY _choose_glEnablei(GLenum target,GLuint index)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEnablei");
     if (!gotPtr)
-        OpenGL_log << "Error: glEnablei is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEnablei is NULL " << std::endl;
     else
     {
         _ptr_to_glEnablei = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -2506,7 +2509,7 @@ static void API_ENTRY _choose_glEnd()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEnd");
     if (!gotPtr)
-        OpenGL_log << "Error: glEnd is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEnd is NULL " << std::endl;
     else
     {
         _ptr_to_glEnd = (void(API_ENTRY*)())gotPtr;
@@ -2519,7 +2522,7 @@ static void API_ENTRY _choose_glEndConditionalRender()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEndConditionalRender");
     if (!gotPtr)
-        OpenGL_log << "Error: glEndConditionalRender is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEndConditionalRender is NULL " << std::endl;
     else
     {
         _ptr_to_glEndConditionalRender = (void(API_ENTRY*)())gotPtr;
@@ -2532,7 +2535,7 @@ static void API_ENTRY _choose_glEndList()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEndList");
     if (!gotPtr)
-        OpenGL_log << "Error: glEndList is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEndList is NULL " << std::endl;
     else
     {
         _ptr_to_glEndList = (void(API_ENTRY*)())gotPtr;
@@ -2545,7 +2548,7 @@ static void API_ENTRY _choose_glEndQuery(GLenum target)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEndQuery");
     if (!gotPtr)
-        OpenGL_log << "Error: glEndQuery is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEndQuery is NULL " << std::endl;
     else
     {
         _ptr_to_glEndQuery = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -2558,7 +2561,7 @@ static void API_ENTRY _choose_glEndQueryIndexed(GLenum target,GLuint index)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEndQueryIndexed");
     if (!gotPtr)
-        OpenGL_log << "Error: glEndQueryIndexed is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEndQueryIndexed is NULL " << std::endl;
     else
     {
         _ptr_to_glEndQueryIndexed = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -2571,7 +2574,7 @@ static void API_ENTRY _choose_glEndTransformFeedback()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEndTransformFeedback");
     if (!gotPtr)
-        OpenGL_log << "Error: glEndTransformFeedback is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEndTransformFeedback is NULL " << std::endl;
     else
     {
         _ptr_to_glEndTransformFeedback = (void(API_ENTRY*)())gotPtr;
@@ -2584,7 +2587,7 @@ static void API_ENTRY _choose_glEvalCoord1d(GLdouble u)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalCoord1d");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalCoord1d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalCoord1d is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalCoord1d = (void(API_ENTRY*)(GLdouble))gotPtr;
@@ -2597,7 +2600,7 @@ static void API_ENTRY _choose_glEvalCoord1dv(const GLdouble* u)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalCoord1dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalCoord1dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalCoord1dv is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalCoord1dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -2610,7 +2613,7 @@ static void API_ENTRY _choose_glEvalCoord1f(GLfloat u)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalCoord1f");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalCoord1f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalCoord1f is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalCoord1f = (void(API_ENTRY*)(GLfloat))gotPtr;
@@ -2623,7 +2626,7 @@ static void API_ENTRY _choose_glEvalCoord1fv(const GLfloat* u)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalCoord1fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalCoord1fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalCoord1fv is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalCoord1fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -2636,7 +2639,7 @@ static void API_ENTRY _choose_glEvalCoord2d(GLdouble u,GLdouble v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalCoord2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalCoord2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalCoord2d is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalCoord2d = (void(API_ENTRY*)(GLdouble,GLdouble))gotPtr;
@@ -2649,7 +2652,7 @@ static void API_ENTRY _choose_glEvalCoord2dv(const GLdouble* u)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalCoord2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalCoord2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalCoord2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalCoord2dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -2662,7 +2665,7 @@ static void API_ENTRY _choose_glEvalCoord2f(GLfloat u,GLfloat v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalCoord2f");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalCoord2f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalCoord2f is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalCoord2f = (void(API_ENTRY*)(GLfloat,GLfloat))gotPtr;
@@ -2675,7 +2678,7 @@ static void API_ENTRY _choose_glEvalCoord2fv(const GLfloat* u)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalCoord2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalCoord2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalCoord2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalCoord2fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -2688,7 +2691,7 @@ static void API_ENTRY _choose_glEvalMesh1(GLenum mode,GLint i1,GLint i2)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalMesh1");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalMesh1 is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalMesh1 is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalMesh1 = (void(API_ENTRY*)(GLenum,GLint,GLint))gotPtr;
@@ -2701,7 +2704,7 @@ static void API_ENTRY _choose_glEvalMesh2(GLenum mode,GLint i1,GLint i2,GLint j1
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalMesh2");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalMesh2 is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalMesh2 is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalMesh2 = (void(API_ENTRY*)(GLenum,GLint,GLint,GLint,GLint))gotPtr;
@@ -2714,7 +2717,7 @@ static void API_ENTRY _choose_glEvalPoint1(GLint i)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalPoint1");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalPoint1 is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalPoint1 is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalPoint1 = (void(API_ENTRY*)(GLint))gotPtr;
@@ -2727,7 +2730,7 @@ static void API_ENTRY _choose_glEvalPoint2(GLint i,GLint j)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glEvalPoint2");
     if (!gotPtr)
-        OpenGL_log << "Error: glEvalPoint2 is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glEvalPoint2 is NULL " << std::endl;
     else
     {
         _ptr_to_glEvalPoint2 = (void(API_ENTRY*)(GLint,GLint))gotPtr;
@@ -2740,7 +2743,7 @@ static void API_ENTRY _choose_glFeedbackBuffer(GLsizei size,GLenum type,GLfloat*
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFeedbackBuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glFeedbackBuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFeedbackBuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glFeedbackBuffer = (void(API_ENTRY*)(GLsizei,GLenum,GLfloat*))gotPtr;
@@ -2753,7 +2756,7 @@ static GLsync API_ENTRY _choose_glFenceSync(GLenum condition,GLbitfield flags)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFenceSync");
     if (!gotPtr)
-        OpenGL_log << "Error: glFenceSync is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFenceSync is NULL " << std::endl;
     else
     {
         _ptr_to_glFenceSync = (GLsync(API_ENTRY*)(GLenum,GLbitfield))gotPtr;
@@ -2766,7 +2769,7 @@ static void API_ENTRY _choose_glFinish()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFinish");
     if (!gotPtr)
-        OpenGL_log << "Error: glFinish is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFinish is NULL " << std::endl;
     else
     {
         _ptr_to_glFinish = (void(API_ENTRY*)())gotPtr;
@@ -2779,7 +2782,7 @@ static void API_ENTRY _choose_glFlush()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFlush");
     if (!gotPtr)
-        OpenGL_log << "Error: glFlush is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFlush is NULL " << std::endl;
     else
     {
         _ptr_to_glFlush = (void(API_ENTRY*)())gotPtr;
@@ -2792,7 +2795,7 @@ static void API_ENTRY _choose_glFlushMappedBufferRange(GLenum target,GLintptr of
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFlushMappedBufferRange");
     if (!gotPtr)
-        OpenGL_log << "Error: glFlushMappedBufferRange is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFlushMappedBufferRange is NULL " << std::endl;
     else
     {
         _ptr_to_glFlushMappedBufferRange = (void(API_ENTRY*)(GLenum,GLintptr,GLsizeiptr))gotPtr;
@@ -2805,7 +2808,7 @@ static void API_ENTRY _choose_glFogCoordPointer(GLenum type,GLsizei stride,const
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFogCoordPointer");
     if (!gotPtr)
-        OpenGL_log << "Error: glFogCoordPointer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFogCoordPointer is NULL " << std::endl;
     else
     {
         _ptr_to_glFogCoordPointer = (void(API_ENTRY*)(GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -2818,7 +2821,7 @@ static void API_ENTRY _choose_glFogCoordd(GLdouble coord)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFogCoordd");
     if (!gotPtr)
-        OpenGL_log << "Error: glFogCoordd is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFogCoordd is NULL " << std::endl;
     else
     {
         _ptr_to_glFogCoordd = (void(API_ENTRY*)(GLdouble))gotPtr;
@@ -2831,7 +2834,7 @@ static void API_ENTRY _choose_glFogCoorddv(const GLdouble* coord)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFogCoorddv");
     if (!gotPtr)
-        OpenGL_log << "Error: glFogCoorddv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFogCoorddv is NULL " << std::endl;
     else
     {
         _ptr_to_glFogCoorddv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -2844,7 +2847,7 @@ static void API_ENTRY _choose_glFogCoordf(GLfloat coord)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFogCoordf");
     if (!gotPtr)
-        OpenGL_log << "Error: glFogCoordf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFogCoordf is NULL " << std::endl;
     else
     {
         _ptr_to_glFogCoordf = (void(API_ENTRY*)(GLfloat))gotPtr;
@@ -2857,7 +2860,7 @@ static void API_ENTRY _choose_glFogCoordfv(const GLfloat* coord)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFogCoordfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glFogCoordfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFogCoordfv is NULL " << std::endl;
     else
     {
         _ptr_to_glFogCoordfv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -2870,7 +2873,7 @@ static void API_ENTRY _choose_glFogf(GLenum pname,GLfloat param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFogf");
     if (!gotPtr)
-        OpenGL_log << "Error: glFogf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFogf is NULL " << std::endl;
     else
     {
         _ptr_to_glFogf = (void(API_ENTRY*)(GLenum,GLfloat))gotPtr;
@@ -2883,7 +2886,7 @@ static void API_ENTRY _choose_glFogfv(GLenum pname,const GLfloat* params)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFogfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glFogfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFogfv is NULL " << std::endl;
     else
     {
         _ptr_to_glFogfv = (void(API_ENTRY*)(GLenum,const GLfloat*))gotPtr;
@@ -2896,7 +2899,7 @@ static void API_ENTRY _choose_glFogi(GLenum pname,GLint param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFogi");
     if (!gotPtr)
-        OpenGL_log << "Error: glFogi is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFogi is NULL " << std::endl;
     else
     {
         _ptr_to_glFogi = (void(API_ENTRY*)(GLenum,GLint))gotPtr;
@@ -2909,7 +2912,7 @@ static void API_ENTRY _choose_glFogiv(GLenum pname,const GLint* params)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFogiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glFogiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFogiv is NULL " << std::endl;
     else
     {
         _ptr_to_glFogiv = (void(API_ENTRY*)(GLenum,const GLint*))gotPtr;
@@ -2922,7 +2925,7 @@ static void API_ENTRY _choose_glFramebufferRenderbuffer(GLenum target,GLenum att
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFramebufferRenderbuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glFramebufferRenderbuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFramebufferRenderbuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glFramebufferRenderbuffer = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLuint))gotPtr;
@@ -2935,7 +2938,7 @@ static void API_ENTRY _choose_glFramebufferRenderbufferEXT(GLenum target,GLenum 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFramebufferRenderbufferEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glFramebufferRenderbufferEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFramebufferRenderbufferEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glFramebufferRenderbufferEXT = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLuint))gotPtr;
@@ -2948,7 +2951,7 @@ static void API_ENTRY _choose_glFramebufferTexture(GLenum target,GLenum attachme
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFramebufferTexture");
     if (!gotPtr)
-        OpenGL_log << "Error: glFramebufferTexture is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFramebufferTexture is NULL " << std::endl;
     else
     {
         _ptr_to_glFramebufferTexture = (void(API_ENTRY*)(GLenum,GLenum,GLuint,GLint))gotPtr;
@@ -2961,7 +2964,7 @@ static void API_ENTRY _choose_glFramebufferTexture1D(GLenum target,GLenum attach
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFramebufferTexture1D");
     if (!gotPtr)
-        OpenGL_log << "Error: glFramebufferTexture1D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFramebufferTexture1D is NULL " << std::endl;
     else
     {
         _ptr_to_glFramebufferTexture1D = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLuint,GLint))gotPtr;
@@ -2974,7 +2977,7 @@ static void API_ENTRY _choose_glFramebufferTexture1DEXT(GLenum target,GLenum att
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFramebufferTexture1DEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glFramebufferTexture1DEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFramebufferTexture1DEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glFramebufferTexture1DEXT = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLuint,GLint))gotPtr;
@@ -2987,7 +2990,7 @@ static void API_ENTRY _choose_glFramebufferTexture2D(GLenum target,GLenum attach
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFramebufferTexture2D");
     if (!gotPtr)
-        OpenGL_log << "Error: glFramebufferTexture2D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFramebufferTexture2D is NULL " << std::endl;
     else
     {
         _ptr_to_glFramebufferTexture2D = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLuint,GLint))gotPtr;
@@ -3000,7 +3003,7 @@ static void API_ENTRY _choose_glFramebufferTexture2DEXT(GLenum target,GLenum att
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFramebufferTexture2DEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glFramebufferTexture2DEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFramebufferTexture2DEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glFramebufferTexture2DEXT = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLuint,GLint))gotPtr;
@@ -3013,7 +3016,7 @@ static void API_ENTRY _choose_glFramebufferTexture3D(GLenum target,GLenum attach
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFramebufferTexture3D");
     if (!gotPtr)
-        OpenGL_log << "Error: glFramebufferTexture3D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFramebufferTexture3D is NULL " << std::endl;
     else
     {
         _ptr_to_glFramebufferTexture3D = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLuint,GLint,GLint))gotPtr;
@@ -3026,7 +3029,7 @@ static void API_ENTRY _choose_glFramebufferTexture3DEXT(GLenum target,GLenum att
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFramebufferTexture3DEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glFramebufferTexture3DEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFramebufferTexture3DEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glFramebufferTexture3DEXT = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLuint,GLint,GLint))gotPtr;
@@ -3039,7 +3042,7 @@ static void API_ENTRY _choose_glFramebufferTextureLayer(GLenum target,GLenum att
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFramebufferTextureLayer");
     if (!gotPtr)
-        OpenGL_log << "Error: glFramebufferTextureLayer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFramebufferTextureLayer is NULL " << std::endl;
     else
     {
         _ptr_to_glFramebufferTextureLayer = (void(API_ENTRY*)(GLenum,GLenum,GLuint,GLint,GLint))gotPtr;
@@ -3052,7 +3055,7 @@ static void API_ENTRY _choose_glFrontFace(GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFrontFace");
     if (!gotPtr)
-        OpenGL_log << "Error: glFrontFace is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFrontFace is NULL " << std::endl;
     else
     {
         _ptr_to_glFrontFace = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -3065,7 +3068,7 @@ static void API_ENTRY _choose_glFrustum(GLdouble left,GLdouble right,GLdouble bo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glFrustum");
     if (!gotPtr)
-        OpenGL_log << "Error: glFrustum is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glFrustum is NULL " << std::endl;
     else
     {
         _ptr_to_glFrustum = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -3078,7 +3081,7 @@ static void API_ENTRY _choose_glGenBuffers(GLsizei n,GLuint* buffers)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenBuffers");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenBuffers is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenBuffers is NULL " << std::endl;
     else
     {
         _ptr_to_glGenBuffers = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3091,7 +3094,7 @@ static void API_ENTRY _choose_glGenBuffersARB(GLsizei n,GLuint* buffers)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenBuffersARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenBuffersARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenBuffersARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGenBuffersARB = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3104,7 +3107,7 @@ static void API_ENTRY _choose_glGenFramebuffers(GLsizei n,GLuint* framebuffers)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenFramebuffers");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenFramebuffers is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenFramebuffers is NULL " << std::endl;
     else
     {
         _ptr_to_glGenFramebuffers = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3117,7 +3120,7 @@ static void API_ENTRY _choose_glGenFramebuffersEXT(GLsizei n,GLuint* framebuffer
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenFramebuffersEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenFramebuffersEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenFramebuffersEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glGenFramebuffersEXT = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3130,7 +3133,7 @@ static GLuint API_ENTRY _choose_glGenLists(GLsizei range)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenLists");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenLists is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenLists is NULL " << std::endl;
     else
     {
         _ptr_to_glGenLists = (GLuint(API_ENTRY*)(GLsizei))gotPtr;
@@ -3143,7 +3146,7 @@ static void API_ENTRY _choose_glGenProgramPipelines(GLsizei n,GLuint* pipelines)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenProgramPipelines");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenProgramPipelines is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenProgramPipelines is NULL " << std::endl;
     else
     {
         _ptr_to_glGenProgramPipelines = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3156,7 +3159,7 @@ static void API_ENTRY _choose_glGenQueries(GLsizei n,GLuint* ids)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenQueries");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenQueries is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenQueries is NULL " << std::endl;
     else
     {
         _ptr_to_glGenQueries = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3169,7 +3172,7 @@ static void API_ENTRY _choose_glGenRenderbuffers(GLsizei n,GLuint* renderbuffers
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenRenderbuffers");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenRenderbuffers is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenRenderbuffers is NULL " << std::endl;
     else
     {
         _ptr_to_glGenRenderbuffers = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3182,7 +3185,7 @@ static void API_ENTRY _choose_glGenRenderbuffersEXT(GLsizei n,GLuint* renderbuff
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenRenderbuffersEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenRenderbuffersEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenRenderbuffersEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glGenRenderbuffersEXT = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3195,7 +3198,7 @@ static void API_ENTRY _choose_glGenSamplers(GLsizei count,GLuint* samplers)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenSamplers");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenSamplers is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenSamplers is NULL " << std::endl;
     else
     {
         _ptr_to_glGenSamplers = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3208,7 +3211,7 @@ static void API_ENTRY _choose_glGenTextures(GLsizei n,GLuint* textures)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenTextures");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenTextures is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenTextures is NULL " << std::endl;
     else
     {
         _ptr_to_glGenTextures = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3221,7 +3224,7 @@ static void API_ENTRY _choose_glGenTransformFeedbacks(GLsizei n,GLuint* ids)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenTransformFeedbacks");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenTransformFeedbacks is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenTransformFeedbacks is NULL " << std::endl;
     else
     {
         _ptr_to_glGenTransformFeedbacks = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3234,7 +3237,7 @@ static void API_ENTRY _choose_glGenVertexArrays(GLsizei n,GLuint* arrays)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenVertexArrays");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenVertexArrays is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenVertexArrays is NULL " << std::endl;
     else
     {
         _ptr_to_glGenVertexArrays = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -3247,7 +3250,7 @@ static void API_ENTRY _choose_glGenerateMipmap(GLenum target)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenerateMipmap");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenerateMipmap is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenerateMipmap is NULL " << std::endl;
     else
     {
         _ptr_to_glGenerateMipmap = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -3260,7 +3263,7 @@ static void API_ENTRY _choose_glGenerateMipmapEXT(GLenum target)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenerateMipmapEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glGenerateMipmapEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGenerateMipmapEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glGenerateMipmapEXT = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -3273,7 +3276,7 @@ static void API_ENTRY _choose_glGetActiveAtomicCounterBufferiv(GLuint program,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetActiveAtomicCounterBufferiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetActiveAtomicCounterBufferiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetActiveAtomicCounterBufferiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetActiveAtomicCounterBufferiv = (void(API_ENTRY*)(GLuint,GLuint,GLenum,GLint*))gotPtr;
@@ -3286,7 +3289,7 @@ static void API_ENTRY _choose_glGetActiveAttrib(GLuint program,GLuint index,GLsi
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetActiveAttrib");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetActiveAttrib is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetActiveAttrib is NULL " << std::endl;
     else
     {
         _ptr_to_glGetActiveAttrib = (void(API_ENTRY*)(GLuint,GLuint,GLsizei,GLsizei*,GLint*,GLenum*,GLchar*))gotPtr;
@@ -3299,7 +3302,7 @@ static void API_ENTRY _choose_glGetActiveSubroutineName(GLuint program,GLenum sh
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetActiveSubroutineName");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetActiveSubroutineName is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetActiveSubroutineName is NULL " << std::endl;
     else
     {
         _ptr_to_glGetActiveSubroutineName = (void(API_ENTRY*)(GLuint,GLenum,GLuint,GLsizei,GLsizei*,GLchar*))gotPtr;
@@ -3312,7 +3315,7 @@ static void API_ENTRY _choose_glGetActiveSubroutineUniformName(GLuint program,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetActiveSubroutineUniformName");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetActiveSubroutineUniformName is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetActiveSubroutineUniformName is NULL " << std::endl;
     else
     {
         _ptr_to_glGetActiveSubroutineUniformName = (void(API_ENTRY*)(GLuint,GLenum,GLuint,GLsizei,GLsizei*,GLchar*))gotPtr;
@@ -3325,7 +3328,7 @@ static void API_ENTRY _choose_glGetActiveSubroutineUniformiv(GLuint program,GLen
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetActiveSubroutineUniformiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetActiveSubroutineUniformiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetActiveSubroutineUniformiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetActiveSubroutineUniformiv = (void(API_ENTRY*)(GLuint,GLenum,GLuint,GLenum,GLint*))gotPtr;
@@ -3338,7 +3341,7 @@ static void API_ENTRY _choose_glGetActiveUniform(GLuint program,GLuint index,GLs
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetActiveUniform");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetActiveUniform is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetActiveUniform is NULL " << std::endl;
     else
     {
         _ptr_to_glGetActiveUniform = (void(API_ENTRY*)(GLuint,GLuint,GLsizei,GLsizei*,GLint*,GLenum*,GLchar*))gotPtr;
@@ -3351,7 +3354,7 @@ static void API_ENTRY _choose_glGetActiveUniformARB(GLhandleARB programObj,GLuin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetActiveUniformARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetActiveUniformARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetActiveUniformARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetActiveUniformARB = (void(API_ENTRY*)(GLhandleARB,GLuint,GLsizei,GLsizei*,GLint*,GLenum*,GLcharARB*))gotPtr;
@@ -3364,7 +3367,7 @@ static void API_ENTRY _choose_glGetActiveUniformBlockName(GLuint program,GLuint 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetActiveUniformBlockName");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetActiveUniformBlockName is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetActiveUniformBlockName is NULL " << std::endl;
     else
     {
         _ptr_to_glGetActiveUniformBlockName = (void(API_ENTRY*)(GLuint,GLuint,GLsizei,GLsizei*,GLchar*))gotPtr;
@@ -3377,7 +3380,7 @@ static void API_ENTRY _choose_glGetActiveUniformBlockiv(GLuint program,GLuint un
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetActiveUniformBlockiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetActiveUniformBlockiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetActiveUniformBlockiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetActiveUniformBlockiv = (void(API_ENTRY*)(GLuint,GLuint,GLenum,GLint*))gotPtr;
@@ -3390,7 +3393,7 @@ static void API_ENTRY _choose_glGetActiveUniformName(GLuint program,GLuint unifo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetActiveUniformName");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetActiveUniformName is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetActiveUniformName is NULL " << std::endl;
     else
     {
         _ptr_to_glGetActiveUniformName = (void(API_ENTRY*)(GLuint,GLuint,GLsizei,GLsizei*,GLchar*))gotPtr;
@@ -3403,7 +3406,7 @@ static void API_ENTRY _choose_glGetActiveUniformsiv(GLuint program,GLsizei unifo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetActiveUniformsiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetActiveUniformsiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetActiveUniformsiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetActiveUniformsiv = (void(API_ENTRY*)(GLuint,GLsizei,const GLuint*,GLenum,GLint*))gotPtr;
@@ -3416,7 +3419,7 @@ static void API_ENTRY _choose_glGetAttachedObjectsARB(GLhandleARB containerObj,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetAttachedObjectsARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetAttachedObjectsARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetAttachedObjectsARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetAttachedObjectsARB = (void(API_ENTRY*)(GLhandleARB,GLsizei,GLsizei*,GLhandleARB*))gotPtr;
@@ -3429,7 +3432,7 @@ static void API_ENTRY _choose_glGetAttachedShaders(GLuint program,GLsizei maxCou
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetAttachedShaders");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetAttachedShaders is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetAttachedShaders is NULL " << std::endl;
     else
     {
         _ptr_to_glGetAttachedShaders = (void(API_ENTRY*)(GLuint,GLsizei,GLsizei*,GLuint*))gotPtr;
@@ -3442,7 +3445,7 @@ static GLint API_ENTRY _choose_glGetAttribLocation(GLuint program,const GLchar* 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetAttribLocation");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetAttribLocation is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetAttribLocation is NULL " << std::endl;
     else
     {
         _ptr_to_glGetAttribLocation = (GLint(API_ENTRY*)(GLuint,const GLchar*))gotPtr;
@@ -3455,7 +3458,7 @@ static void API_ENTRY _choose_glGetBooleani_v(GLenum target,GLuint index,GLboole
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetBooleani_v");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetBooleani_v is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetBooleani_v is NULL " << std::endl;
     else
     {
         _ptr_to_glGetBooleani_v = (void(API_ENTRY*)(GLenum,GLuint,GLboolean*))gotPtr;
@@ -3468,7 +3471,7 @@ static void API_ENTRY _choose_glGetBooleanv(GLenum pname,GLboolean* params)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetBooleanv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetBooleanv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetBooleanv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetBooleanv = (void(API_ENTRY*)(GLenum,GLboolean*))gotPtr;
@@ -3481,7 +3484,7 @@ static void API_ENTRY _choose_glGetBufferParameteri64v(GLenum target,GLenum pnam
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetBufferParameteri64v");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetBufferParameteri64v is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetBufferParameteri64v is NULL " << std::endl;
     else
     {
         _ptr_to_glGetBufferParameteri64v = (void(API_ENTRY*)(GLenum,GLenum,GLint64*))gotPtr;
@@ -3494,7 +3497,7 @@ static void API_ENTRY _choose_glGetBufferParameteriv(GLenum target,GLenum pname,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetBufferParameteriv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetBufferParameteriv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetBufferParameteriv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetBufferParameteriv = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -3507,7 +3510,7 @@ static void API_ENTRY _choose_glGetBufferParameterivARB(GLenum target,GLenum pna
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetBufferParameterivARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetBufferParameterivARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetBufferParameterivARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetBufferParameterivARB = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -3520,7 +3523,7 @@ static void API_ENTRY _choose_glGetBufferPointerv(GLenum target,GLenum pname,GLv
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetBufferPointerv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetBufferPointerv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetBufferPointerv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetBufferPointerv = (void(API_ENTRY*)(GLenum,GLenum,GLvoid**))gotPtr;
@@ -3533,7 +3536,7 @@ static void API_ENTRY _choose_glGetBufferPointervARB(GLenum target,GLenum pname,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetBufferPointervARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetBufferPointervARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetBufferPointervARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetBufferPointervARB = (void(API_ENTRY*)(GLenum,GLenum,GLvoid**))gotPtr;
@@ -3546,7 +3549,7 @@ static void API_ENTRY _choose_glGetBufferSubData(GLenum target,GLintptr offset,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetBufferSubData");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetBufferSubData is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetBufferSubData is NULL " << std::endl;
     else
     {
         _ptr_to_glGetBufferSubData = (void(API_ENTRY*)(GLenum,GLintptr,GLsizeiptr,GLvoid*))gotPtr;
@@ -3559,7 +3562,7 @@ static void API_ENTRY _choose_glGetBufferSubDataARB(GLenum target,GLintptrARB of
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetBufferSubDataARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetBufferSubDataARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetBufferSubDataARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetBufferSubDataARB = (void(API_ENTRY*)(GLenum,GLintptrARB,GLsizeiptrARB,GLvoid*))gotPtr;
@@ -3572,7 +3575,7 @@ static void API_ENTRY _choose_glGetClipPlane(GLenum plane,GLdouble* equation)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetClipPlane");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetClipPlane is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetClipPlane is NULL " << std::endl;
     else
     {
         _ptr_to_glGetClipPlane = (void(API_ENTRY*)(GLenum,GLdouble*))gotPtr;
@@ -3585,7 +3588,7 @@ static void API_ENTRY _choose_glGetCompressedTexImage(GLenum target,GLint level,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetCompressedTexImage");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetCompressedTexImage is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetCompressedTexImage is NULL " << std::endl;
     else
     {
         _ptr_to_glGetCompressedTexImage = (void(API_ENTRY*)(GLenum,GLint,GLvoid*))gotPtr;
@@ -3598,7 +3601,7 @@ static void API_ENTRY _choose_glGetDoublei_v(GLenum target,GLuint index,GLdouble
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetDoublei_v");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetDoublei_v is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetDoublei_v is NULL " << std::endl;
     else
     {
         _ptr_to_glGetDoublei_v = (void(API_ENTRY*)(GLenum,GLuint,GLdouble*))gotPtr;
@@ -3611,7 +3614,7 @@ static void API_ENTRY _choose_glGetDoublev(GLenum pname,GLdouble* params)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetDoublev");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetDoublev is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetDoublev is NULL " << std::endl;
     else
     {
         _ptr_to_glGetDoublev = (void(API_ENTRY*)(GLenum,GLdouble*))gotPtr;
@@ -3624,7 +3627,7 @@ static GLenum API_ENTRY _choose_glGetError()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetError");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetError is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetError is NULL " << std::endl;
     else
     {
         _ptr_to_glGetError = (GLenum(API_ENTRY*)())gotPtr;
@@ -3637,7 +3640,7 @@ static void API_ENTRY _choose_glGetFloati_v(GLenum target,GLuint index,GLfloat* 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetFloati_v");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetFloati_v is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetFloati_v is NULL " << std::endl;
     else
     {
         _ptr_to_glGetFloati_v = (void(API_ENTRY*)(GLenum,GLuint,GLfloat*))gotPtr;
@@ -3650,7 +3653,7 @@ static void API_ENTRY _choose_glGetFloatv(GLenum pname,GLfloat* params)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetFloatv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetFloatv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetFloatv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetFloatv = (void(API_ENTRY*)(GLenum,GLfloat*))gotPtr;
@@ -3663,7 +3666,7 @@ static GLint API_ENTRY _choose_glGetFragDataIndex(GLuint program,const GLchar* n
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetFragDataIndex");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetFragDataIndex is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetFragDataIndex is NULL " << std::endl;
     else
     {
         _ptr_to_glGetFragDataIndex = (GLint(API_ENTRY*)(GLuint,const GLchar*))gotPtr;
@@ -3676,7 +3679,7 @@ static GLint API_ENTRY _choose_glGetFragDataLocation(GLuint program,const GLchar
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetFragDataLocation");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetFragDataLocation is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetFragDataLocation is NULL " << std::endl;
     else
     {
         _ptr_to_glGetFragDataLocation = (GLint(API_ENTRY*)(GLuint,const GLchar*))gotPtr;
@@ -3689,7 +3692,7 @@ static void API_ENTRY _choose_glGetFramebufferAttachmentParameteriv(GLenum targe
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetFramebufferAttachmentParameteriv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetFramebufferAttachmentParameteriv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetFramebufferAttachmentParameteriv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetFramebufferAttachmentParameteriv = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLint*))gotPtr;
@@ -3702,7 +3705,7 @@ static void API_ENTRY _choose_glGetFramebufferAttachmentParameterivEXT(GLenum ta
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetFramebufferAttachmentParameterivEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetFramebufferAttachmentParameterivEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetFramebufferAttachmentParameterivEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glGetFramebufferAttachmentParameterivEXT = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLint*))gotPtr;
@@ -3715,7 +3718,7 @@ static GLhandleARB API_ENTRY _choose_glGetHandleARB(GLenum pname)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetHandleARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetHandleARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetHandleARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetHandleARB = (GLhandleARB(API_ENTRY*)(GLenum))gotPtr;
@@ -3728,7 +3731,7 @@ static void API_ENTRY _choose_glGetInfoLogARB(GLhandleARB obj,GLsizei maxLength,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetInfoLogARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetInfoLogARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetInfoLogARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetInfoLogARB = (void(API_ENTRY*)(GLhandleARB,GLsizei,GLsizei*,GLcharARB*))gotPtr;
@@ -3741,7 +3744,7 @@ static void API_ENTRY _choose_glGetInteger64i_v(GLenum target,GLuint index,GLint
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetInteger64i_v");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetInteger64i_v is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetInteger64i_v is NULL " << std::endl;
     else
     {
         _ptr_to_glGetInteger64i_v = (void(API_ENTRY*)(GLenum,GLuint,GLint64*))gotPtr;
@@ -3754,7 +3757,7 @@ static void API_ENTRY _choose_glGetInteger64v(GLenum pname,GLint64* params)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetInteger64v");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetInteger64v is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetInteger64v is NULL " << std::endl;
     else
     {
         _ptr_to_glGetInteger64v = (void(API_ENTRY*)(GLenum,GLint64*))gotPtr;
@@ -3767,7 +3770,7 @@ static void API_ENTRY _choose_glGetIntegeri_v(GLenum target,GLuint index,GLint* 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetIntegeri_v");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetIntegeri_v is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetIntegeri_v is NULL " << std::endl;
     else
     {
         _ptr_to_glGetIntegeri_v = (void(API_ENTRY*)(GLenum,GLuint,GLint*))gotPtr;
@@ -3780,7 +3783,7 @@ static void API_ENTRY _choose_glGetIntegerv(GLenum pname,GLint* params)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetIntegerv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetIntegerv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetIntegerv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetIntegerv = (void(API_ENTRY*)(GLenum,GLint*))gotPtr;
@@ -3793,7 +3796,7 @@ static void API_ENTRY _choose_glGetInternalformati64v(GLenum target,GLenum inter
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetInternalformati64v");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetInternalformati64v is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetInternalformati64v is NULL " << std::endl;
     else
     {
         _ptr_to_glGetInternalformati64v = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLsizei,GLint64*))gotPtr;
@@ -3806,7 +3809,7 @@ static void API_ENTRY _choose_glGetLightfv(GLenum light,GLenum pname,GLfloat* pa
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetLightfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetLightfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetLightfv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetLightfv = (void(API_ENTRY*)(GLenum,GLenum,GLfloat*))gotPtr;
@@ -3819,7 +3822,7 @@ static void API_ENTRY _choose_glGetLightiv(GLenum light,GLenum pname,GLint* para
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetLightiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetLightiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetLightiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetLightiv = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -3832,7 +3835,7 @@ static void API_ENTRY _choose_glGetMapdv(GLenum target,GLenum query,GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetMapdv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetMapdv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetMapdv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetMapdv = (void(API_ENTRY*)(GLenum,GLenum,GLdouble*))gotPtr;
@@ -3845,7 +3848,7 @@ static void API_ENTRY _choose_glGetMapfv(GLenum target,GLenum query,GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetMapfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetMapfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetMapfv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetMapfv = (void(API_ENTRY*)(GLenum,GLenum,GLfloat*))gotPtr;
@@ -3858,7 +3861,7 @@ static void API_ENTRY _choose_glGetMapiv(GLenum target,GLenum query,GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetMapiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetMapiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetMapiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetMapiv = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -3871,7 +3874,7 @@ static void API_ENTRY _choose_glGetMaterialfv(GLenum face,GLenum pname,GLfloat* 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetMaterialfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetMaterialfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetMaterialfv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetMaterialfv = (void(API_ENTRY*)(GLenum,GLenum,GLfloat*))gotPtr;
@@ -3884,7 +3887,7 @@ static void API_ENTRY _choose_glGetMaterialiv(GLenum face,GLenum pname,GLint* pa
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetMaterialiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetMaterialiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetMaterialiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetMaterialiv = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -3897,7 +3900,7 @@ static void API_ENTRY _choose_glGetMultisamplefv(GLenum pname,GLuint index,GLflo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetMultisamplefv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetMultisamplefv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetMultisamplefv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetMultisamplefv = (void(API_ENTRY*)(GLenum,GLuint,GLfloat*))gotPtr;
@@ -3910,7 +3913,7 @@ static void API_ENTRY _choose_glGetObjectParameterfvARB(GLhandleARB obj,GLenum p
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetObjectParameterfvARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetObjectParameterfvARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetObjectParameterfvARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetObjectParameterfvARB = (void(API_ENTRY*)(GLhandleARB,GLenum,GLfloat*))gotPtr;
@@ -3923,7 +3926,7 @@ static void API_ENTRY _choose_glGetObjectParameterivARB(GLhandleARB obj,GLenum p
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetObjectParameterivARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetObjectParameterivARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetObjectParameterivARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetObjectParameterivARB = (void(API_ENTRY*)(GLhandleARB,GLenum,GLint*))gotPtr;
@@ -3936,7 +3939,7 @@ static void API_ENTRY _choose_glGetPixelMapfv(GLenum map,GLfloat* values)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetPixelMapfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetPixelMapfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetPixelMapfv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetPixelMapfv = (void(API_ENTRY*)(GLenum,GLfloat*))gotPtr;
@@ -3949,7 +3952,7 @@ static void API_ENTRY _choose_glGetPixelMapuiv(GLenum map,GLuint* values)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetPixelMapuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetPixelMapuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetPixelMapuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetPixelMapuiv = (void(API_ENTRY*)(GLenum,GLuint*))gotPtr;
@@ -3962,7 +3965,7 @@ static void API_ENTRY _choose_glGetPixelMapusv(GLenum map,GLushort* values)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetPixelMapusv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetPixelMapusv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetPixelMapusv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetPixelMapusv = (void(API_ENTRY*)(GLenum,GLushort*))gotPtr;
@@ -3975,7 +3978,7 @@ static void API_ENTRY _choose_glGetPointerv(GLenum pname,GLvoid** params)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetPointerv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetPointerv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetPointerv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetPointerv = (void(API_ENTRY*)(GLenum,GLvoid**))gotPtr;
@@ -3988,7 +3991,7 @@ static void API_ENTRY _choose_glGetPolygonStipple(GLubyte* mask)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetPolygonStipple");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetPolygonStipple is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetPolygonStipple is NULL " << std::endl;
     else
     {
         _ptr_to_glGetPolygonStipple = (void(API_ENTRY*)(GLubyte*))gotPtr;
@@ -4001,7 +4004,7 @@ static void API_ENTRY _choose_glGetProgramBinary(GLuint program,GLsizei bufSize,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramBinary");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetProgramBinary is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetProgramBinary is NULL " << std::endl;
     else
     {
         _ptr_to_glGetProgramBinary = (void(API_ENTRY*)(GLuint,GLsizei,GLsizei*,GLenum*,GLvoid*))gotPtr;
@@ -4014,7 +4017,7 @@ static void API_ENTRY _choose_glGetProgramInfoLog(GLuint program,GLsizei bufSize
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramInfoLog");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetProgramInfoLog is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetProgramInfoLog is NULL " << std::endl;
     else
     {
         _ptr_to_glGetProgramInfoLog = (void(API_ENTRY*)(GLuint,GLsizei,GLsizei*,GLchar*))gotPtr;
@@ -4027,7 +4030,7 @@ static void API_ENTRY _choose_glGetProgramPipelineInfoLog(GLuint pipeline,GLsize
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramPipelineInfoLog");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetProgramPipelineInfoLog is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetProgramPipelineInfoLog is NULL " << std::endl;
     else
     {
         _ptr_to_glGetProgramPipelineInfoLog = (void(API_ENTRY*)(GLuint,GLsizei,GLsizei*,GLchar*))gotPtr;
@@ -4040,7 +4043,7 @@ static void API_ENTRY _choose_glGetProgramPipelineiv(GLuint pipeline,GLenum pnam
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramPipelineiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetProgramPipelineiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetProgramPipelineiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetProgramPipelineiv = (void(API_ENTRY*)(GLuint,GLenum,GLint*))gotPtr;
@@ -4053,7 +4056,7 @@ static void API_ENTRY _choose_glGetProgramStageiv(GLuint program,GLenum shaderty
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramStageiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetProgramStageiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetProgramStageiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetProgramStageiv = (void(API_ENTRY*)(GLuint,GLenum,GLenum,GLint*))gotPtr;
@@ -4066,7 +4069,7 @@ static void API_ENTRY _choose_glGetProgramiv(GLuint program,GLenum pname,GLint* 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetProgramiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetProgramiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetProgramiv = (void(API_ENTRY*)(GLuint,GLenum,GLint*))gotPtr;
@@ -4079,7 +4082,7 @@ static void API_ENTRY _choose_glGetQueryIndexediv(GLenum target,GLuint index,GLe
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetQueryIndexediv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetQueryIndexediv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetQueryIndexediv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetQueryIndexediv = (void(API_ENTRY*)(GLenum,GLuint,GLenum,GLint*))gotPtr;
@@ -4092,7 +4095,7 @@ static void API_ENTRY _choose_glGetQueryObjecti64v(GLuint id,GLenum pname,GLint6
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetQueryObjecti64v");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetQueryObjecti64v is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetQueryObjecti64v is NULL " << std::endl;
     else
     {
         _ptr_to_glGetQueryObjecti64v = (void(API_ENTRY*)(GLuint,GLenum,GLint64*))gotPtr;
@@ -4105,7 +4108,7 @@ static void API_ENTRY _choose_glGetQueryObjectiv(GLuint id,GLenum pname,GLint* p
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetQueryObjectiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetQueryObjectiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetQueryObjectiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetQueryObjectiv = (void(API_ENTRY*)(GLuint,GLenum,GLint*))gotPtr;
@@ -4118,7 +4121,7 @@ static void API_ENTRY _choose_glGetQueryObjectui64v(GLuint id,GLenum pname,GLuin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetQueryObjectui64v");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetQueryObjectui64v is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetQueryObjectui64v is NULL " << std::endl;
     else
     {
         _ptr_to_glGetQueryObjectui64v = (void(API_ENTRY*)(GLuint,GLenum,GLuint64*))gotPtr;
@@ -4131,7 +4134,7 @@ static void API_ENTRY _choose_glGetQueryObjectuiv(GLuint id,GLenum pname,GLuint*
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetQueryObjectuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetQueryObjectuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetQueryObjectuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetQueryObjectuiv = (void(API_ENTRY*)(GLuint,GLenum,GLuint*))gotPtr;
@@ -4144,7 +4147,7 @@ static void API_ENTRY _choose_glGetQueryiv(GLenum target,GLenum pname,GLint* par
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetQueryiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetQueryiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetQueryiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetQueryiv = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -4157,7 +4160,7 @@ static void API_ENTRY _choose_glGetRenderbufferParameteriv(GLenum target,GLenum 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetRenderbufferParameteriv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetRenderbufferParameteriv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetRenderbufferParameteriv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetRenderbufferParameteriv = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -4170,7 +4173,7 @@ static void API_ENTRY _choose_glGetRenderbufferParameterivEXT(GLenum target,GLen
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetRenderbufferParameterivEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetRenderbufferParameterivEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetRenderbufferParameterivEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glGetRenderbufferParameterivEXT = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -4183,7 +4186,7 @@ static void API_ENTRY _choose_glGetSamplerParameterIiv(GLuint sampler,GLenum pna
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetSamplerParameterIiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetSamplerParameterIiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetSamplerParameterIiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetSamplerParameterIiv = (void(API_ENTRY*)(GLuint,GLenum,GLint*))gotPtr;
@@ -4196,7 +4199,7 @@ static void API_ENTRY _choose_glGetSamplerParameterIuiv(GLuint sampler,GLenum pn
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetSamplerParameterIuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetSamplerParameterIuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetSamplerParameterIuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetSamplerParameterIuiv = (void(API_ENTRY*)(GLuint,GLenum,GLuint*))gotPtr;
@@ -4209,7 +4212,7 @@ static void API_ENTRY _choose_glGetSamplerParameterfv(GLuint sampler,GLenum pnam
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetSamplerParameterfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetSamplerParameterfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetSamplerParameterfv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetSamplerParameterfv = (void(API_ENTRY*)(GLuint,GLenum,GLfloat*))gotPtr;
@@ -4222,7 +4225,7 @@ static void API_ENTRY _choose_glGetSamplerParameteriv(GLuint sampler,GLenum pnam
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetSamplerParameteriv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetSamplerParameteriv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetSamplerParameteriv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetSamplerParameteriv = (void(API_ENTRY*)(GLuint,GLenum,GLint*))gotPtr;
@@ -4235,7 +4238,7 @@ static void API_ENTRY _choose_glGetShaderInfoLog(GLuint shader,GLsizei bufSize,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetShaderInfoLog");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetShaderInfoLog is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetShaderInfoLog is NULL " << std::endl;
     else
     {
         _ptr_to_glGetShaderInfoLog = (void(API_ENTRY*)(GLuint,GLsizei,GLsizei*,GLchar*))gotPtr;
@@ -4248,7 +4251,7 @@ static void API_ENTRY _choose_glGetShaderPrecisionFormat(GLenum shadertype,GLenu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetShaderPrecisionFormat");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetShaderPrecisionFormat is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetShaderPrecisionFormat is NULL " << std::endl;
     else
     {
         _ptr_to_glGetShaderPrecisionFormat = (void(API_ENTRY*)(GLenum,GLenum,GLint*,GLint*))gotPtr;
@@ -4261,7 +4264,7 @@ static void API_ENTRY _choose_glGetShaderSource(GLuint shader,GLsizei bufSize,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetShaderSource");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetShaderSource is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetShaderSource is NULL " << std::endl;
     else
     {
         _ptr_to_glGetShaderSource = (void(API_ENTRY*)(GLuint,GLsizei,GLsizei*,GLchar*))gotPtr;
@@ -4274,7 +4277,7 @@ static void API_ENTRY _choose_glGetShaderSourceARB(GLhandleARB obj,GLsizei maxLe
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetShaderSourceARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetShaderSourceARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetShaderSourceARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetShaderSourceARB = (void(API_ENTRY*)(GLhandleARB,GLsizei,GLsizei*,GLcharARB*))gotPtr;
@@ -4287,7 +4290,7 @@ static void API_ENTRY _choose_glGetShaderiv(GLuint shader,GLenum pname,GLint* pa
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetShaderiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetShaderiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetShaderiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetShaderiv = (void(API_ENTRY*)(GLuint,GLenum,GLint*))gotPtr;
@@ -4300,7 +4303,7 @@ static const GLubyte* API_ENTRY _choose_glGetString(GLenum name)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetString");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetString is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetString is NULL " << std::endl;
     else
     {
         _ptr_to_glGetString = (const GLubyte*(API_ENTRY*)(GLenum))gotPtr;
@@ -4313,7 +4316,7 @@ static const GLubyte* API_ENTRY _choose_glGetStringi(GLenum name,GLuint index)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetStringi");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetStringi is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetStringi is NULL " << std::endl;
     else
     {
         _ptr_to_glGetStringi = (const GLubyte*(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -4326,7 +4329,7 @@ static GLuint API_ENTRY _choose_glGetSubroutineIndex(GLuint program,GLenum shade
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetSubroutineIndex");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetSubroutineIndex is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetSubroutineIndex is NULL " << std::endl;
     else
     {
         _ptr_to_glGetSubroutineIndex = (GLuint(API_ENTRY*)(GLuint,GLenum,const GLchar*))gotPtr;
@@ -4339,7 +4342,7 @@ static GLint API_ENTRY _choose_glGetSubroutineUniformLocation(GLuint program,GLe
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetSubroutineUniformLocation");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetSubroutineUniformLocation is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetSubroutineUniformLocation is NULL " << std::endl;
     else
     {
         _ptr_to_glGetSubroutineUniformLocation = (GLint(API_ENTRY*)(GLuint,GLenum,const GLchar*))gotPtr;
@@ -4352,7 +4355,7 @@ static void API_ENTRY _choose_glGetSynciv(GLsync sync,GLenum pname,GLsizei bufSi
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetSynciv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetSynciv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetSynciv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetSynciv = (void(API_ENTRY*)(GLsync,GLenum,GLsizei,GLsizei*,GLint*))gotPtr;
@@ -4365,7 +4368,7 @@ static void API_ENTRY _choose_glGetTexEnvfv(GLenum target,GLenum pname,GLfloat* 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexEnvfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexEnvfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexEnvfv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexEnvfv = (void(API_ENTRY*)(GLenum,GLenum,GLfloat*))gotPtr;
@@ -4378,7 +4381,7 @@ static void API_ENTRY _choose_glGetTexEnviv(GLenum target,GLenum pname,GLint* pa
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexEnviv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexEnviv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexEnviv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexEnviv = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -4391,7 +4394,7 @@ static void API_ENTRY _choose_glGetTexGendv(GLenum coord,GLenum pname,GLdouble* 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexGendv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexGendv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexGendv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexGendv = (void(API_ENTRY*)(GLenum,GLenum,GLdouble*))gotPtr;
@@ -4404,7 +4407,7 @@ static void API_ENTRY _choose_glGetTexGenfv(GLenum coord,GLenum pname,GLfloat* p
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexGenfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexGenfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexGenfv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexGenfv = (void(API_ENTRY*)(GLenum,GLenum,GLfloat*))gotPtr;
@@ -4417,7 +4420,7 @@ static void API_ENTRY _choose_glGetTexGeniv(GLenum coord,GLenum pname,GLint* par
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexGeniv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexGeniv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexGeniv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexGeniv = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -4430,7 +4433,7 @@ static void API_ENTRY _choose_glGetTexImage(GLenum target,GLint level,GLenum for
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexImage");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexImage is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexImage is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexImage = (void(API_ENTRY*)(GLenum,GLint,GLenum,GLenum,GLvoid*))gotPtr;
@@ -4443,7 +4446,7 @@ static void API_ENTRY _choose_glGetTexLevelParameterfv(GLenum target,GLint level
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexLevelParameterfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexLevelParameterfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexLevelParameterfv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexLevelParameterfv = (void(API_ENTRY*)(GLenum,GLint,GLenum,GLfloat*))gotPtr;
@@ -4456,7 +4459,7 @@ static void API_ENTRY _choose_glGetTexLevelParameteriv(GLenum target,GLint level
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexLevelParameteriv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexLevelParameteriv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexLevelParameteriv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexLevelParameteriv = (void(API_ENTRY*)(GLenum,GLint,GLenum,GLint*))gotPtr;
@@ -4469,7 +4472,7 @@ static void API_ENTRY _choose_glGetTexParameterIiv(GLenum target,GLenum pname,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexParameterIiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexParameterIiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexParameterIiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexParameterIiv = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -4482,7 +4485,7 @@ static void API_ENTRY _choose_glGetTexParameterIuiv(GLenum target,GLenum pname,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexParameterIuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexParameterIuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexParameterIuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexParameterIuiv = (void(API_ENTRY*)(GLenum,GLenum,GLuint*))gotPtr;
@@ -4495,7 +4498,7 @@ static void API_ENTRY _choose_glGetTexParameterfv(GLenum target,GLenum pname,GLf
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexParameterfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexParameterfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexParameterfv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexParameterfv = (void(API_ENTRY*)(GLenum,GLenum,GLfloat*))gotPtr;
@@ -4508,7 +4511,7 @@ static void API_ENTRY _choose_glGetTexParameteriv(GLenum target,GLenum pname,GLi
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTexParameteriv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTexParameteriv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTexParameteriv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTexParameteriv = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
@@ -4521,7 +4524,7 @@ static void API_ENTRY _choose_glGetTransformFeedbackVarying(GLuint program,GLuin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetTransformFeedbackVarying");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetTransformFeedbackVarying is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetTransformFeedbackVarying is NULL " << std::endl;
     else
     {
         _ptr_to_glGetTransformFeedbackVarying = (void(API_ENTRY*)(GLuint,GLuint,GLsizei,GLsizei*,GLsizei*,GLenum*,GLchar*))gotPtr;
@@ -4534,7 +4537,7 @@ static GLuint API_ENTRY _choose_glGetUniformBlockIndex(GLuint program,const GLch
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetUniformBlockIndex");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetUniformBlockIndex is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetUniformBlockIndex is NULL " << std::endl;
     else
     {
         _ptr_to_glGetUniformBlockIndex = (GLuint(API_ENTRY*)(GLuint,const GLchar*))gotPtr;
@@ -4547,7 +4550,7 @@ static void API_ENTRY _choose_glGetUniformIndices(GLuint program,GLsizei uniform
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetUniformIndices");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetUniformIndices is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetUniformIndices is NULL " << std::endl;
     else
     {
         _ptr_to_glGetUniformIndices = (void(API_ENTRY*)(GLuint,GLsizei,const GLchar*const*,GLuint*))gotPtr;
@@ -4560,7 +4563,7 @@ static GLint API_ENTRY _choose_glGetUniformLocation(GLuint program,const GLchar*
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetUniformLocation");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetUniformLocation is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetUniformLocation is NULL " << std::endl;
     else
     {
         _ptr_to_glGetUniformLocation = (GLint(API_ENTRY*)(GLuint,const GLchar*))gotPtr;
@@ -4573,7 +4576,7 @@ static GLint API_ENTRY _choose_glGetUniformLocationARB(GLhandleARB programObj,co
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetUniformLocationARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetUniformLocationARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetUniformLocationARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetUniformLocationARB = (GLint(API_ENTRY*)(GLhandleARB,const GLcharARB*))gotPtr;
@@ -4586,7 +4589,7 @@ static void API_ENTRY _choose_glGetUniformSubroutineuiv(GLenum shadertype,GLint 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetUniformSubroutineuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetUniformSubroutineuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetUniformSubroutineuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetUniformSubroutineuiv = (void(API_ENTRY*)(GLenum,GLint,GLuint*))gotPtr;
@@ -4599,7 +4602,7 @@ static void API_ENTRY _choose_glGetUniformdv(GLuint program,GLint location,GLdou
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetUniformdv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetUniformdv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetUniformdv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetUniformdv = (void(API_ENTRY*)(GLuint,GLint,GLdouble*))gotPtr;
@@ -4612,7 +4615,7 @@ static void API_ENTRY _choose_glGetUniformfv(GLuint program,GLint location,GLflo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetUniformfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetUniformfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetUniformfv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetUniformfv = (void(API_ENTRY*)(GLuint,GLint,GLfloat*))gotPtr;
@@ -4625,7 +4628,7 @@ static void API_ENTRY _choose_glGetUniformfvARB(GLhandleARB programObj,GLint loc
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetUniformfvARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetUniformfvARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetUniformfvARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetUniformfvARB = (void(API_ENTRY*)(GLhandleARB,GLint,GLfloat*))gotPtr;
@@ -4638,7 +4641,7 @@ static void API_ENTRY _choose_glGetUniformiv(GLuint program,GLint location,GLint
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetUniformiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetUniformiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetUniformiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetUniformiv = (void(API_ENTRY*)(GLuint,GLint,GLint*))gotPtr;
@@ -4651,7 +4654,7 @@ static void API_ENTRY _choose_glGetUniformivARB(GLhandleARB programObj,GLint loc
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetUniformivARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetUniformivARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetUniformivARB is NULL " << std::endl;
     else
     {
         _ptr_to_glGetUniformivARB = (void(API_ENTRY*)(GLhandleARB,GLint,GLint*))gotPtr;
@@ -4664,7 +4667,7 @@ static void API_ENTRY _choose_glGetUniformuiv(GLuint program,GLint location,GLui
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetUniformuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetUniformuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetUniformuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetUniformuiv = (void(API_ENTRY*)(GLuint,GLint,GLuint*))gotPtr;
@@ -4677,7 +4680,7 @@ static void API_ENTRY _choose_glGetVertexAttribIiv(GLuint index,GLenum pname,GLi
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetVertexAttribIiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetVertexAttribIiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetVertexAttribIiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetVertexAttribIiv = (void(API_ENTRY*)(GLuint,GLenum,GLint*))gotPtr;
@@ -4690,7 +4693,7 @@ static void API_ENTRY _choose_glGetVertexAttribIuiv(GLuint index,GLenum pname,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetVertexAttribIuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetVertexAttribIuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetVertexAttribIuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetVertexAttribIuiv = (void(API_ENTRY*)(GLuint,GLenum,GLuint*))gotPtr;
@@ -4703,7 +4706,7 @@ static void API_ENTRY _choose_glGetVertexAttribLdv(GLuint index,GLenum pname,GLd
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetVertexAttribLdv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetVertexAttribLdv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetVertexAttribLdv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetVertexAttribLdv = (void(API_ENTRY*)(GLuint,GLenum,GLdouble*))gotPtr;
@@ -4716,7 +4719,7 @@ static void API_ENTRY _choose_glGetVertexAttribPointerv(GLuint index,GLenum pnam
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetVertexAttribPointerv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetVertexAttribPointerv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetVertexAttribPointerv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetVertexAttribPointerv = (void(API_ENTRY*)(GLuint,GLenum,GLvoid**))gotPtr;
@@ -4729,7 +4732,7 @@ static void API_ENTRY _choose_glGetVertexAttribdv(GLuint index,GLenum pname,GLdo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetVertexAttribdv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetVertexAttribdv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetVertexAttribdv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetVertexAttribdv = (void(API_ENTRY*)(GLuint,GLenum,GLdouble*))gotPtr;
@@ -4742,7 +4745,7 @@ static void API_ENTRY _choose_glGetVertexAttribfv(GLuint index,GLenum pname,GLfl
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetVertexAttribfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetVertexAttribfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetVertexAttribfv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetVertexAttribfv = (void(API_ENTRY*)(GLuint,GLenum,GLfloat*))gotPtr;
@@ -4755,7 +4758,7 @@ static void API_ENTRY _choose_glGetVertexAttribiv(GLuint index,GLenum pname,GLin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetVertexAttribiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glGetVertexAttribiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glGetVertexAttribiv is NULL " << std::endl;
     else
     {
         _ptr_to_glGetVertexAttribiv = (void(API_ENTRY*)(GLuint,GLenum,GLint*))gotPtr;
@@ -4768,7 +4771,7 @@ static void API_ENTRY _choose_glHint(GLenum target,GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glHint");
     if (!gotPtr)
-        OpenGL_log << "Error: glHint is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glHint is NULL " << std::endl;
     else
     {
         _ptr_to_glHint = (void(API_ENTRY*)(GLenum,GLenum))gotPtr;
@@ -4781,7 +4784,7 @@ static void API_ENTRY _choose_glIndexMask(GLuint mask)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexMask");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexMask is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexMask is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexMask = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -4794,7 +4797,7 @@ static void API_ENTRY _choose_glIndexPointer(GLenum type,GLsizei stride,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexPointer");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexPointer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexPointer is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexPointer = (void(API_ENTRY*)(GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -4807,7 +4810,7 @@ static void API_ENTRY _choose_glIndexd(GLdouble c)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexd");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexd is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexd is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexd = (void(API_ENTRY*)(GLdouble))gotPtr;
@@ -4820,7 +4823,7 @@ static void API_ENTRY _choose_glIndexdv(const GLdouble* c)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexdv");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexdv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexdv is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexdv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -4833,7 +4836,7 @@ static void API_ENTRY _choose_glIndexf(GLfloat c)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexf");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexf is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexf = (void(API_ENTRY*)(GLfloat))gotPtr;
@@ -4846,7 +4849,7 @@ static void API_ENTRY _choose_glIndexfv(const GLfloat* c)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexfv is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexfv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -4859,7 +4862,7 @@ static void API_ENTRY _choose_glIndexi(GLint c)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexi");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexi is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexi is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexi = (void(API_ENTRY*)(GLint))gotPtr;
@@ -4872,7 +4875,7 @@ static void API_ENTRY _choose_glIndexiv(const GLint* c)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexiv is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexiv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -4885,7 +4888,7 @@ static void API_ENTRY _choose_glIndexs(GLshort c)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexs");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexs is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexs is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexs = (void(API_ENTRY*)(GLshort))gotPtr;
@@ -4898,7 +4901,7 @@ static void API_ENTRY _choose_glIndexsv(const GLshort* c)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexsv");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexsv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexsv is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexsv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -4911,7 +4914,7 @@ static void API_ENTRY _choose_glIndexub(GLubyte c)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexub");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexub is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexub is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexub = (void(API_ENTRY*)(GLubyte))gotPtr;
@@ -4924,7 +4927,7 @@ static void API_ENTRY _choose_glIndexubv(const GLubyte* c)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIndexubv");
     if (!gotPtr)
-        OpenGL_log << "Error: glIndexubv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIndexubv is NULL " << std::endl;
     else
     {
         _ptr_to_glIndexubv = (void(API_ENTRY*)(const GLubyte*))gotPtr;
@@ -4937,7 +4940,7 @@ static void API_ENTRY _choose_glInitNames()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glInitNames");
     if (!gotPtr)
-        OpenGL_log << "Error: glInitNames is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glInitNames is NULL " << std::endl;
     else
     {
         _ptr_to_glInitNames = (void(API_ENTRY*)())gotPtr;
@@ -4950,7 +4953,7 @@ static void API_ENTRY _choose_glInterleavedArrays(GLenum format,GLsizei stride,c
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glInterleavedArrays");
     if (!gotPtr)
-        OpenGL_log << "Error: glInterleavedArrays is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glInterleavedArrays is NULL " << std::endl;
     else
     {
         _ptr_to_glInterleavedArrays = (void(API_ENTRY*)(GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -4963,7 +4966,7 @@ static GLboolean API_ENTRY _choose_glIsBuffer(GLuint buffer)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsBuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsBuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsBuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glIsBuffer = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -4976,7 +4979,7 @@ static GLboolean API_ENTRY _choose_glIsBufferARB(GLuint buffer)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsBufferARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsBufferARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsBufferARB is NULL " << std::endl;
     else
     {
         _ptr_to_glIsBufferARB = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -4989,7 +4992,7 @@ static GLboolean API_ENTRY _choose_glIsEnabled(GLenum cap)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsEnabled");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsEnabled is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsEnabled is NULL " << std::endl;
     else
     {
         _ptr_to_glIsEnabled = (GLboolean(API_ENTRY*)(GLenum))gotPtr;
@@ -5002,7 +5005,7 @@ static GLboolean API_ENTRY _choose_glIsEnabledi(GLenum target,GLuint index)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsEnabledi");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsEnabledi is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsEnabledi is NULL " << std::endl;
     else
     {
         _ptr_to_glIsEnabledi = (GLboolean(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -5015,7 +5018,7 @@ static GLboolean API_ENTRY _choose_glIsFramebuffer(GLuint framebuffer)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsFramebuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsFramebuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsFramebuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glIsFramebuffer = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5028,7 +5031,7 @@ static GLboolean API_ENTRY _choose_glIsFramebufferEXT(GLuint framebuffer)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsFramebufferEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsFramebufferEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsFramebufferEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glIsFramebufferEXT = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5041,7 +5044,7 @@ static GLboolean API_ENTRY _choose_glIsList(GLuint list)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsList");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsList is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsList is NULL " << std::endl;
     else
     {
         _ptr_to_glIsList = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5054,7 +5057,7 @@ static GLboolean API_ENTRY _choose_glIsProgram(GLuint program)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsProgram");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsProgram is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsProgram is NULL " << std::endl;
     else
     {
         _ptr_to_glIsProgram = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5067,7 +5070,7 @@ static GLboolean API_ENTRY _choose_glIsProgramPipeline(GLuint pipeline)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsProgramPipeline");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsProgramPipeline is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsProgramPipeline is NULL " << std::endl;
     else
     {
         _ptr_to_glIsProgramPipeline = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5080,7 +5083,7 @@ static GLboolean API_ENTRY _choose_glIsQuery(GLuint id)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsQuery");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsQuery is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsQuery is NULL " << std::endl;
     else
     {
         _ptr_to_glIsQuery = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5093,7 +5096,7 @@ static GLboolean API_ENTRY _choose_glIsRenderbuffer(GLuint renderbuffer)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsRenderbuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsRenderbuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsRenderbuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glIsRenderbuffer = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5106,7 +5109,7 @@ static GLboolean API_ENTRY _choose_glIsRenderbufferEXT(GLuint renderbuffer)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsRenderbufferEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsRenderbufferEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsRenderbufferEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glIsRenderbufferEXT = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5119,7 +5122,7 @@ static GLboolean API_ENTRY _choose_glIsSampler(GLuint sampler)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsSampler");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsSampler is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsSampler is NULL " << std::endl;
     else
     {
         _ptr_to_glIsSampler = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5132,7 +5135,7 @@ static GLboolean API_ENTRY _choose_glIsShader(GLuint shader)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsShader");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsShader is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsShader is NULL " << std::endl;
     else
     {
         _ptr_to_glIsShader = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5145,7 +5148,7 @@ static GLboolean API_ENTRY _choose_glIsSync(GLsync sync)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsSync");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsSync is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsSync is NULL " << std::endl;
     else
     {
         _ptr_to_glIsSync = (GLboolean(API_ENTRY*)(GLsync))gotPtr;
@@ -5158,7 +5161,7 @@ static GLboolean API_ENTRY _choose_glIsTexture(GLuint texture)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsTexture");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsTexture is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsTexture is NULL " << std::endl;
     else
     {
         _ptr_to_glIsTexture = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5171,7 +5174,7 @@ static GLboolean API_ENTRY _choose_glIsTransformFeedback(GLuint id)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsTransformFeedback");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsTransformFeedback is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsTransformFeedback is NULL " << std::endl;
     else
     {
         _ptr_to_glIsTransformFeedback = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5184,7 +5187,7 @@ static GLboolean API_ENTRY _choose_glIsVertexArray(GLuint ren_array)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsVertexArray");
     if (!gotPtr)
-        OpenGL_log << "Error: glIsVertexArray is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glIsVertexArray is NULL " << std::endl;
     else
     {
         _ptr_to_glIsVertexArray = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
@@ -5197,7 +5200,7 @@ static void API_ENTRY _choose_glLightModelf(GLenum pname,GLfloat param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLightModelf");
     if (!gotPtr)
-        OpenGL_log << "Error: glLightModelf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLightModelf is NULL " << std::endl;
     else
     {
         _ptr_to_glLightModelf = (void(API_ENTRY*)(GLenum,GLfloat))gotPtr;
@@ -5210,7 +5213,7 @@ static void API_ENTRY _choose_glLightModelfv(GLenum pname,const GLfloat* params)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLightModelfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glLightModelfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLightModelfv is NULL " << std::endl;
     else
     {
         _ptr_to_glLightModelfv = (void(API_ENTRY*)(GLenum,const GLfloat*))gotPtr;
@@ -5223,7 +5226,7 @@ static void API_ENTRY _choose_glLightModeli(GLenum pname,GLint param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLightModeli");
     if (!gotPtr)
-        OpenGL_log << "Error: glLightModeli is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLightModeli is NULL " << std::endl;
     else
     {
         _ptr_to_glLightModeli = (void(API_ENTRY*)(GLenum,GLint))gotPtr;
@@ -5236,7 +5239,7 @@ static void API_ENTRY _choose_glLightModeliv(GLenum pname,const GLint* params)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLightModeliv");
     if (!gotPtr)
-        OpenGL_log << "Error: glLightModeliv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLightModeliv is NULL " << std::endl;
     else
     {
         _ptr_to_glLightModeliv = (void(API_ENTRY*)(GLenum,const GLint*))gotPtr;
@@ -5249,7 +5252,7 @@ static void API_ENTRY _choose_glLightf(GLenum light,GLenum pname,GLfloat param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLightf");
     if (!gotPtr)
-        OpenGL_log << "Error: glLightf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLightf is NULL " << std::endl;
     else
     {
         _ptr_to_glLightf = (void(API_ENTRY*)(GLenum,GLenum,GLfloat))gotPtr;
@@ -5262,7 +5265,7 @@ static void API_ENTRY _choose_glLightfv(GLenum light,GLenum pname,const GLfloat*
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLightfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glLightfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLightfv is NULL " << std::endl;
     else
     {
         _ptr_to_glLightfv = (void(API_ENTRY*)(GLenum,GLenum,const GLfloat*))gotPtr;
@@ -5275,7 +5278,7 @@ static void API_ENTRY _choose_glLighti(GLenum light,GLenum pname,GLint param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLighti");
     if (!gotPtr)
-        OpenGL_log << "Error: glLighti is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLighti is NULL " << std::endl;
     else
     {
         _ptr_to_glLighti = (void(API_ENTRY*)(GLenum,GLenum,GLint))gotPtr;
@@ -5288,7 +5291,7 @@ static void API_ENTRY _choose_glLightiv(GLenum light,GLenum pname,const GLint* p
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLightiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glLightiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLightiv is NULL " << std::endl;
     else
     {
         _ptr_to_glLightiv = (void(API_ENTRY*)(GLenum,GLenum,const GLint*))gotPtr;
@@ -5301,7 +5304,7 @@ static void API_ENTRY _choose_glLineStipple(GLint factor,GLushort pattern)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLineStipple");
     if (!gotPtr)
-        OpenGL_log << "Error: glLineStipple is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLineStipple is NULL " << std::endl;
     else
     {
         _ptr_to_glLineStipple = (void(API_ENTRY*)(GLint,GLushort))gotPtr;
@@ -5314,7 +5317,7 @@ static void API_ENTRY _choose_glLineWidth(GLfloat width)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLineWidth");
     if (!gotPtr)
-        OpenGL_log << "Error: glLineWidth is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLineWidth is NULL " << std::endl;
     else
     {
         _ptr_to_glLineWidth = (void(API_ENTRY*)(GLfloat))gotPtr;
@@ -5327,7 +5330,7 @@ static void API_ENTRY _choose_glLinkProgram(GLuint program)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLinkProgram");
     if (!gotPtr)
-        OpenGL_log << "Error: glLinkProgram is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLinkProgram is NULL " << std::endl;
     else
     {
         _ptr_to_glLinkProgram = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -5340,7 +5343,7 @@ static void API_ENTRY _choose_glLinkProgramARB(GLhandleARB programObj)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLinkProgramARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glLinkProgramARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLinkProgramARB is NULL " << std::endl;
     else
     {
         _ptr_to_glLinkProgramARB = (void(API_ENTRY*)(GLhandleARB))gotPtr;
@@ -5353,7 +5356,7 @@ static void API_ENTRY _choose_glListBase(GLuint base)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glListBase");
     if (!gotPtr)
-        OpenGL_log << "Error: glListBase is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glListBase is NULL " << std::endl;
     else
     {
         _ptr_to_glListBase = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -5366,7 +5369,7 @@ static void API_ENTRY _choose_glLoadIdentity()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLoadIdentity");
     if (!gotPtr)
-        OpenGL_log << "Error: glLoadIdentity is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLoadIdentity is NULL " << std::endl;
     else
     {
         _ptr_to_glLoadIdentity = (void(API_ENTRY*)())gotPtr;
@@ -5379,7 +5382,7 @@ static void API_ENTRY _choose_glLoadMatrixd(const GLdouble* m)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLoadMatrixd");
     if (!gotPtr)
-        OpenGL_log << "Error: glLoadMatrixd is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLoadMatrixd is NULL " << std::endl;
     else
     {
         _ptr_to_glLoadMatrixd = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -5392,7 +5395,7 @@ static void API_ENTRY _choose_glLoadMatrixf(const GLfloat* m)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLoadMatrixf");
     if (!gotPtr)
-        OpenGL_log << "Error: glLoadMatrixf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLoadMatrixf is NULL " << std::endl;
     else
     {
         _ptr_to_glLoadMatrixf = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -5405,7 +5408,7 @@ static void API_ENTRY _choose_glLoadName(GLuint name)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLoadName");
     if (!gotPtr)
-        OpenGL_log << "Error: glLoadName is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLoadName is NULL " << std::endl;
     else
     {
         _ptr_to_glLoadName = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -5418,7 +5421,7 @@ static void API_ENTRY _choose_glLoadTransposeMatrixd(const GLdouble* m)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLoadTransposeMatrixd");
     if (!gotPtr)
-        OpenGL_log << "Error: glLoadTransposeMatrixd is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLoadTransposeMatrixd is NULL " << std::endl;
     else
     {
         _ptr_to_glLoadTransposeMatrixd = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -5431,7 +5434,7 @@ static void API_ENTRY _choose_glLoadTransposeMatrixf(const GLfloat* m)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLoadTransposeMatrixf");
     if (!gotPtr)
-        OpenGL_log << "Error: glLoadTransposeMatrixf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLoadTransposeMatrixf is NULL " << std::endl;
     else
     {
         _ptr_to_glLoadTransposeMatrixf = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -5444,7 +5447,7 @@ static void API_ENTRY _choose_glLogicOp(GLenum opcode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glLogicOp");
     if (!gotPtr)
-        OpenGL_log << "Error: glLogicOp is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glLogicOp is NULL " << std::endl;
     else
     {
         _ptr_to_glLogicOp = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -5457,7 +5460,7 @@ static void API_ENTRY _choose_glMap1d(GLenum target,GLdouble u1,GLdouble u2,GLin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMap1d");
     if (!gotPtr)
-        OpenGL_log << "Error: glMap1d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMap1d is NULL " << std::endl;
     else
     {
         _ptr_to_glMap1d = (void(API_ENTRY*)(GLenum,GLdouble,GLdouble,GLint,GLint,const GLdouble*))gotPtr;
@@ -5470,7 +5473,7 @@ static void API_ENTRY _choose_glMap1f(GLenum target,GLfloat u1,GLfloat u2,GLint 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMap1f");
     if (!gotPtr)
-        OpenGL_log << "Error: glMap1f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMap1f is NULL " << std::endl;
     else
     {
         _ptr_to_glMap1f = (void(API_ENTRY*)(GLenum,GLfloat,GLfloat,GLint,GLint,const GLfloat*))gotPtr;
@@ -5483,7 +5486,7 @@ static void API_ENTRY _choose_glMap2d(GLenum target,GLdouble u1,GLdouble u2,GLin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMap2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glMap2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMap2d is NULL " << std::endl;
     else
     {
         _ptr_to_glMap2d = (void(API_ENTRY*)(GLenum,GLdouble,GLdouble,GLint,GLint,GLdouble,GLdouble,GLint,GLint,const GLdouble*))gotPtr;
@@ -5496,7 +5499,7 @@ static void API_ENTRY _choose_glMap2f(GLenum target,GLfloat u1,GLfloat u2,GLint 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMap2f");
     if (!gotPtr)
-        OpenGL_log << "Error: glMap2f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMap2f is NULL " << std::endl;
     else
     {
         _ptr_to_glMap2f = (void(API_ENTRY*)(GLenum,GLfloat,GLfloat,GLint,GLint,GLfloat,GLfloat,GLint,GLint,const GLfloat*))gotPtr;
@@ -5509,7 +5512,7 @@ static void API_ENTRY _choose_glMapBuffer(GLenum target,GLenum access)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMapBuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glMapBuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMapBuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glMapBuffer = (void(API_ENTRY*)(GLenum,GLenum))gotPtr;
@@ -5522,7 +5525,7 @@ static void API_ENTRY _choose_glMapBufferARB(GLenum target,GLenum access)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMapBufferARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glMapBufferARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMapBufferARB is NULL " << std::endl;
     else
     {
         _ptr_to_glMapBufferARB = (void(API_ENTRY*)(GLenum,GLenum))gotPtr;
@@ -5535,7 +5538,7 @@ static void API_ENTRY _choose_glMapBufferRange(GLenum target,GLintptr offset,GLs
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMapBufferRange");
     if (!gotPtr)
-        OpenGL_log << "Error: glMapBufferRange is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMapBufferRange is NULL " << std::endl;
     else
     {
         _ptr_to_glMapBufferRange = (void(API_ENTRY*)(GLenum,GLintptr,GLsizeiptr,GLbitfield))gotPtr;
@@ -5548,7 +5551,7 @@ static void API_ENTRY _choose_glMapGrid1d(GLint un,GLdouble u1,GLdouble u2)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMapGrid1d");
     if (!gotPtr)
-        OpenGL_log << "Error: glMapGrid1d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMapGrid1d is NULL " << std::endl;
     else
     {
         _ptr_to_glMapGrid1d = (void(API_ENTRY*)(GLint,GLdouble,GLdouble))gotPtr;
@@ -5561,7 +5564,7 @@ static void API_ENTRY _choose_glMapGrid1f(GLint un,GLfloat u1,GLfloat u2)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMapGrid1f");
     if (!gotPtr)
-        OpenGL_log << "Error: glMapGrid1f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMapGrid1f is NULL " << std::endl;
     else
     {
         _ptr_to_glMapGrid1f = (void(API_ENTRY*)(GLint,GLfloat,GLfloat))gotPtr;
@@ -5574,7 +5577,7 @@ static void API_ENTRY _choose_glMapGrid2d(GLint un,GLdouble u1,GLdouble u2,GLint
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMapGrid2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glMapGrid2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMapGrid2d is NULL " << std::endl;
     else
     {
         _ptr_to_glMapGrid2d = (void(API_ENTRY*)(GLint,GLdouble,GLdouble,GLint,GLdouble,GLdouble))gotPtr;
@@ -5587,7 +5590,7 @@ static void API_ENTRY _choose_glMapGrid2f(GLint un,GLfloat u1,GLfloat u2,GLint v
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMapGrid2f");
     if (!gotPtr)
-        OpenGL_log << "Error: glMapGrid2f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMapGrid2f is NULL " << std::endl;
     else
     {
         _ptr_to_glMapGrid2f = (void(API_ENTRY*)(GLint,GLfloat,GLfloat,GLint,GLfloat,GLfloat))gotPtr;
@@ -5600,7 +5603,7 @@ static void API_ENTRY _choose_glMaterialf(GLenum face,GLenum pname,GLfloat param
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMaterialf");
     if (!gotPtr)
-        OpenGL_log << "Error: glMaterialf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMaterialf is NULL " << std::endl;
     else
     {
         _ptr_to_glMaterialf = (void(API_ENTRY*)(GLenum,GLenum,GLfloat))gotPtr;
@@ -5613,7 +5616,7 @@ static void API_ENTRY _choose_glMaterialfv(GLenum face,GLenum pname,const GLfloa
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMaterialfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMaterialfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMaterialfv is NULL " << std::endl;
     else
     {
         _ptr_to_glMaterialfv = (void(API_ENTRY*)(GLenum,GLenum,const GLfloat*))gotPtr;
@@ -5626,7 +5629,7 @@ static void API_ENTRY _choose_glMateriali(GLenum face,GLenum pname,GLint param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMateriali");
     if (!gotPtr)
-        OpenGL_log << "Error: glMateriali is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMateriali is NULL " << std::endl;
     else
     {
         _ptr_to_glMateriali = (void(API_ENTRY*)(GLenum,GLenum,GLint))gotPtr;
@@ -5639,7 +5642,7 @@ static void API_ENTRY _choose_glMaterialiv(GLenum face,GLenum pname,const GLint*
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMaterialiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMaterialiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMaterialiv is NULL " << std::endl;
     else
     {
         _ptr_to_glMaterialiv = (void(API_ENTRY*)(GLenum,GLenum,const GLint*))gotPtr;
@@ -5652,7 +5655,7 @@ static void API_ENTRY _choose_glMatrixMode(GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMatrixMode");
     if (!gotPtr)
-        OpenGL_log << "Error: glMatrixMode is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMatrixMode is NULL " << std::endl;
     else
     {
         _ptr_to_glMatrixMode = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -5665,7 +5668,7 @@ static void API_ENTRY _choose_glMemoryBarrier(GLbitfield barriers)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMemoryBarrier");
     if (!gotPtr)
-        OpenGL_log << "Error: glMemoryBarrier is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMemoryBarrier is NULL " << std::endl;
     else
     {
         _ptr_to_glMemoryBarrier = (void(API_ENTRY*)(GLbitfield))gotPtr;
@@ -5678,7 +5681,7 @@ static void API_ENTRY _choose_glMinSampleShading(GLfloat value)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMinSampleShading");
     if (!gotPtr)
-        OpenGL_log << "Error: glMinSampleShading is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMinSampleShading is NULL " << std::endl;
     else
     {
         _ptr_to_glMinSampleShading = (void(API_ENTRY*)(GLfloat))gotPtr;
@@ -5691,7 +5694,7 @@ static void API_ENTRY _choose_glMultMatrixd(const GLdouble* m)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultMatrixd");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultMatrixd is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultMatrixd is NULL " << std::endl;
     else
     {
         _ptr_to_glMultMatrixd = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -5704,7 +5707,7 @@ static void API_ENTRY _choose_glMultMatrixf(const GLfloat* m)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultMatrixf");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultMatrixf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultMatrixf is NULL " << std::endl;
     else
     {
         _ptr_to_glMultMatrixf = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -5717,7 +5720,7 @@ static void API_ENTRY _choose_glMultTransposeMatrixd(const GLdouble* m)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultTransposeMatrixd");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultTransposeMatrixd is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultTransposeMatrixd is NULL " << std::endl;
     else
     {
         _ptr_to_glMultTransposeMatrixd = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -5730,7 +5733,7 @@ static void API_ENTRY _choose_glMultTransposeMatrixf(const GLfloat* m)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultTransposeMatrixf");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultTransposeMatrixf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultTransposeMatrixf is NULL " << std::endl;
     else
     {
         _ptr_to_glMultTransposeMatrixf = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -5743,7 +5746,7 @@ static void API_ENTRY _choose_glMultiDrawArrays(GLenum mode,const GLint* first,c
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiDrawArrays");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiDrawArrays is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiDrawArrays is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiDrawArrays = (void(API_ENTRY*)(GLenum,const GLint*,const GLsizei*,GLsizei))gotPtr;
@@ -5756,7 +5759,7 @@ static void API_ENTRY _choose_glMultiDrawElements(GLenum mode,const GLsizei* cou
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiDrawElements");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiDrawElements is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiDrawElements is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiDrawElements = (void(API_ENTRY*)(GLenum,const GLsizei*,GLenum,const GLvoid*const*,GLsizei))gotPtr;
@@ -5769,7 +5772,7 @@ static void API_ENTRY _choose_glMultiDrawElementsBaseVertex(GLenum mode,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiDrawElementsBaseVertex");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiDrawElementsBaseVertex is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiDrawElementsBaseVertex is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiDrawElementsBaseVertex = (void(API_ENTRY*)(GLenum,const GLsizei*,GLenum,const GLvoid*const*,GLsizei,const GLint*))gotPtr;
@@ -5782,7 +5785,7 @@ static void API_ENTRY _choose_glMultiTexCoord1d(GLenum target,GLdouble s)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord1d");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord1d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord1d is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord1d = (void(API_ENTRY*)(GLenum,GLdouble))gotPtr;
@@ -5795,7 +5798,7 @@ static void API_ENTRY _choose_glMultiTexCoord1dv(GLenum target,const GLdouble* v
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord1dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord1dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord1dv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord1dv = (void(API_ENTRY*)(GLenum,const GLdouble*))gotPtr;
@@ -5808,7 +5811,7 @@ static void API_ENTRY _choose_glMultiTexCoord1f(GLenum target,GLfloat s)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord1f");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord1f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord1f is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord1f = (void(API_ENTRY*)(GLenum,GLfloat))gotPtr;
@@ -5821,7 +5824,7 @@ static void API_ENTRY _choose_glMultiTexCoord1fv(GLenum target,const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord1fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord1fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord1fv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord1fv = (void(API_ENTRY*)(GLenum,const GLfloat*))gotPtr;
@@ -5834,7 +5837,7 @@ static void API_ENTRY _choose_glMultiTexCoord1i(GLenum target,GLint s)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord1i");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord1i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord1i is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord1i = (void(API_ENTRY*)(GLenum,GLint))gotPtr;
@@ -5847,7 +5850,7 @@ static void API_ENTRY _choose_glMultiTexCoord1iv(GLenum target,const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord1iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord1iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord1iv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord1iv = (void(API_ENTRY*)(GLenum,const GLint*))gotPtr;
@@ -5860,7 +5863,7 @@ static void API_ENTRY _choose_glMultiTexCoord1s(GLenum target,GLshort s)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord1s");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord1s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord1s is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord1s = (void(API_ENTRY*)(GLenum,GLshort))gotPtr;
@@ -5873,7 +5876,7 @@ static void API_ENTRY _choose_glMultiTexCoord1sv(GLenum target,const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord1sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord1sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord1sv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord1sv = (void(API_ENTRY*)(GLenum,const GLshort*))gotPtr;
@@ -5886,7 +5889,7 @@ static void API_ENTRY _choose_glMultiTexCoord2d(GLenum target,GLdouble s,GLdoubl
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord2d is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord2d = (void(API_ENTRY*)(GLenum,GLdouble,GLdouble))gotPtr;
@@ -5899,7 +5902,7 @@ static void API_ENTRY _choose_glMultiTexCoord2dv(GLenum target,const GLdouble* v
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord2dv = (void(API_ENTRY*)(GLenum,const GLdouble*))gotPtr;
@@ -5912,7 +5915,7 @@ static void API_ENTRY _choose_glMultiTexCoord2f(GLenum target,GLfloat s,GLfloat 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord2f");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord2f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord2f is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord2f = (void(API_ENTRY*)(GLenum,GLfloat,GLfloat))gotPtr;
@@ -5925,7 +5928,7 @@ static void API_ENTRY _choose_glMultiTexCoord2fv(GLenum target,const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord2fv = (void(API_ENTRY*)(GLenum,const GLfloat*))gotPtr;
@@ -5938,7 +5941,7 @@ static void API_ENTRY _choose_glMultiTexCoord2i(GLenum target,GLint s,GLint t)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord2i");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord2i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord2i is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord2i = (void(API_ENTRY*)(GLenum,GLint,GLint))gotPtr;
@@ -5951,7 +5954,7 @@ static void API_ENTRY _choose_glMultiTexCoord2iv(GLenum target,const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord2iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord2iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord2iv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord2iv = (void(API_ENTRY*)(GLenum,const GLint*))gotPtr;
@@ -5964,7 +5967,7 @@ static void API_ENTRY _choose_glMultiTexCoord2s(GLenum target,GLshort s,GLshort 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord2s");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord2s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord2s is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord2s = (void(API_ENTRY*)(GLenum,GLshort,GLshort))gotPtr;
@@ -5977,7 +5980,7 @@ static void API_ENTRY _choose_glMultiTexCoord2sv(GLenum target,const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord2sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord2sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord2sv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord2sv = (void(API_ENTRY*)(GLenum,const GLshort*))gotPtr;
@@ -5990,7 +5993,7 @@ static void API_ENTRY _choose_glMultiTexCoord3d(GLenum target,GLdouble s,GLdoubl
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord3d is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord3d = (void(API_ENTRY*)(GLenum,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -6003,7 +6006,7 @@ static void API_ENTRY _choose_glMultiTexCoord3dv(GLenum target,const GLdouble* v
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord3dv = (void(API_ENTRY*)(GLenum,const GLdouble*))gotPtr;
@@ -6016,7 +6019,7 @@ static void API_ENTRY _choose_glMultiTexCoord3f(GLenum target,GLfloat s,GLfloat 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord3f");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord3f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord3f is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord3f = (void(API_ENTRY*)(GLenum,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -6029,7 +6032,7 @@ static void API_ENTRY _choose_glMultiTexCoord3fv(GLenum target,const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord3fv = (void(API_ENTRY*)(GLenum,const GLfloat*))gotPtr;
@@ -6042,7 +6045,7 @@ static void API_ENTRY _choose_glMultiTexCoord3i(GLenum target,GLint s,GLint t,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord3i");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord3i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord3i is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord3i = (void(API_ENTRY*)(GLenum,GLint,GLint,GLint))gotPtr;
@@ -6055,7 +6058,7 @@ static void API_ENTRY _choose_glMultiTexCoord3iv(GLenum target,const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord3iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord3iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord3iv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord3iv = (void(API_ENTRY*)(GLenum,const GLint*))gotPtr;
@@ -6068,7 +6071,7 @@ static void API_ENTRY _choose_glMultiTexCoord3s(GLenum target,GLshort s,GLshort 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord3s");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord3s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord3s is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord3s = (void(API_ENTRY*)(GLenum,GLshort,GLshort,GLshort))gotPtr;
@@ -6081,7 +6084,7 @@ static void API_ENTRY _choose_glMultiTexCoord3sv(GLenum target,const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord3sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord3sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord3sv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord3sv = (void(API_ENTRY*)(GLenum,const GLshort*))gotPtr;
@@ -6094,7 +6097,7 @@ static void API_ENTRY _choose_glMultiTexCoord4d(GLenum target,GLdouble s,GLdoubl
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord4d");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord4d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord4d is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord4d = (void(API_ENTRY*)(GLenum,GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -6107,7 +6110,7 @@ static void API_ENTRY _choose_glMultiTexCoord4dv(GLenum target,const GLdouble* v
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord4dv = (void(API_ENTRY*)(GLenum,const GLdouble*))gotPtr;
@@ -6120,7 +6123,7 @@ static void API_ENTRY _choose_glMultiTexCoord4f(GLenum target,GLfloat s,GLfloat 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord4f");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord4f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord4f is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord4f = (void(API_ENTRY*)(GLenum,GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -6133,7 +6136,7 @@ static void API_ENTRY _choose_glMultiTexCoord4fv(GLenum target,const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord4fv = (void(API_ENTRY*)(GLenum,const GLfloat*))gotPtr;
@@ -6146,7 +6149,7 @@ static void API_ENTRY _choose_glMultiTexCoord4i(GLenum target,GLint s,GLint t,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord4i");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord4i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord4i is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord4i = (void(API_ENTRY*)(GLenum,GLint,GLint,GLint,GLint))gotPtr;
@@ -6159,7 +6162,7 @@ static void API_ENTRY _choose_glMultiTexCoord4iv(GLenum target,const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord4iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord4iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord4iv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord4iv = (void(API_ENTRY*)(GLenum,const GLint*))gotPtr;
@@ -6172,7 +6175,7 @@ static void API_ENTRY _choose_glMultiTexCoord4s(GLenum target,GLshort s,GLshort 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord4s");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord4s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord4s is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord4s = (void(API_ENTRY*)(GLenum,GLshort,GLshort,GLshort,GLshort))gotPtr;
@@ -6185,7 +6188,7 @@ static void API_ENTRY _choose_glMultiTexCoord4sv(GLenum target,const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoord4sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoord4sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoord4sv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoord4sv = (void(API_ENTRY*)(GLenum,const GLshort*))gotPtr;
@@ -6198,7 +6201,7 @@ static void API_ENTRY _choose_glMultiTexCoordP1ui(GLenum texture,GLenum type,GLu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoordP1ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoordP1ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoordP1ui is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoordP1ui = (void(API_ENTRY*)(GLenum,GLenum,GLuint))gotPtr;
@@ -6211,7 +6214,7 @@ static void API_ENTRY _choose_glMultiTexCoordP1uiv(GLenum texture,GLenum type,co
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoordP1uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoordP1uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoordP1uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoordP1uiv = (void(API_ENTRY*)(GLenum,GLenum,const GLuint*))gotPtr;
@@ -6224,7 +6227,7 @@ static void API_ENTRY _choose_glMultiTexCoordP2ui(GLenum texture,GLenum type,GLu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoordP2ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoordP2ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoordP2ui is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoordP2ui = (void(API_ENTRY*)(GLenum,GLenum,GLuint))gotPtr;
@@ -6237,7 +6240,7 @@ static void API_ENTRY _choose_glMultiTexCoordP2uiv(GLenum texture,GLenum type,co
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoordP2uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoordP2uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoordP2uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoordP2uiv = (void(API_ENTRY*)(GLenum,GLenum,const GLuint*))gotPtr;
@@ -6250,7 +6253,7 @@ static void API_ENTRY _choose_glMultiTexCoordP3ui(GLenum texture,GLenum type,GLu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoordP3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoordP3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoordP3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoordP3ui = (void(API_ENTRY*)(GLenum,GLenum,GLuint))gotPtr;
@@ -6263,7 +6266,7 @@ static void API_ENTRY _choose_glMultiTexCoordP3uiv(GLenum texture,GLenum type,co
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoordP3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoordP3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoordP3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoordP3uiv = (void(API_ENTRY*)(GLenum,GLenum,const GLuint*))gotPtr;
@@ -6276,7 +6279,7 @@ static void API_ENTRY _choose_glMultiTexCoordP4ui(GLenum texture,GLenum type,GLu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoordP4ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoordP4ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoordP4ui is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoordP4ui = (void(API_ENTRY*)(GLenum,GLenum,GLuint))gotPtr;
@@ -6289,7 +6292,7 @@ static void API_ENTRY _choose_glMultiTexCoordP4uiv(GLenum texture,GLenum type,co
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glMultiTexCoordP4uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glMultiTexCoordP4uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glMultiTexCoordP4uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glMultiTexCoordP4uiv = (void(API_ENTRY*)(GLenum,GLenum,const GLuint*))gotPtr;
@@ -6302,7 +6305,7 @@ static void API_ENTRY _choose_glNewList(GLuint list,GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNewList");
     if (!gotPtr)
-        OpenGL_log << "Error: glNewList is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNewList is NULL " << std::endl;
     else
     {
         _ptr_to_glNewList = (void(API_ENTRY*)(GLuint,GLenum))gotPtr;
@@ -6315,7 +6318,7 @@ static void API_ENTRY _choose_glNormal3b(GLbyte nx,GLbyte ny,GLbyte nz)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormal3b");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormal3b is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormal3b is NULL " << std::endl;
     else
     {
         _ptr_to_glNormal3b = (void(API_ENTRY*)(GLbyte,GLbyte,GLbyte))gotPtr;
@@ -6328,7 +6331,7 @@ static void API_ENTRY _choose_glNormal3bv(const GLbyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormal3bv");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormal3bv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormal3bv is NULL " << std::endl;
     else
     {
         _ptr_to_glNormal3bv = (void(API_ENTRY*)(const GLbyte*))gotPtr;
@@ -6341,7 +6344,7 @@ static void API_ENTRY _choose_glNormal3d(GLdouble nx,GLdouble ny,GLdouble nz)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormal3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormal3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormal3d is NULL " << std::endl;
     else
     {
         _ptr_to_glNormal3d = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble))gotPtr;
@@ -6354,7 +6357,7 @@ static void API_ENTRY _choose_glNormal3dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormal3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormal3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormal3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glNormal3dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -6367,7 +6370,7 @@ static void API_ENTRY _choose_glNormal3f(GLfloat nx,GLfloat ny,GLfloat nz)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormal3f");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormal3f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormal3f is NULL " << std::endl;
     else
     {
         _ptr_to_glNormal3f = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat))gotPtr;
@@ -6380,7 +6383,7 @@ static void API_ENTRY _choose_glNormal3fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormal3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormal3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormal3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glNormal3fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -6393,7 +6396,7 @@ static void API_ENTRY _choose_glNormal3i(GLint nx,GLint ny,GLint nz)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormal3i");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormal3i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormal3i is NULL " << std::endl;
     else
     {
         _ptr_to_glNormal3i = (void(API_ENTRY*)(GLint,GLint,GLint))gotPtr;
@@ -6406,7 +6409,7 @@ static void API_ENTRY _choose_glNormal3iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormal3iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormal3iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormal3iv is NULL " << std::endl;
     else
     {
         _ptr_to_glNormal3iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -6419,7 +6422,7 @@ static void API_ENTRY _choose_glNormal3s(GLshort nx,GLshort ny,GLshort nz)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormal3s");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormal3s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormal3s is NULL " << std::endl;
     else
     {
         _ptr_to_glNormal3s = (void(API_ENTRY*)(GLshort,GLshort,GLshort))gotPtr;
@@ -6432,7 +6435,7 @@ static void API_ENTRY _choose_glNormal3sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormal3sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormal3sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormal3sv is NULL " << std::endl;
     else
     {
         _ptr_to_glNormal3sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -6445,7 +6448,7 @@ static void API_ENTRY _choose_glNormalP3ui(GLenum type,GLuint coords)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormalP3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormalP3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormalP3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glNormalP3ui = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -6458,7 +6461,7 @@ static void API_ENTRY _choose_glNormalP3uiv(GLenum type,const GLuint* coords)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormalP3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormalP3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormalP3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glNormalP3uiv = (void(API_ENTRY*)(GLenum,const GLuint*))gotPtr;
@@ -6471,7 +6474,7 @@ static void API_ENTRY _choose_glNormalPointer(GLenum type,GLsizei stride,const G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glNormalPointer");
     if (!gotPtr)
-        OpenGL_log << "Error: glNormalPointer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glNormalPointer is NULL " << std::endl;
     else
     {
         _ptr_to_glNormalPointer = (void(API_ENTRY*)(GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -6484,7 +6487,7 @@ static void API_ENTRY _choose_glOrtho(GLdouble left,GLdouble right,GLdouble bott
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glOrtho");
     if (!gotPtr)
-        OpenGL_log << "Error: glOrtho is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glOrtho is NULL " << std::endl;
     else
     {
         _ptr_to_glOrtho = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -6497,7 +6500,7 @@ static void API_ENTRY _choose_glPassThrough(GLfloat token)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPassThrough");
     if (!gotPtr)
-        OpenGL_log << "Error: glPassThrough is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPassThrough is NULL " << std::endl;
     else
     {
         _ptr_to_glPassThrough = (void(API_ENTRY*)(GLfloat))gotPtr;
@@ -6510,7 +6513,7 @@ static void API_ENTRY _choose_glPatchParameterfv(GLenum pname,const GLfloat* val
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPatchParameterfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glPatchParameterfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPatchParameterfv is NULL " << std::endl;
     else
     {
         _ptr_to_glPatchParameterfv = (void(API_ENTRY*)(GLenum,const GLfloat*))gotPtr;
@@ -6523,7 +6526,7 @@ static void API_ENTRY _choose_glPatchParameteri(GLenum pname,GLint value)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPatchParameteri");
     if (!gotPtr)
-        OpenGL_log << "Error: glPatchParameteri is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPatchParameteri is NULL " << std::endl;
     else
     {
         _ptr_to_glPatchParameteri = (void(API_ENTRY*)(GLenum,GLint))gotPtr;
@@ -6536,7 +6539,7 @@ static void API_ENTRY _choose_glPauseTransformFeedback()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPauseTransformFeedback");
     if (!gotPtr)
-        OpenGL_log << "Error: glPauseTransformFeedback is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPauseTransformFeedback is NULL " << std::endl;
     else
     {
         _ptr_to_glPauseTransformFeedback = (void(API_ENTRY*)())gotPtr;
@@ -6549,7 +6552,7 @@ static void API_ENTRY _choose_glPixelMapfv(GLenum map,GLsizei mapsize,const GLfl
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPixelMapfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glPixelMapfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPixelMapfv is NULL " << std::endl;
     else
     {
         _ptr_to_glPixelMapfv = (void(API_ENTRY*)(GLenum,GLsizei,const GLfloat*))gotPtr;
@@ -6562,7 +6565,7 @@ static void API_ENTRY _choose_glPixelMapuiv(GLenum map,GLsizei mapsize,const GLu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPixelMapuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glPixelMapuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPixelMapuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glPixelMapuiv = (void(API_ENTRY*)(GLenum,GLsizei,const GLuint*))gotPtr;
@@ -6575,7 +6578,7 @@ static void API_ENTRY _choose_glPixelMapusv(GLenum map,GLsizei mapsize,const GLu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPixelMapusv");
     if (!gotPtr)
-        OpenGL_log << "Error: glPixelMapusv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPixelMapusv is NULL " << std::endl;
     else
     {
         _ptr_to_glPixelMapusv = (void(API_ENTRY*)(GLenum,GLsizei,const GLushort*))gotPtr;
@@ -6588,7 +6591,7 @@ static void API_ENTRY _choose_glPixelStoref(GLenum pname,GLfloat param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPixelStoref");
     if (!gotPtr)
-        OpenGL_log << "Error: glPixelStoref is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPixelStoref is NULL " << std::endl;
     else
     {
         _ptr_to_glPixelStoref = (void(API_ENTRY*)(GLenum,GLfloat))gotPtr;
@@ -6601,7 +6604,7 @@ static void API_ENTRY _choose_glPixelStorei(GLenum pname,GLint param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPixelStorei");
     if (!gotPtr)
-        OpenGL_log << "Error: glPixelStorei is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPixelStorei is NULL " << std::endl;
     else
     {
         _ptr_to_glPixelStorei = (void(API_ENTRY*)(GLenum,GLint))gotPtr;
@@ -6614,7 +6617,7 @@ static void API_ENTRY _choose_glPixelTransferf(GLenum pname,GLfloat param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPixelTransferf");
     if (!gotPtr)
-        OpenGL_log << "Error: glPixelTransferf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPixelTransferf is NULL " << std::endl;
     else
     {
         _ptr_to_glPixelTransferf = (void(API_ENTRY*)(GLenum,GLfloat))gotPtr;
@@ -6627,7 +6630,7 @@ static void API_ENTRY _choose_glPixelTransferi(GLenum pname,GLint param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPixelTransferi");
     if (!gotPtr)
-        OpenGL_log << "Error: glPixelTransferi is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPixelTransferi is NULL " << std::endl;
     else
     {
         _ptr_to_glPixelTransferi = (void(API_ENTRY*)(GLenum,GLint))gotPtr;
@@ -6640,7 +6643,7 @@ static void API_ENTRY _choose_glPixelZoom(GLfloat xfactor,GLfloat yfactor)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPixelZoom");
     if (!gotPtr)
-        OpenGL_log << "Error: glPixelZoom is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPixelZoom is NULL " << std::endl;
     else
     {
         _ptr_to_glPixelZoom = (void(API_ENTRY*)(GLfloat,GLfloat))gotPtr;
@@ -6653,7 +6656,7 @@ static void API_ENTRY _choose_glPointParameterf(GLenum pname,GLfloat param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPointParameterf");
     if (!gotPtr)
-        OpenGL_log << "Error: glPointParameterf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPointParameterf is NULL " << std::endl;
     else
     {
         _ptr_to_glPointParameterf = (void(API_ENTRY*)(GLenum,GLfloat))gotPtr;
@@ -6666,7 +6669,7 @@ static void API_ENTRY _choose_glPointParameterfv(GLenum pname,const GLfloat* par
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPointParameterfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glPointParameterfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPointParameterfv is NULL " << std::endl;
     else
     {
         _ptr_to_glPointParameterfv = (void(API_ENTRY*)(GLenum,const GLfloat*))gotPtr;
@@ -6679,7 +6682,7 @@ static void API_ENTRY _choose_glPointParameteri(GLenum pname,GLint param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPointParameteri");
     if (!gotPtr)
-        OpenGL_log << "Error: glPointParameteri is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPointParameteri is NULL " << std::endl;
     else
     {
         _ptr_to_glPointParameteri = (void(API_ENTRY*)(GLenum,GLint))gotPtr;
@@ -6692,7 +6695,7 @@ static void API_ENTRY _choose_glPointParameteriv(GLenum pname,const GLint* param
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPointParameteriv");
     if (!gotPtr)
-        OpenGL_log << "Error: glPointParameteriv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPointParameteriv is NULL " << std::endl;
     else
     {
         _ptr_to_glPointParameteriv = (void(API_ENTRY*)(GLenum,const GLint*))gotPtr;
@@ -6705,7 +6708,7 @@ static void API_ENTRY _choose_glPointSize(GLfloat size)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPointSize");
     if (!gotPtr)
-        OpenGL_log << "Error: glPointSize is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPointSize is NULL " << std::endl;
     else
     {
         _ptr_to_glPointSize = (void(API_ENTRY*)(GLfloat))gotPtr;
@@ -6718,7 +6721,7 @@ static void API_ENTRY _choose_glPolygonMode(GLenum face,GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPolygonMode");
     if (!gotPtr)
-        OpenGL_log << "Error: glPolygonMode is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPolygonMode is NULL " << std::endl;
     else
     {
         _ptr_to_glPolygonMode = (void(API_ENTRY*)(GLenum,GLenum))gotPtr;
@@ -6731,7 +6734,7 @@ static void API_ENTRY _choose_glPolygonOffset(GLfloat factor,GLfloat units)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPolygonOffset");
     if (!gotPtr)
-        OpenGL_log << "Error: glPolygonOffset is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPolygonOffset is NULL " << std::endl;
     else
     {
         _ptr_to_glPolygonOffset = (void(API_ENTRY*)(GLfloat,GLfloat))gotPtr;
@@ -6744,7 +6747,7 @@ static void API_ENTRY _choose_glPolygonStipple(const GLubyte* mask)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPolygonStipple");
     if (!gotPtr)
-        OpenGL_log << "Error: glPolygonStipple is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPolygonStipple is NULL " << std::endl;
     else
     {
         _ptr_to_glPolygonStipple = (void(API_ENTRY*)(const GLubyte*))gotPtr;
@@ -6757,7 +6760,7 @@ static void API_ENTRY _choose_glPopAttrib()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPopAttrib");
     if (!gotPtr)
-        OpenGL_log << "Error: glPopAttrib is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPopAttrib is NULL " << std::endl;
     else
     {
         _ptr_to_glPopAttrib = (void(API_ENTRY*)())gotPtr;
@@ -6770,7 +6773,7 @@ static void API_ENTRY _choose_glPopClientAttrib()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPopClientAttrib");
     if (!gotPtr)
-        OpenGL_log << "Error: glPopClientAttrib is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPopClientAttrib is NULL " << std::endl;
     else
     {
         _ptr_to_glPopClientAttrib = (void(API_ENTRY*)())gotPtr;
@@ -6783,7 +6786,7 @@ static void API_ENTRY _choose_glPopMatrix()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPopMatrix");
     if (!gotPtr)
-        OpenGL_log << "Error: glPopMatrix is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPopMatrix is NULL " << std::endl;
     else
     {
         _ptr_to_glPopMatrix = (void(API_ENTRY*)())gotPtr;
@@ -6796,7 +6799,7 @@ static void API_ENTRY _choose_glPopName()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPopName");
     if (!gotPtr)
-        OpenGL_log << "Error: glPopName is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPopName is NULL " << std::endl;
     else
     {
         _ptr_to_glPopName = (void(API_ENTRY*)())gotPtr;
@@ -6809,7 +6812,7 @@ static void API_ENTRY _choose_glPrimitiveRestartIndex(GLuint index)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPrimitiveRestartIndex");
     if (!gotPtr)
-        OpenGL_log << "Error: glPrimitiveRestartIndex is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPrimitiveRestartIndex is NULL " << std::endl;
     else
     {
         _ptr_to_glPrimitiveRestartIndex = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -6822,7 +6825,7 @@ static void API_ENTRY _choose_glPrioritizeTextures(GLsizei n,const GLuint* textu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPrioritizeTextures");
     if (!gotPtr)
-        OpenGL_log << "Error: glPrioritizeTextures is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPrioritizeTextures is NULL " << std::endl;
     else
     {
         _ptr_to_glPrioritizeTextures = (void(API_ENTRY*)(GLsizei,const GLuint*,const GLfloat*))gotPtr;
@@ -6835,7 +6838,7 @@ static void API_ENTRY _choose_glProgramBinary(GLuint program,GLenum binaryFormat
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramBinary");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramBinary is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramBinary is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramBinary = (void(API_ENTRY*)(GLuint,GLenum,const GLvoid*,GLsizei))gotPtr;
@@ -6848,7 +6851,7 @@ static void API_ENTRY _choose_glProgramParameteri(GLuint program,GLenum pname,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramParameteri");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramParameteri is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramParameteri is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramParameteri = (void(API_ENTRY*)(GLuint,GLenum,GLint))gotPtr;
@@ -6861,7 +6864,7 @@ static void API_ENTRY _choose_glProgramUniform1d(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform1d");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform1d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform1d is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform1d = (void(API_ENTRY*)(GLuint,GLint,GLdouble))gotPtr;
@@ -6874,7 +6877,7 @@ static void API_ENTRY _choose_glProgramUniform1dv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform1dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform1dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform1dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform1dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLdouble*))gotPtr;
@@ -6887,7 +6890,7 @@ static void API_ENTRY _choose_glProgramUniform1f(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform1f");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform1f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform1f is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform1f = (void(API_ENTRY*)(GLuint,GLint,GLfloat))gotPtr;
@@ -6900,7 +6903,7 @@ static void API_ENTRY _choose_glProgramUniform1fv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform1fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform1fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform1fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform1fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLfloat*))gotPtr;
@@ -6913,7 +6916,7 @@ static void API_ENTRY _choose_glProgramUniform1i(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform1i");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform1i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform1i is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform1i = (void(API_ENTRY*)(GLuint,GLint,GLint))gotPtr;
@@ -6926,7 +6929,7 @@ static void API_ENTRY _choose_glProgramUniform1iv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform1iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform1iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform1iv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform1iv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLint*))gotPtr;
@@ -6939,7 +6942,7 @@ static void API_ENTRY _choose_glProgramUniform1ui(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform1ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform1ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform1ui is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform1ui = (void(API_ENTRY*)(GLuint,GLint,GLuint))gotPtr;
@@ -6952,7 +6955,7 @@ static void API_ENTRY _choose_glProgramUniform1uiv(GLuint program,GLint location
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform1uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform1uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform1uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform1uiv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLuint*))gotPtr;
@@ -6965,7 +6968,7 @@ static void API_ENTRY _choose_glProgramUniform2d(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform2d is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform2d = (void(API_ENTRY*)(GLuint,GLint,GLdouble,GLdouble))gotPtr;
@@ -6978,7 +6981,7 @@ static void API_ENTRY _choose_glProgramUniform2dv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform2dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLdouble*))gotPtr;
@@ -6991,7 +6994,7 @@ static void API_ENTRY _choose_glProgramUniform2f(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform2f");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform2f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform2f is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform2f = (void(API_ENTRY*)(GLuint,GLint,GLfloat,GLfloat))gotPtr;
@@ -7004,7 +7007,7 @@ static void API_ENTRY _choose_glProgramUniform2fv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform2fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLfloat*))gotPtr;
@@ -7017,7 +7020,7 @@ static void API_ENTRY _choose_glProgramUniform2i(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform2i");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform2i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform2i is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform2i = (void(API_ENTRY*)(GLuint,GLint,GLint,GLint))gotPtr;
@@ -7030,7 +7033,7 @@ static void API_ENTRY _choose_glProgramUniform2iv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform2iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform2iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform2iv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform2iv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLint*))gotPtr;
@@ -7043,7 +7046,7 @@ static void API_ENTRY _choose_glProgramUniform2ui(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform2ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform2ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform2ui is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform2ui = (void(API_ENTRY*)(GLuint,GLint,GLuint,GLuint))gotPtr;
@@ -7056,7 +7059,7 @@ static void API_ENTRY _choose_glProgramUniform2uiv(GLuint program,GLint location
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform2uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform2uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform2uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform2uiv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLuint*))gotPtr;
@@ -7069,7 +7072,7 @@ static void API_ENTRY _choose_glProgramUniform3d(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform3d is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform3d = (void(API_ENTRY*)(GLuint,GLint,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -7082,7 +7085,7 @@ static void API_ENTRY _choose_glProgramUniform3dv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform3dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLdouble*))gotPtr;
@@ -7095,7 +7098,7 @@ static void API_ENTRY _choose_glProgramUniform3f(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform3f");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform3f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform3f is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform3f = (void(API_ENTRY*)(GLuint,GLint,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -7108,7 +7111,7 @@ static void API_ENTRY _choose_glProgramUniform3fv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform3fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLfloat*))gotPtr;
@@ -7121,7 +7124,7 @@ static void API_ENTRY _choose_glProgramUniform3i(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform3i");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform3i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform3i is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform3i = (void(API_ENTRY*)(GLuint,GLint,GLint,GLint,GLint))gotPtr;
@@ -7134,7 +7137,7 @@ static void API_ENTRY _choose_glProgramUniform3iv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform3iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform3iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform3iv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform3iv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLint*))gotPtr;
@@ -7147,7 +7150,7 @@ static void API_ENTRY _choose_glProgramUniform3ui(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform3ui = (void(API_ENTRY*)(GLuint,GLint,GLuint,GLuint,GLuint))gotPtr;
@@ -7160,7 +7163,7 @@ static void API_ENTRY _choose_glProgramUniform3uiv(GLuint program,GLint location
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform3uiv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLuint*))gotPtr;
@@ -7173,7 +7176,7 @@ static void API_ENTRY _choose_glProgramUniform4d(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform4d");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform4d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform4d is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform4d = (void(API_ENTRY*)(GLuint,GLint,GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -7186,7 +7189,7 @@ static void API_ENTRY _choose_glProgramUniform4dv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform4dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLdouble*))gotPtr;
@@ -7199,7 +7202,7 @@ static void API_ENTRY _choose_glProgramUniform4f(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform4f");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform4f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform4f is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform4f = (void(API_ENTRY*)(GLuint,GLint,GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -7212,7 +7215,7 @@ static void API_ENTRY _choose_glProgramUniform4fv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform4fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLfloat*))gotPtr;
@@ -7225,7 +7228,7 @@ static void API_ENTRY _choose_glProgramUniform4i(GLuint program,GLint location,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform4i");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform4i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform4i is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform4i = (void(API_ENTRY*)(GLuint,GLint,GLint,GLint,GLint,GLint))gotPtr;
@@ -7238,7 +7241,7 @@ static void API_ENTRY _choose_glProgramUniform4iv(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform4iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform4iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform4iv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform4iv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLint*))gotPtr;
@@ -7251,7 +7254,7 @@ static void API_ENTRY _choose_glProgramUniform4ui(GLuint program,GLint location,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform4ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform4ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform4ui is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform4ui = (void(API_ENTRY*)(GLuint,GLint,GLuint,GLuint,GLuint,GLuint))gotPtr;
@@ -7264,7 +7267,7 @@ static void API_ENTRY _choose_glProgramUniform4uiv(GLuint program,GLint location
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform4uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniform4uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniform4uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniform4uiv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,const GLuint*))gotPtr;
@@ -7277,7 +7280,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix2dv(GLuint program,GLint loc
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix2dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -7290,7 +7293,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix2fv(GLuint program,GLint loc
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix2fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -7303,7 +7306,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix2x3dv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix2x3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix2x3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix2x3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix2x3dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -7316,7 +7319,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix2x3fv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix2x3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix2x3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix2x3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix2x3fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -7329,7 +7332,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix2x4dv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix2x4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix2x4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix2x4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix2x4dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -7342,7 +7345,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix2x4fv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix2x4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix2x4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix2x4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix2x4fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -7355,7 +7358,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix3dv(GLuint program,GLint loc
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix3dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -7368,7 +7371,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix3fv(GLuint program,GLint loc
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix3fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -7381,7 +7384,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix3x2dv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix3x2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix3x2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix3x2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix3x2dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -7394,7 +7397,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix3x2fv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix3x2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix3x2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix3x2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix3x2fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -7407,7 +7410,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix3x4dv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix3x4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix3x4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix3x4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix3x4dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -7420,7 +7423,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix3x4fv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix3x4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix3x4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix3x4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix3x4fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -7433,7 +7436,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix4dv(GLuint program,GLint loc
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix4dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -7446,7 +7449,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix4fv(GLuint program,GLint loc
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix4fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -7459,7 +7462,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix4x2dv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix4x2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix4x2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix4x2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix4x2dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -7472,7 +7475,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix4x2fv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix4x2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix4x2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix4x2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix4x2fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -7485,7 +7488,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix4x3dv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix4x3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix4x3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix4x3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix4x3dv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -7498,7 +7501,7 @@ static void API_ENTRY _choose_glProgramUniformMatrix4x3fv(GLuint program,GLint l
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniformMatrix4x3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glProgramUniformMatrix4x3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProgramUniformMatrix4x3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glProgramUniformMatrix4x3fv = (void(API_ENTRY*)(GLuint,GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -7511,7 +7514,7 @@ static void API_ENTRY _choose_glProvokingVertex(GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glProvokingVertex");
     if (!gotPtr)
-        OpenGL_log << "Error: glProvokingVertex is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glProvokingVertex is NULL " << std::endl;
     else
     {
         _ptr_to_glProvokingVertex = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -7524,7 +7527,7 @@ static void API_ENTRY _choose_glPushAttrib(GLbitfield mask)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPushAttrib");
     if (!gotPtr)
-        OpenGL_log << "Error: glPushAttrib is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPushAttrib is NULL " << std::endl;
     else
     {
         _ptr_to_glPushAttrib = (void(API_ENTRY*)(GLbitfield))gotPtr;
@@ -7537,7 +7540,7 @@ static void API_ENTRY _choose_glPushClientAttrib(GLbitfield mask)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPushClientAttrib");
     if (!gotPtr)
-        OpenGL_log << "Error: glPushClientAttrib is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPushClientAttrib is NULL " << std::endl;
     else
     {
         _ptr_to_glPushClientAttrib = (void(API_ENTRY*)(GLbitfield))gotPtr;
@@ -7550,7 +7553,7 @@ static void API_ENTRY _choose_glPushMatrix()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPushMatrix");
     if (!gotPtr)
-        OpenGL_log << "Error: glPushMatrix is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPushMatrix is NULL " << std::endl;
     else
     {
         _ptr_to_glPushMatrix = (void(API_ENTRY*)())gotPtr;
@@ -7563,7 +7566,7 @@ static void API_ENTRY _choose_glPushName(GLuint name)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glPushName");
     if (!gotPtr)
-        OpenGL_log << "Error: glPushName is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glPushName is NULL " << std::endl;
     else
     {
         _ptr_to_glPushName = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -7576,7 +7579,7 @@ static void API_ENTRY _choose_glQueryCounter(GLuint id,GLenum target)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glQueryCounter");
     if (!gotPtr)
-        OpenGL_log << "Error: glQueryCounter is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glQueryCounter is NULL " << std::endl;
     else
     {
         _ptr_to_glQueryCounter = (void(API_ENTRY*)(GLuint,GLenum))gotPtr;
@@ -7589,7 +7592,7 @@ static void API_ENTRY _choose_glRasterPos2d(GLdouble x,GLdouble y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos2d is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos2d = (void(API_ENTRY*)(GLdouble,GLdouble))gotPtr;
@@ -7602,7 +7605,7 @@ static void API_ENTRY _choose_glRasterPos2dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos2dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -7615,7 +7618,7 @@ static void API_ENTRY _choose_glRasterPos2f(GLfloat x,GLfloat y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos2f");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos2f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos2f is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos2f = (void(API_ENTRY*)(GLfloat,GLfloat))gotPtr;
@@ -7628,7 +7631,7 @@ static void API_ENTRY _choose_glRasterPos2fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos2fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -7641,7 +7644,7 @@ static void API_ENTRY _choose_glRasterPos2i(GLint x,GLint y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos2i");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos2i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos2i is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos2i = (void(API_ENTRY*)(GLint,GLint))gotPtr;
@@ -7654,7 +7657,7 @@ static void API_ENTRY _choose_glRasterPos2iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos2iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos2iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos2iv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos2iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -7667,7 +7670,7 @@ static void API_ENTRY _choose_glRasterPos2s(GLshort x,GLshort y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos2s");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos2s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos2s is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos2s = (void(API_ENTRY*)(GLshort,GLshort))gotPtr;
@@ -7680,7 +7683,7 @@ static void API_ENTRY _choose_glRasterPos2sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos2sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos2sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos2sv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos2sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -7693,7 +7696,7 @@ static void API_ENTRY _choose_glRasterPos3d(GLdouble x,GLdouble y,GLdouble z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos3d is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos3d = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble))gotPtr;
@@ -7706,7 +7709,7 @@ static void API_ENTRY _choose_glRasterPos3dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos3dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -7719,7 +7722,7 @@ static void API_ENTRY _choose_glRasterPos3f(GLfloat x,GLfloat y,GLfloat z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos3f");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos3f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos3f is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos3f = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat))gotPtr;
@@ -7732,7 +7735,7 @@ static void API_ENTRY _choose_glRasterPos3fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos3fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -7745,7 +7748,7 @@ static void API_ENTRY _choose_glRasterPos3i(GLint x,GLint y,GLint z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos3i");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos3i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos3i is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos3i = (void(API_ENTRY*)(GLint,GLint,GLint))gotPtr;
@@ -7758,7 +7761,7 @@ static void API_ENTRY _choose_glRasterPos3iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos3iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos3iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos3iv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos3iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -7771,7 +7774,7 @@ static void API_ENTRY _choose_glRasterPos3s(GLshort x,GLshort y,GLshort z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos3s");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos3s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos3s is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos3s = (void(API_ENTRY*)(GLshort,GLshort,GLshort))gotPtr;
@@ -7784,7 +7787,7 @@ static void API_ENTRY _choose_glRasterPos3sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos3sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos3sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos3sv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos3sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -7797,7 +7800,7 @@ static void API_ENTRY _choose_glRasterPos4d(GLdouble x,GLdouble y,GLdouble z,GLd
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos4d");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos4d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos4d is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos4d = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -7810,7 +7813,7 @@ static void API_ENTRY _choose_glRasterPos4dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos4dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -7823,7 +7826,7 @@ static void API_ENTRY _choose_glRasterPos4f(GLfloat x,GLfloat y,GLfloat z,GLfloa
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos4f");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos4f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos4f is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos4f = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -7836,7 +7839,7 @@ static void API_ENTRY _choose_glRasterPos4fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos4fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -7849,7 +7852,7 @@ static void API_ENTRY _choose_glRasterPos4i(GLint x,GLint y,GLint z,GLint w)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos4i");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos4i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos4i is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos4i = (void(API_ENTRY*)(GLint,GLint,GLint,GLint))gotPtr;
@@ -7862,7 +7865,7 @@ static void API_ENTRY _choose_glRasterPos4iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos4iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos4iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos4iv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos4iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -7875,7 +7878,7 @@ static void API_ENTRY _choose_glRasterPos4s(GLshort x,GLshort y,GLshort z,GLshor
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos4s");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos4s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos4s is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos4s = (void(API_ENTRY*)(GLshort,GLshort,GLshort,GLshort))gotPtr;
@@ -7888,7 +7891,7 @@ static void API_ENTRY _choose_glRasterPos4sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRasterPos4sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRasterPos4sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRasterPos4sv is NULL " << std::endl;
     else
     {
         _ptr_to_glRasterPos4sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -7901,7 +7904,7 @@ static void API_ENTRY _choose_glReadBuffer(GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glReadBuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glReadBuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glReadBuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glReadBuffer = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -7914,7 +7917,7 @@ static void API_ENTRY _choose_glReadPixels(GLint x,GLint y,GLsizei width,GLsizei
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glReadPixels");
     if (!gotPtr)
-        OpenGL_log << "Error: glReadPixels is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glReadPixels is NULL " << std::endl;
     else
     {
         _ptr_to_glReadPixels = (void(API_ENTRY*)(GLint,GLint,GLsizei,GLsizei,GLenum,GLenum,GLvoid*))gotPtr;
@@ -7927,7 +7930,7 @@ static void API_ENTRY _choose_glRectd(GLdouble x1,GLdouble y1,GLdouble x2,GLdoub
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRectd");
     if (!gotPtr)
-        OpenGL_log << "Error: glRectd is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRectd is NULL " << std::endl;
     else
     {
         _ptr_to_glRectd = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -7940,7 +7943,7 @@ static void API_ENTRY _choose_glRectdv(const GLdouble* v1,const GLdouble* v2)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRectdv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRectdv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRectdv is NULL " << std::endl;
     else
     {
         _ptr_to_glRectdv = (void(API_ENTRY*)(const GLdouble*,const GLdouble*))gotPtr;
@@ -7953,7 +7956,7 @@ static void API_ENTRY _choose_glRectf(GLfloat x1,GLfloat y1,GLfloat x2,GLfloat y
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRectf");
     if (!gotPtr)
-        OpenGL_log << "Error: glRectf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRectf is NULL " << std::endl;
     else
     {
         _ptr_to_glRectf = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -7966,7 +7969,7 @@ static void API_ENTRY _choose_glRectfv(const GLfloat* v1,const GLfloat* v2)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRectfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRectfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRectfv is NULL " << std::endl;
     else
     {
         _ptr_to_glRectfv = (void(API_ENTRY*)(const GLfloat*,const GLfloat*))gotPtr;
@@ -7979,7 +7982,7 @@ static void API_ENTRY _choose_glRecti(GLint x1,GLint y1,GLint x2,GLint y2)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRecti");
     if (!gotPtr)
-        OpenGL_log << "Error: glRecti is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRecti is NULL " << std::endl;
     else
     {
         _ptr_to_glRecti = (void(API_ENTRY*)(GLint,GLint,GLint,GLint))gotPtr;
@@ -7992,7 +7995,7 @@ static void API_ENTRY _choose_glRectiv(const GLint* v1,const GLint* v2)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRectiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRectiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRectiv is NULL " << std::endl;
     else
     {
         _ptr_to_glRectiv = (void(API_ENTRY*)(const GLint*,const GLint*))gotPtr;
@@ -8005,7 +8008,7 @@ static void API_ENTRY _choose_glRects(GLshort x1,GLshort y1,GLshort x2,GLshort y
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRects");
     if (!gotPtr)
-        OpenGL_log << "Error: glRects is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRects is NULL " << std::endl;
     else
     {
         _ptr_to_glRects = (void(API_ENTRY*)(GLshort,GLshort,GLshort,GLshort))gotPtr;
@@ -8018,7 +8021,7 @@ static void API_ENTRY _choose_glRectsv(const GLshort* v1,const GLshort* v2)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRectsv");
     if (!gotPtr)
-        OpenGL_log << "Error: glRectsv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRectsv is NULL " << std::endl;
     else
     {
         _ptr_to_glRectsv = (void(API_ENTRY*)(const GLshort*,const GLshort*))gotPtr;
@@ -8031,7 +8034,7 @@ static void API_ENTRY _choose_glReleaseShaderCompiler()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glReleaseShaderCompiler");
     if (!gotPtr)
-        OpenGL_log << "Error: glReleaseShaderCompiler is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glReleaseShaderCompiler is NULL " << std::endl;
     else
     {
         _ptr_to_glReleaseShaderCompiler = (void(API_ENTRY*)())gotPtr;
@@ -8044,7 +8047,7 @@ static GLint API_ENTRY _choose_glRenderMode(GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRenderMode");
     if (!gotPtr)
-        OpenGL_log << "Error: glRenderMode is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRenderMode is NULL " << std::endl;
     else
     {
         _ptr_to_glRenderMode = (GLint(API_ENTRY*)(GLenum))gotPtr;
@@ -8057,7 +8060,7 @@ static void API_ENTRY _choose_glRenderbufferStorage(GLenum target,GLenum interna
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRenderbufferStorage");
     if (!gotPtr)
-        OpenGL_log << "Error: glRenderbufferStorage is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRenderbufferStorage is NULL " << std::endl;
     else
     {
         _ptr_to_glRenderbufferStorage = (void(API_ENTRY*)(GLenum,GLenum,GLsizei,GLsizei))gotPtr;
@@ -8070,7 +8073,7 @@ static void API_ENTRY _choose_glRenderbufferStorageEXT(GLenum target,GLenum inte
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRenderbufferStorageEXT");
     if (!gotPtr)
-        OpenGL_log << "Error: glRenderbufferStorageEXT is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRenderbufferStorageEXT is NULL " << std::endl;
     else
     {
         _ptr_to_glRenderbufferStorageEXT = (void(API_ENTRY*)(GLenum,GLenum,GLsizei,GLsizei))gotPtr;
@@ -8083,7 +8086,7 @@ static void API_ENTRY _choose_glRenderbufferStorageMultisample(GLenum target,GLs
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRenderbufferStorageMultisample");
     if (!gotPtr)
-        OpenGL_log << "Error: glRenderbufferStorageMultisample is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRenderbufferStorageMultisample is NULL " << std::endl;
     else
     {
         _ptr_to_glRenderbufferStorageMultisample = (void(API_ENTRY*)(GLenum,GLsizei,GLenum,GLsizei,GLsizei))gotPtr;
@@ -8096,7 +8099,7 @@ static void API_ENTRY _choose_glResumeTransformFeedback()
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glResumeTransformFeedback");
     if (!gotPtr)
-        OpenGL_log << "Error: glResumeTransformFeedback is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glResumeTransformFeedback is NULL " << std::endl;
     else
     {
         _ptr_to_glResumeTransformFeedback = (void(API_ENTRY*)())gotPtr;
@@ -8109,7 +8112,7 @@ static void API_ENTRY _choose_glRotated(GLdouble angle,GLdouble x,GLdouble y,GLd
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRotated");
     if (!gotPtr)
-        OpenGL_log << "Error: glRotated is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRotated is NULL " << std::endl;
     else
     {
         _ptr_to_glRotated = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -8122,7 +8125,7 @@ static void API_ENTRY _choose_glRotatef(GLfloat angle,GLfloat x,GLfloat y,GLfloa
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glRotatef");
     if (!gotPtr)
-        OpenGL_log << "Error: glRotatef is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glRotatef is NULL " << std::endl;
     else
     {
         _ptr_to_glRotatef = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -8135,7 +8138,7 @@ static void API_ENTRY _choose_glSampleCoverage(GLfloat value,GLboolean invert)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSampleCoverage");
     if (!gotPtr)
-        OpenGL_log << "Error: glSampleCoverage is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSampleCoverage is NULL " << std::endl;
     else
     {
         _ptr_to_glSampleCoverage = (void(API_ENTRY*)(GLfloat,GLboolean))gotPtr;
@@ -8148,7 +8151,7 @@ static void API_ENTRY _choose_glSampleMaski(GLuint index,GLbitfield mask)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSampleMaski");
     if (!gotPtr)
-        OpenGL_log << "Error: glSampleMaski is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSampleMaski is NULL " << std::endl;
     else
     {
         _ptr_to_glSampleMaski = (void(API_ENTRY*)(GLuint,GLbitfield))gotPtr;
@@ -8161,7 +8164,7 @@ static void API_ENTRY _choose_glSamplerParameterIiv(GLuint sampler,GLenum pname,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSamplerParameterIiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSamplerParameterIiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSamplerParameterIiv is NULL " << std::endl;
     else
     {
         _ptr_to_glSamplerParameterIiv = (void(API_ENTRY*)(GLuint,GLenum,const GLint*))gotPtr;
@@ -8174,7 +8177,7 @@ static void API_ENTRY _choose_glSamplerParameterIuiv(GLuint sampler,GLenum pname
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSamplerParameterIuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSamplerParameterIuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSamplerParameterIuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glSamplerParameterIuiv = (void(API_ENTRY*)(GLuint,GLenum,const GLuint*))gotPtr;
@@ -8187,7 +8190,7 @@ static void API_ENTRY _choose_glSamplerParameterf(GLuint sampler,GLenum pname,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSamplerParameterf");
     if (!gotPtr)
-        OpenGL_log << "Error: glSamplerParameterf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSamplerParameterf is NULL " << std::endl;
     else
     {
         _ptr_to_glSamplerParameterf = (void(API_ENTRY*)(GLuint,GLenum,GLfloat))gotPtr;
@@ -8200,7 +8203,7 @@ static void API_ENTRY _choose_glSamplerParameterfv(GLuint sampler,GLenum pname,c
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSamplerParameterfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSamplerParameterfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSamplerParameterfv is NULL " << std::endl;
     else
     {
         _ptr_to_glSamplerParameterfv = (void(API_ENTRY*)(GLuint,GLenum,const GLfloat*))gotPtr;
@@ -8213,7 +8216,7 @@ static void API_ENTRY _choose_glSamplerParameteri(GLuint sampler,GLenum pname,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSamplerParameteri");
     if (!gotPtr)
-        OpenGL_log << "Error: glSamplerParameteri is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSamplerParameteri is NULL " << std::endl;
     else
     {
         _ptr_to_glSamplerParameteri = (void(API_ENTRY*)(GLuint,GLenum,GLint))gotPtr;
@@ -8226,7 +8229,7 @@ static void API_ENTRY _choose_glSamplerParameteriv(GLuint sampler,GLenum pname,c
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSamplerParameteriv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSamplerParameteriv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSamplerParameteriv is NULL " << std::endl;
     else
     {
         _ptr_to_glSamplerParameteriv = (void(API_ENTRY*)(GLuint,GLenum,const GLint*))gotPtr;
@@ -8239,7 +8242,7 @@ static void API_ENTRY _choose_glScaled(GLdouble x,GLdouble y,GLdouble z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glScaled");
     if (!gotPtr)
-        OpenGL_log << "Error: glScaled is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glScaled is NULL " << std::endl;
     else
     {
         _ptr_to_glScaled = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble))gotPtr;
@@ -8252,7 +8255,7 @@ static void API_ENTRY _choose_glScalef(GLfloat x,GLfloat y,GLfloat z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glScalef");
     if (!gotPtr)
-        OpenGL_log << "Error: glScalef is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glScalef is NULL " << std::endl;
     else
     {
         _ptr_to_glScalef = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat))gotPtr;
@@ -8265,7 +8268,7 @@ static void API_ENTRY _choose_glScissor(GLint x,GLint y,GLsizei width,GLsizei he
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glScissor");
     if (!gotPtr)
-        OpenGL_log << "Error: glScissor is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glScissor is NULL " << std::endl;
     else
     {
         _ptr_to_glScissor = (void(API_ENTRY*)(GLint,GLint,GLsizei,GLsizei))gotPtr;
@@ -8278,7 +8281,7 @@ static void API_ENTRY _choose_glScissorArrayv(GLuint first,GLsizei count,const G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glScissorArrayv");
     if (!gotPtr)
-        OpenGL_log << "Error: glScissorArrayv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glScissorArrayv is NULL " << std::endl;
     else
     {
         _ptr_to_glScissorArrayv = (void(API_ENTRY*)(GLuint,GLsizei,const GLint*))gotPtr;
@@ -8291,7 +8294,7 @@ static void API_ENTRY _choose_glScissorIndexed(GLuint index,GLint left,GLint bot
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glScissorIndexed");
     if (!gotPtr)
-        OpenGL_log << "Error: glScissorIndexed is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glScissorIndexed is NULL " << std::endl;
     else
     {
         _ptr_to_glScissorIndexed = (void(API_ENTRY*)(GLuint,GLint,GLint,GLsizei,GLsizei))gotPtr;
@@ -8304,7 +8307,7 @@ static void API_ENTRY _choose_glScissorIndexedv(GLuint index,const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glScissorIndexedv");
     if (!gotPtr)
-        OpenGL_log << "Error: glScissorIndexedv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glScissorIndexedv is NULL " << std::endl;
     else
     {
         _ptr_to_glScissorIndexedv = (void(API_ENTRY*)(GLuint,const GLint*))gotPtr;
@@ -8317,7 +8320,7 @@ static void API_ENTRY _choose_glSecondaryColor3b(GLbyte red,GLbyte green,GLbyte 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3b");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3b is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3b is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3b = (void(API_ENTRY*)(GLbyte,GLbyte,GLbyte))gotPtr;
@@ -8330,7 +8333,7 @@ static void API_ENTRY _choose_glSecondaryColor3bv(const GLbyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3bv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3bv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3bv is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3bv = (void(API_ENTRY*)(const GLbyte*))gotPtr;
@@ -8343,7 +8346,7 @@ static void API_ENTRY _choose_glSecondaryColor3d(GLdouble red,GLdouble green,GLd
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3d is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3d = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble))gotPtr;
@@ -8356,7 +8359,7 @@ static void API_ENTRY _choose_glSecondaryColor3dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -8369,7 +8372,7 @@ static void API_ENTRY _choose_glSecondaryColor3f(GLfloat red,GLfloat green,GLflo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3f");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3f is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3f = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat))gotPtr;
@@ -8382,7 +8385,7 @@ static void API_ENTRY _choose_glSecondaryColor3fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -8395,7 +8398,7 @@ static void API_ENTRY _choose_glSecondaryColor3i(GLint red,GLint green,GLint blu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3i");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3i is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3i = (void(API_ENTRY*)(GLint,GLint,GLint))gotPtr;
@@ -8408,7 +8411,7 @@ static void API_ENTRY _choose_glSecondaryColor3iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3iv is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -8421,7 +8424,7 @@ static void API_ENTRY _choose_glSecondaryColor3s(GLshort red,GLshort green,GLsho
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3s");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3s is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3s = (void(API_ENTRY*)(GLshort,GLshort,GLshort))gotPtr;
@@ -8434,7 +8437,7 @@ static void API_ENTRY _choose_glSecondaryColor3sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3sv is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -8447,7 +8450,7 @@ static void API_ENTRY _choose_glSecondaryColor3ub(GLubyte red,GLubyte green,GLub
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3ub");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3ub is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3ub is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3ub = (void(API_ENTRY*)(GLubyte,GLubyte,GLubyte))gotPtr;
@@ -8460,7 +8463,7 @@ static void API_ENTRY _choose_glSecondaryColor3ubv(const GLubyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3ubv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3ubv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3ubv is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3ubv = (void(API_ENTRY*)(const GLubyte*))gotPtr;
@@ -8473,7 +8476,7 @@ static void API_ENTRY _choose_glSecondaryColor3ui(GLuint red,GLuint green,GLuint
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3ui = (void(API_ENTRY*)(GLuint,GLuint,GLuint))gotPtr;
@@ -8486,7 +8489,7 @@ static void API_ENTRY _choose_glSecondaryColor3uiv(const GLuint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3uiv = (void(API_ENTRY*)(const GLuint*))gotPtr;
@@ -8499,7 +8502,7 @@ static void API_ENTRY _choose_glSecondaryColor3us(GLushort red,GLushort green,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3us");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3us is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3us is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3us = (void(API_ENTRY*)(GLushort,GLushort,GLushort))gotPtr;
@@ -8512,7 +8515,7 @@ static void API_ENTRY _choose_glSecondaryColor3usv(const GLushort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColor3usv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColor3usv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColor3usv is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColor3usv = (void(API_ENTRY*)(const GLushort*))gotPtr;
@@ -8525,7 +8528,7 @@ static void API_ENTRY _choose_glSecondaryColorP3ui(GLenum type,GLuint color)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColorP3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColorP3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColorP3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColorP3ui = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -8538,7 +8541,7 @@ static void API_ENTRY _choose_glSecondaryColorP3uiv(GLenum type,const GLuint* co
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColorP3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColorP3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColorP3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColorP3uiv = (void(API_ENTRY*)(GLenum,const GLuint*))gotPtr;
@@ -8551,7 +8554,7 @@ static void API_ENTRY _choose_glSecondaryColorPointer(GLint size,GLenum type,GLs
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSecondaryColorPointer");
     if (!gotPtr)
-        OpenGL_log << "Error: glSecondaryColorPointer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSecondaryColorPointer is NULL " << std::endl;
     else
     {
         _ptr_to_glSecondaryColorPointer = (void(API_ENTRY*)(GLint,GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -8564,7 +8567,7 @@ static void API_ENTRY _choose_glSelectBuffer(GLsizei size,GLuint* buffer)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glSelectBuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glSelectBuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glSelectBuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glSelectBuffer = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
@@ -8577,7 +8580,7 @@ static void API_ENTRY _choose_glShadeModel(GLenum mode)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glShadeModel");
     if (!gotPtr)
-        OpenGL_log << "Error: glShadeModel is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glShadeModel is NULL " << std::endl;
     else
     {
         _ptr_to_glShadeModel = (void(API_ENTRY*)(GLenum))gotPtr;
@@ -8590,7 +8593,7 @@ static void API_ENTRY _choose_glShaderBinary(GLsizei count,const GLuint* shaders
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glShaderBinary");
     if (!gotPtr)
-        OpenGL_log << "Error: glShaderBinary is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glShaderBinary is NULL " << std::endl;
     else
     {
         _ptr_to_glShaderBinary = (void(API_ENTRY*)(GLsizei,const GLuint*,GLenum,const GLvoid*,GLsizei))gotPtr;
@@ -8603,7 +8606,7 @@ static void API_ENTRY _choose_glShaderSource(GLuint shader,GLsizei count,const G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glShaderSource");
     if (!gotPtr)
-        OpenGL_log << "Error: glShaderSource is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glShaderSource is NULL " << std::endl;
     else
     {
         _ptr_to_glShaderSource = (void(API_ENTRY*)(GLuint,GLsizei,const GLchar*const*,const GLint*))gotPtr;
@@ -8616,7 +8619,7 @@ static void API_ENTRY _choose_glShaderSourceARB(GLhandleARB shaderObj,GLsizei co
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glShaderSourceARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glShaderSourceARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glShaderSourceARB is NULL " << std::endl;
     else
     {
         _ptr_to_glShaderSourceARB = (void(API_ENTRY*)(GLhandleARB,GLsizei,const GLcharARB**,const GLint*))gotPtr;
@@ -8629,7 +8632,7 @@ static void API_ENTRY _choose_glStencilFunc(GLenum func,GLint ref,GLuint mask)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glStencilFunc");
     if (!gotPtr)
-        OpenGL_log << "Error: glStencilFunc is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glStencilFunc is NULL " << std::endl;
     else
     {
         _ptr_to_glStencilFunc = (void(API_ENTRY*)(GLenum,GLint,GLuint))gotPtr;
@@ -8642,7 +8645,7 @@ static void API_ENTRY _choose_glStencilFuncSeparate(GLenum face,GLenum func,GLin
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glStencilFuncSeparate");
     if (!gotPtr)
-        OpenGL_log << "Error: glStencilFuncSeparate is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glStencilFuncSeparate is NULL " << std::endl;
     else
     {
         _ptr_to_glStencilFuncSeparate = (void(API_ENTRY*)(GLenum,GLenum,GLint,GLuint))gotPtr;
@@ -8655,7 +8658,7 @@ static void API_ENTRY _choose_glStencilMask(GLuint mask)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glStencilMask");
     if (!gotPtr)
-        OpenGL_log << "Error: glStencilMask is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glStencilMask is NULL " << std::endl;
     else
     {
         _ptr_to_glStencilMask = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -8668,7 +8671,7 @@ static void API_ENTRY _choose_glStencilMaskSeparate(GLenum face,GLuint mask)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glStencilMaskSeparate");
     if (!gotPtr)
-        OpenGL_log << "Error: glStencilMaskSeparate is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glStencilMaskSeparate is NULL " << std::endl;
     else
     {
         _ptr_to_glStencilMaskSeparate = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -8681,7 +8684,7 @@ static void API_ENTRY _choose_glStencilOp(GLenum fail,GLenum zfail,GLenum zpass)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glStencilOp");
     if (!gotPtr)
-        OpenGL_log << "Error: glStencilOp is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glStencilOp is NULL " << std::endl;
     else
     {
         _ptr_to_glStencilOp = (void(API_ENTRY*)(GLenum,GLenum,GLenum))gotPtr;
@@ -8694,7 +8697,7 @@ static void API_ENTRY _choose_glStencilOpSeparate(GLenum face,GLenum sfail,GLenu
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glStencilOpSeparate");
     if (!gotPtr)
-        OpenGL_log << "Error: glStencilOpSeparate is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glStencilOpSeparate is NULL " << std::endl;
     else
     {
         _ptr_to_glStencilOpSeparate = (void(API_ENTRY*)(GLenum,GLenum,GLenum,GLenum))gotPtr;
@@ -8707,7 +8710,7 @@ static void API_ENTRY _choose_glTexBuffer(GLenum target,GLenum internalformat,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexBuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexBuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexBuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glTexBuffer = (void(API_ENTRY*)(GLenum,GLenum,GLuint))gotPtr;
@@ -8720,7 +8723,7 @@ static void API_ENTRY _choose_glTexCoord1d(GLdouble s)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord1d");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord1d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord1d is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord1d = (void(API_ENTRY*)(GLdouble))gotPtr;
@@ -8733,7 +8736,7 @@ static void API_ENTRY _choose_glTexCoord1dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord1dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord1dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord1dv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord1dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -8746,7 +8749,7 @@ static void API_ENTRY _choose_glTexCoord1f(GLfloat s)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord1f");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord1f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord1f is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord1f = (void(API_ENTRY*)(GLfloat))gotPtr;
@@ -8759,7 +8762,7 @@ static void API_ENTRY _choose_glTexCoord1fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord1fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord1fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord1fv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord1fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -8772,7 +8775,7 @@ static void API_ENTRY _choose_glTexCoord1i(GLint s)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord1i");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord1i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord1i is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord1i = (void(API_ENTRY*)(GLint))gotPtr;
@@ -8785,7 +8788,7 @@ static void API_ENTRY _choose_glTexCoord1iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord1iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord1iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord1iv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord1iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -8798,7 +8801,7 @@ static void API_ENTRY _choose_glTexCoord1s(GLshort s)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord1s");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord1s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord1s is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord1s = (void(API_ENTRY*)(GLshort))gotPtr;
@@ -8811,7 +8814,7 @@ static void API_ENTRY _choose_glTexCoord1sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord1sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord1sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord1sv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord1sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -8824,7 +8827,7 @@ static void API_ENTRY _choose_glTexCoord2d(GLdouble s,GLdouble t)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord2d is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord2d = (void(API_ENTRY*)(GLdouble,GLdouble))gotPtr;
@@ -8837,7 +8840,7 @@ static void API_ENTRY _choose_glTexCoord2dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord2dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -8850,7 +8853,7 @@ static void API_ENTRY _choose_glTexCoord2f(GLfloat s,GLfloat t)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord2f");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord2f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord2f is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord2f = (void(API_ENTRY*)(GLfloat,GLfloat))gotPtr;
@@ -8863,7 +8866,7 @@ static void API_ENTRY _choose_glTexCoord2fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord2fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -8876,7 +8879,7 @@ static void API_ENTRY _choose_glTexCoord2i(GLint s,GLint t)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord2i");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord2i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord2i is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord2i = (void(API_ENTRY*)(GLint,GLint))gotPtr;
@@ -8889,7 +8892,7 @@ static void API_ENTRY _choose_glTexCoord2iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord2iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord2iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord2iv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord2iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -8902,7 +8905,7 @@ static void API_ENTRY _choose_glTexCoord2s(GLshort s,GLshort t)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord2s");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord2s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord2s is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord2s = (void(API_ENTRY*)(GLshort,GLshort))gotPtr;
@@ -8915,7 +8918,7 @@ static void API_ENTRY _choose_glTexCoord2sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord2sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord2sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord2sv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord2sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -8928,7 +8931,7 @@ static void API_ENTRY _choose_glTexCoord3d(GLdouble s,GLdouble t,GLdouble r)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord3d is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord3d = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble))gotPtr;
@@ -8941,7 +8944,7 @@ static void API_ENTRY _choose_glTexCoord3dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord3dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -8954,7 +8957,7 @@ static void API_ENTRY _choose_glTexCoord3f(GLfloat s,GLfloat t,GLfloat r)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord3f");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord3f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord3f is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord3f = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat))gotPtr;
@@ -8967,7 +8970,7 @@ static void API_ENTRY _choose_glTexCoord3fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord3fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -8980,7 +8983,7 @@ static void API_ENTRY _choose_glTexCoord3i(GLint s,GLint t,GLint r)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord3i");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord3i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord3i is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord3i = (void(API_ENTRY*)(GLint,GLint,GLint))gotPtr;
@@ -8993,7 +8996,7 @@ static void API_ENTRY _choose_glTexCoord3iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord3iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord3iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord3iv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord3iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -9006,7 +9009,7 @@ static void API_ENTRY _choose_glTexCoord3s(GLshort s,GLshort t,GLshort r)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord3s");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord3s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord3s is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord3s = (void(API_ENTRY*)(GLshort,GLshort,GLshort))gotPtr;
@@ -9019,7 +9022,7 @@ static void API_ENTRY _choose_glTexCoord3sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord3sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord3sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord3sv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord3sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -9032,7 +9035,7 @@ static void API_ENTRY _choose_glTexCoord4d(GLdouble s,GLdouble t,GLdouble r,GLdo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord4d");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord4d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord4d is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord4d = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -9045,7 +9048,7 @@ static void API_ENTRY _choose_glTexCoord4dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord4dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -9058,7 +9061,7 @@ static void API_ENTRY _choose_glTexCoord4f(GLfloat s,GLfloat t,GLfloat r,GLfloat
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord4f");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord4f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord4f is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord4f = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -9071,7 +9074,7 @@ static void API_ENTRY _choose_glTexCoord4fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord4fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -9084,7 +9087,7 @@ static void API_ENTRY _choose_glTexCoord4i(GLint s,GLint t,GLint r,GLint q)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord4i");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord4i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord4i is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord4i = (void(API_ENTRY*)(GLint,GLint,GLint,GLint))gotPtr;
@@ -9097,7 +9100,7 @@ static void API_ENTRY _choose_glTexCoord4iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord4iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord4iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord4iv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord4iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -9110,7 +9113,7 @@ static void API_ENTRY _choose_glTexCoord4s(GLshort s,GLshort t,GLshort r,GLshort
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord4s");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord4s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord4s is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord4s = (void(API_ENTRY*)(GLshort,GLshort,GLshort,GLshort))gotPtr;
@@ -9123,7 +9126,7 @@ static void API_ENTRY _choose_glTexCoord4sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoord4sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoord4sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoord4sv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoord4sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -9136,7 +9139,7 @@ static void API_ENTRY _choose_glTexCoordP1ui(GLenum type,GLuint coords)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoordP1ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoordP1ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoordP1ui is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoordP1ui = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -9149,7 +9152,7 @@ static void API_ENTRY _choose_glTexCoordP1uiv(GLenum type,const GLuint* coords)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoordP1uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoordP1uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoordP1uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoordP1uiv = (void(API_ENTRY*)(GLenum,const GLuint*))gotPtr;
@@ -9162,7 +9165,7 @@ static void API_ENTRY _choose_glTexCoordP2ui(GLenum type,GLuint coords)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoordP2ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoordP2ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoordP2ui is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoordP2ui = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -9175,7 +9178,7 @@ static void API_ENTRY _choose_glTexCoordP2uiv(GLenum type,const GLuint* coords)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoordP2uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoordP2uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoordP2uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoordP2uiv = (void(API_ENTRY*)(GLenum,const GLuint*))gotPtr;
@@ -9188,7 +9191,7 @@ static void API_ENTRY _choose_glTexCoordP3ui(GLenum type,GLuint coords)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoordP3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoordP3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoordP3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoordP3ui = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -9201,7 +9204,7 @@ static void API_ENTRY _choose_glTexCoordP3uiv(GLenum type,const GLuint* coords)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoordP3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoordP3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoordP3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoordP3uiv = (void(API_ENTRY*)(GLenum,const GLuint*))gotPtr;
@@ -9214,7 +9217,7 @@ static void API_ENTRY _choose_glTexCoordP4ui(GLenum type,GLuint coords)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoordP4ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoordP4ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoordP4ui is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoordP4ui = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -9227,7 +9230,7 @@ static void API_ENTRY _choose_glTexCoordP4uiv(GLenum type,const GLuint* coords)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoordP4uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoordP4uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoordP4uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoordP4uiv = (void(API_ENTRY*)(GLenum,const GLuint*))gotPtr;
@@ -9240,7 +9243,7 @@ static void API_ENTRY _choose_glTexCoordPointer(GLint size,GLenum type,GLsizei s
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexCoordPointer");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexCoordPointer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexCoordPointer is NULL " << std::endl;
     else
     {
         _ptr_to_glTexCoordPointer = (void(API_ENTRY*)(GLint,GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -9253,7 +9256,7 @@ static void API_ENTRY _choose_glTexEnvf(GLenum target,GLenum pname,GLfloat param
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexEnvf");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexEnvf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexEnvf is NULL " << std::endl;
     else
     {
         _ptr_to_glTexEnvf = (void(API_ENTRY*)(GLenum,GLenum,GLfloat))gotPtr;
@@ -9266,7 +9269,7 @@ static void API_ENTRY _choose_glTexEnvfv(GLenum target,GLenum pname,const GLfloa
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexEnvfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexEnvfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexEnvfv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexEnvfv = (void(API_ENTRY*)(GLenum,GLenum,const GLfloat*))gotPtr;
@@ -9279,7 +9282,7 @@ static void API_ENTRY _choose_glTexEnvi(GLenum target,GLenum pname,GLint param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexEnvi");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexEnvi is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexEnvi is NULL " << std::endl;
     else
     {
         _ptr_to_glTexEnvi = (void(API_ENTRY*)(GLenum,GLenum,GLint))gotPtr;
@@ -9292,7 +9295,7 @@ static void API_ENTRY _choose_glTexEnviv(GLenum target,GLenum pname,const GLint*
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexEnviv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexEnviv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexEnviv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexEnviv = (void(API_ENTRY*)(GLenum,GLenum,const GLint*))gotPtr;
@@ -9305,7 +9308,7 @@ static void API_ENTRY _choose_glTexGend(GLenum coord,GLenum pname,GLdouble param
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexGend");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexGend is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexGend is NULL " << std::endl;
     else
     {
         _ptr_to_glTexGend = (void(API_ENTRY*)(GLenum,GLenum,GLdouble))gotPtr;
@@ -9318,7 +9321,7 @@ static void API_ENTRY _choose_glTexGendv(GLenum coord,GLenum pname,const GLdoubl
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexGendv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexGendv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexGendv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexGendv = (void(API_ENTRY*)(GLenum,GLenum,const GLdouble*))gotPtr;
@@ -9331,7 +9334,7 @@ static void API_ENTRY _choose_glTexGenf(GLenum coord,GLenum pname,GLfloat param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexGenf");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexGenf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexGenf is NULL " << std::endl;
     else
     {
         _ptr_to_glTexGenf = (void(API_ENTRY*)(GLenum,GLenum,GLfloat))gotPtr;
@@ -9344,7 +9347,7 @@ static void API_ENTRY _choose_glTexGenfv(GLenum coord,GLenum pname,const GLfloat
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexGenfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexGenfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexGenfv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexGenfv = (void(API_ENTRY*)(GLenum,GLenum,const GLfloat*))gotPtr;
@@ -9357,7 +9360,7 @@ static void API_ENTRY _choose_glTexGeni(GLenum coord,GLenum pname,GLint param)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexGeni");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexGeni is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexGeni is NULL " << std::endl;
     else
     {
         _ptr_to_glTexGeni = (void(API_ENTRY*)(GLenum,GLenum,GLint))gotPtr;
@@ -9370,7 +9373,7 @@ static void API_ENTRY _choose_glTexGeniv(GLenum coord,GLenum pname,const GLint* 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexGeniv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexGeniv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexGeniv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexGeniv = (void(API_ENTRY*)(GLenum,GLenum,const GLint*))gotPtr;
@@ -9383,7 +9386,7 @@ static void API_ENTRY _choose_glTexImage1D(GLenum target,GLint level,GLint inter
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexImage1D");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexImage1D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexImage1D is NULL " << std::endl;
     else
     {
         _ptr_to_glTexImage1D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLsizei,GLint,GLenum,GLenum,const GLvoid*))gotPtr;
@@ -9396,7 +9399,7 @@ static void API_ENTRY _choose_glTexImage2D(GLenum target,GLint level,GLint inter
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexImage2D");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexImage2D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexImage2D is NULL " << std::endl;
     else
     {
         _ptr_to_glTexImage2D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLsizei,GLsizei,GLint,GLenum,GLenum,const GLvoid*))gotPtr;
@@ -9409,7 +9412,7 @@ static void API_ENTRY _choose_glTexImage2DMultisample(GLenum target,GLsizei samp
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexImage2DMultisample");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexImage2DMultisample is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexImage2DMultisample is NULL " << std::endl;
     else
     {
         _ptr_to_glTexImage2DMultisample = (void(API_ENTRY*)(GLenum,GLsizei,GLint,GLsizei,GLsizei,GLboolean))gotPtr;
@@ -9422,7 +9425,7 @@ static void API_ENTRY _choose_glTexImage3D(GLenum target,GLint level,GLint inter
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexImage3D");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexImage3D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexImage3D is NULL " << std::endl;
     else
     {
         _ptr_to_glTexImage3D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLsizei,GLsizei,GLsizei,GLint,GLenum,GLenum,const GLvoid*))gotPtr;
@@ -9435,7 +9438,7 @@ static void API_ENTRY _choose_glTexImage3DMultisample(GLenum target,GLsizei samp
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexImage3DMultisample");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexImage3DMultisample is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexImage3DMultisample is NULL " << std::endl;
     else
     {
         _ptr_to_glTexImage3DMultisample = (void(API_ENTRY*)(GLenum,GLsizei,GLint,GLsizei,GLsizei,GLsizei,GLboolean))gotPtr;
@@ -9448,7 +9451,7 @@ static void API_ENTRY _choose_glTexParameterIiv(GLenum target,GLenum pname,const
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexParameterIiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexParameterIiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexParameterIiv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexParameterIiv = (void(API_ENTRY*)(GLenum,GLenum,const GLint*))gotPtr;
@@ -9461,7 +9464,7 @@ static void API_ENTRY _choose_glTexParameterIuiv(GLenum target,GLenum pname,cons
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexParameterIuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexParameterIuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexParameterIuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexParameterIuiv = (void(API_ENTRY*)(GLenum,GLenum,const GLuint*))gotPtr;
@@ -9474,7 +9477,7 @@ static void API_ENTRY _choose_glTexParameterf(GLenum target,GLenum pname,GLfloat
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexParameterf");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexParameterf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexParameterf is NULL " << std::endl;
     else
     {
         _ptr_to_glTexParameterf = (void(API_ENTRY*)(GLenum,GLenum,GLfloat))gotPtr;
@@ -9487,7 +9490,7 @@ static void API_ENTRY _choose_glTexParameterfv(GLenum target,GLenum pname,const 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexParameterfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexParameterfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexParameterfv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexParameterfv = (void(API_ENTRY*)(GLenum,GLenum,const GLfloat*))gotPtr;
@@ -9500,7 +9503,7 @@ static void API_ENTRY _choose_glTexParameteri(GLenum target,GLenum pname,GLint p
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexParameteri");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexParameteri is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexParameteri is NULL " << std::endl;
     else
     {
         _ptr_to_glTexParameteri = (void(API_ENTRY*)(GLenum,GLenum,GLint))gotPtr;
@@ -9513,7 +9516,7 @@ static void API_ENTRY _choose_glTexParameteriv(GLenum target,GLenum pname,const 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexParameteriv");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexParameteriv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexParameteriv is NULL " << std::endl;
     else
     {
         _ptr_to_glTexParameteriv = (void(API_ENTRY*)(GLenum,GLenum,const GLint*))gotPtr;
@@ -9526,7 +9529,7 @@ static void API_ENTRY _choose_glTexStorage1D(GLenum target,GLsizei levels,GLenum
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexStorage1D");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexStorage1D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexStorage1D is NULL " << std::endl;
     else
     {
         _ptr_to_glTexStorage1D = (void(API_ENTRY*)(GLenum,GLsizei,GLenum,GLsizei))gotPtr;
@@ -9539,7 +9542,7 @@ static void API_ENTRY _choose_glTexStorage2D(GLenum target,GLsizei levels,GLenum
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexStorage2D");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexStorage2D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexStorage2D is NULL " << std::endl;
     else
     {
         _ptr_to_glTexStorage2D = (void(API_ENTRY*)(GLenum,GLsizei,GLenum,GLsizei,GLsizei))gotPtr;
@@ -9552,7 +9555,7 @@ static void API_ENTRY _choose_glTexStorage3D(GLenum target,GLsizei levels,GLenum
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexStorage3D");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexStorage3D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexStorage3D is NULL " << std::endl;
     else
     {
         _ptr_to_glTexStorage3D = (void(API_ENTRY*)(GLenum,GLsizei,GLenum,GLsizei,GLsizei,GLsizei))gotPtr;
@@ -9565,7 +9568,7 @@ static void API_ENTRY _choose_glTexSubImage1D(GLenum target,GLint level,GLint xo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexSubImage1D");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexSubImage1D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexSubImage1D is NULL " << std::endl;
     else
     {
         _ptr_to_glTexSubImage1D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLsizei,GLenum,GLenum,const GLvoid*))gotPtr;
@@ -9578,7 +9581,7 @@ static void API_ENTRY _choose_glTexSubImage2D(GLenum target,GLint level,GLint xo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexSubImage2D");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexSubImage2D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexSubImage2D is NULL " << std::endl;
     else
     {
         _ptr_to_glTexSubImage2D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLint,GLsizei,GLsizei,GLenum,GLenum,const GLvoid*))gotPtr;
@@ -9591,7 +9594,7 @@ static void API_ENTRY _choose_glTexSubImage3D(GLenum target,GLint level,GLint xo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTexSubImage3D");
     if (!gotPtr)
-        OpenGL_log << "Error: glTexSubImage3D is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTexSubImage3D is NULL " << std::endl;
     else
     {
         _ptr_to_glTexSubImage3D = (void(API_ENTRY*)(GLenum,GLint,GLint,GLint,GLint,GLsizei,GLsizei,GLsizei,GLenum,GLenum,const GLvoid*))gotPtr;
@@ -9604,7 +9607,7 @@ static void API_ENTRY _choose_glTransformFeedbackVaryings(GLuint program,GLsizei
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTransformFeedbackVaryings");
     if (!gotPtr)
-        OpenGL_log << "Error: glTransformFeedbackVaryings is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTransformFeedbackVaryings is NULL " << std::endl;
     else
     {
         _ptr_to_glTransformFeedbackVaryings = (void(API_ENTRY*)(GLuint,GLsizei,const GLchar*const*,GLenum))gotPtr;
@@ -9617,7 +9620,7 @@ static void API_ENTRY _choose_glTranslated(GLdouble x,GLdouble y,GLdouble z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTranslated");
     if (!gotPtr)
-        OpenGL_log << "Error: glTranslated is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTranslated is NULL " << std::endl;
     else
     {
         _ptr_to_glTranslated = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble))gotPtr;
@@ -9630,7 +9633,7 @@ static void API_ENTRY _choose_glTranslatef(GLfloat x,GLfloat y,GLfloat z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glTranslatef");
     if (!gotPtr)
-        OpenGL_log << "Error: glTranslatef is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glTranslatef is NULL " << std::endl;
     else
     {
         _ptr_to_glTranslatef = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat))gotPtr;
@@ -9643,7 +9646,7 @@ static void API_ENTRY _choose_glUniform1d(GLint location,GLdouble x)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1d");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1d is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1d = (void(API_ENTRY*)(GLint,GLdouble))gotPtr;
@@ -9656,7 +9659,7 @@ static void API_ENTRY _choose_glUniform1dv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1dv = (void(API_ENTRY*)(GLint,GLsizei,const GLdouble*))gotPtr;
@@ -9669,7 +9672,7 @@ static void API_ENTRY _choose_glUniform1f(GLint location,GLfloat v0)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1f");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1f is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1f = (void(API_ENTRY*)(GLint,GLfloat))gotPtr;
@@ -9682,7 +9685,7 @@ static void API_ENTRY _choose_glUniform1fARB(GLint location,GLfloat v0)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1fARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1fARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1fARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1fARB = (void(API_ENTRY*)(GLint,GLfloat))gotPtr;
@@ -9695,7 +9698,7 @@ static void API_ENTRY _choose_glUniform1fv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1fv = (void(API_ENTRY*)(GLint,GLsizei,const GLfloat*))gotPtr;
@@ -9708,7 +9711,7 @@ static void API_ENTRY _choose_glUniform1fvARB(GLint location,GLsizei count,const
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1fvARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1fvARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1fvARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1fvARB = (void(API_ENTRY*)(GLint,GLsizei,const GLfloat*))gotPtr;
@@ -9721,7 +9724,7 @@ static void API_ENTRY _choose_glUniform1i(GLint location,GLint v0)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1i");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1i is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1i = (void(API_ENTRY*)(GLint,GLint))gotPtr;
@@ -9734,7 +9737,7 @@ static void API_ENTRY _choose_glUniform1iARB(GLint location,GLint v0)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1iARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1iARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1iARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1iARB = (void(API_ENTRY*)(GLint,GLint))gotPtr;
@@ -9747,7 +9750,7 @@ static void API_ENTRY _choose_glUniform1iv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1iv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1iv = (void(API_ENTRY*)(GLint,GLsizei,const GLint*))gotPtr;
@@ -9760,7 +9763,7 @@ static void API_ENTRY _choose_glUniform1ivARB(GLint location,GLsizei count,const
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1ivARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1ivARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1ivARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1ivARB = (void(API_ENTRY*)(GLint,GLsizei,const GLint*))gotPtr;
@@ -9773,7 +9776,7 @@ static void API_ENTRY _choose_glUniform1ui(GLint location,GLuint v0)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1ui is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1ui = (void(API_ENTRY*)(GLint,GLuint))gotPtr;
@@ -9786,7 +9789,7 @@ static void API_ENTRY _choose_glUniform1uiv(GLint location,GLsizei count,const G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform1uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform1uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform1uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform1uiv = (void(API_ENTRY*)(GLint,GLsizei,const GLuint*))gotPtr;
@@ -9799,7 +9802,7 @@ static void API_ENTRY _choose_glUniform2d(GLint location,GLdouble x,GLdouble y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2d is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2d = (void(API_ENTRY*)(GLint,GLdouble,GLdouble))gotPtr;
@@ -9812,7 +9815,7 @@ static void API_ENTRY _choose_glUniform2dv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2dv = (void(API_ENTRY*)(GLint,GLsizei,const GLdouble*))gotPtr;
@@ -9825,7 +9828,7 @@ static void API_ENTRY _choose_glUniform2f(GLint location,GLfloat v0,GLfloat v1)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2f");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2f is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2f = (void(API_ENTRY*)(GLint,GLfloat,GLfloat))gotPtr;
@@ -9838,7 +9841,7 @@ static void API_ENTRY _choose_glUniform2fARB(GLint location,GLfloat v0,GLfloat v
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2fARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2fARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2fARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2fARB = (void(API_ENTRY*)(GLint,GLfloat,GLfloat))gotPtr;
@@ -9851,7 +9854,7 @@ static void API_ENTRY _choose_glUniform2fv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2fv = (void(API_ENTRY*)(GLint,GLsizei,const GLfloat*))gotPtr;
@@ -9864,7 +9867,7 @@ static void API_ENTRY _choose_glUniform2fvARB(GLint location,GLsizei count,const
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2fvARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2fvARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2fvARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2fvARB = (void(API_ENTRY*)(GLint,GLsizei,const GLfloat*))gotPtr;
@@ -9877,7 +9880,7 @@ static void API_ENTRY _choose_glUniform2i(GLint location,GLint v0,GLint v1)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2i");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2i is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2i = (void(API_ENTRY*)(GLint,GLint,GLint))gotPtr;
@@ -9890,7 +9893,7 @@ static void API_ENTRY _choose_glUniform2iARB(GLint location,GLint v0,GLint v1)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2iARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2iARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2iARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2iARB = (void(API_ENTRY*)(GLint,GLint,GLint))gotPtr;
@@ -9903,7 +9906,7 @@ static void API_ENTRY _choose_glUniform2iv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2iv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2iv = (void(API_ENTRY*)(GLint,GLsizei,const GLint*))gotPtr;
@@ -9916,7 +9919,7 @@ static void API_ENTRY _choose_glUniform2ivARB(GLint location,GLsizei count,const
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2ivARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2ivARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2ivARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2ivARB = (void(API_ENTRY*)(GLint,GLsizei,const GLint*))gotPtr;
@@ -9929,7 +9932,7 @@ static void API_ENTRY _choose_glUniform2ui(GLint location,GLuint v0,GLuint v1)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2ui is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2ui = (void(API_ENTRY*)(GLint,GLuint,GLuint))gotPtr;
@@ -9942,7 +9945,7 @@ static void API_ENTRY _choose_glUniform2uiv(GLint location,GLsizei count,const G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform2uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform2uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform2uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform2uiv = (void(API_ENTRY*)(GLint,GLsizei,const GLuint*))gotPtr;
@@ -9955,7 +9958,7 @@ static void API_ENTRY _choose_glUniform3d(GLint location,GLdouble x,GLdouble y,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3d is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3d = (void(API_ENTRY*)(GLint,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -9968,7 +9971,7 @@ static void API_ENTRY _choose_glUniform3dv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3dv = (void(API_ENTRY*)(GLint,GLsizei,const GLdouble*))gotPtr;
@@ -9981,7 +9984,7 @@ static void API_ENTRY _choose_glUniform3f(GLint location,GLfloat v0,GLfloat v1,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3f");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3f is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3f = (void(API_ENTRY*)(GLint,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -9994,7 +9997,7 @@ static void API_ENTRY _choose_glUniform3fARB(GLint location,GLfloat v0,GLfloat v
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3fARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3fARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3fARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3fARB = (void(API_ENTRY*)(GLint,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -10007,7 +10010,7 @@ static void API_ENTRY _choose_glUniform3fv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3fv = (void(API_ENTRY*)(GLint,GLsizei,const GLfloat*))gotPtr;
@@ -10020,7 +10023,7 @@ static void API_ENTRY _choose_glUniform3fvARB(GLint location,GLsizei count,const
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3fvARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3fvARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3fvARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3fvARB = (void(API_ENTRY*)(GLint,GLsizei,const GLfloat*))gotPtr;
@@ -10033,7 +10036,7 @@ static void API_ENTRY _choose_glUniform3i(GLint location,GLint v0,GLint v1,GLint
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3i");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3i is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3i = (void(API_ENTRY*)(GLint,GLint,GLint,GLint))gotPtr;
@@ -10046,7 +10049,7 @@ static void API_ENTRY _choose_glUniform3iARB(GLint location,GLint v0,GLint v1,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3iARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3iARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3iARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3iARB = (void(API_ENTRY*)(GLint,GLint,GLint,GLint))gotPtr;
@@ -10059,7 +10062,7 @@ static void API_ENTRY _choose_glUniform3iv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3iv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3iv = (void(API_ENTRY*)(GLint,GLsizei,const GLint*))gotPtr;
@@ -10072,7 +10075,7 @@ static void API_ENTRY _choose_glUniform3ivARB(GLint location,GLsizei count,const
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3ivARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3ivARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3ivARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3ivARB = (void(API_ENTRY*)(GLint,GLsizei,const GLint*))gotPtr;
@@ -10085,7 +10088,7 @@ static void API_ENTRY _choose_glUniform3ui(GLint location,GLuint v0,GLuint v1,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3ui = (void(API_ENTRY*)(GLint,GLuint,GLuint,GLuint))gotPtr;
@@ -10098,7 +10101,7 @@ static void API_ENTRY _choose_glUniform3uiv(GLint location,GLsizei count,const G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform3uiv = (void(API_ENTRY*)(GLint,GLsizei,const GLuint*))gotPtr;
@@ -10111,7 +10114,7 @@ static void API_ENTRY _choose_glUniform4d(GLint location,GLdouble x,GLdouble y,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4d");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4d is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4d = (void(API_ENTRY*)(GLint,GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -10124,7 +10127,7 @@ static void API_ENTRY _choose_glUniform4dv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4dv = (void(API_ENTRY*)(GLint,GLsizei,const GLdouble*))gotPtr;
@@ -10137,7 +10140,7 @@ static void API_ENTRY _choose_glUniform4f(GLint location,GLfloat v0,GLfloat v1,G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4f");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4f is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4f = (void(API_ENTRY*)(GLint,GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -10150,7 +10153,7 @@ static void API_ENTRY _choose_glUniform4fARB(GLint location,GLfloat v0,GLfloat v
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4fARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4fARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4fARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4fARB = (void(API_ENTRY*)(GLint,GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -10163,7 +10166,7 @@ static void API_ENTRY _choose_glUniform4fv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4fv = (void(API_ENTRY*)(GLint,GLsizei,const GLfloat*))gotPtr;
@@ -10176,7 +10179,7 @@ static void API_ENTRY _choose_glUniform4fvARB(GLint location,GLsizei count,const
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4fvARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4fvARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4fvARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4fvARB = (void(API_ENTRY*)(GLint,GLsizei,const GLfloat*))gotPtr;
@@ -10189,7 +10192,7 @@ static void API_ENTRY _choose_glUniform4i(GLint location,GLint v0,GLint v1,GLint
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4i");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4i is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4i = (void(API_ENTRY*)(GLint,GLint,GLint,GLint,GLint))gotPtr;
@@ -10202,7 +10205,7 @@ static void API_ENTRY _choose_glUniform4iARB(GLint location,GLint v0,GLint v1,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4iARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4iARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4iARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4iARB = (void(API_ENTRY*)(GLint,GLint,GLint,GLint,GLint))gotPtr;
@@ -10215,7 +10218,7 @@ static void API_ENTRY _choose_glUniform4iv(GLint location,GLsizei count,const GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4iv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4iv = (void(API_ENTRY*)(GLint,GLsizei,const GLint*))gotPtr;
@@ -10228,7 +10231,7 @@ static void API_ENTRY _choose_glUniform4ivARB(GLint location,GLsizei count,const
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4ivARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4ivARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4ivARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4ivARB = (void(API_ENTRY*)(GLint,GLsizei,const GLint*))gotPtr;
@@ -10241,7 +10244,7 @@ static void API_ENTRY _choose_glUniform4ui(GLint location,GLuint v0,GLuint v1,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4ui is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4ui = (void(API_ENTRY*)(GLint,GLuint,GLuint,GLuint,GLuint))gotPtr;
@@ -10254,7 +10257,7 @@ static void API_ENTRY _choose_glUniform4uiv(GLint location,GLsizei count,const G
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniform4uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniform4uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniform4uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniform4uiv = (void(API_ENTRY*)(GLint,GLsizei,const GLuint*))gotPtr;
@@ -10267,7 +10270,7 @@ static void API_ENTRY _choose_glUniformBlockBinding(GLuint program,GLuint unifor
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformBlockBinding");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformBlockBinding is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformBlockBinding is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformBlockBinding = (void(API_ENTRY*)(GLuint,GLuint,GLuint))gotPtr;
@@ -10280,7 +10283,7 @@ static void API_ENTRY _choose_glUniformMatrix2dv(GLint location,GLsizei count,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix2dv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -10293,7 +10296,7 @@ static void API_ENTRY _choose_glUniformMatrix2fv(GLint location,GLsizei count,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix2fv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10306,7 +10309,7 @@ static void API_ENTRY _choose_glUniformMatrix2fvARB(GLint location,GLsizei count
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix2fvARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix2fvARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix2fvARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix2fvARB = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10319,7 +10322,7 @@ static void API_ENTRY _choose_glUniformMatrix2x3dv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix2x3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix2x3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix2x3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix2x3dv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -10332,7 +10335,7 @@ static void API_ENTRY _choose_glUniformMatrix2x3fv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix2x3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix2x3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix2x3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix2x3fv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10345,7 +10348,7 @@ static void API_ENTRY _choose_glUniformMatrix2x4dv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix2x4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix2x4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix2x4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix2x4dv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -10358,7 +10361,7 @@ static void API_ENTRY _choose_glUniformMatrix2x4fv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix2x4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix2x4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix2x4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix2x4fv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10371,7 +10374,7 @@ static void API_ENTRY _choose_glUniformMatrix3dv(GLint location,GLsizei count,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix3dv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -10384,7 +10387,7 @@ static void API_ENTRY _choose_glUniformMatrix3fv(GLint location,GLsizei count,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix3fv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10397,7 +10400,7 @@ static void API_ENTRY _choose_glUniformMatrix3fvARB(GLint location,GLsizei count
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix3fvARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix3fvARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix3fvARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix3fvARB = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10410,7 +10413,7 @@ static void API_ENTRY _choose_glUniformMatrix3x2dv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix3x2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix3x2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix3x2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix3x2dv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -10423,7 +10426,7 @@ static void API_ENTRY _choose_glUniformMatrix3x2fv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix3x2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix3x2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix3x2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix3x2fv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10436,7 +10439,7 @@ static void API_ENTRY _choose_glUniformMatrix3x4dv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix3x4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix3x4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix3x4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix3x4dv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -10449,7 +10452,7 @@ static void API_ENTRY _choose_glUniformMatrix3x4fv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix3x4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix3x4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix3x4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix3x4fv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10462,7 +10465,7 @@ static void API_ENTRY _choose_glUniformMatrix4dv(GLint location,GLsizei count,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix4dv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -10475,7 +10478,7 @@ static void API_ENTRY _choose_glUniformMatrix4fv(GLint location,GLsizei count,GL
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix4fv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10488,7 +10491,7 @@ static void API_ENTRY _choose_glUniformMatrix4fvARB(GLint location,GLsizei count
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix4fvARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix4fvARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix4fvARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix4fvARB = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10501,7 +10504,7 @@ static void API_ENTRY _choose_glUniformMatrix4x2dv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix4x2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix4x2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix4x2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix4x2dv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -10514,7 +10517,7 @@ static void API_ENTRY _choose_glUniformMatrix4x2fv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix4x2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix4x2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix4x2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix4x2fv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10527,7 +10530,7 @@ static void API_ENTRY _choose_glUniformMatrix4x3dv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix4x3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix4x3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix4x3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix4x3dv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLdouble*))gotPtr;
@@ -10540,7 +10543,7 @@ static void API_ENTRY _choose_glUniformMatrix4x3fv(GLint location,GLsizei count,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformMatrix4x3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformMatrix4x3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformMatrix4x3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformMatrix4x3fv = (void(API_ENTRY*)(GLint,GLsizei,GLboolean,const GLfloat*))gotPtr;
@@ -10553,7 +10556,7 @@ static void API_ENTRY _choose_glUniformSubroutinesuiv(GLenum shadertype,GLsizei 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUniformSubroutinesuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glUniformSubroutinesuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUniformSubroutinesuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glUniformSubroutinesuiv = (void(API_ENTRY*)(GLenum,GLsizei,const GLuint*))gotPtr;
@@ -10566,7 +10569,7 @@ static GLboolean API_ENTRY _choose_glUnmapBuffer(GLenum target)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUnmapBuffer");
     if (!gotPtr)
-        OpenGL_log << "Error: glUnmapBuffer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUnmapBuffer is NULL " << std::endl;
     else
     {
         _ptr_to_glUnmapBuffer = (GLboolean(API_ENTRY*)(GLenum))gotPtr;
@@ -10579,7 +10582,7 @@ static GLboolean API_ENTRY _choose_glUnmapBufferARB(GLenum target)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUnmapBufferARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUnmapBufferARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUnmapBufferARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUnmapBufferARB = (GLboolean(API_ENTRY*)(GLenum))gotPtr;
@@ -10592,7 +10595,7 @@ static void API_ENTRY _choose_glUseProgram(GLuint program)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUseProgram");
     if (!gotPtr)
-        OpenGL_log << "Error: glUseProgram is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUseProgram is NULL " << std::endl;
     else
     {
         _ptr_to_glUseProgram = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -10605,7 +10608,7 @@ static void API_ENTRY _choose_glUseProgramObjectARB(GLhandleARB programObj)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUseProgramObjectARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glUseProgramObjectARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUseProgramObjectARB is NULL " << std::endl;
     else
     {
         _ptr_to_glUseProgramObjectARB = (void(API_ENTRY*)(GLhandleARB))gotPtr;
@@ -10618,7 +10621,7 @@ static void API_ENTRY _choose_glUseProgramStages(GLuint pipeline,GLbitfield stag
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glUseProgramStages");
     if (!gotPtr)
-        OpenGL_log << "Error: glUseProgramStages is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glUseProgramStages is NULL " << std::endl;
     else
     {
         _ptr_to_glUseProgramStages = (void(API_ENTRY*)(GLuint,GLbitfield,GLuint))gotPtr;
@@ -10631,7 +10634,7 @@ static void API_ENTRY _choose_glValidateProgram(GLuint program)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glValidateProgram");
     if (!gotPtr)
-        OpenGL_log << "Error: glValidateProgram is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glValidateProgram is NULL " << std::endl;
     else
     {
         _ptr_to_glValidateProgram = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -10644,7 +10647,7 @@ static void API_ENTRY _choose_glValidateProgramARB(GLhandleARB programObj)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glValidateProgramARB");
     if (!gotPtr)
-        OpenGL_log << "Error: glValidateProgramARB is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glValidateProgramARB is NULL " << std::endl;
     else
     {
         _ptr_to_glValidateProgramARB = (void(API_ENTRY*)(GLhandleARB))gotPtr;
@@ -10657,7 +10660,7 @@ static void API_ENTRY _choose_glValidateProgramPipeline(GLuint pipeline)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glValidateProgramPipeline");
     if (!gotPtr)
-        OpenGL_log << "Error: glValidateProgramPipeline is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glValidateProgramPipeline is NULL " << std::endl;
     else
     {
         _ptr_to_glValidateProgramPipeline = (void(API_ENTRY*)(GLuint))gotPtr;
@@ -10670,7 +10673,7 @@ static void API_ENTRY _choose_glVertex2d(GLdouble x,GLdouble y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex2d is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex2d = (void(API_ENTRY*)(GLdouble,GLdouble))gotPtr;
@@ -10683,7 +10686,7 @@ static void API_ENTRY _choose_glVertex2dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex2dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -10696,7 +10699,7 @@ static void API_ENTRY _choose_glVertex2f(GLfloat x,GLfloat y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex2f");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex2f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex2f is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex2f = (void(API_ENTRY*)(GLfloat,GLfloat))gotPtr;
@@ -10709,7 +10712,7 @@ static void API_ENTRY _choose_glVertex2fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex2fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -10722,7 +10725,7 @@ static void API_ENTRY _choose_glVertex2i(GLint x,GLint y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex2i");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex2i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex2i is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex2i = (void(API_ENTRY*)(GLint,GLint))gotPtr;
@@ -10735,7 +10738,7 @@ static void API_ENTRY _choose_glVertex2iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex2iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex2iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex2iv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex2iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -10748,7 +10751,7 @@ static void API_ENTRY _choose_glVertex2s(GLshort x,GLshort y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex2s");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex2s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex2s is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex2s = (void(API_ENTRY*)(GLshort,GLshort))gotPtr;
@@ -10761,7 +10764,7 @@ static void API_ENTRY _choose_glVertex2sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex2sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex2sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex2sv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex2sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -10774,7 +10777,7 @@ static void API_ENTRY _choose_glVertex3d(GLdouble x,GLdouble y,GLdouble z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex3d is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex3d = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble))gotPtr;
@@ -10787,7 +10790,7 @@ static void API_ENTRY _choose_glVertex3dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex3dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -10800,7 +10803,7 @@ static void API_ENTRY _choose_glVertex3f(GLfloat x,GLfloat y,GLfloat z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex3f");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex3f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex3f is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex3f = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat))gotPtr;
@@ -10813,7 +10816,7 @@ static void API_ENTRY _choose_glVertex3fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex3fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -10826,7 +10829,7 @@ static void API_ENTRY _choose_glVertex3i(GLint x,GLint y,GLint z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex3i");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex3i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex3i is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex3i = (void(API_ENTRY*)(GLint,GLint,GLint))gotPtr;
@@ -10839,7 +10842,7 @@ static void API_ENTRY _choose_glVertex3iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex3iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex3iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex3iv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex3iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -10852,7 +10855,7 @@ static void API_ENTRY _choose_glVertex3s(GLshort x,GLshort y,GLshort z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex3s");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex3s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex3s is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex3s = (void(API_ENTRY*)(GLshort,GLshort,GLshort))gotPtr;
@@ -10865,7 +10868,7 @@ static void API_ENTRY _choose_glVertex3sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex3sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex3sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex3sv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex3sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -10878,7 +10881,7 @@ static void API_ENTRY _choose_glVertex4d(GLdouble x,GLdouble y,GLdouble z,GLdoub
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex4d");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex4d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex4d is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex4d = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -10891,7 +10894,7 @@ static void API_ENTRY _choose_glVertex4dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex4dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -10904,7 +10907,7 @@ static void API_ENTRY _choose_glVertex4f(GLfloat x,GLfloat y,GLfloat z,GLfloat w
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex4f");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex4f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex4f is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex4f = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -10917,7 +10920,7 @@ static void API_ENTRY _choose_glVertex4fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex4fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -10930,7 +10933,7 @@ static void API_ENTRY _choose_glVertex4i(GLint x,GLint y,GLint z,GLint w)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex4i");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex4i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex4i is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex4i = (void(API_ENTRY*)(GLint,GLint,GLint,GLint))gotPtr;
@@ -10943,7 +10946,7 @@ static void API_ENTRY _choose_glVertex4iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex4iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex4iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex4iv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex4iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -10956,7 +10959,7 @@ static void API_ENTRY _choose_glVertex4s(GLshort x,GLshort y,GLshort z,GLshort w
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex4s");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex4s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex4s is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex4s = (void(API_ENTRY*)(GLshort,GLshort,GLshort,GLshort))gotPtr;
@@ -10969,7 +10972,7 @@ static void API_ENTRY _choose_glVertex4sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertex4sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertex4sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertex4sv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertex4sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -10982,7 +10985,7 @@ static void API_ENTRY _choose_glVertexAttrib1d(GLuint index,GLdouble x)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib1d");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib1d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib1d is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib1d = (void(API_ENTRY*)(GLuint,GLdouble))gotPtr;
@@ -10995,7 +10998,7 @@ static void API_ENTRY _choose_glVertexAttrib1dv(GLuint index,const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib1dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib1dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib1dv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib1dv = (void(API_ENTRY*)(GLuint,const GLdouble*))gotPtr;
@@ -11008,7 +11011,7 @@ static void API_ENTRY _choose_glVertexAttrib1f(GLuint index,GLfloat x)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib1f");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib1f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib1f is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib1f = (void(API_ENTRY*)(GLuint,GLfloat))gotPtr;
@@ -11021,7 +11024,7 @@ static void API_ENTRY _choose_glVertexAttrib1fv(GLuint index,const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib1fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib1fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib1fv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib1fv = (void(API_ENTRY*)(GLuint,const GLfloat*))gotPtr;
@@ -11034,7 +11037,7 @@ static void API_ENTRY _choose_glVertexAttrib1s(GLuint index,GLshort x)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib1s");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib1s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib1s is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib1s = (void(API_ENTRY*)(GLuint,GLshort))gotPtr;
@@ -11047,7 +11050,7 @@ static void API_ENTRY _choose_glVertexAttrib1sv(GLuint index,const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib1sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib1sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib1sv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib1sv = (void(API_ENTRY*)(GLuint,const GLshort*))gotPtr;
@@ -11060,7 +11063,7 @@ static void API_ENTRY _choose_glVertexAttrib2d(GLuint index,GLdouble x,GLdouble 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib2d is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib2d = (void(API_ENTRY*)(GLuint,GLdouble,GLdouble))gotPtr;
@@ -11073,7 +11076,7 @@ static void API_ENTRY _choose_glVertexAttrib2dv(GLuint index,const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib2dv = (void(API_ENTRY*)(GLuint,const GLdouble*))gotPtr;
@@ -11086,7 +11089,7 @@ static void API_ENTRY _choose_glVertexAttrib2f(GLuint index,GLfloat x,GLfloat y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib2f");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib2f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib2f is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib2f = (void(API_ENTRY*)(GLuint,GLfloat,GLfloat))gotPtr;
@@ -11099,7 +11102,7 @@ static void API_ENTRY _choose_glVertexAttrib2fv(GLuint index,const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib2fv = (void(API_ENTRY*)(GLuint,const GLfloat*))gotPtr;
@@ -11112,7 +11115,7 @@ static void API_ENTRY _choose_glVertexAttrib2s(GLuint index,GLshort x,GLshort y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib2s");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib2s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib2s is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib2s = (void(API_ENTRY*)(GLuint,GLshort,GLshort))gotPtr;
@@ -11125,7 +11128,7 @@ static void API_ENTRY _choose_glVertexAttrib2sv(GLuint index,const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib2sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib2sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib2sv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib2sv = (void(API_ENTRY*)(GLuint,const GLshort*))gotPtr;
@@ -11138,7 +11141,7 @@ static void API_ENTRY _choose_glVertexAttrib3d(GLuint index,GLdouble x,GLdouble 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib3d is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib3d = (void(API_ENTRY*)(GLuint,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -11151,7 +11154,7 @@ static void API_ENTRY _choose_glVertexAttrib3dv(GLuint index,const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib3dv = (void(API_ENTRY*)(GLuint,const GLdouble*))gotPtr;
@@ -11164,7 +11167,7 @@ static void API_ENTRY _choose_glVertexAttrib3f(GLuint index,GLfloat x,GLfloat y,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib3f");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib3f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib3f is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib3f = (void(API_ENTRY*)(GLuint,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -11177,7 +11180,7 @@ static void API_ENTRY _choose_glVertexAttrib3fv(GLuint index,const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib3fv = (void(API_ENTRY*)(GLuint,const GLfloat*))gotPtr;
@@ -11190,7 +11193,7 @@ static void API_ENTRY _choose_glVertexAttrib3s(GLuint index,GLshort x,GLshort y,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib3s");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib3s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib3s is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib3s = (void(API_ENTRY*)(GLuint,GLshort,GLshort,GLshort))gotPtr;
@@ -11203,7 +11206,7 @@ static void API_ENTRY _choose_glVertexAttrib3sv(GLuint index,const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib3sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib3sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib3sv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib3sv = (void(API_ENTRY*)(GLuint,const GLshort*))gotPtr;
@@ -11216,7 +11219,7 @@ static void API_ENTRY _choose_glVertexAttrib4Nbv(GLuint index,const GLbyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4Nbv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4Nbv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4Nbv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4Nbv = (void(API_ENTRY*)(GLuint,const GLbyte*))gotPtr;
@@ -11229,7 +11232,7 @@ static void API_ENTRY _choose_glVertexAttrib4Niv(GLuint index,const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4Niv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4Niv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4Niv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4Niv = (void(API_ENTRY*)(GLuint,const GLint*))gotPtr;
@@ -11242,7 +11245,7 @@ static void API_ENTRY _choose_glVertexAttrib4Nsv(GLuint index,const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4Nsv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4Nsv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4Nsv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4Nsv = (void(API_ENTRY*)(GLuint,const GLshort*))gotPtr;
@@ -11255,7 +11258,7 @@ static void API_ENTRY _choose_glVertexAttrib4Nub(GLuint index,GLubyte x,GLubyte 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4Nub");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4Nub is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4Nub is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4Nub = (void(API_ENTRY*)(GLuint,GLubyte,GLubyte,GLubyte,GLubyte))gotPtr;
@@ -11268,7 +11271,7 @@ static void API_ENTRY _choose_glVertexAttrib4Nubv(GLuint index,const GLubyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4Nubv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4Nubv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4Nubv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4Nubv = (void(API_ENTRY*)(GLuint,const GLubyte*))gotPtr;
@@ -11281,7 +11284,7 @@ static void API_ENTRY _choose_glVertexAttrib4Nuiv(GLuint index,const GLuint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4Nuiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4Nuiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4Nuiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4Nuiv = (void(API_ENTRY*)(GLuint,const GLuint*))gotPtr;
@@ -11294,7 +11297,7 @@ static void API_ENTRY _choose_glVertexAttrib4Nusv(GLuint index,const GLushort* v
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4Nusv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4Nusv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4Nusv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4Nusv = (void(API_ENTRY*)(GLuint,const GLushort*))gotPtr;
@@ -11307,7 +11310,7 @@ static void API_ENTRY _choose_glVertexAttrib4bv(GLuint index,const GLbyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4bv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4bv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4bv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4bv = (void(API_ENTRY*)(GLuint,const GLbyte*))gotPtr;
@@ -11320,7 +11323,7 @@ static void API_ENTRY _choose_glVertexAttrib4d(GLuint index,GLdouble x,GLdouble 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4d");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4d is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4d = (void(API_ENTRY*)(GLuint,GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -11333,7 +11336,7 @@ static void API_ENTRY _choose_glVertexAttrib4dv(GLuint index,const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4dv = (void(API_ENTRY*)(GLuint,const GLdouble*))gotPtr;
@@ -11346,7 +11349,7 @@ static void API_ENTRY _choose_glVertexAttrib4f(GLuint index,GLfloat x,GLfloat y,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4f");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4f is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4f = (void(API_ENTRY*)(GLuint,GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -11359,7 +11362,7 @@ static void API_ENTRY _choose_glVertexAttrib4fv(GLuint index,const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4fv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4fv = (void(API_ENTRY*)(GLuint,const GLfloat*))gotPtr;
@@ -11372,7 +11375,7 @@ static void API_ENTRY _choose_glVertexAttrib4iv(GLuint index,const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4iv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4iv = (void(API_ENTRY*)(GLuint,const GLint*))gotPtr;
@@ -11385,7 +11388,7 @@ static void API_ENTRY _choose_glVertexAttrib4s(GLuint index,GLshort x,GLshort y,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4s");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4s is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4s = (void(API_ENTRY*)(GLuint,GLshort,GLshort,GLshort,GLshort))gotPtr;
@@ -11398,7 +11401,7 @@ static void API_ENTRY _choose_glVertexAttrib4sv(GLuint index,const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4sv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4sv = (void(API_ENTRY*)(GLuint,const GLshort*))gotPtr;
@@ -11411,7 +11414,7 @@ static void API_ENTRY _choose_glVertexAttrib4ubv(GLuint index,const GLubyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4ubv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4ubv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4ubv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4ubv = (void(API_ENTRY*)(GLuint,const GLubyte*))gotPtr;
@@ -11424,7 +11427,7 @@ static void API_ENTRY _choose_glVertexAttrib4uiv(GLuint index,const GLuint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4uiv = (void(API_ENTRY*)(GLuint,const GLuint*))gotPtr;
@@ -11437,7 +11440,7 @@ static void API_ENTRY _choose_glVertexAttrib4usv(GLuint index,const GLushort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttrib4usv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttrib4usv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttrib4usv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttrib4usv = (void(API_ENTRY*)(GLuint,const GLushort*))gotPtr;
@@ -11450,7 +11453,7 @@ static void API_ENTRY _choose_glVertexAttribDivisor(GLuint index,GLuint divisor)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribDivisor");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribDivisor is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribDivisor is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribDivisor = (void(API_ENTRY*)(GLuint,GLuint))gotPtr;
@@ -11463,7 +11466,7 @@ static void API_ENTRY _choose_glVertexAttribI1i(GLuint index,GLint x)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI1i");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI1i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI1i is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI1i = (void(API_ENTRY*)(GLuint,GLint))gotPtr;
@@ -11476,7 +11479,7 @@ static void API_ENTRY _choose_glVertexAttribI1iv(GLuint index,const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI1iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI1iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI1iv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI1iv = (void(API_ENTRY*)(GLuint,const GLint*))gotPtr;
@@ -11489,7 +11492,7 @@ static void API_ENTRY _choose_glVertexAttribI1ui(GLuint index,GLuint x)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI1ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI1ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI1ui is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI1ui = (void(API_ENTRY*)(GLuint,GLuint))gotPtr;
@@ -11502,7 +11505,7 @@ static void API_ENTRY _choose_glVertexAttribI1uiv(GLuint index,const GLuint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI1uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI1uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI1uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI1uiv = (void(API_ENTRY*)(GLuint,const GLuint*))gotPtr;
@@ -11515,7 +11518,7 @@ static void API_ENTRY _choose_glVertexAttribI2i(GLuint index,GLint x,GLint y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI2i");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI2i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI2i is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI2i = (void(API_ENTRY*)(GLuint,GLint,GLint))gotPtr;
@@ -11528,7 +11531,7 @@ static void API_ENTRY _choose_glVertexAttribI2iv(GLuint index,const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI2iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI2iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI2iv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI2iv = (void(API_ENTRY*)(GLuint,const GLint*))gotPtr;
@@ -11541,7 +11544,7 @@ static void API_ENTRY _choose_glVertexAttribI2ui(GLuint index,GLuint x,GLuint y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI2ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI2ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI2ui is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI2ui = (void(API_ENTRY*)(GLuint,GLuint,GLuint))gotPtr;
@@ -11554,7 +11557,7 @@ static void API_ENTRY _choose_glVertexAttribI2uiv(GLuint index,const GLuint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI2uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI2uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI2uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI2uiv = (void(API_ENTRY*)(GLuint,const GLuint*))gotPtr;
@@ -11567,7 +11570,7 @@ static void API_ENTRY _choose_glVertexAttribI3i(GLuint index,GLint x,GLint y,GLi
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI3i");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI3i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI3i is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI3i = (void(API_ENTRY*)(GLuint,GLint,GLint,GLint))gotPtr;
@@ -11580,7 +11583,7 @@ static void API_ENTRY _choose_glVertexAttribI3iv(GLuint index,const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI3iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI3iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI3iv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI3iv = (void(API_ENTRY*)(GLuint,const GLint*))gotPtr;
@@ -11593,7 +11596,7 @@ static void API_ENTRY _choose_glVertexAttribI3ui(GLuint index,GLuint x,GLuint y,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI3ui = (void(API_ENTRY*)(GLuint,GLuint,GLuint,GLuint))gotPtr;
@@ -11606,7 +11609,7 @@ static void API_ENTRY _choose_glVertexAttribI3uiv(GLuint index,const GLuint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI3uiv = (void(API_ENTRY*)(GLuint,const GLuint*))gotPtr;
@@ -11619,7 +11622,7 @@ static void API_ENTRY _choose_glVertexAttribI4bv(GLuint index,const GLbyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI4bv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI4bv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI4bv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI4bv = (void(API_ENTRY*)(GLuint,const GLbyte*))gotPtr;
@@ -11632,7 +11635,7 @@ static void API_ENTRY _choose_glVertexAttribI4i(GLuint index,GLint x,GLint y,GLi
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI4i");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI4i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI4i is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI4i = (void(API_ENTRY*)(GLuint,GLint,GLint,GLint,GLint))gotPtr;
@@ -11645,7 +11648,7 @@ static void API_ENTRY _choose_glVertexAttribI4iv(GLuint index,const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI4iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI4iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI4iv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI4iv = (void(API_ENTRY*)(GLuint,const GLint*))gotPtr;
@@ -11658,7 +11661,7 @@ static void API_ENTRY _choose_glVertexAttribI4sv(GLuint index,const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI4sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI4sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI4sv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI4sv = (void(API_ENTRY*)(GLuint,const GLshort*))gotPtr;
@@ -11671,7 +11674,7 @@ static void API_ENTRY _choose_glVertexAttribI4ubv(GLuint index,const GLubyte* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI4ubv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI4ubv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI4ubv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI4ubv = (void(API_ENTRY*)(GLuint,const GLubyte*))gotPtr;
@@ -11684,7 +11687,7 @@ static void API_ENTRY _choose_glVertexAttribI4ui(GLuint index,GLuint x,GLuint y,
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI4ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI4ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI4ui is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI4ui = (void(API_ENTRY*)(GLuint,GLuint,GLuint,GLuint,GLuint))gotPtr;
@@ -11697,7 +11700,7 @@ static void API_ENTRY _choose_glVertexAttribI4uiv(GLuint index,const GLuint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI4uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI4uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI4uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI4uiv = (void(API_ENTRY*)(GLuint,const GLuint*))gotPtr;
@@ -11710,7 +11713,7 @@ static void API_ENTRY _choose_glVertexAttribI4usv(GLuint index,const GLushort* v
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribI4usv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribI4usv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribI4usv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribI4usv = (void(API_ENTRY*)(GLuint,const GLushort*))gotPtr;
@@ -11723,7 +11726,7 @@ static void API_ENTRY _choose_glVertexAttribIPointer(GLuint index,GLint size,GLe
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribIPointer");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribIPointer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribIPointer is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribIPointer = (void(API_ENTRY*)(GLuint,GLint,GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -11736,7 +11739,7 @@ static void API_ENTRY _choose_glVertexAttribL1d(GLuint index,GLdouble x)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribL1d");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribL1d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribL1d is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribL1d = (void(API_ENTRY*)(GLuint,GLdouble))gotPtr;
@@ -11749,7 +11752,7 @@ static void API_ENTRY _choose_glVertexAttribL1dv(GLuint index,const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribL1dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribL1dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribL1dv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribL1dv = (void(API_ENTRY*)(GLuint,const GLdouble*))gotPtr;
@@ -11762,7 +11765,7 @@ static void API_ENTRY _choose_glVertexAttribL2d(GLuint index,GLdouble x,GLdouble
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribL2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribL2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribL2d is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribL2d = (void(API_ENTRY*)(GLuint,GLdouble,GLdouble))gotPtr;
@@ -11775,7 +11778,7 @@ static void API_ENTRY _choose_glVertexAttribL2dv(GLuint index,const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribL2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribL2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribL2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribL2dv = (void(API_ENTRY*)(GLuint,const GLdouble*))gotPtr;
@@ -11788,7 +11791,7 @@ static void API_ENTRY _choose_glVertexAttribL3d(GLuint index,GLdouble x,GLdouble
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribL3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribL3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribL3d is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribL3d = (void(API_ENTRY*)(GLuint,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -11801,7 +11804,7 @@ static void API_ENTRY _choose_glVertexAttribL3dv(GLuint index,const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribL3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribL3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribL3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribL3dv = (void(API_ENTRY*)(GLuint,const GLdouble*))gotPtr;
@@ -11814,7 +11817,7 @@ static void API_ENTRY _choose_glVertexAttribL4d(GLuint index,GLdouble x,GLdouble
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribL4d");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribL4d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribL4d is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribL4d = (void(API_ENTRY*)(GLuint,GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
@@ -11827,7 +11830,7 @@ static void API_ENTRY _choose_glVertexAttribL4dv(GLuint index,const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribL4dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribL4dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribL4dv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribL4dv = (void(API_ENTRY*)(GLuint,const GLdouble*))gotPtr;
@@ -11840,7 +11843,7 @@ static void API_ENTRY _choose_glVertexAttribLPointer(GLuint index,GLint size,GLe
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribLPointer");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribLPointer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribLPointer is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribLPointer = (void(API_ENTRY*)(GLuint,GLint,GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -11853,7 +11856,7 @@ static void API_ENTRY _choose_glVertexAttribP1ui(GLuint index,GLenum type,GLbool
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribP1ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribP1ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribP1ui is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribP1ui = (void(API_ENTRY*)(GLuint,GLenum,GLboolean,GLuint))gotPtr;
@@ -11866,7 +11869,7 @@ static void API_ENTRY _choose_glVertexAttribP1uiv(GLuint index,GLenum type,GLboo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribP1uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribP1uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribP1uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribP1uiv = (void(API_ENTRY*)(GLuint,GLenum,GLboolean,const GLuint*))gotPtr;
@@ -11879,7 +11882,7 @@ static void API_ENTRY _choose_glVertexAttribP2ui(GLuint index,GLenum type,GLbool
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribP2ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribP2ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribP2ui is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribP2ui = (void(API_ENTRY*)(GLuint,GLenum,GLboolean,GLuint))gotPtr;
@@ -11892,7 +11895,7 @@ static void API_ENTRY _choose_glVertexAttribP2uiv(GLuint index,GLenum type,GLboo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribP2uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribP2uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribP2uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribP2uiv = (void(API_ENTRY*)(GLuint,GLenum,GLboolean,const GLuint*))gotPtr;
@@ -11905,7 +11908,7 @@ static void API_ENTRY _choose_glVertexAttribP3ui(GLuint index,GLenum type,GLbool
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribP3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribP3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribP3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribP3ui = (void(API_ENTRY*)(GLuint,GLenum,GLboolean,GLuint))gotPtr;
@@ -11918,7 +11921,7 @@ static void API_ENTRY _choose_glVertexAttribP3uiv(GLuint index,GLenum type,GLboo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribP3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribP3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribP3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribP3uiv = (void(API_ENTRY*)(GLuint,GLenum,GLboolean,const GLuint*))gotPtr;
@@ -11931,7 +11934,7 @@ static void API_ENTRY _choose_glVertexAttribP4ui(GLuint index,GLenum type,GLbool
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribP4ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribP4ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribP4ui is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribP4ui = (void(API_ENTRY*)(GLuint,GLenum,GLboolean,GLuint))gotPtr;
@@ -11944,7 +11947,7 @@ static void API_ENTRY _choose_glVertexAttribP4uiv(GLuint index,GLenum type,GLboo
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribP4uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribP4uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribP4uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribP4uiv = (void(API_ENTRY*)(GLuint,GLenum,GLboolean,const GLuint*))gotPtr;
@@ -11957,7 +11960,7 @@ static void API_ENTRY _choose_glVertexAttribPointer(GLuint index,GLint size,GLen
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexAttribPointer");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexAttribPointer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexAttribPointer is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexAttribPointer = (void(API_ENTRY*)(GLuint,GLint,GLenum,GLboolean,GLsizei,const GLvoid*))gotPtr;
@@ -11970,7 +11973,7 @@ static void API_ENTRY _choose_glVertexP2ui(GLenum type,GLuint value)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexP2ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexP2ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexP2ui is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexP2ui = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -11983,7 +11986,7 @@ static void API_ENTRY _choose_glVertexP2uiv(GLenum type,const GLuint* value)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexP2uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexP2uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexP2uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexP2uiv = (void(API_ENTRY*)(GLenum,const GLuint*))gotPtr;
@@ -11996,7 +11999,7 @@ static void API_ENTRY _choose_glVertexP3ui(GLenum type,GLuint value)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexP3ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexP3ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexP3ui is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexP3ui = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -12009,7 +12012,7 @@ static void API_ENTRY _choose_glVertexP3uiv(GLenum type,const GLuint* value)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexP3uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexP3uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexP3uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexP3uiv = (void(API_ENTRY*)(GLenum,const GLuint*))gotPtr;
@@ -12022,7 +12025,7 @@ static void API_ENTRY _choose_glVertexP4ui(GLenum type,GLuint value)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexP4ui");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexP4ui is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexP4ui is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexP4ui = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
@@ -12035,7 +12038,7 @@ static void API_ENTRY _choose_glVertexP4uiv(GLenum type,const GLuint* value)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexP4uiv");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexP4uiv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexP4uiv is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexP4uiv = (void(API_ENTRY*)(GLenum,const GLuint*))gotPtr;
@@ -12048,7 +12051,7 @@ static void API_ENTRY _choose_glVertexPointer(GLint size,GLenum type,GLsizei str
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glVertexPointer");
     if (!gotPtr)
-        OpenGL_log << "Error: glVertexPointer is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glVertexPointer is NULL " << std::endl;
     else
     {
         _ptr_to_glVertexPointer = (void(API_ENTRY*)(GLint,GLenum,GLsizei,const GLvoid*))gotPtr;
@@ -12061,7 +12064,7 @@ static void API_ENTRY _choose_glViewport(GLint x,GLint y,GLsizei width,GLsizei h
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glViewport");
     if (!gotPtr)
-        OpenGL_log << "Error: glViewport is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glViewport is NULL " << std::endl;
     else
     {
         _ptr_to_glViewport = (void(API_ENTRY*)(GLint,GLint,GLsizei,GLsizei))gotPtr;
@@ -12074,7 +12077,7 @@ static void API_ENTRY _choose_glViewportArrayv(GLuint first,GLsizei count,const 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glViewportArrayv");
     if (!gotPtr)
-        OpenGL_log << "Error: glViewportArrayv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glViewportArrayv is NULL " << std::endl;
     else
     {
         _ptr_to_glViewportArrayv = (void(API_ENTRY*)(GLuint,GLsizei,const GLfloat*))gotPtr;
@@ -12087,7 +12090,7 @@ static void API_ENTRY _choose_glViewportIndexedf(GLuint index,GLfloat x,GLfloat 
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glViewportIndexedf");
     if (!gotPtr)
-        OpenGL_log << "Error: glViewportIndexedf is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glViewportIndexedf is NULL " << std::endl;
     else
     {
         _ptr_to_glViewportIndexedf = (void(API_ENTRY*)(GLuint,GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
@@ -12100,7 +12103,7 @@ static void API_ENTRY _choose_glViewportIndexedfv(GLuint index,const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glViewportIndexedfv");
     if (!gotPtr)
-        OpenGL_log << "Error: glViewportIndexedfv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glViewportIndexedfv is NULL " << std::endl;
     else
     {
         _ptr_to_glViewportIndexedfv = (void(API_ENTRY*)(GLuint,const GLfloat*))gotPtr;
@@ -12113,7 +12116,7 @@ static void API_ENTRY _choose_glWaitSync(GLsync sync,GLbitfield flags,GLuint64 t
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWaitSync");
     if (!gotPtr)
-        OpenGL_log << "Error: glWaitSync is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWaitSync is NULL " << std::endl;
     else
     {
         _ptr_to_glWaitSync = (void(API_ENTRY*)(GLsync,GLbitfield,GLuint64))gotPtr;
@@ -12126,7 +12129,7 @@ static void API_ENTRY _choose_glWindowPos2d(GLdouble x,GLdouble y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos2d");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos2d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos2d is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos2d = (void(API_ENTRY*)(GLdouble,GLdouble))gotPtr;
@@ -12139,7 +12142,7 @@ static void API_ENTRY _choose_glWindowPos2dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos2dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos2dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos2dv is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos2dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -12152,7 +12155,7 @@ static void API_ENTRY _choose_glWindowPos2f(GLfloat x,GLfloat y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos2f");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos2f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos2f is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos2f = (void(API_ENTRY*)(GLfloat,GLfloat))gotPtr;
@@ -12165,7 +12168,7 @@ static void API_ENTRY _choose_glWindowPos2fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos2fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos2fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos2fv is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos2fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -12178,7 +12181,7 @@ static void API_ENTRY _choose_glWindowPos2i(GLint x,GLint y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos2i");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos2i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos2i is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos2i = (void(API_ENTRY*)(GLint,GLint))gotPtr;
@@ -12191,7 +12194,7 @@ static void API_ENTRY _choose_glWindowPos2iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos2iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos2iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos2iv is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos2iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -12204,7 +12207,7 @@ static void API_ENTRY _choose_glWindowPos2s(GLshort x,GLshort y)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos2s");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos2s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos2s is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos2s = (void(API_ENTRY*)(GLshort,GLshort))gotPtr;
@@ -12217,7 +12220,7 @@ static void API_ENTRY _choose_glWindowPos2sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos2sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos2sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos2sv is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos2sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
@@ -12230,7 +12233,7 @@ static void API_ENTRY _choose_glWindowPos3d(GLdouble x,GLdouble y,GLdouble z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos3d");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos3d is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos3d is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos3d = (void(API_ENTRY*)(GLdouble,GLdouble,GLdouble))gotPtr;
@@ -12243,7 +12246,7 @@ static void API_ENTRY _choose_glWindowPos3dv(const GLdouble* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos3dv");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos3dv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos3dv is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos3dv = (void(API_ENTRY*)(const GLdouble*))gotPtr;
@@ -12256,7 +12259,7 @@ static void API_ENTRY _choose_glWindowPos3f(GLfloat x,GLfloat y,GLfloat z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos3f");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos3f is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos3f is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos3f = (void(API_ENTRY*)(GLfloat,GLfloat,GLfloat))gotPtr;
@@ -12269,7 +12272,7 @@ static void API_ENTRY _choose_glWindowPos3fv(const GLfloat* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos3fv");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos3fv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos3fv is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos3fv = (void(API_ENTRY*)(const GLfloat*))gotPtr;
@@ -12282,7 +12285,7 @@ static void API_ENTRY _choose_glWindowPos3i(GLint x,GLint y,GLint z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos3i");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos3i is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos3i is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos3i = (void(API_ENTRY*)(GLint,GLint,GLint))gotPtr;
@@ -12295,7 +12298,7 @@ static void API_ENTRY _choose_glWindowPos3iv(const GLint* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos3iv");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos3iv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos3iv is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos3iv = (void(API_ENTRY*)(const GLint*))gotPtr;
@@ -12308,7 +12311,7 @@ static void API_ENTRY _choose_glWindowPos3s(GLshort x,GLshort y,GLshort z)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos3s");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos3s is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos3s is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos3s = (void(API_ENTRY*)(GLshort,GLshort,GLshort))gotPtr;
@@ -12321,7 +12324,7 @@ static void API_ENTRY _choose_glWindowPos3sv(const GLshort* v)
 {
     void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos3sv");
     if (!gotPtr)
-        OpenGL_log << "Error: glWindowPos3sv is NULL " << std::endl;
+        fg::OpenGL_log << "Error: glWindowPos3sv is NULL " << std::endl;
     else
     {
         _ptr_to_glWindowPos3sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
