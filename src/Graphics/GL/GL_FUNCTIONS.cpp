@@ -67,8 +67,7 @@ fm::Log OpenGL_log = std::cout;
 		bool load(const char *name)
 		{
 			m_handle = dlopen(name, RTLD_NOW|RTLD_LOCAL);
-			const char *status = (char *)dlerror();
-			return m_handle!=NULL;
+			return m_handle  != NULL;
 		}
 	};
 
