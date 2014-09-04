@@ -66,6 +66,14 @@ namespace fg
 	#define GL_EXT_framebuffer_object 1
 #endif
 
+#ifndef GL_ARB_vertex_shader
+	#define GL_ARB_vertex_shader 1
+#endif
+
+#ifndef GL_ARB_fragment_shader
+	#define GL_ARB_fragment_shader 1
+#endif
+
 
 //////////////////////////////////
 /// Define GL types
