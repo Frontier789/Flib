@@ -1,30 +1,30 @@
 #files
-CPP_FILES_SYSTEM := $(wildcard $(SRC)/System/*.cpp)
-OBJ_FILES_SYSTEM := $(addprefix $(TARGETDIR)/System/,$(notdir $(CPP_FILES_SYSTEM:.cpp=.o)))
+CPP_FILES_SYSTEM := $(wildcard $(PATH_TO_SRC)/System/*.cpp)
+OBJ_FILES_SYSTEM := $(addprefix $(LIBPATH)/System/,$(notdir $(CPP_FILES_SYSTEM:.cpp=.o)))
 
-SYSTEM_TARGET: $(TARGETDIR)/libf-system.a
-SYSTEM_DIR: $(TARGETDIR)/System
+TARGETS+=$(LIBPATH)/libf-system.a
+DIR_TARGETS+=$(LIBPATH)/System
 
 #created files
-RESULT_FILES := $(OBJ_FILES_SYSTEM) $(TARGETDIR)/libf-system.a
+RESULT_FILES := $(OBJ_FILES_SYSTEM) $(LIBPATH)/libf-system.a
 
 ###
 # directory targets
 ###
-$(TARGETDIR)/System: $(TARGETDIR)
-	$(CD) $(PATHTOROOT); $(CD) lib$(LIBNAME); $(MKDIR) System
+$(LIBPATH)/System: $(LIBPATH)
+	$(CD) $(PATH_TO_ROOT); $(CD) $(LIBNAME); $(MKDIR) System
 
 ###
 # source targets
 ###
-$(TARGETDIR)/libf-system.a: $(OBJ_FILES_SYSTEM)
+$(LIBPATH)/libf-system.a: $(OBJ_FILES_SYSTEM)
 	$(AR) rcs $@ $^
 
-$(TARGETDIR)/System/%.o: $(SRC)/System/%.cpp | $(TARGETDIR)/System
-	$(CXX) $(CPPFLAGS) -I  $(INCLUDE) -c $< -o $@
+$(LIBPATH)/System/%.o: $(PATH_TO_SRC)/System/%.cpp | $(LIBPATH)/System
+	$(CXX) $(CPPFLAGS) -I $(PATH_TO_INCLUDE) -c $< -o $@
 
 ###
 # clean_targets
 ###
 clean-system:
-	$(RM) $(OBJ_FILES_SYSTEM) $(TARGETDIR)/libf-system.a
+	$(RM) $(OBJ_FILES_SYSTEM) $(LIBPATH)/libf-system.a
