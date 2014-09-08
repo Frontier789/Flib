@@ -153,19 +153,6 @@ namespace fg
 
 
 
-static void API_ENTRY _choose_glAccum(GLenum op,GLfloat value)
-{
-	void (*gotPtr)() = (void(*)())retrieveProcAddress("glAccum");
-	if (!gotPtr)
-		fg::OpenGL_log << "Error: glAccum is NULL " << std::endl;
-	else
-	{
-		_ptr_to_glAccum = (void(API_ENTRY*)(GLenum,GLfloat))gotPtr;
-		return _ptr_to_glAccum(op,value);
-	}
-	return;
-}
-void (API_ENTRY *_ptr_to_glAccum)(GLenum op,GLfloat value) = _choose_glAccum;
 static void API_ENTRY _choose_glActiveShaderProgram(GLuint pipeline,GLuint program)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glActiveShaderProgram");
@@ -466,6 +453,19 @@ static void API_ENTRY _choose_glBindImageTexture(GLuint unit,GLuint texture,GLin
 	return;
 }
 void (API_ENTRY *_ptr_to_glBindImageTexture)(GLuint unit,GLuint texture,GLint level,GLboolean layered,GLint layer,GLenum access,GLenum format) = _choose_glBindImageTexture;
+static void API_ENTRY _choose_glBindProgramARB(GLenum target,GLuint program)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindProgramARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glBindProgramARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glBindProgramARB = (void(API_ENTRY*)(GLenum,GLuint))gotPtr;
+		return _ptr_to_glBindProgramARB(target,program);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glBindProgramARB)(GLenum target,GLuint program) = _choose_glBindProgramARB;
 static void API_ENTRY _choose_glBindProgramPipeline(GLuint pipeline)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glBindProgramPipeline");
@@ -1904,6 +1904,19 @@ static void API_ENTRY _choose_glDeleteProgramPipelines(GLsizei n,const GLuint* p
 	return;
 }
 void (API_ENTRY *_ptr_to_glDeleteProgramPipelines)(GLsizei n,const GLuint* pipelines) = _choose_glDeleteProgramPipelines;
+static void API_ENTRY _choose_glDeleteProgramsARB(GLsizei n,const GLuint* programs)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteProgramsARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glDeleteProgramsARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glDeleteProgramsARB = (void(API_ENTRY*)(GLsizei,const GLuint*))gotPtr;
+		return _ptr_to_glDeleteProgramsARB(n,programs);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glDeleteProgramsARB)(GLsizei n,const GLuint* programs) = _choose_glDeleteProgramsARB;
 static void API_ENTRY _choose_glDeleteQueries(GLsizei n,const GLuint* ids)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glDeleteQueries");
@@ -3206,6 +3219,19 @@ static void API_ENTRY _choose_glGenProgramPipelines(GLsizei n,GLuint* pipelines)
 	return;
 }
 void (API_ENTRY *_ptr_to_glGenProgramPipelines)(GLsizei n,GLuint* pipelines) = _choose_glGenProgramPipelines;
+static void API_ENTRY _choose_glGenProgramsARB(GLsizei n,GLuint* programs)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenProgramsARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glGenProgramsARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glGenProgramsARB = (void(API_ENTRY*)(GLsizei,GLuint*))gotPtr;
+		return _ptr_to_glGenProgramsARB(n,programs);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glGenProgramsARB)(GLsizei n,GLuint* programs) = _choose_glGenProgramsARB;
 static void API_ENTRY _choose_glGenQueries(GLsizei n,GLuint* ids)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGenQueries");
@@ -4096,6 +4122,32 @@ static void API_ENTRY _choose_glGetProgramBinary(GLuint program,GLsizei bufSize,
 	return;
 }
 void (API_ENTRY *_ptr_to_glGetProgramBinary)(GLuint program,GLsizei bufSize,GLsizei* length,GLenum* binaryFormat,GLvoid* binary) = _choose_glGetProgramBinary;
+static void API_ENTRY _choose_glGetProgramEnvParameterdvARB(GLenum target,GLuint index,GLdouble* params)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramEnvParameterdvARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glGetProgramEnvParameterdvARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glGetProgramEnvParameterdvARB = (void(API_ENTRY*)(GLenum,GLuint,GLdouble*))gotPtr;
+		return _ptr_to_glGetProgramEnvParameterdvARB(target,index,params);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glGetProgramEnvParameterdvARB)(GLenum target,GLuint index,GLdouble* params) = _choose_glGetProgramEnvParameterdvARB;
+static void API_ENTRY _choose_glGetProgramEnvParameterfvARB(GLenum target,GLuint index,GLfloat* params)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramEnvParameterfvARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glGetProgramEnvParameterfvARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glGetProgramEnvParameterfvARB = (void(API_ENTRY*)(GLenum,GLuint,GLfloat*))gotPtr;
+		return _ptr_to_glGetProgramEnvParameterfvARB(target,index,params);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glGetProgramEnvParameterfvARB)(GLenum target,GLuint index,GLfloat* params) = _choose_glGetProgramEnvParameterfvARB;
 static void API_ENTRY _choose_glGetProgramInfoLog(GLuint program,GLsizei bufSize,GLsizei* length,GLchar* infoLog)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramInfoLog");
@@ -4109,6 +4161,32 @@ static void API_ENTRY _choose_glGetProgramInfoLog(GLuint program,GLsizei bufSize
 	return;
 }
 void (API_ENTRY *_ptr_to_glGetProgramInfoLog)(GLuint program,GLsizei bufSize,GLsizei* length,GLchar* infoLog) = _choose_glGetProgramInfoLog;
+static void API_ENTRY _choose_glGetProgramLocalParameterdvARB(GLenum target,GLuint index,GLdouble* params)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramLocalParameterdvARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glGetProgramLocalParameterdvARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glGetProgramLocalParameterdvARB = (void(API_ENTRY*)(GLenum,GLuint,GLdouble*))gotPtr;
+		return _ptr_to_glGetProgramLocalParameterdvARB(target,index,params);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glGetProgramLocalParameterdvARB)(GLenum target,GLuint index,GLdouble* params) = _choose_glGetProgramLocalParameterdvARB;
+static void API_ENTRY _choose_glGetProgramLocalParameterfvARB(GLenum target,GLuint index,GLfloat* params)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramLocalParameterfvARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glGetProgramLocalParameterfvARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glGetProgramLocalParameterfvARB = (void(API_ENTRY*)(GLenum,GLuint,GLfloat*))gotPtr;
+		return _ptr_to_glGetProgramLocalParameterfvARB(target,index,params);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glGetProgramLocalParameterfvARB)(GLenum target,GLuint index,GLfloat* params) = _choose_glGetProgramLocalParameterfvARB;
 static void API_ENTRY _choose_glGetProgramPipelineInfoLog(GLuint pipeline,GLsizei bufSize,GLsizei* length,GLchar* infoLog)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramPipelineInfoLog");
@@ -4148,6 +4226,19 @@ static void API_ENTRY _choose_glGetProgramStageiv(GLuint program,GLenum shaderty
 	return;
 }
 void (API_ENTRY *_ptr_to_glGetProgramStageiv)(GLuint program,GLenum shadertype,GLenum pname,GLint* values) = _choose_glGetProgramStageiv;
+static void API_ENTRY _choose_glGetProgramStringARB(GLenum target,GLenum pname,GLvoid* string)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramStringARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glGetProgramStringARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glGetProgramStringARB = (void(API_ENTRY*)(GLenum,GLenum,GLvoid*))gotPtr;
+		return _ptr_to_glGetProgramStringARB(target,pname,string);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glGetProgramStringARB)(GLenum target,GLenum pname,GLvoid* string) = _choose_glGetProgramStringARB;
 static void API_ENTRY _choose_glGetProgramiv(GLuint program,GLenum pname,GLint* params)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramiv");
@@ -4161,6 +4252,19 @@ static void API_ENTRY _choose_glGetProgramiv(GLuint program,GLenum pname,GLint* 
 	return;
 }
 void (API_ENTRY *_ptr_to_glGetProgramiv)(GLuint program,GLenum pname,GLint* params) = _choose_glGetProgramiv;
+static void API_ENTRY _choose_glGetProgramivARB(GLenum target,GLenum pname,GLint* params)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetProgramivARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glGetProgramivARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glGetProgramivARB = (void(API_ENTRY*)(GLenum,GLenum,GLint*))gotPtr;
+		return _ptr_to_glGetProgramivARB(target,pname,params);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glGetProgramivARB)(GLenum target,GLenum pname,GLint* params) = _choose_glGetProgramivARB;
 static void API_ENTRY _choose_glGetQueryIndexediv(GLenum target,GLuint index,GLenum pname,GLint* params)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glGetQueryIndexediv");
@@ -5216,6 +5320,20 @@ static GLboolean API_ENTRY _choose_glIsProgram(GLuint program)
 	return RET_TYPE();
 }
 GLboolean (API_ENTRY *_ptr_to_glIsProgram)(GLuint program) = _choose_glIsProgram;
+static boolean API_ENTRY _choose_glIsProgramARB(GLuint program)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsProgramARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glIsProgramARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glIsProgramARB = (boolean(API_ENTRY*)(GLuint))gotPtr;
+		return _ptr_to_glIsProgramARB(program);
+	}
+	typedef boolean RET_TYPE;
+	return RET_TYPE();
+}
+boolean (API_ENTRY *_ptr_to_glIsProgramARB)(GLuint program) = _choose_glIsProgramARB;
 static GLboolean API_ENTRY _choose_glIsProgramPipeline(GLuint pipeline)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsProgramPipeline");
@@ -7007,6 +7125,110 @@ static void API_ENTRY _choose_glProgramBinary(GLuint program,GLenum binaryFormat
 	return;
 }
 void (API_ENTRY *_ptr_to_glProgramBinary)(GLuint program,GLenum binaryFormat,const GLvoid* binary,GLsizei length) = _choose_glProgramBinary;
+static void API_ENTRY _choose_glProgramEnvParameter4dARB(GLenum target,GLuint index,GLdouble x,GLdouble y,GLdouble z,GLdouble w)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramEnvParameter4dARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glProgramEnvParameter4dARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glProgramEnvParameter4dARB = (void(API_ENTRY*)(GLenum,GLuint,GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
+		return _ptr_to_glProgramEnvParameter4dARB(target,index,x,y,z,w);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glProgramEnvParameter4dARB)(GLenum target,GLuint index,GLdouble x,GLdouble y,GLdouble z,GLdouble w) = _choose_glProgramEnvParameter4dARB;
+static void API_ENTRY _choose_glProgramEnvParameter4dvARB(GLenum target,GLuint index,const GLdouble* params)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramEnvParameter4dvARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glProgramEnvParameter4dvARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glProgramEnvParameter4dvARB = (void(API_ENTRY*)(GLenum,GLuint,const GLdouble*))gotPtr;
+		return _ptr_to_glProgramEnvParameter4dvARB(target,index,params);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glProgramEnvParameter4dvARB)(GLenum target,GLuint index,const GLdouble* params) = _choose_glProgramEnvParameter4dvARB;
+static void API_ENTRY _choose_glProgramEnvParameter4fARB(GLenum target,GLuint index,GLfloat x,GLfloat y,GLfloat z,GLfloat w)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramEnvParameter4fARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glProgramEnvParameter4fARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glProgramEnvParameter4fARB = (void(API_ENTRY*)(GLenum,GLuint,GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
+		return _ptr_to_glProgramEnvParameter4fARB(target,index,x,y,z,w);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glProgramEnvParameter4fARB)(GLenum target,GLuint index,GLfloat x,GLfloat y,GLfloat z,GLfloat w) = _choose_glProgramEnvParameter4fARB;
+static void API_ENTRY _choose_glProgramEnvParameter4fvARB(GLenum target,GLuint index,const GLfloat* params)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramEnvParameter4fvARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glProgramEnvParameter4fvARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glProgramEnvParameter4fvARB = (void(API_ENTRY*)(GLenum,GLuint,const GLfloat*))gotPtr;
+		return _ptr_to_glProgramEnvParameter4fvARB(target,index,params);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glProgramEnvParameter4fvARB)(GLenum target,GLuint index,const GLfloat* params) = _choose_glProgramEnvParameter4fvARB;
+static void API_ENTRY _choose_glProgramLocalParameter4dARB(GLenum target,GLuint index,GLdouble x,GLdouble y,GLdouble z,GLdouble w)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramLocalParameter4dARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glProgramLocalParameter4dARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glProgramLocalParameter4dARB = (void(API_ENTRY*)(GLenum,GLuint,GLdouble,GLdouble,GLdouble,GLdouble))gotPtr;
+		return _ptr_to_glProgramLocalParameter4dARB(target,index,x,y,z,w);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glProgramLocalParameter4dARB)(GLenum target,GLuint index,GLdouble x,GLdouble y,GLdouble z,GLdouble w) = _choose_glProgramLocalParameter4dARB;
+static void API_ENTRY _choose_glProgramLocalParameter4dvARB(GLenum target,GLuint index,const GLdouble* params)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramLocalParameter4dvARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glProgramLocalParameter4dvARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glProgramLocalParameter4dvARB = (void(API_ENTRY*)(GLenum,GLuint,const GLdouble*))gotPtr;
+		return _ptr_to_glProgramLocalParameter4dvARB(target,index,params);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glProgramLocalParameter4dvARB)(GLenum target,GLuint index,const GLdouble* params) = _choose_glProgramLocalParameter4dvARB;
+static void API_ENTRY _choose_glProgramLocalParameter4fARB(GLenum target,GLuint index,GLfloat x,GLfloat y,GLfloat z,GLfloat w)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramLocalParameter4fARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glProgramLocalParameter4fARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glProgramLocalParameter4fARB = (void(API_ENTRY*)(GLenum,GLuint,GLfloat,GLfloat,GLfloat,GLfloat))gotPtr;
+		return _ptr_to_glProgramLocalParameter4fARB(target,index,x,y,z,w);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glProgramLocalParameter4fARB)(GLenum target,GLuint index,GLfloat x,GLfloat y,GLfloat z,GLfloat w) = _choose_glProgramLocalParameter4fARB;
+static void API_ENTRY _choose_glProgramLocalParameter4fvARB(GLenum target,GLuint index,const GLfloat* params)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramLocalParameter4fvARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glProgramLocalParameter4fvARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glProgramLocalParameter4fvARB = (void(API_ENTRY*)(GLenum,GLuint,const GLfloat*))gotPtr;
+		return _ptr_to_glProgramLocalParameter4fvARB(target,index,params);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glProgramLocalParameter4fvARB)(GLenum target,GLuint index,const GLfloat* params) = _choose_glProgramLocalParameter4fvARB;
 static void API_ENTRY _choose_glProgramParameteri(GLuint program,GLenum pname,GLint value)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramParameteri");
@@ -7020,6 +7242,19 @@ static void API_ENTRY _choose_glProgramParameteri(GLuint program,GLenum pname,GL
 	return;
 }
 void (API_ENTRY *_ptr_to_glProgramParameteri)(GLuint program,GLenum pname,GLint value) = _choose_glProgramParameteri;
+static void API_ENTRY _choose_glProgramStringARB(GLenum target,GLenum format,GLsizei len,const GLvoid* string)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramStringARB");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glProgramStringARB is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glProgramStringARB = (void(API_ENTRY*)(GLenum,GLenum,GLsizei,const GLvoid*))gotPtr;
+		return _ptr_to_glProgramStringARB(target,format,len,string);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glProgramStringARB)(GLenum target,GLenum format,GLsizei len,const GLvoid* string) = _choose_glProgramStringARB;
 static void API_ENTRY _choose_glProgramUniform1d(GLuint program,GLint location,GLdouble v0)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glProgramUniform1d");
@@ -12964,16 +13199,17 @@ static void API_ENTRY _choose_glWindowPos3s(GLshort x,GLshort y,GLshort z)
 	return;
 }
 void (API_ENTRY *_ptr_to_glWindowPos3s)(GLshort x,GLshort y,GLshort z) = _choose_glWindowPos3s;
-static void API_ENTRY _choose_glWindowPos3sv(const GLshort* v)
+static () API_ENTRY _choose_glvoid(GLglAccum (GLenum,GLop, GLfloat,GLvalue )
 {
-	void (*gotPtr)() = (void(*)())retrieveProcAddress("glWindowPos3sv");
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glvoid");
 	if (!gotPtr)
-		fg::OpenGL_log << "Error: glWindowPos3sv is NULL " << std::endl;
+		fg::OpenGL_log << "Error: glvoid is NULL " << std::endl;
 	else
 	{
-		_ptr_to_glWindowPos3sv = (void(API_ENTRY*)(const GLshort*))gotPtr;
-		return _ptr_to_glWindowPos3sv(v);
+		_ptr_to_glvoid = (()(API_ENTRY*)(GLglAccum,GLop,,GLvalue))gotPtr;
+		return _ptr_to_glvoid((GLenum,GLfloat,);
 	}
-	return;
+	typedef () RET_TYPE;
+	return RET_TYPE();
 }
-void (API_ENTRY *_ptr_to_glWindowPos3sv)(const GLshort* v) = _choose_glWindowPos3sv;
+() (API_ENTRY *_ptr_to_glvoid)(GLglAccum (GLenum,GLop, GLfloat,GLvalue ) = _choose_glvoid;

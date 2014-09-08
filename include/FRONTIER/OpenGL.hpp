@@ -74,6 +74,14 @@ namespace fg
 	#define GL_ARB_fragment_shader 1
 #endif
 
+#ifndef GL_ARB_fragment_program
+	#define GL_ARB_fragment_program 1
+#endif
+
+#ifndef GL_ARB_vertex_program
+	#define GL_ARB_vertex_program 1
+#endif
+
 
 //////////////////////////////////
 /// Define GL types

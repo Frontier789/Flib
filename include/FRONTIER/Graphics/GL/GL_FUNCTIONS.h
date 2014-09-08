@@ -37,8 +37,6 @@
 	{
 	#endif //__cplusplus
 	
-	extern void (API_ENTRY *_ptr_to_glAccum)(GLenum op,GLfloat value);
-	#define glAccum _ptr_to_glAccum
 	extern void (API_ENTRY *_ptr_to_glActiveShaderProgram)(GLuint pipeline,GLuint program);
 	#define glActiveShaderProgram _ptr_to_glActiveShaderProgram
 	extern void (API_ENTRY *_ptr_to_glActiveTexture)(GLenum texture);
@@ -85,6 +83,8 @@
 	#define glBindFramebufferEXT _ptr_to_glBindFramebufferEXT
 	extern void (API_ENTRY *_ptr_to_glBindImageTexture)(GLuint unit,GLuint texture,GLint level,GLboolean layered,GLint layer,GLenum access,GLenum format);
 	#define glBindImageTexture _ptr_to_glBindImageTexture
+	extern void (API_ENTRY *_ptr_to_glBindProgramARB)(GLenum target,GLuint program);
+	#define glBindProgramARB _ptr_to_glBindProgramARB
 	extern void (API_ENTRY *_ptr_to_glBindProgramPipeline)(GLuint pipeline);
 	#define glBindProgramPipeline _ptr_to_glBindProgramPipeline
 	extern void (API_ENTRY *_ptr_to_glBindRenderbuffer)(GLenum target,GLuint renderbuffer);
@@ -305,6 +305,8 @@
 	#define glDeleteProgram _ptr_to_glDeleteProgram
 	extern void (API_ENTRY *_ptr_to_glDeleteProgramPipelines)(GLsizei n,const GLuint* pipelines);
 	#define glDeleteProgramPipelines _ptr_to_glDeleteProgramPipelines
+	extern void (API_ENTRY *_ptr_to_glDeleteProgramsARB)(GLsizei n,const GLuint* programs);
+	#define glDeleteProgramsARB _ptr_to_glDeleteProgramsARB
 	extern void (API_ENTRY *_ptr_to_glDeleteQueries)(GLsizei n,const GLuint* ids);
 	#define glDeleteQueries _ptr_to_glDeleteQueries
 	extern void (API_ENTRY *_ptr_to_glDeleteRenderbuffers)(GLsizei n,const GLuint* renderbuffers);
@@ -505,6 +507,8 @@
 	#define glGenLists _ptr_to_glGenLists
 	extern void (API_ENTRY *_ptr_to_glGenProgramPipelines)(GLsizei n,GLuint* pipelines);
 	#define glGenProgramPipelines _ptr_to_glGenProgramPipelines
+	extern void (API_ENTRY *_ptr_to_glGenProgramsARB)(GLsizei n,GLuint* programs);
+	#define glGenProgramsARB _ptr_to_glGenProgramsARB
 	extern void (API_ENTRY *_ptr_to_glGenQueries)(GLsizei n,GLuint* ids);
 	#define glGenQueries _ptr_to_glGenQueries
 	extern void (API_ENTRY *_ptr_to_glGenRenderbuffers)(GLsizei n,GLuint* renderbuffers);
@@ -641,16 +645,28 @@
 	#define glGetPolygonStipple _ptr_to_glGetPolygonStipple
 	extern void (API_ENTRY *_ptr_to_glGetProgramBinary)(GLuint program,GLsizei bufSize,GLsizei* length,GLenum* binaryFormat,GLvoid* binary);
 	#define glGetProgramBinary _ptr_to_glGetProgramBinary
+	extern void (API_ENTRY *_ptr_to_glGetProgramEnvParameterdvARB)(GLenum target,GLuint index,GLdouble* params);
+	#define glGetProgramEnvParameterdvARB _ptr_to_glGetProgramEnvParameterdvARB
+	extern void (API_ENTRY *_ptr_to_glGetProgramEnvParameterfvARB)(GLenum target,GLuint index,GLfloat* params);
+	#define glGetProgramEnvParameterfvARB _ptr_to_glGetProgramEnvParameterfvARB
 	extern void (API_ENTRY *_ptr_to_glGetProgramInfoLog)(GLuint program,GLsizei bufSize,GLsizei* length,GLchar* infoLog);
 	#define glGetProgramInfoLog _ptr_to_glGetProgramInfoLog
+	extern void (API_ENTRY *_ptr_to_glGetProgramLocalParameterdvARB)(GLenum target,GLuint index,GLdouble* params);
+	#define glGetProgramLocalParameterdvARB _ptr_to_glGetProgramLocalParameterdvARB
+	extern void (API_ENTRY *_ptr_to_glGetProgramLocalParameterfvARB)(GLenum target,GLuint index,GLfloat* params);
+	#define glGetProgramLocalParameterfvARB _ptr_to_glGetProgramLocalParameterfvARB
 	extern void (API_ENTRY *_ptr_to_glGetProgramPipelineInfoLog)(GLuint pipeline,GLsizei bufSize,GLsizei* length,GLchar* infoLog);
 	#define glGetProgramPipelineInfoLog _ptr_to_glGetProgramPipelineInfoLog
 	extern void (API_ENTRY *_ptr_to_glGetProgramPipelineiv)(GLuint pipeline,GLenum pname,GLint* params);
 	#define glGetProgramPipelineiv _ptr_to_glGetProgramPipelineiv
 	extern void (API_ENTRY *_ptr_to_glGetProgramStageiv)(GLuint program,GLenum shadertype,GLenum pname,GLint* values);
 	#define glGetProgramStageiv _ptr_to_glGetProgramStageiv
+	extern void (API_ENTRY *_ptr_to_glGetProgramStringARB)(GLenum target,GLenum pname,GLvoid* string);
+	#define glGetProgramStringARB _ptr_to_glGetProgramStringARB
 	extern void (API_ENTRY *_ptr_to_glGetProgramiv)(GLuint program,GLenum pname,GLint* params);
 	#define glGetProgramiv _ptr_to_glGetProgramiv
+	extern void (API_ENTRY *_ptr_to_glGetProgramivARB)(GLenum target,GLenum pname,GLint* params);
+	#define glGetProgramivARB _ptr_to_glGetProgramivARB
 	extern void (API_ENTRY *_ptr_to_glGetQueryIndexediv)(GLenum target,GLuint index,GLenum pname,GLint* params);
 	#define glGetQueryIndexediv _ptr_to_glGetQueryIndexediv
 	extern void (API_ENTRY *_ptr_to_glGetQueryObjecti64v)(GLuint id,GLenum pname,GLint64* params);
@@ -811,6 +827,8 @@
 	#define glIsList _ptr_to_glIsList
 	extern GLboolean (API_ENTRY *_ptr_to_glIsProgram)(GLuint program);
 	#define glIsProgram _ptr_to_glIsProgram
+	extern boolean (API_ENTRY *_ptr_to_glIsProgramARB)(GLuint program);
+	#define glIsProgramARB _ptr_to_glIsProgramARB
 	extern GLboolean (API_ENTRY *_ptr_to_glIsProgramPipeline)(GLuint pipeline);
 	#define glIsProgramPipeline _ptr_to_glIsProgramPipeline
 	extern GLboolean (API_ENTRY *_ptr_to_glIsQuery)(GLuint id);
@@ -1085,8 +1103,26 @@
 	#define glPrioritizeTextures _ptr_to_glPrioritizeTextures
 	extern void (API_ENTRY *_ptr_to_glProgramBinary)(GLuint program,GLenum binaryFormat,const GLvoid* binary,GLsizei length);
 	#define glProgramBinary _ptr_to_glProgramBinary
+	extern void (API_ENTRY *_ptr_to_glProgramEnvParameter4dARB)(GLenum target,GLuint index,GLdouble x,GLdouble y,GLdouble z,GLdouble w);
+	#define glProgramEnvParameter4dARB _ptr_to_glProgramEnvParameter4dARB
+	extern void (API_ENTRY *_ptr_to_glProgramEnvParameter4dvARB)(GLenum target,GLuint index,const GLdouble* params);
+	#define glProgramEnvParameter4dvARB _ptr_to_glProgramEnvParameter4dvARB
+	extern void (API_ENTRY *_ptr_to_glProgramEnvParameter4fARB)(GLenum target,GLuint index,GLfloat x,GLfloat y,GLfloat z,GLfloat w);
+	#define glProgramEnvParameter4fARB _ptr_to_glProgramEnvParameter4fARB
+	extern void (API_ENTRY *_ptr_to_glProgramEnvParameter4fvARB)(GLenum target,GLuint index,const GLfloat* params);
+	#define glProgramEnvParameter4fvARB _ptr_to_glProgramEnvParameter4fvARB
+	extern void (API_ENTRY *_ptr_to_glProgramLocalParameter4dARB)(GLenum target,GLuint index,GLdouble x,GLdouble y,GLdouble z,GLdouble w);
+	#define glProgramLocalParameter4dARB _ptr_to_glProgramLocalParameter4dARB
+	extern void (API_ENTRY *_ptr_to_glProgramLocalParameter4dvARB)(GLenum target,GLuint index,const GLdouble* params);
+	#define glProgramLocalParameter4dvARB _ptr_to_glProgramLocalParameter4dvARB
+	extern void (API_ENTRY *_ptr_to_glProgramLocalParameter4fARB)(GLenum target,GLuint index,GLfloat x,GLfloat y,GLfloat z,GLfloat w);
+	#define glProgramLocalParameter4fARB _ptr_to_glProgramLocalParameter4fARB
+	extern void (API_ENTRY *_ptr_to_glProgramLocalParameter4fvARB)(GLenum target,GLuint index,const GLfloat* params);
+	#define glProgramLocalParameter4fvARB _ptr_to_glProgramLocalParameter4fvARB
 	extern void (API_ENTRY *_ptr_to_glProgramParameteri)(GLuint program,GLenum pname,GLint value);
 	#define glProgramParameteri _ptr_to_glProgramParameteri
+	extern void (API_ENTRY *_ptr_to_glProgramStringARB)(GLenum target,GLenum format,GLsizei len,const GLvoid* string);
+	#define glProgramStringARB _ptr_to_glProgramStringARB
 	extern void (API_ENTRY *_ptr_to_glProgramUniform1d)(GLuint program,GLint location,GLdouble v0);
 	#define glProgramUniform1d _ptr_to_glProgramUniform1d
 	extern void (API_ENTRY *_ptr_to_glProgramUniform1dv)(GLuint program,GLint location,GLsizei count,const GLdouble* value);
@@ -2001,8 +2037,8 @@
 	#define glWindowPos3iv _ptr_to_glWindowPos3iv
 	extern void (API_ENTRY *_ptr_to_glWindowPos3s)(GLshort x,GLshort y,GLshort z);
 	#define glWindowPos3s _ptr_to_glWindowPos3s
-	extern void (API_ENTRY *_ptr_to_glWindowPos3sv)(const GLshort* v);
-	#define glWindowPos3sv _ptr_to_glWindowPos3sv
+	extern () (API_ENTRY *_ptr_to_glvoid)(GLglAccum (GLenum,GLop, GLfloat,GLvalue );
+	#define glvoid _ptr_to_glvoid
 	
 	#ifdef __cplusplus
 	}

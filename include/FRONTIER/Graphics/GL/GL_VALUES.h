@@ -208,6 +208,7 @@
 	#define GL_COLOR_MATERIAL_FACE                                        0xb55
 	#define GL_COLOR_MATERIAL_PARAMETER                                   0xb56
 	#define GL_COLOR_SUM                                                  0x8458
+	#define GL_COLOR_SUM_ARB                                              0x8458
 	#define GL_COLOR_WRITEMASK                                            0xc23
 	#define GL_COMBINE                                                    0x8570
 	#define GL_COMBINE_ALPHA                                              0x8572
@@ -257,6 +258,8 @@
 	#define GL_CURRENT_FOG_COORD                                          0x8453
 	#define GL_CURRENT_FOG_COORDINATE                                     0x8453
 	#define GL_CURRENT_INDEX                                              0xb01
+	#define GL_CURRENT_MATRIX_ARB                                         0x8641
+	#define GL_CURRENT_MATRIX_STACK_DEPTH_ARB                             0x8640
 	#define GL_CURRENT_NORMAL                                             0xb02
 	#define GL_CURRENT_PROGRAM                                            0x8b8d
 	#define GL_CURRENT_QUERY                                              0x8865
@@ -429,6 +432,7 @@
 	#define GL_FRACTIONAL_ODD                                             0x8e7b
 	#define GL_FRAGMENT_DEPTH                                             0x8452
 	#define GL_FRAGMENT_INTERPOLATION_OFFSET_BITS                         0x8e5d
+	#define GL_FRAGMENT_PROGRAM_ARB                                       0x8804
 	#define GL_FRAGMENT_SHADER                                            0x8b30
 	#define GL_FRAGMENT_SHADER_ARB                                        0x8b30
 	#define GL_FRAGMENT_SHADER_BIT                                        0x2
@@ -680,6 +684,38 @@
 	#define GL_MAP_STENCIL                                                0xd11
 	#define GL_MAP_UNSYNCHRONIZED_BIT                                     0x20
 	#define GL_MAP_WRITE_BIT                                              0x2
+	#define GL_MATRIX0_ARB                                                0x88c0
+	#define GL_MATRIX10_ARB                                               0x88ca
+	#define GL_MATRIX11_ARB                                               0x88cb
+	#define GL_MATRIX12_ARB                                               0x88cc
+	#define GL_MATRIX13_ARB                                               0x88cd
+	#define GL_MATRIX14_ARB                                               0x88ce
+	#define GL_MATRIX15_ARB                                               0x88cf
+	#define GL_MATRIX16_ARB                                               0x88d0
+	#define GL_MATRIX17_ARB                                               0x88d1
+	#define GL_MATRIX18_ARB                                               0x88d2
+	#define GL_MATRIX19_ARB                                               0x88d3
+	#define GL_MATRIX1_ARB                                                0x88c1
+	#define GL_MATRIX20_ARB                                               0x88d4
+	#define GL_MATRIX21_ARB                                               0x88d5
+	#define GL_MATRIX22_ARB                                               0x88d6
+	#define GL_MATRIX23_ARB                                               0x88d7
+	#define GL_MATRIX24_ARB                                               0x88d8
+	#define GL_MATRIX25_ARB                                               0x88d9
+	#define GL_MATRIX26_ARB                                               0x88da
+	#define GL_MATRIX27_ARB                                               0x88db
+	#define GL_MATRIX28_ARB                                               0x88dc
+	#define GL_MATRIX29_ARB                                               0x88dd
+	#define GL_MATRIX2_ARB                                                0x88c2
+	#define GL_MATRIX30_ARB                                               0x88de
+	#define GL_MATRIX31_ARB                                               0x88df
+	#define GL_MATRIX3_ARB                                                0x88c3
+	#define GL_MATRIX4_ARB                                                0x88c4
+	#define GL_MATRIX5_ARB                                                0x88c5
+	#define GL_MATRIX6_ARB                                                0x88c6
+	#define GL_MATRIX7_ARB                                                0x88c7
+	#define GL_MATRIX8_ARB                                                0x88c8
+	#define GL_MATRIX9_ARB                                                0x88c9
 	#define GL_MATRIX_MODE                                                0xba0
 	#define GL_MAX_3D_TEXTURE_SIZE                                        0x8073
 	#define GL_MAX_ARRAY_TEXTURE_LAYERS                                   0x88ff
@@ -738,8 +774,28 @@
 	#define GL_MAX_NAME_STACK_DEPTH                                       0xd37
 	#define GL_MAX_PATCH_VERTICES                                         0x8e7d
 	#define GL_MAX_PIXEL_MAP_TABLE                                        0xd34
+	#define GL_MAX_PROGRAM_ADDRESS_REGISTERS_ARB                          0x88b1
+	#define GL_MAX_PROGRAM_ALU_INSTRUCTIONS_ARB                           0x880b
+	#define GL_MAX_PROGRAM_ATTRIBS_ARB                                    0x88ad
+	#define GL_MAX_PROGRAM_ENV_PARAMETERS_ARB                             0x88b5
+	#define GL_MAX_PROGRAM_INSTRUCTIONS_ARB                               0x88a1
+	#define GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB                           0x88b4
+	#define GL_MAX_PROGRAM_MATRICES_ARB                                   0x862f
+	#define GL_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB                         0x862e
+	#define GL_MAX_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB                   0x88b3
+	#define GL_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB                    0x880e
+	#define GL_MAX_PROGRAM_NATIVE_ATTRIBS_ARB                             0x88af
+	#define GL_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB                        0x88a3
+	#define GL_MAX_PROGRAM_NATIVE_PARAMETERS_ARB                          0x88ab
+	#define GL_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB                         0x88a7
+	#define GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB                    0x8810
+	#define GL_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB                    0x880f
+	#define GL_MAX_PROGRAM_PARAMETERS_ARB                                 0x88a9
+	#define GL_MAX_PROGRAM_TEMPORARIES_ARB                                0x88a5
 	#define GL_MAX_PROGRAM_TEXEL_OFFSET                                   0x8905
 	#define GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET                          0x8e5f
+	#define GL_MAX_PROGRAM_TEX_INDIRECTIONS_ARB                           0x880d
+	#define GL_MAX_PROGRAM_TEX_INSTRUCTIONS_ARB                           0x880c
 	#define GL_MAX_PROJECTION_STACK_DEPTH                                 0xd38
 	#define GL_MAX_RECTANGLE_TEXTURE_SIZE                                 0x84f8
 	#define GL_MAX_RENDERBUFFER_SIZE                                      0x84e8
@@ -957,13 +1013,37 @@
 	#define GL_PRIMITIVES_GENERATED                                       0x8c87
 	#define GL_PRIMITIVE_RESTART                                          0x8f9d
 	#define GL_PRIMITIVE_RESTART_INDEX                                    0x8f9e
+	#define GL_PROGRAM_ADDRESS_REGISTERS_ARB                              0x88b0
+	#define GL_PROGRAM_ALU_INSTRUCTIONS_ARB                               0x8805
+	#define GL_PROGRAM_ATTRIBS_ARB                                        0x88ac
 	#define GL_PROGRAM_BINARY_FORMATS                                     0x87ff
 	#define GL_PROGRAM_BINARY_LENGTH                                      0x8741
 	#define GL_PROGRAM_BINARY_RETRIEVABLE_HINT                            0x8257
+	#define GL_PROGRAM_BINDING_ARB                                        0x8677
+	#define GL_PROGRAM_ERROR_POSITION_ARB                                 0x864b
+	#define GL_PROGRAM_ERROR_STRING_ARB                                   0x8874
+	#define GL_PROGRAM_FORMAT_ARB                                         0x8876
+	#define GL_PROGRAM_FORMAT_ASCII_ARB                                   0x8875
+	#define GL_PROGRAM_INSTRUCTIONS_ARB                                   0x88a0
+	#define GL_PROGRAM_LENGTH_ARB                                         0x8627
+	#define GL_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB                       0x88b2
+	#define GL_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB                        0x8808
+	#define GL_PROGRAM_NATIVE_ATTRIBS_ARB                                 0x88ae
+	#define GL_PROGRAM_NATIVE_INSTRUCTIONS_ARB                            0x88a2
+	#define GL_PROGRAM_NATIVE_PARAMETERS_ARB                              0x88aa
+	#define GL_PROGRAM_NATIVE_TEMPORARIES_ARB                             0x88a6
+	#define GL_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB                        0x880a
+	#define GL_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB                        0x8809
 	#define GL_PROGRAM_OBJECT_ARB                                         0x8b40
+	#define GL_PROGRAM_PARAMETERS_ARB                                     0x88a8
 	#define GL_PROGRAM_PIPELINE_BINDING                                   0x825a
 	#define GL_PROGRAM_POINT_SIZE                                         0x8642
 	#define GL_PROGRAM_SEPARABLE                                          0x8258
+	#define GL_PROGRAM_STRING_ARB                                         0x8628
+	#define GL_PROGRAM_TEMPORARIES_ARB                                    0x88a4
+	#define GL_PROGRAM_TEX_INDIRECTIONS_ARB                               0x8807
+	#define GL_PROGRAM_TEX_INSTRUCTIONS_ARB                               0x8806
+	#define GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB                            0x88b6
 	#define GL_PROJECTION                                                 0x1701
 	#define GL_PROJECTION_MATRIX                                          0xba7
 	#define GL_PROJECTION_STACK_DEPTH                                     0xba4
@@ -1430,6 +1510,7 @@
 	#define GL_TRANSFORM_FEEDBACK_VARYINGS                                0x8c83
 	#define GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH                      0x8c76
 	#define GL_TRANSPOSE_COLOR_MATRIX                                     0x84e6
+	#define GL_TRANSPOSE_CURRENT_MATRIX_ARB                               0x88b7
 	#define GL_TRANSPOSE_MODELVIEW_MATRIX                                 0x84e3
 	#define GL_TRANSPOSE_PROJECTION_MATRIX                                0x84e4
 	#define GL_TRANSPOSE_TEXTURE_MATRIX                                   0x84e5
@@ -1553,6 +1634,7 @@
 	#define GL_VERTEX_ATTRIB_ARRAY_STRIDE_ARB                             0x8624
 	#define GL_VERTEX_ATTRIB_ARRAY_TYPE                                   0x8625
 	#define GL_VERTEX_ATTRIB_ARRAY_TYPE_ARB                               0x8625
+	#define GL_VERTEX_PROGRAM_ARB                                         0x8620
 	#define GL_VERTEX_PROGRAM_POINT_SIZE                                  0x8642
 	#define GL_VERTEX_PROGRAM_POINT_SIZE_ARB                              0x8642
 	#define GL_VERTEX_PROGRAM_TWO_SIDE                                    0x8643
@@ -1573,6 +1655,5 @@
 	#define GL_XOR                                                        0x1506
 	#define GL_ZERO                                                       0x0
 	#define GL_ZOOM_X                                                     0xd16
-	#define GL_ZOOM_Y                                                     0xd17
 
 #endif //FRONTIER_GL_VALUES_H_INCLUDED
