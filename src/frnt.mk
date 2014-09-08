@@ -16,13 +16,14 @@ LIBPATH=$(PATH_TO_LIB)/$(LIBNAME)
 COMPILE_SYSTEM=1
 COMPILE_GRAPHICS=1
 COMPILE_GL_HEADER=1
+COMPILE_MERGED=1
 
 
 ifeq ($(LIBNAME),)
 	$(warning LIBNAME wasn't specified /using plain 'lib'/)
 endif
 
-all: MAKE_TARGETS MAKE_DIR_TARGETS
+all: MAKE_TARGETS | MAKE_DIR_TARGETS
 
 #only include the submake if compile system
 ifeq ($(COMPILE_SYSTEM),1)
@@ -34,15 +35,28 @@ ifeq ($(COMPILE_GRAPHICS),1)
 include f_graphics.mk
 endif
 
-MAKE_TARGETS: $(TARGETS) 
-MAKE_DIR_TARGETS: $(DIR_TARGETS) 
+ifeq ($(COMPILE_MERGED),1)
+TARGETS+=$(LIBPATH)/libf.a
+clean-merged:
+	$(RM) $(LIBPATH)/libf.a
+else
+clean-merged:
+endif
 
+MAKE_TARGETS: $(TARGETS) 
+MAKE_DIR_TARGETS: | $(DIR_TARGETS) 
+
+###
+# directory target
+###
+$(LIBPATH)/libf.a: $(OBJ_FILES) | $(LIBPATH) 
+	$(AR) rcs $@ $(OBJ_FILES)
 ###
 # directory target
 ###
 $(PATH_TO_LIB)/$(LIBNAME):
 	$(CD) $(PATH_TO_ROOT); $(MKDIR) $(LIBNAME)
 
-clean: clean-system clean-graphics
+clean: clean-system clean-graphics clean-merged
 	
 	

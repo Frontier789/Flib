@@ -4,14 +4,12 @@ OBJ_FILES_SYSTEM := $(addprefix $(LIBPATH)/System/,$(notdir $(CPP_FILES_SYSTEM:.
 
 TARGETS+=$(LIBPATH)/libf-system.a
 DIR_TARGETS+=$(LIBPATH)/System
-
-#created files
-RESULT_FILES := $(OBJ_FILES_SYSTEM) $(LIBPATH)/libf-system.a
+OBJ_FILES+=$(OBJ_FILES_SYSTEM)
 
 ###
 # directory targets
 ###
-$(LIBPATH)/System: $(LIBPATH)
+$(LIBPATH)/System: | $(LIBPATH)
 	$(CD) $(PATH_TO_ROOT); $(CD) $(LIBNAME); $(MKDIR) System
 
 ###

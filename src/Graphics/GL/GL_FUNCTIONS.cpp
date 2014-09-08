@@ -153,6 +153,19 @@ namespace fg
 
 
 
+static void API_ENTRY _choose_glAccum(GLenum op,GLfloat value)
+{
+	void (*gotPtr)() = (void(*)())retrieveProcAddress("glAccum");
+	if (!gotPtr)
+		fg::OpenGL_log << "Error: glAccum is NULL " << std::endl;
+	else
+	{
+		_ptr_to_glAccum = (void(API_ENTRY*)(GLenum,GLfloat))gotPtr;
+		return _ptr_to_glAccum(op,value);
+	}
+	return;
+}
+void (API_ENTRY *_ptr_to_glAccum)(GLenum op,GLfloat value) = _choose_glAccum;
 static void API_ENTRY _choose_glActiveShaderProgram(GLuint pipeline,GLuint program)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glActiveShaderProgram");
@@ -5320,20 +5333,20 @@ static GLboolean API_ENTRY _choose_glIsProgram(GLuint program)
 	return RET_TYPE();
 }
 GLboolean (API_ENTRY *_ptr_to_glIsProgram)(GLuint program) = _choose_glIsProgram;
-static boolean API_ENTRY _choose_glIsProgramARB(GLuint program)
+static GLboolean API_ENTRY _choose_glIsProgramARB(GLuint program)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsProgramARB");
 	if (!gotPtr)
 		fg::OpenGL_log << "Error: glIsProgramARB is NULL " << std::endl;
 	else
 	{
-		_ptr_to_glIsProgramARB = (boolean(API_ENTRY*)(GLuint))gotPtr;
+		_ptr_to_glIsProgramARB = (GLboolean(API_ENTRY*)(GLuint))gotPtr;
 		return _ptr_to_glIsProgramARB(program);
 	}
-	typedef boolean RET_TYPE;
+	typedef GLboolean RET_TYPE;
 	return RET_TYPE();
 }
-boolean (API_ENTRY *_ptr_to_glIsProgramARB)(GLuint program) = _choose_glIsProgramARB;
+GLboolean (API_ENTRY *_ptr_to_glIsProgramARB)(GLuint program) = _choose_glIsProgramARB;
 static GLboolean API_ENTRY _choose_glIsProgramPipeline(GLuint pipeline)
 {
 	void (*gotPtr)() = (void(*)())retrieveProcAddress("glIsProgramPipeline");
@@ -13199,17 +13212,3 @@ static void API_ENTRY _choose_glWindowPos3s(GLshort x,GLshort y,GLshort z)
 	return;
 }
 void (API_ENTRY *_ptr_to_glWindowPos3s)(GLshort x,GLshort y,GLshort z) = _choose_glWindowPos3s;
-static () API_ENTRY _choose_glvoid(GLglAccum (GLenum,GLop, GLfloat,GLvalue )
-{
-	void (*gotPtr)() = (void(*)())retrieveProcAddress("glvoid");
-	if (!gotPtr)
-		fg::OpenGL_log << "Error: glvoid is NULL " << std::endl;
-	else
-	{
-		_ptr_to_glvoid = (()(API_ENTRY*)(GLglAccum,GLop,,GLvalue))gotPtr;
-		return _ptr_to_glvoid((GLenum,GLfloat,);
-	}
-	typedef () RET_TYPE;
-	return RET_TYPE();
-}
-() (API_ENTRY *_ptr_to_glvoid)(GLglAccum (GLenum,GLop, GLfloat,GLvalue ) = _choose_glvoid;

@@ -37,6 +37,8 @@
 	{
 	#endif //__cplusplus
 	
+	extern void (API_ENTRY *_ptr_to_glAccum)(GLenum op,GLfloat value);
+	#define glAccum _ptr_to_glAccum
 	extern void (API_ENTRY *_ptr_to_glActiveShaderProgram)(GLuint pipeline,GLuint program);
 	#define glActiveShaderProgram _ptr_to_glActiveShaderProgram
 	extern void (API_ENTRY *_ptr_to_glActiveTexture)(GLenum texture);
@@ -827,7 +829,7 @@
 	#define glIsList _ptr_to_glIsList
 	extern GLboolean (API_ENTRY *_ptr_to_glIsProgram)(GLuint program);
 	#define glIsProgram _ptr_to_glIsProgram
-	extern boolean (API_ENTRY *_ptr_to_glIsProgramARB)(GLuint program);
+	extern GLboolean (API_ENTRY *_ptr_to_glIsProgramARB)(GLuint program);
 	#define glIsProgramARB _ptr_to_glIsProgramARB
 	extern GLboolean (API_ENTRY *_ptr_to_glIsProgramPipeline)(GLuint pipeline);
 	#define glIsProgramPipeline _ptr_to_glIsProgramPipeline
@@ -2037,8 +2039,6 @@
 	#define glWindowPos3iv _ptr_to_glWindowPos3iv
 	extern void (API_ENTRY *_ptr_to_glWindowPos3s)(GLshort x,GLshort y,GLshort z);
 	#define glWindowPos3s _ptr_to_glWindowPos3s
-	extern () (API_ENTRY *_ptr_to_glvoid)(GLglAccum (GLenum,GLop, GLfloat,GLvalue );
-	#define glvoid _ptr_to_glvoid
 	
 	#ifdef __cplusplus
 	}

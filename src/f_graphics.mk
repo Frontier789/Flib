@@ -4,22 +4,21 @@ OBJ_FILES_GRAPHICS := $(addprefix $(LIBPATH)/Graphics/,$(notdir $(CPP_FILES_GRAP
 
 TARGETS+=$(LIBPATH)/libf-graphics.a
 DIR_TARGETS+=$(LIBPATH)/Graphics
+OBJ_FILES+=$(OBJ_FILES_GRAPHICS)
 
 ifeq ($(COMPILE_GL_HEADER),1)
 OBJ_FILES_GRAPHICS+=$(LIBPATH)/Graphics/ext/GL_FUNCTIONS.o
+OBJ_FILES+=$(LIBPATH)/Graphics/ext/GL_FUNCTIONS.o
 DIR_TARGETS+=$(LIBPATH)/Graphics/ext
 endif
-
-#created files
-RESULT_FILES := $(OBJ_FILES_GRAPHICS) $(LIBPATH)/libf-graphics.a
 
 ###
 # directory targets
 ###
-$(LIBPATH)/Graphics: $(LIBPATH)
+$(LIBPATH)/Graphics: | $(LIBPATH)
 	$(CD) $(PATH_TO_ROOT); $(CD) $(LIBNAME); $(MKDIR) Graphics
 	
-$(LIBPATH)/Graphics/ext: $(LIBPATH)/Graphics
+$(LIBPATH)/Graphics/ext: | $(LIBPATH)/Graphics
 	$(CD) $(PATH_TO_ROOT); $(CD) $(LIBNAME); $(CD) Graphics; $(MKDIR) ext
 
 ###
