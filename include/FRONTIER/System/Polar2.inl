@@ -106,34 +106,78 @@ namespace fm
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	polar2<T> &operator+=(polar2<T> &left,const polar2<T> &right)
+	polar2<T> &polar2<T>::operator+=(const polar2<T> &other)
 	{
-		left = polar2<T>(vector2<T>(left)+vector2<T>(right));
-		return left;
+		*this = polar2<T>(vector2<T>(*this)+vector2<T>(other));
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	polar2<T> &operator-=(polar2<T> &left,const polar2<T> &right)
+	polar2<T> &polar2<T>::operator-=(const polar2<T> &other)
 	{
-		left = polar2<T>(vector2<T>(left)-vector2<T>(right));
-		return left;
+		*this = polar2<T>(vector2<T>(*this)-vector2<T>(other));
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	polar2<T> &operator*=(polar2<T> &left,const T &right)
+	polar2<T> &polar2<T>::operator*=(const T &other)
 	{
-		left.length*=right;
-		return left;
+		length*=other;
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	polar2<T> &operator/=(polar2<T> &left,const T &right)
+	polar2<T> &polar2<T>::operator/=(const T &other)
 	{
-		left.length/=right;
-		return left;
+		length/=other;
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////
+	template<class T>
+	polar2<T> polar2<T>::operator+(const polar2<T> &other) const
+	{
+		return polar2<T>(vector2<T>(*this)+vector2<T>(other));
+	}
+
+	////////////////////////////////////////////////////////////
+	template<class T>
+	polar2<T> polar2<T>::operator-(const polar2<T> &other) const
+	{
+		return polar2<T>(vector2<T>(*this)-vector2<T>(other));
+	}
+
+	////////////////////////////////////////////////////////////
+	template<class T>
+	polar2<T> polar2<T>::operator*(const T &scalar) const
+	{
+		return polar2<T>(length*scalar,angle);
+	}
+
+	////////////////////////////////////////////////////////////
+	template<class T>
+	polar2<T> polar2<T>::operator/(const T &scalar) const
+	{
+		return polar2<T>(length/scalar,angle);
+	}
+
+	////////////////////////////////////////////////////////////
+	template<class T>
+	bool polar2<T>::operator==(const polar2<T> &other) const 
+	{
+		return (length==other.length	    && (angle-other.angle).asDegrees()%360==0) ||
+			   (length==other.length*T(-1) && (angle-other.angle).asDegrees()%360==180);
+	}
+
+	////////////////////////////////////////////////////////////
+	template<class T>
+	bool polar2<T>::operator!=(const polar2<T> &other) const
+	{
+		return !(length==other.length	     && (angle-other.angle).asDegrees()%360==0) &&
+			   !(length==other.length*T(-1) && (angle-other.angle).asDegrees()%360==180);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -145,53 +189,9 @@ namespace fm
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	polar2<T> operator+(const polar2<T> &left,const polar2<T> &right)
-	{
-		return polar2<T>(vector2<T>(left)+vector2<T>(right));
-	}
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	polar2<T> operator-(const polar2<T> &left,const polar2<T> &right)
-	{
-		return polar2<T>(vector2<T>(left)-vector2<T>(right));
-	}
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	polar2<T> operator*(const polar2<T> &left,const T &right)
-	{
-		return polar2<T>(left.length*right,left.angle);
-	}
-
-	////////////////////////////////////////////////////////////
-	template<class T>
 	polar2<T> operator*(const T &left,const polar2<T> &right)
 	{
 		return polar2<T>(right.length*left,right.angle);
-	}
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	polar2<T> operator/(const polar2<T> &left,const T &right)
-	{
-		return polar2<T>(left.length/right,left.angle);
-	}
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	bool operator==(const polar2<T> &left,const polar2<T> &right)
-	{
-		return (left.length==right.length	    && (left.angle-right.angle).asDegrees()%360==0) ||
-			   (left.length==right.length*T(-1) && (left.angle-right.angle).asDegrees()%360==180);
-	}
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	bool operator!=(const polar2<T> &left,const polar2<T> &right)
-	{
-		return !(left.length==right.length	     && (left.angle-right.angle).asDegrees()%360==0) &&
-			   !(left.length==right.length*T(-1) && (left.angle-right.angle).asDegrees()%360==180);
 	}
 }
 #endif

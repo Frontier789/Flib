@@ -409,6 +409,54 @@ namespace fm
 		return vector2<T>(x*scalar,
 						  y*scalar);
 	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline vector2<T> &vector2<T>::operator+=(const vector2<T> &other)
+	{
+		x+=other.x;
+		y+=other.y;
+		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline vector2<T> &vector2<T>::operator-=(const vector2<T> &other)
+	{
+		x-=other.x;
+		y-=other.y;
+		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline vector2<T> vector2<T>::operator+(const vector2<T> &other) const
+	{
+		return vector2<T>(x+other.x,
+						  y+other.y);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline vector2<T> vector2<T>::operator-(const vector2<T> &other) const
+	{
+		return vector2<T>(x-other.x,
+						  y-other.y);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline bool vector2<T>::operator==(const vector2<T> &other) const
+	{
+		return x==other.x && y==other.y;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline bool vector2<T>::operator!=(const vector2<T> &other) const
+	{
+		return x!=other.x || y!=other.y;
+	}
 }
 
 namespace std
@@ -437,66 +485,18 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline vector2<T> &operator+=(vector2<T> &left,const vector2<T> &right)
+	inline vector2<T> operator*(const T &left,const vector2<T> &right)
 	{
-		left.x+=right.x;
-		left.y+=right.y;
-		return left;
+		return vector2<T>(left*right.x,
+						  left*right.y);
 	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector2<T> &operator-=(vector2<T> &left,const vector2<T> &right)
-	{
-		left.x-=right.x;
-		left.y-=right.y;
-		return left;
-	}
-
+	
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector2<T> operator-(const vector2<T> &vec)
 	{
 		return vector2<T>(vec.x*T(-1),
 						  vec.y*T(-1));
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector2<T> operator+(const vector2<T> &left,const vector2<T> &right)
-	{
-		return vector2<T>(left.x+right.x,
-						  left.y+right.y);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector2<T> operator-(const vector2<T> &left,const vector2<T> &right)
-	{
-		return vector2<T>(left.x-right.x,
-						  left.y-right.y);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector2<T> operator*(const T &left,const vector2<T> &right)
-	{
-		return vector2<T>(left*right.x,
-						  left*right.y);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline bool operator==(const vector2<T> &left,const vector2<T> &right)
-	{
-		return left.x==right.x && left.y==right.y;
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline bool operator!=(const vector2<T> &left,const vector2<T> &right)
-	{
-		return left.x!=right.x || left.y!=right.y;
 	}
 
 }

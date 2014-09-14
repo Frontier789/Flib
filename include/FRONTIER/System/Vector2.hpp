@@ -514,6 +514,72 @@ namespace fm
 		reference operator/=(const T &scalar);
 
 		/////////////////////////////////////////////////////////////
+		/// @relates fm::vector2
+		/// @brief Overload of binary operator +=
+		///
+		/// @param other Right operand (vector)
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference operator+=(const vector2<T> &other);
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::vector2
+		/// @brief Overload of binary operator -=
+		///
+		/// @param other Right operand (vector)
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference operator-=(const vector2<T> &other);
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::vector2
+		/// @brief Overload of binary operator +
+		///
+		/// @param other Right operand (vector)
+		///
+		/// @return Memberwise addition with @a other
+		///
+		/////////////////////////////////////////////////////////////
+		vector2<T> operator+(const vector2<T> &other) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::vector2
+		/// @brief Overload of binary operator -
+		///
+		/// @param other Right operand (vector)
+		///
+		/// @return Memberwise substraction with @a other
+		///
+		/////////////////////////////////////////////////////////////
+		vector2<T> operator-(const vector2<T> &other) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::vector2
+		/// @brief Overload of binary operator ==
+		///
+		/// @param other Right operand (vector)
+		///
+		/// @return True if the vector equals @a other
+		///
+		/////////////////////////////////////////////////////////////
+		bool operator==(const vector2<T> &other) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::vector2
+		/// @brief Overload of binary operator !=
+		///
+		/// @param other Right operand (vector)
+		///
+		/// @return True if the vector does not equal @a other
+		///
+		/////////////////////////////////////////////////////////////
+		bool operator!=(const vector2<T> &other) const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Convert template class with x y fields to 2D vector
 		///
 		/// This functions fails to compile ifdef
@@ -558,32 +624,6 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector2
-	/// @brief Overload of binary operator +=
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return Reference to @a left
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	vector2<T> &operator+=(vector2<T> &left,const vector2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector2
-	/// @brief Overload of binary operator -=
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return Reference to @a left
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	vector2<T> &operator-=(vector2<T> &left,const vector2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector2
 	/// @brief Overload of unary operator -
 	///
 	/// @param vec Vector to negate
@@ -596,68 +636,16 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector2
-	/// @brief Overload of binary operator +
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return Memberwise addition of @a left and @a right
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	vector2<T> operator+(const vector2<T> &left,const vector2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector2
-	/// @brief Overload of binary operator -
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return Memberwise substraction of @a left and @a right
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	vector2<T> operator-(const vector2<T> &left,const vector2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector2
 	/// @brief Overload of binary operator *
 	///
 	/// @param left Left operand (scalar)
 	/// @param right Right operand (vector)
 	///
-	/// @return Memberwise multiplication of @a right by @a left
+	/// @return Memberwise multiplication with @a other
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	vector2<T> operator*(const T &left,const vector2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector2
-	/// @brief Overload of binary operator ==
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return True if @a left and @a right are the same
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	bool operator==(const vector2<T> &left,const vector2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector2
-	/// @brief Overload of binary operator !=
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return True if @a left and @a right are not the same
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	bool operator!=(const vector2<T> &left,const vector2<T> &right);
 
 
 	typedef vector2<float> 		  vec2;

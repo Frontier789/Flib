@@ -95,6 +95,116 @@ namespace fm
 		reference operator()(const vector2<T2> &vec);
 
 		/////////////////////////////////////////////////////////////
+		/// @relates fm::polar2
+		/// @brief Overload of binary operator +=
+		///
+		/// @param other Right operand (polar vector)
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		polar2<T> &operator+=(const polar2<T> &other);
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::polar2
+		/// @brief Overload of binary operator -=
+		///
+		/// @param other Right operand (polar vector)
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		polar2<T> &operator-=(const polar2<T> &other);
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::polar2
+		/// @brief Overload of binary operator *=
+		///
+		/// @param other Right operand (scalar)
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		polar2<T> &operator*=(const T &scalar);
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::polar2
+		/// @brief Overload of binary operator /=
+		///
+		/// @param scalar Right operand (scalar)
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		polar2<T> &operator/=(const T &scalar);
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::polar2
+		/// @brief Overload of binary operator +
+		///
+		/// @param other Right operand (polar vector)
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		polar2<T> operator+(const polar2<T> &other) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::polar2
+		/// @brief Overload of binary operator -
+		///
+		/// @param other Right operand (polar vector)
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		polar2<T> operator-(const polar2<T> &other) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::polar2
+		/// @brief Overload of binary operator *
+		///
+		/// @param scalar Right operand (scalar)
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		polar2<T> operator*(const T &scalar) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::polar2
+		/// @brief Overload of binary operator /
+		///
+		/// @param scalar Right operand (scalar)
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		polar2<T> operator/(const T &scalar) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::polar2
+		/// @brief Overload of binary operator ==
+		///
+		/// @param other Right operand (polar vector)
+		///
+		/// @return True if the vector and @a other are equal
+		///
+		/////////////////////////////////////////////////////////////
+		bool operator==(const polar2<T> &other) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::polar2
+		/// @brief Overload of binary operator ==
+		///
+		/// @param other Right operand (polar vector)
+		///
+		/// @return True if the vector and @a other are not equal
+		///
+		/////////////////////////////////////////////////////////////
+		bool operator!=(const polar2<T> &other) const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Project the polar vector to @a target
 		///
 		/// @param target The vector to project to
@@ -131,59 +241,6 @@ namespace fm
 		operator vector2<T>() const;
 	};
 
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
-	/// @brief Overload of binary operator +=
-	///
-	/// @param left Left operand (polar vector)
-	/// @param right Right operand (polar vector)
-	///
-	/// @return Reference to @a left
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	polar2<T> &operator+=(polar2<T> &left,const polar2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
-	/// @brief Overload of binary operator -=
-	///
-	/// @param left Left operand (polar vector)
-	/// @param right Right operand (polar vector)
-	///
-	/// @return Reference to @a left
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	polar2<T> &operator-=(polar2<T> &left,const polar2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
-	/// @brief Overload of binary operator *=
-	///
-	/// @param left Left operand (polar vector)
-	/// @param right Right operand (scalar)
-	///
-	/// @return Reference to @a left
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	polar2<T> &operator*=(polar2<T> &left,const T &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
-	/// @brief Overload of binary operator /=
-	///
-	/// @param left Left operand (polar vector)
-	/// @param right Right operand (scalar)
-	///
-	/// @return Reference to @a left
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	polar2<T> &operator/=(polar2<T> &left,const T &right);
-
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::polar2
 	/// @brief Overload of unary operator -
@@ -198,45 +255,6 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::polar2
-	/// @brief Overload of binary operator +
-	///
-	/// @param left Left operand (polar vector)
-	/// @param right Right operand (polar vector)
-	///
-	/// @return Result of the operation
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	polar2<T> operator+(const polar2<T> &left,const polar2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
-	/// @brief Overload of binary operator -
-	///
-	/// @param left Left operand (polar vector)
-	/// @param right Right operand (polar vector)
-	///
-	/// @return Result of the operation
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	polar2<T> operator-(const polar2<T> &left,const polar2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
-	/// @brief Overload of binary operator *
-	///
-	/// @param left Left operand (polar vector)
-	/// @param right Right operand (scalar)
-	///
-	/// @return Result of the operation
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	polar2<T> operator*(const polar2<T> &left,const T &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
 	/// @brief Overload of binary operator *
 	///
 	/// @param left Left operand (scalar)
@@ -247,45 +265,6 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	polar2<T> operator*(const T &left,const polar2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
-	/// @brief Overload of binary operator /
-	///
-	/// @param left Left operand (polar vector)
-	/// @param right Right operand (scalar)
-	///
-	/// @return Result of the operation
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	polar2<T> operator/(const polar2<T> &left,const T &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
-	/// @brief Overload of binary operator ==
-	///
-	/// @param left Left operand (polar vector)
-	/// @param right Right operand (polar vector)
-	///
-	/// @return True if @a left and @a right are equal
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	bool operator==(const polar2<T> &left,const polar2<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
-	/// @brief Overload of binary operator ==
-	///
-	/// @param left Left operand (polar vector)
-	/// @param right Right operand (polar vector)
-	///
-	/// @return True if @a left and @a right are not equal
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	bool operator!=(const polar2<T> &left,const polar2<T> &right);
 
 	typedef polar2<float> pol2;
 	typedef polar2<float> pol2f;
