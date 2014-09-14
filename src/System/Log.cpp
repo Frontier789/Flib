@@ -1,9 +1,13 @@
 #include <FRONTIER/System/Log.hpp>
+#include <sstream>
 #include <ostream>
 namespace fm
 {
 	/// Constructors //////////////////////////////////////////////////////////
 	Log::Log() : m_newLog(true),
+				 m_lastLog(new std::string()),
+				 m_name(new std::string()),
+				 m_tmp(new std::string()),
 				 m_promptName(false),
 				 m_os(NULL)
 	{
@@ -12,6 +16,9 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	Log::Log(std::ostream &os) : m_newLog(true),
+								 m_lastLog(new std::string()),
+								 m_name(new std::string()),
+								 m_tmp(new std::string()),
 								 m_promptName(false),
 								 m_os(&os)
 	{
@@ -20,17 +27,31 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	Log::Log(std::ostream *os) : m_newLog(true),
+								 m_lastLog(new std::string()),
+								 m_name(new std::string()),
+								 m_tmp(new std::string()),
 								 m_promptName(false), 
 								 m_os(os)
 	{
 		 
 	}
 	
+	/////////////////////////////////////////////////////////////
+	Log::~Log()
+	{
+		if (m_lastLog)
+			delete (std::string*)m_lastLog;
+		if (m_name)
+			delete (std::string*)m_name;
+		if (m_tmp)
+			delete (std::string*)m_tmp;
+	}
+	
 	/// Operators //////////////////////////////////////////////////////////
 	Log::reference Log::operator=(std::ostream &os)
 	{
 		m_newLog  = true;
-		m_lastLog = std::string();
+		(*m_lastLog) = std::string();
 		m_os = &os;
 		return *this;
 	}
@@ -39,9 +60,15 @@ namespace fm
 	Log::reference Log::operator=(std::ostream *os)
 	{
 		m_newLog  = true;
-		m_lastLog = std::string();
+		(*m_lastLog) = std::string();
 		m_os = os;
 		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	std::ostream *Log::getStream()
+	{
+		return m_os;
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -74,27 +101,33 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	bool Log::hasLog() const
 	{
-		return m_lastLog.length()!=0;
+		return (*m_lastLog).length()!=0;
 	}
 	
 	/////////////////////////////////////////////////////////////
-	std::string Log::getLastLog()
+	bool Log::hasStream() const
 	{
-		std::string cpy = m_lastLog;
-		m_lastLog.resize(0);
-		return cpy;
+		return m_os!=NULL;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	const std::string &Log::getLastLog()
+	{
+		(*m_tmp) = (*m_lastLog);
+		(*m_lastLog).resize(0);
+		return (*m_tmp);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	const std::string &Log::getName() const
 	{
-		return m_name;
+		return (*m_name);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	Log::reference Log::setName(const std::string &name)
 	{
-		m_name = name;
+		(*m_name) = name;
 		return *this;
 	}
 	
@@ -117,7 +150,97 @@ namespace fm
 		m_canRecallLog = enable;
 		if (!m_canRecallLog)
 			m_newLog  = true,
-			m_lastLog = std::string();
+			(*m_lastLog) = std::string();
+		return *this;
+	}
+	
+	template<class T>
+	void putToLog(Log &log,const T &data,bool &newLog,bool canRecallLog,std::string &lastLog)
+	{
+		if (log.hasStream())
+		{
+			if (log.doesPromptName() && newLog)
+				(*log.getStream())<<log.getName()<<' ';
+			newLog=false;
+			
+			if (canRecallLog)
+			{
+				std::stringstream ss;
+				ss<<lastLog<<data;
+				lastLog = ss.str();
+			}
+			
+			(*log.getStream())<<data;
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(const char *text)
+	{
+		putToLog(*this,text,m_newLog,m_canRecallLog,(*m_lastLog));
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(const std::string &text)
+	{
+		putToLog(*this,text,m_newLog,m_canRecallLog,(*m_lastLog));
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(const char &character)
+	{
+		putToLog(*this,character,m_newLog,m_canRecallLog,(*m_lastLog));
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(const int &number)
+	{
+		putToLog(*this,number,m_newLog,m_canRecallLog,(*m_lastLog));
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(const long &number)
+	{
+		putToLog(*this,number,m_newLog,m_canRecallLog,(*m_lastLog));
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(const unsigned int &number)
+	{
+		putToLog(*this,number,m_newLog,m_canRecallLog,(*m_lastLog));
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(const unsigned long &number)
+	{
+		putToLog(*this,number,m_newLog,m_canRecallLog,(*m_lastLog));
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(const float &number)
+	{
+		putToLog(*this,number,m_newLog,m_canRecallLog,(*m_lastLog));
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(const double &number)
+	{
+		putToLog(*this,number,m_newLog,m_canRecallLog,(*m_lastLog));
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(const void *address)
+	{
+		putToLog(*this,address,m_newLog,m_canRecallLog,(*m_lastLog));
 		return *this;
 	}
 }

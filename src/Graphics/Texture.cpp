@@ -7,7 +7,6 @@
 #include <FRONTIER/Config.hpp>
 #include <FRONTIER/OpenGL.hpp>
 #include "TextureSaver.hpp"
-#include <ostream>
 #include <cstring>
 namespace fg
 {

@@ -11,7 +11,6 @@
 #include "stb_image/stb_image.h"
 #include "jpge/jpge.cpp"
 #include <cstring>
-#include <ostream>
 namespace fg
 {
 	/// constructors /////////////////////////////////////////////////////////

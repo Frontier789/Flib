@@ -1,7 +1,6 @@
 #ifndef FRONTIER_LOG_HPP_INCLUDED
 #define FRONTIER_LOG_HPP_INCLUDED
 #define FRONTIER_LOG
-#include <string>
 namespace std
 {
     template<typename,typename>
@@ -16,6 +15,13 @@ namespace std
     typedef basic_ostream<char, std::char_traits<char> > ostream;
     template <class charT, class traits>
 	basic_ostream<charT,traits> &endl(basic_ostream<charT,traits> &);
+	
+	template<typename>
+    class allocator;
+	template<typename,typename,typename> 
+	class basic_string;
+	
+	typedef basic_string<char,std::char_traits<char>,std::allocator<char> > string;
 }
 namespace fm
 {
@@ -27,12 +33,13 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	class Log
 	{
-		bool m_canRecallLog;   ///< If true, the last log can be accessed through getLastLog
-		bool m_newLog;         ///< Iternal variable
-		std::string m_lastLog; ///< Contains the last sent log
-		std::string m_name;    ///< The name of the log (can be changed)
-		bool m_promptName;     ///< If true then at every time logging @a m_name will be prompted (initially false)
-		std::ostream *m_os;    ///< Pointer to the current target output stream
+		bool m_canRecallLog;        ///< If true, the last log can be accessed through getLastLog
+		bool m_newLog;              ///< Iternal variable
+		std::string *m_lastLog;     ///< Contains the last sent log
+		std::string *m_name;        ///< The name of the log (can be changed)
+		std::string *m_tmp;	        ///< Iternally used temrory object
+		bool m_promptName;          ///< If true then at every time logging @a m_name will be prompted (initially false)
+		std::ostream *m_os;         ///< Pointer to the current target output stream
 	public:
 		typedef Log &reference;
 		typedef const Log &const_reference;
@@ -64,9 +71,15 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		Log(std::ostream *os);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Default destructor
+		/// 
+		/////////////////////////////////////////////////////////////
+		~Log();
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Reassign the Log to a std::ostream
+		/// @brief Associate the Log with a std::ostream
 		/// 
 		/// Please note that it is the caller's response to keep @a os stream valid when calling
 		/// the bit-shift (<<) operator on the log
@@ -79,7 +92,7 @@ namespace fm
 		reference operator=(std::ostream &os);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Reassign the Log to a pointer to a std::ostream
+		/// @brief Associate the Log with a std::ostream
 		/// 
 		/// Please note that it is the caller's response to keep @a os stream valid when calling
 		/// the bit-shift (<<) operator on the log
@@ -92,18 +105,162 @@ namespace fm
 		reference operator=(std::ostream *os);
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the associated stream
+		/// 
+		/// May return NULL
+		/// 
+		/// @return Pointer to the stream
+		/// 
+		/////////////////////////////////////////////////////////////
+		std::ostream *getStream();
+		
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Templated overload of the << binary operator
 		/// 
-		/// Please note that it is the caller's response to keep the passed stream 
+		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
 		/// 
-		/// @param value The value to output to the stream
+		/// @param text The output string
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		template<class T>
-		reference operator<<(const T &value);
+		reference operator<<(const char *text);
+		
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Templated overload of the << binary operator
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param text The output string
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const std::string &text);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Templated overload of the << binary operator
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param number The output number
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const long &number);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Templated overload of the << binary operator
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param number The output number
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const unsigned long &number);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Templated overload of the << binary operator
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param number The output number
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const int &number);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Templated overload of the << binary operator
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param number The output number
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const unsigned int &number);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Templated overload of the << binary operator
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param character The output character
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const char &character);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Templated overload of the << binary operator
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param number The output number
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const unsigned char &number);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Templated overload of the << binary operator
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param number The output number
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const float &number);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Templated overload of the << binary operator
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param number The output number
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const double &number);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Templated overload of the << binary operator
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param address The output address
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const void *address);
+		
+		
+		
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Templated overload of the << binary operator
@@ -156,6 +313,17 @@ namespace fm
 		bool hasLog() const;
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Find out if the log has associated stream
+		/// 
+		/// Even if the associated stream is invalid (destructed)
+		/// this function returns true
+		/// 
+		/// @return True if has associated stream
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool hasStream() const;
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Get last logged information
 		/// 
 		/// This function resets the state thus
@@ -164,7 +332,7 @@ namespace fm
 		/// @return The log (empty string if has no log)
 		/// 
 		/////////////////////////////////////////////////////////////
-		std::string getLastLog();
+		const std::string &getLastLog();
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the name of the log
@@ -227,7 +395,3 @@ namespace fm
 
 
 #endif // FRONTIER_LOG_HPP_INCLUDED
-
-#ifndef FRONTIER_DONT_INCLUDE_INL
-	#include <FRONTIER/System/Log.inl>
-#endif
