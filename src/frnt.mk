@@ -25,14 +25,14 @@ endif
 
 all: MAKE_TARGETS | MAKE_DIR_TARGETS
 
-#only include the submake if compile system
-ifeq ($(COMPILE_SYSTEM),1)
-include f_system.mk
-endif
-
 #only include the submake if compile graphics
 ifeq ($(COMPILE_GRAPHICS),1)
 include f_graphics.mk
+endif
+
+#only include the submake if compile system
+ifeq ($(COMPILE_SYSTEM),1)
+include f_system.mk
 endif
 
 ifeq ($(COMPILE_MERGED),1)
