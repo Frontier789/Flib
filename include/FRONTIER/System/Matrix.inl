@@ -401,44 +401,44 @@ namespace fm
 		}
 
 		////////////////////////////////////////////////////////////
-		inline matrix<4,4,float> translation(const vec3 &translate,StorageOrder storeOrder)
+		inline matrix<4,4,float> translation(float x,float y,float z,StorageOrder storeOrder)
 		{
 			if (storeOrder==RowMajor)
 			{
-				float ret[]={1,0,0,translate.x,
-							 0,1,0,translate.y,
-							 0,0,1,translate.z,
-							 0,0,0,			 1};
+				float ret[]={1,0,0,x,
+							 0,1,0,y,
+							 0,0,1,z,
+							 0,0,0,1};
 
 				return matrix<4,4,float>(ret);
 			}
-			float ret[]={		   1,		   0,		   0,0,
-								   0,		   1,		   0,0,
-								   0,		   0,		   1,0,
-						 translate.x,translate.y,translate.z,1};
+			float ret[]={1,0,0,0,
+						 0,1,0,0,
+						 0,0,1,0,
+						 x,y,z,1};
 
 			return matrix<4,4,float>(ret);
 		}
 
 		////////////////////////////////////////////////////////////
-		inline matrix<4,4,float> translation(float x,float y,float z,StorageOrder storeOrder)
+		inline matrix<4,4,float> translation(const vec3 &translate,StorageOrder storeOrder)
 		{
-			return translation(vec3(x,y,z),storeOrder);
+			return translation(translate.x,translate.y,translate.z,storeOrder);
 		}
 
 		////////////////////////////////////////////////////////////
 		inline matrix<4,4,float> translation(float x,float y,StorageOrder storeOrder)
 		{
-			return translation(vec3(x,y,0),storeOrder);
+			return translation(x,y,0,storeOrder);
 		}
 
 		////////////////////////////////////////////////////////////
-		inline matrix<4,4,float> scaling(const vec3 &scale,StorageOrder storeOrder)
+		inline matrix<4,4,float> scaling(float x,float y,float z,StorageOrder storeOrder)
 		{
-			float ret[]={scale.x,      0,      0,0,
-							   0,scale.y,      0,0,
-							   0,      0,scale.z,0,
-							   0,      0,      0,1};
+			float ret[]={x,0,0,0,
+						 0,y,0,0,
+						 0,0,z,0,
+						 0,0,0,1};
 
 			return matrix<4,4,float>(ret);
 		}
@@ -446,19 +446,19 @@ namespace fm
 		////////////////////////////////////////////////////////////
 		inline matrix<4,4,float> scaling(const vec2 &scale,StorageOrder storeOrder)
 		{
-			return scaling(vec3(scale,1));
+			return scaling(scale.x,scale.y,1);
 		}
 
 		////////////////////////////////////////////////////////////
-		inline matrix<4,4,float> scaling(float x,float y,float z,StorageOrder storeOrder)
+		inline matrix<4,4,float> scaling(const vec3 &scale,StorageOrder storeOrder)
 		{
-			return scaling(vec3(x,y,z));
+			return scaling(scale.x,scale.y,scale.z);
 		}
 
 		////////////////////////////////////////////////////////////
 		inline matrix<4,4,float> scaling(float x,float y,StorageOrder storeOrder)
 		{
-			return scaling(vec3(x,y,1));
+			return scaling(x,y,1);
 		}
 
 		////////////////////////////////////////////////////////////
