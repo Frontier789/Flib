@@ -722,6 +722,23 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		matrix<4,4,float> perspective(const Angle &fieldOfView,float aspect,float Znear,float Zfar,StorageOrder storeOrder=RowMajor);
 
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::matrix
+		/// @brief Calculate a <a href="http://en.wikipedia.org/wiki/Orthographic_projection">orthogonal projection matrix</a>
+		///
+		/// @param left Value of the left side on the vertical clipping plane
+		/// @param bottom Value of the bottom side on the vertical clipping plane
+		/// @param right Value of the right side on the vertical clipping plane
+		/// @param up Value of the upper side on the vertical clipping plane
+		/// @param nearVal Distance to the nearer clipping plane
+		/// @param farVal Distance to the further clipping plane
+		/// @param storeOrder The way to store the result
+		///
+		/// @return The orthogonal projection matrix
+		///
+		/////////////////////////////////////////////////////////////
+		matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal,float farVal,StorageOrder storeOrder=RowMajor);
+
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -898,6 +915,26 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		template<StorageOrder storeOrder>
 		matrix<4,4,float> perspective(const Angle &fieldOfView,float aspect,float Znear,float Zfar);
+
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::matrix
+		/// @brief Calculate a <a href="http://en.wikipedia.org/wiki/Orthographic_projection">orthogonal projection matrix</a>
+		///
+		/// This is a templated version of the original function.
+		/// It can be used to supply the store order as a template argument
+		/// 
+		/// @param left Value of the left side on the vertical clipping plane
+		/// @param bottom Value of the bottom side on the vertical clipping plane
+		/// @param right Value of the right side on the vertical clipping plane
+		/// @param up Value of the upper side on the vertical clipping plane
+		/// @param nearVal Distance to the nearer clipping plane
+		/// @param farVal Distance to the further clipping plane
+		///
+		/// @return The orthogonal projection matrix
+		///
+		/////////////////////////////////////////////////////////////
+		template<StorageOrder storeOrder>
+		matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal,float farVal);
 
 
 		/////////////////////////////////////////////////////////////

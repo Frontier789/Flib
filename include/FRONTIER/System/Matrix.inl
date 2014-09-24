@@ -502,6 +502,25 @@ namespace fm
 			return matrix<4,4,float>(n);
 
 		}
+		
+		/////////////////////////////////////////////////////////////
+		matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal,float farVal,StorageOrder storeOrder)
+		{
+			if (storeOrder==RowMajor)
+			{
+				float n[4][4]={{2.f/(right-left),0,0,(right+left)/(left-right)},
+							   {0,2.f/(top-bottom),0,(top+bottom)/(bottom-top)},
+							   {0,0,2.f/(farVal-nearVal),(farVal+nearVal)/(nearVal-farVal)  },
+							   {0,0,0,1}};
+				return matrix<4,4,float>(n);
+			}
+			float n[4][4]={{2.f/(right-left),0,0,0},
+						   {0,2.f/(top-bottom),0,0},
+						   {0,0,2.f/(farVal-nearVal),0},
+						   {(right+left)/(left-right),(top+bottom)/(bottom-top),(farVal + nearVal)/(nearVal - farVal),1}};
+			return matrix<4,4,float>(n);
+		}
+
 
 		////////////////////////////////////////////////////////////
 		inline matrix<4,4,float> lookAt(const vec3 &cam_pos,const vec3 &target_pos,const vec3 &up_dir,StorageOrder storeOrder)
@@ -606,6 +625,13 @@ namespace fm
 		inline matrix<4,4,float> perspective(const Angle &fieldOfView,float aspect,float Znear,float Zfar)
 		{
 			return perspective(fieldOfView,aspect,Znear,Zfar,storeOrder);
+		}
+
+		////////////////////////////////////////////////////////////
+		template<StorageOrder storeOrder>
+		inline matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal,float farVal)
+		{
+			return ortho(left,bottom,right,top,nearVal,farVal,storeOrder);
 		}
 	}
 }
