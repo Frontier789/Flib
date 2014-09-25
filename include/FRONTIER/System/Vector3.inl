@@ -213,7 +213,9 @@ namespace fm
 	template<class T>
 	inline vector3<T> vector3<T>::byCompInv(typename vector3<T>::const_reference other) const
 	{
-		return byComp(other.inv());
+		return vector3<T>(x / other.x,
+						  y / other.y,
+						  z / other.z);
 	}
 
 
@@ -221,7 +223,9 @@ namespace fm
 	template<class T>
 	inline vector3<T> vector3<T>::byCompInv(const T &X,const T &Y,const T &Z) const
 	{
-		return byComp(vector3<T>(X,Y,Z).inv());
+		return vector3<T>(x / X,
+						  y / Y,
+						  z / Z);
 	}
 
 

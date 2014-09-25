@@ -203,7 +203,10 @@ namespace fm
 	template<class T>
 	inline vector4<T> vector4<T>::byCompInv(typename vector4<T>::const_reference vec) const
 	{
-		return byComp(vec.inv());
+		return vector4<T>(x / vec.x,
+						  y / vec.y,
+						  z / vec.z,
+						  w / vec.w);
 	}
 
 
@@ -211,7 +214,10 @@ namespace fm
 	template<class T>
 	inline vector4<T> vector4<T>::byCompInv(const T &X,const T &Y,const T &Z,const T &W) const
 	{
-		return byComp(vector4<T>(X,Y,Z,W).inv());
+		return vector4<T>(x / X,
+						  y / Y,
+						  z / Z,
+						  w / W);
 	}
 
 
