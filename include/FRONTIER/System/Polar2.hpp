@@ -120,7 +120,7 @@ namespace fm
 		/// @relates fm::polar2
 		/// @brief Overload of binary operator *=
 		///
-		/// @param other Right operand (scalar)
+		/// @param scalar Right operand (scalar)
 		///
 		/// @return Reference to itself
 		///

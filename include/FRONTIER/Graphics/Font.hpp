@@ -153,7 +153,7 @@ namespace fg
 	
 	//////////////////////////////////
 	/// 
-	/// 	@brief Font class that implements <s href="http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02#Creating_a_texture_atlas">Font atlas</a> technique
+	/// 	@brief Font class that implements <a href="http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02#Creating_a_texture_atlas">Font atlas</a> technique
 	/// 
 	/// @ingroup Graphics
 	/// 
@@ -275,7 +275,7 @@ namespace fg
 		/// 
 		/// This function does not access the glyphTable
 		/// 
-		/// @param letter The codepoint of the glyph
+		/// @param codePoint The codepoint of the glyph
 		/// @param characterSize The size of the created character in pixels
 		/// @param type The style of the glyph
 		/// 

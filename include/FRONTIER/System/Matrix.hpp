@@ -729,7 +729,7 @@ namespace fm
 		/// @param left Value of the left side on the vertical clipping plane
 		/// @param bottom Value of the bottom side on the vertical clipping plane
 		/// @param right Value of the right side on the vertical clipping plane
-		/// @param up Value of the upper side on the vertical clipping plane
+		/// @param top Value of the upper side on the vertical clipping plane
 		/// @param nearVal Distance to the nearer clipping plane
 		/// @param farVal Distance to the further clipping plane
 		/// @param storeOrder The way to store the result
@@ -926,7 +926,7 @@ namespace fm
 		/// @param left Value of the left side on the vertical clipping plane
 		/// @param bottom Value of the bottom side on the vertical clipping plane
 		/// @param right Value of the right side on the vertical clipping plane
-		/// @param up Value of the upper side on the vertical clipping plane
+		/// @param top Value of the upper side on the vertical clipping plane
 		/// @param nearVal Distance to the nearer clipping plane
 		/// @param farVal Distance to the further clipping plane
 		///
