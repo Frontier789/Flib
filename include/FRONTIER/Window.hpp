@@ -1,5 +1,5 @@
-#ifndef FRONTIER_WINDOW_HPP_INCLUDED
-#define FRONTIER_WINDOW_HPP_INCLUDED
+#ifndef FRONTIER_WINDOW_MODULE_HPP_INCLUDED
+#define FRONTIER_WINDOW_MODULE_HPP_INCLUDED
 
 ////////////////////////////////////////////////////////////
 /// @defgroup Window Window module
@@ -20,4 +20,7 @@ namespace fw
 	
 }
 
-#endif // FRONTIER_WINDOW_HPP_INCLUDED
+#include <FRONTIER/Window/Window.hpp>
+#include <FRONTIER/Window/FwLog.hpp>
+
+#endif // FRONTIER_WINDOW_MODULE_HPP_INCLUDED

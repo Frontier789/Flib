@@ -1,4 +1,5 @@
 #include <FRONTIER/Window/Wapi/WapiWindow.hpp>
+#include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
 #include <string>
 
@@ -49,6 +50,59 @@ namespace fw
 		h = (Rct.bottom - Rct.top);
 		
 		return true;
+	}
+	
+	DWORD getDWORDfromStyle(int style)
+	{
+		// A resizeable window needs border
+		if (style & Window::Resize)  
+			style |= Window::Border;
+		
+		// A close button can only be located in the titlebar
+		if (style & Window::Close)
+			style |= Window::Titlebar;
+		
+		// So does a minimize button
+		if (style & Window::Minimize)
+			style |= Window::Titlebar|Window::Close;
+
+		// And a maximize button
+		if (style & Window::Maximaze)
+			style |= Window::Titlebar|Window::Close;
+		
+		// A titlebar means border
+		if (style & Window::Titlebar)
+			style |= Window::Border;
+		
+		
+		// convert the style to DWORD
+		// so windows understands it too
+		
+		DWORD ret = WS_OVERLAPPED;
+		if (style & Window::None)
+			ret |= WS_POPUP;
+			
+		if (style & Window::Close)
+			ret |= WS_SYSMENU;
+			
+		if (style & Window::Border)
+			ret |= WS_POPUP|WS_THICKFRAME;
+			
+		if (style & Window::Titlebar)
+			ret |= WS_CAPTION;
+		
+		if (style & Window::Minimize)
+			ret |= WS_MINIMIZEBOX;
+		
+		if (style & Window::Maximaze)
+			ret |= WS_MAXIMIZEBOX;
+		
+		
+		if (style == Window::Border && 
+			style == Window::None)
+				ret &= ~WS_OVERLAPPED;
+		
+		return ret;
 	}
 
 	namespace Wapi
@@ -151,7 +205,7 @@ namespace fw
 			cleanUp();
 			init();
 			
-			DWORD createStyle = WS_OVERLAPPEDWINDOW;
+			DWORD createStyle = getDWORDfromStyle(style);
 	
 			if (!adjustWindowSize(w,h,createStyle))
 				return false;

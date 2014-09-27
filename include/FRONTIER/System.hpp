@@ -1,5 +1,5 @@
-#ifndef FRONTIER_SYSTEM_HPP_INCLUDED
-#define FRONTIER_SYSTEM_HPP_INCLUDED
+#ifndef FRONTIER_SYSTEM_MODULE_HPP_INCLUDED
+#define FRONTIER_SYSTEM_MODULE_HPP_INCLUDED
 
 ////////////////////////////////////////////////////////////
 /// @defgroup System System module
@@ -38,4 +38,4 @@ namespace fm
 #include <FRONTIER/System/Quaternion.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 
-#endif // FRONTIER_SYSTEM_HPP_INCLUDED
+#endif // FRONTIER_SYSTEM_MODULE_HPP_INCLUDED

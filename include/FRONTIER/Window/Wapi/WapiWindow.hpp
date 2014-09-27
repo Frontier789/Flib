@@ -1,6 +1,5 @@
 #ifndef FRONTIER_WAPI_WINDOW_INCLUDED
 #define FRONTIER_WAPI_WINDOW_INCLUDED
-#include <FRONTIER/Window/Style.hpp>
 #define FRONTIER_WAPI_WINDOW
 #include <windows.h>
 

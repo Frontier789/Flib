@@ -1,5 +1,5 @@
-#ifndef FRONTIER_GRAPICS_HPP_INCLUDED
-#define FRONTIER_GRAPICS_HPP_INCLUDED
+#ifndef FRONTIER_GRAPICS_MODULE_HPP_INCLUDED
+#define FRONTIER_GRAPICS_MODULE_HPP_INCLUDED
 
 ////////////////////////////////////////////////////////////
 /// @defgroup Graphics Graphics (OpenGL) module
@@ -29,4 +29,4 @@ namespace fg
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
 
-#endif // FRONTIER_GRAPICS_HPP_INCLUDED
+#endif // FRONTIER_GRAPICS_MODULE_HPP_INCLUDED
