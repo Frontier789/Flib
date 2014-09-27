@@ -2,7 +2,7 @@
 #define FRONTIER_WINDOW_HPP_INCLUDED
 
 ////////////////////////////////////////////////////////////
-/// @defgroup Window Window and OpenGL Context managing module
+/// @defgroup Window Window module
 ///
 /// This module defines platform-specific and 
 /// wrapper classes for managing windows and OpenGL Contexts

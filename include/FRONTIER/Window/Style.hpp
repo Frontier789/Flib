@@ -4,6 +4,12 @@
 
 namespace fw
 {
+	/////////////////////////////////////////////////////////////
+	/// @brief Enumeration used to indicate window style
+	/// 
+	/// @ingroup Window
+	/// 
+	/////////////////////////////////////////////////////////////
 	enum WindowStyle {
 		None       = 0x0000000,
 		Close      = 0x0000001,

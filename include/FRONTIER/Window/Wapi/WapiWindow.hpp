@@ -5,7 +5,7 @@
 #include <windows.h>
 
 /** The name of the WINDCLASS */
-#define FRONTIER_WINDOWS_CLASS_NAME "F_WCLASS"
+#define FRONTIER_WINDOWS_CLASS_NAME "FLIB_CLASS"
 
 namespace fw
 {
@@ -24,9 +24,10 @@ namespace fw
 		class Window
 		{
 			static unsigned int m_windowCount; ///< The number of windows open
-			void cleanUp(); ///< Iternal function used to free resources
+			bool cleanUp(); ///< Iternal function used to free resources
 			bool init();    ///< Iternal function used at initialization
 			HWND m_hwnd;    ///< The id (handle) of the window
+			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that handles Windows api events
 		public:
 			
 			typedef HWND Handle; ///< Used in fw::Window
@@ -111,6 +112,8 @@ namespace fw
 		///
 		/// This class is used to open and manage windows in winOS.
 		/// By manage i mean process its events, resize, move, set its title etc
+		/// 
+		/// fw::Wapi::Window creates and maintains a WNDCLASS named FRONTIER_WINDOWS_CLASS_NAME (macro)
 		/// 
 		/// Including this file directly will cause the loss platform independency (winOS only)
 		/// 

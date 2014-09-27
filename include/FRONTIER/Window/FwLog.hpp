@@ -4,7 +4,7 @@
 #define FRONTIER_FWLOG
 namespace fw
 {
-	//////////////////////////////////
+	/////////////////////////////////////////////////////////////
 	/// @brief Log of the Window module
 	/// 
 	/// @ingroup Window
@@ -14,7 +14,7 @@ namespace fw
 	/// the bitshift (<<) operator will be called on 
 	/// this instance
 	/// 
-	//////////////////////////////////
+	/////////////////////////////////////////////////////////////
     extern fm::Log fw_log;
 }
 #endif // FRONTIER_FWLOG_HPP_INCLUDED
