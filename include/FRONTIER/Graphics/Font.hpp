@@ -419,6 +419,9 @@ namespace fg
         friend class Font;
 	};
 	////////////////////////////////////////////////////////////
+	/// @class fg::Font
+	/// @ingroup Graphics
+	/// 
 	/// @class fg::Font::Renderer
 	/// @ingroup Graphics
 	///

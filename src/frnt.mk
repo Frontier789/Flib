@@ -16,6 +16,7 @@ LIBPATH=$(PATH_TO_LIB)/$(LIBNAME)
 COMPILE_SYSTEM=1
 COMPILE_GRAPHICS=1
 COMPILE_GL_HEADER=1
+COMPILE_WINDOW=1
 COMPILE_MERGED=1
 
 
@@ -25,14 +26,19 @@ endif
 
 all: MAKE_TARGETS | MAKE_DIR_TARGETS
 
-#only include the submake if compile graphics
+#only include the submake if compile graphics module
 ifeq ($(COMPILE_GRAPHICS),1)
 include f_graphics.mk
 endif
 
-#only include the submake if compile system
+#only include the submake if compile system module
 ifeq ($(COMPILE_SYSTEM),1)
 include f_system.mk
+endif
+
+#only include the submake if compile window module
+ifeq ($(COMPILE_WINDOW),1)
+include f_window.mk
 endif
 
 ifeq ($(COMPILE_MERGED),1)
@@ -57,6 +63,6 @@ $(LIBPATH)/libf.a: $(OBJ_FILES) | $(LIBPATH)
 $(PATH_TO_LIB)/$(LIBNAME):
 	$(CD) $(PATH_TO_ROOT); $(MKDIR) $(LIBNAME)
 
-clean: clean-system clean-graphics clean-merged
+clean: clean-system clean-graphics clean-window clean-merged
 	
 	

@@ -7,8 +7,10 @@ namespace fg
 	//////////////////////////////////
 	/// @brief Log of the Graphics module
 	/// 
+	/// @ingroup Graphics
+	/// 
 	/// Every time an error occures in
-	/// a class that is part of the graphics module
+	/// a class that is part of the Graphics module
 	/// the bitshift (<<) operator will be called on 
 	/// this instance
 	/// 
