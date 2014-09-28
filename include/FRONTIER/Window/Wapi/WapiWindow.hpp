@@ -29,8 +29,22 @@ namespace fw
 			bool init();       ///< Iternal function used at initialization
 			HWND m_hwnd;       ///< The id (handle) of the window
 			bool m_showCursor; ///< Indicates whether the cursor is shown in the window
+			bool m_resizeable; ///< Indicates wheter the window can be resized on the borders
 			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that deduces the object and calls handleEvent
 			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that handles events of the window
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief User defined hittest
+			/// 
+			/// See <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms645618(v=vs.85).aspx">this msdn article</a>
+			/// for what to return
+			/// 
+			/////////////////////////////////////////////////////////////
+			LRESULT (*m_cursorHitTest)(const POINT &mousePos,
+									   const RECT  &winRect,
+									   const RECT  &clientRect,
+									   bool resizeable,
+									   const LRESULT &defResult);
 		public:
 			
 			typedef HWND Handle; ///< Used in fw::Window
@@ -267,6 +281,20 @@ namespace fw
 			/// 
 			/////////////////////////////////////////////////////////////
 			void setVisible(bool visible=true);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Set the cursor hittest function
+			/// 
+			/// NULL means that the default hittest will be used
+			/// 
+			/// The function @a hitTestFunc recieves the mouse position (POINT)
+			/// The window rect (RECT) the client rect (RECT) and the value 
+			/// that would be returned by default (LRESULT)
+			/// 
+			/// @param hitTestFunc The new hittest function
+			/// 
+			/////////////////////////////////////////////////////////////
+			void setCursorHitTest(LRESULT (*hitTestFunc)(const POINT&,const RECT&,const RECT&,bool,const LRESULT&));
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Implicitly convert to HWND

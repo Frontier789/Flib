@@ -55,7 +55,7 @@ namespace fw
 	}
 	
 	/////////////////////////////////////////////////////////////
-	DWORD getDWORDfromStyle(int style)
+	DWORD getDWORDfromStyle(unsigned int &style)
 	{
 		// A resizeable window needs border
 		if (style & Window::Resize)  
@@ -157,6 +157,62 @@ namespace fw
 					break;
 				}
 				
+				// area-hit test
+				case WM_NCHITTEST:
+				{
+					if (!m_cursorHitTest) // if the user didn't specify a function 
+					{
+						if (!m_resizeable) // Only if we dont want resize
+						{
+							// ask windows what he thinks the cursor is on
+							LRESULT defResult = DefWindowProc(hwnd, msg, wParam, lParam);
+							
+							// tell him he is wrong when he thinks 
+							// the cursor is on something resizeable
+							if (defResult == HTBOTTOM ||
+								defResult == HTBOTTOMLEFT ||
+								defResult == HTBOTTOMRIGHT ||
+								defResult == HTLEFT ||
+								defResult == HTRIGHT ||
+								defResult == HTTOP ||
+								defResult == HTTOPLEFT ||
+								defResult == HTTOPRIGHT)
+									return HTBORDER; 
+									
+							return defResult;
+						}
+					}
+					else // if the user did specify a function 
+					{
+						// what windows would return
+						LRESULT defRet = DefWindowProc(hwnd, msg, wParam, lParam);
+						
+						// wheres the cursor
+						POINT mousePos;
+						mousePos.x = ((int)(short)LOWORD(lParam)); 
+						mousePos.y = ((int)(short)HIWORD(lParam));
+						
+						// get window's bounding rectangle
+						RECT windowRect;
+						if (!GetWindowRect(hwnd,&windowRect))
+						{
+							fw_log << "GetWindowRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+							return defRet;
+						}
+						
+						// get window's client area's bounding rectangle
+						RECT clientRect;
+						if (!GetClientRect(hwnd,&clientRect))
+						{
+							fw_log << "GetClientRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+							return defRet;
+						}
+						
+						// and call the user defined function
+						return m_cursorHitTest(mousePos,windowRect,clientRect,m_resizeable,defRet);
+					}
+				}
+				
 				// by default let windows handle it
 				default:
 					return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -169,21 +225,27 @@ namespace fw
 
 		////////////////////////////////////////////////////////////
 		Window::Window() : m_hwnd(NULL),
-						   m_showCursor(true)
+						   m_showCursor(true),
+						   m_resizeable(true),
+						   m_cursorHitTest(NULL)
 		{
 			
 		}
 		
 		////////////////////////////////////////////////////////////
 		Window::Window(int x,int y,int w,int h,const std::string &title,unsigned int style) : m_hwnd(NULL),
-																							  m_showCursor(true)
+																							  m_showCursor(true),
+																							  m_resizeable(true),
+																							  m_cursorHitTest(NULL)
 		{
 			open(x,y,w,h,title,style);
 		}
 		
 		////////////////////////////////////////////////////////////
 		Window::Window(int x,int y,int w,int h,const std::wstring &title,unsigned int style) : m_hwnd(NULL),
-																							   m_showCursor(true)
+																							   m_showCursor(true),
+																							   m_resizeable(true),
+																							   m_cursorHitTest(NULL)
 		{
 			open(x,y,w,h,title,style);
 		}
@@ -258,7 +320,7 @@ namespace fw
 			return true;
 		}
 		
-		bool openME(int x,int y,int w,int h,const void *title,Window *win,unsigned int style,bool wideTitle,HWND &m_hwnd,unsigned int &m_windowCount)
+		bool openME(int x,int y,int w,int h,const void *title,Window *win,unsigned int style,bool wideTitle,HWND &m_hwnd,unsigned int &m_windowCount,bool &m_resizeable)
 		{
 			DWORD createStyle = getDWORDfromStyle(style);
 	
@@ -286,6 +348,8 @@ namespace fw
 									   win); // set createdata to 'this'				
 			}
 
+			// If the window is intended to be resizeable we note it
+			m_resizeable = (style & fw::Window::Resize);
 			
 			if(!m_hwnd)
 			{
@@ -309,7 +373,7 @@ namespace fw
 			cleanUp();
 			init();
 			
-			return openME(x,y,w,h,&title,this,style,false,m_hwnd,m_windowCount);
+			return openME(x,y,w,h,&title,this,style,false,m_hwnd,m_windowCount,m_resizeable);
 		}
 		
 		////////////////////////////////////////////////////////////
@@ -319,7 +383,7 @@ namespace fw
 			cleanUp();
 			init();
 			
-			return openME(x,y,w,h,&title,this,style,true,m_hwnd,m_windowCount);
+			return openME(x,y,w,h,&title,this,style,true,m_hwnd,m_windowCount,m_resizeable);
 		}
 		
 		////////////////////////////////////////////////////////////
@@ -541,13 +605,19 @@ namespace fw
 		}
 		
 		////////////////////////////////////////////////////////////
-		HWND Window::getHandle() const
+		void Window::setCursorHitTest(LRESULT (*hitTestFunc)(const POINT&,const RECT&,const RECT&,bool,const LRESULT&))
+		{
+			m_cursorHitTest = hitTestFunc;
+		}
+				
+		////////////////////////////////////////////////////////////
+		Window::operator HWND() const
 		{
 			return m_hwnd;
 		}
 		
 		////////////////////////////////////////////////////////////
-		Window::operator HWND() const
+		HWND Window::getHandle() const
 		{
 			return m_hwnd;
 		}
