@@ -1,0 +1,17 @@
+#include <FRONTIER/Window/Event.hpp>
+
+namespace fw
+{
+	////////////////////////////////////////////////////////////
+	Event::Event() : type(Empty)
+	{
+		
+	}
+	
+	////////////////////////////////////////////////////////////
+	Event::operator bool() const
+	{
+		return type != Empty;
+	}
+}
+		 

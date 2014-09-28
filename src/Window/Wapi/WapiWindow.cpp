@@ -144,6 +144,33 @@ namespace fw
 		{
 			switch(msg)
 			{
+				// our window got focus
+				case WM_SETFOCUS:
+				{
+					Event ev;
+					ev.type = Event::FocusGained;
+					m_eventQueue.push(ev);
+					return 0;
+				}
+				
+				// our window lost focus
+				case WM_KILLFOCUS:
+				{
+					Event ev;
+					ev.type = Event::FocusLost;
+					m_eventQueue.push(ev);
+					return 0;	
+				}
+				
+				// our window was asked to close
+				case WM_CLOSE:
+				{
+					Event ev;
+					ev.type = Event::Closed;
+					m_eventQueue.push(ev);
+					return 0;
+				}
+				
 				// refresh cursor image
 				case WM_SETCURSOR:
 				{
@@ -154,7 +181,18 @@ namespace fw
 							return TRUE;
 						}
 
-					break;
+					return DefWindowProc(hwnd, msg, wParam, lParam);
+				}
+				
+				// mouse moved
+				case WM_MOUSEMOVE: 
+				{
+					Event ev;
+					ev.type = Event::MouseMoved;
+					ev.pos.x =  ((int)(short)LOWORD(lParam));
+					ev.pos.y =  ((int)(short)HIWORD(lParam));
+					m_eventQueue.push(ev);
+					return 0;
 				}
 				
 				// area-hit test
@@ -390,6 +428,10 @@ namespace fw
 		void Window::close()
 		{
 			cleanUp();
+			
+			// Empty the event queue
+			std::queue<Event> emptyEventQueue;
+			std::swap(emptyEventQueue,m_eventQueue);
 		}
 		
 		/////////////////////////////////////////////////////////////
@@ -644,6 +686,67 @@ namespace fw
 		void Window::setCursorHitTest(LRESULT (*hitTestFunc)(const POINT&,const RECT&,const RECT&,bool,const LRESULT&))
 		{
 			m_cursorHitTest = hitTestFunc;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::isOpen() const
+		{
+			return m_hwnd!=NULL;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::popEvent(Event &ev)
+		{
+			if (!m_hwnd)
+				return false;
+			
+			MSG msg;
+			
+			// Prcess every pending message 
+			while (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage (&msg);			
+			}
+			
+			// if we have an event to report
+			// then return true and pop the queue
+			if (!m_eventQueue.empty())
+			{
+				ev = m_eventQueue.front();
+				m_eventQueue.pop();
+				return true;
+			}
+			
+			// otherwise return false;
+			return false;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::waitEvent(Event &ev)
+		{
+			// In case the window is invalid a message would never appear
+			if (!m_hwnd)
+				return false;
+				
+			// we loop until we dont have a event
+			while (m_eventQueue.empty())
+			{
+				MSG msg;
+				// GetMessage suspends the thread until an event occures 
+				// (this event may not be a window event but a thread event that is the while loop for)
+				if (GetMessage(&msg, NULL, 0, 0)==-1)
+				{
+					fw_log << "GetMessage failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+				TranslateMessage(&msg);
+				DispatchMessage (&msg);
+			}
+
+			ev = m_eventQueue.front();
+			m_eventQueue.pop();
+			return true;
 		}
 				
 		////////////////////////////////////////////////////////////

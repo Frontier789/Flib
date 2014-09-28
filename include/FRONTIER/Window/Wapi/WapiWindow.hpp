@@ -1,8 +1,10 @@
 #ifndef FRONTIER_WAPI_WINDOW_INCLUDED
 #define FRONTIER_WAPI_WINDOW_INCLUDED
+#include <FRONTIER/Window/Event.hpp>
 #define FRONTIER_WAPI_WINDOW
 #include <windows.h>
 #include <string>
+#include <queue>
 
 /** The name of the WINDCLASS */
 #define FRONTIER_WINDOWS_CLASS_NAME "FLIB_CLASS"
@@ -32,6 +34,7 @@ namespace fw
 			bool m_resizeable; ///< Indicates wheter the window can be resized on the borders
 			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that deduces the object and calls handleEvent
 			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that handles events of the window
+			std::queue<Event> m_eventQueue; ///< A queue holding the unhandled events
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief User defined hittest
@@ -315,6 +318,39 @@ namespace fw
 			/// 
 			/////////////////////////////////////////////////////////////
 			void setCursorHitTest(LRESULT (*hitTestFunc)(const POINT&,const RECT&,const RECT&,bool,const LRESULT&));
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Check if the window is opened
+			/// 
+			/// @return True if the window is open
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool isOpen() const;
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Retrive the last event
+			/// 
+			/// If the event queue is empty false is returned and
+			/// @a ev is not modified
+			/// 
+			/// @param ev Set to the last event
+			/// 
+			/// @return True if there was a event
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool popEvent(Event &ev);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Suspend thread until a event occures
+			/// 
+			/// If an error occures false is returned and ev is not modified
+			/// 
+			/// @param ev Set to the last event
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool waitEvent(Event &ev);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Implicitly convert to HWND
