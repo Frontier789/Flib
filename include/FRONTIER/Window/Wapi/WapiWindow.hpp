@@ -2,9 +2,11 @@
 #define FRONTIER_WAPI_WINDOW_INCLUDED
 #define FRONTIER_WAPI_WINDOW
 #include <windows.h>
+#include <string>
 
 /** The name of the WINDCLASS */
 #define FRONTIER_WINDOWS_CLASS_NAME "FLIB_CLASS"
+#define FRONTIER_WINDOWS_WCLASS_NAME L"FLIB_CLASS"
 
 namespace fw
 {
@@ -54,7 +56,22 @@ namespace fw
 			/// @param style Style of the window (see fw::WindowStyle)
 			/// 
 			/////////////////////////////////////////////////////////////
-			Window(int x,int y,int w,int h,const char *title,unsigned int style);
+			Window(int x,int y,int w,int h,const std::string &title,unsigned int style);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Construct the window from its attributes
+			/// 
+			/// Upon iternal error a message is prompted to fw::Wapi::log
+			/// 
+			/// @param x X position of the window
+			/// @param y Y position of the window
+			/// @param w Width of the window
+			/// @param h Height of the window
+			/// @param title Title of the window
+			/// @param style Style of the window (see fw::WindowStyle)
+			/// 
+			/////////////////////////////////////////////////////////////
+			Window(int x,int y,int w,int h,const std::wstring &title,unsigned int style);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief (Re)Open the window
@@ -71,7 +88,24 @@ namespace fw
 			/// @return True if everything went right
 			/// 
 			/////////////////////////////////////////////////////////////
-			bool open(int x,int y,int w,int h,const char *title,unsigned int style);
+			bool open(int x,int y,int w,int h,const std::string &title,unsigned int style);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief (Re)Open the window
+			/// 
+			/// Upon iternal error a message is prompted to fw::Wapi::log
+			/// 
+			/// @param x X position of the window
+			/// @param y Y position of the window
+			/// @param w Width of the window
+			/// @param h Height of the window
+			/// @param title Title of the window
+			/// @param style Style of the window (see fw::WindowStyle)
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool open(int x,int y,int w,int h,const std::wstring &title,unsigned int style);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Default destructor
@@ -183,6 +217,56 @@ namespace fw
 			/// 
 			/////////////////////////////////////////////////////////////
 			bool getSize(int &w,int &h) const;
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Set the title of the window
+			/// 
+			/// @param title The new title
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool setTitle(const std::string &title);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Retrieve the title of the window
+			/// 
+			/// @param title Set to the title
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool getTitle(std::string &title) const;
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Set the title of the window
+			/// 
+			/// @param title The new title
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool setTitle(const std::wstring &title);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Retrieve the title of the window
+			/// 
+			/// @param title Set to the title
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool getTitle(std::wstring &title) const;
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Show or hide the window
+			/// 
+			/// @param visible If true the window is shown 
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			void setVisible(bool visible=true);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Implicitly convert to HWND

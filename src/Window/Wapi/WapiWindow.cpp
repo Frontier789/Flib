@@ -175,8 +175,15 @@ namespace fw
 		}
 		
 		////////////////////////////////////////////////////////////
-		Window::Window(int x,int y,int w,int h,const char *title,unsigned int style) : m_hwnd(NULL),
-																					   m_showCursor(true)
+		Window::Window(int x,int y,int w,int h,const std::string &title,unsigned int style) : m_hwnd(NULL),
+																							  m_showCursor(true)
+		{
+			open(x,y,w,h,title,style);
+		}
+		
+		////////////////////////////////////////////////////////////
+		Window::Window(int x,int y,int w,int h,const std::wstring &title,unsigned int style) : m_hwnd(NULL),
+																							   m_showCursor(true)
 		{
 			open(x,y,w,h,title,style);
 		}
@@ -251,25 +258,34 @@ namespace fw
 			return true;
 		}
 		
-		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,int w,int h,const char *title,unsigned int style)
+		bool openME(int x,int y,int w,int h,const void *title,Window *win,unsigned int style,bool wideTitle,HWND &m_hwnd,unsigned int &m_windowCount)
 		{
-			// clean our resources before recreating
-			cleanUp();
-			init();
-			
 			DWORD createStyle = getDWORDfromStyle(style);
 	
 			if (!adjustWindowSize(w,h,createStyle))
 				return false;
 			
-			// initialize the window
-			m_hwnd = CreateWindowA(FRONTIER_WINDOWS_CLASS_NAME,
-								   title,
-								   createStyle,
-								   x,y,w,h,
-								   NULL,NULL,NULL,
-								   this); // set createdata to 'this'
+			if (!wideTitle)
+			{
+				// initialize the window
+				m_hwnd = CreateWindowA(FRONTIER_WINDOWS_CLASS_NAME,
+									   ((std::string*)title)->c_str(),
+									   createStyle,
+									   x,y,w,h,
+									   NULL,NULL,NULL,
+									   win); // set createdata to 'this'				
+			}
+			else
+			{
+				// initialize the window
+				m_hwnd = CreateWindowW(FRONTIER_WINDOWS_WCLASS_NAME,
+									   ((std::wstring*)title)->c_str(),
+									   createStyle,
+									   x,y,w,h,
+									   NULL,NULL,NULL,
+									   win); // set createdata to 'this'				
+			}
+
 			
 			if(!m_hwnd)
 			{
@@ -284,6 +300,26 @@ namespace fw
 			m_windowCount++;
 			
 			return true;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::open(int x,int y,int w,int h,const std::string &title,unsigned int style)
+		{
+			// clean our resources before recreating
+			cleanUp();
+			init();
+			
+			return openME(x,y,w,h,&title,this,style,false,m_hwnd,m_windowCount);
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::open(int x,int y,int w,int h,const std::wstring &title,unsigned int style)
+		{
+			// clean our resources before recreating
+			cleanUp();
+			init();
+			
+			return openME(x,y,w,h,&title,this,style,true,m_hwnd,m_windowCount);
 		}
 		
 		////////////////////////////////////////////////////////////
@@ -432,7 +468,78 @@ namespace fw
 			}
 			return true;
 		}
-
+		
+		////////////////////////////////////////////////////////////
+		bool Window::setTitle(const std::string &title)
+		{
+			if (m_hwnd)
+				if (!SetWindowTextA(m_hwnd,title.c_str()))
+				{
+					fw_log << "SetWindowText failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+			return true;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::setTitle(const std::wstring &title)
+		{
+			if (m_hwnd)
+				if (!SetWindowTextW(m_hwnd,title.c_str()))
+				{
+					fw_log << "SetWindowText failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+			return true;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::getTitle(std::string &title) const
+		{
+			if (m_hwnd)
+			{
+				unsigned int bufsize = GetWindowTextLength(m_hwnd) + 1;
+				char *ret = new char[bufsize];
+				if (!GetWindowTextA(m_hwnd, ret, bufsize))
+				{
+					 // we must delete allocated memory!
+					delete ret;
+					fw_log << "GetWindowText failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+				title = std::string(ret);
+				delete ret;		
+			}
+			return true;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::getTitle(std::wstring &title) const
+		{
+			if (m_hwnd)
+			{
+				unsigned int bufsize = GetWindowTextLength(m_hwnd) + 1;
+				wchar_t *ret = new wchar_t[bufsize];
+				if (!GetWindowTextW(m_hwnd, ret, bufsize))
+				{
+					 // we must delete allocated memory!
+					delete ret;
+					fw_log << "GetWindowText failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+				title = std::wstring(ret);
+				delete ret;		
+			}
+			return true;
+		}
+		
+		////////////////////////////////////////////////////////////
+		void Window::setVisible(bool visible)
+		{
+			if (m_hwnd)
+				ShowWindow(m_hwnd,visible ? SW_SHOW : SW_HIDE);
+		}
+		
 		////////////////////////////////////////////////////////////
 		HWND Window::getHandle() const
 		{
