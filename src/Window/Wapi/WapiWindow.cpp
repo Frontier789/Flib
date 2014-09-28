@@ -392,6 +392,42 @@ namespace fw
 			cleanUp();
 		}
 		
+		/////////////////////////////////////////////////////////////
+		void Window::minimize()
+		{
+			if (m_hwnd)
+				ShowWindow(m_hwnd,SW_SHOWMINIMIZED);
+		}
+		
+		/////////////////////////////////////////////////////////////
+		void Window::maximize()
+		{
+			if (m_hwnd)
+				ShowWindow(m_hwnd,SW_SHOWMAXIMIZED);
+		}
+		
+		/////////////////////////////////////////////////////////////
+		bool Window::setActive()
+		{
+			if (m_hwnd)
+			{
+				// bring the window to front
+				if (!SetActiveWindow(m_hwnd))
+				{
+					fw_log << "SetActiveWindow failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+				
+				// set keyboard focus
+				if (!SetFocus(m_hwnd))
+				{
+					fw_log << "SetFocus failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+			}
+			return true;
+		}
+		
 		////////////////////////////////////////////////////////////
 		void Window::showCursor(bool show)
 		{
