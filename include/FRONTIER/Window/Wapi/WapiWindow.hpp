@@ -98,6 +98,93 @@ namespace fw
 			void showCursor(bool show=true);
 			
 			/////////////////////////////////////////////////////////////
+			/// @brief Changes the position and the size of the window
+			/// 
+			/// The given data is used to determine the properties 
+			/// of the client (drawing) area, not the complete window
+			/// 
+			/// @param x The offset on the X axis from the left side
+			/// @param y The offset on the Y axis from the upper side
+			/// @param w The width of the window
+			/// @param h The height of the window
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool setRect(int x,int y,int w,int h);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Retrieve the position and the size of the window
+			/// 
+			/// The returned data describes the client rect
+			/// 
+			/// @param x The offset on the X axis from the left side
+			/// @param y The offset on the Y axis from the upper side
+			/// @param w The width of the window
+			/// @param h The height of the window
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool getRect(int &x,int &y,int &w,int &h);
+			
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Changes the position of the window
+			/// 
+			/// The given data is used to determine the properties 
+			/// of the client (drawing) area, not the complete window
+			/// 
+			/// @param x The offset on the X axis from the left side
+			/// @param y The offset on the Y axis from the upper side
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool setPosition(int x,int y);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Retrieve the position of the window
+			/// 
+			/// The returned data describes the client rect
+			/// 
+			/// @param x The offset on the X axis from the left side
+			/// @param y The offset on the Y axis from the upper side
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool getPosition(int &x,int &y) const;
+			
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Changes the size of the window
+			/// 
+			/// The given data is used to determine the properties 
+			/// of the client (drawing) area, not the complete window
+			/// 
+			/// @param w The width of the window
+			/// @param h The height of the window
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool setSize(int w,int h);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Retrieve the size of the window
+			/// 
+			/// The returned data describes the client rect
+			/// 
+			/// @param w The width of the window
+			/// @param h The height of the window
+			/// 
+			/// @return True if everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool getSize(int &w,int &h) const;
+			
+			/////////////////////////////////////////////////////////////
 			/// @brief Implicitly convert to HWND
 			/// 
 			/// If the window is closed (not opened) NULL is returned

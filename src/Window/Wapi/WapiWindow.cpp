@@ -303,6 +303,137 @@ namespace fw
 		}
 		
 		////////////////////////////////////////////////////////////
+		bool Window::setRect(int x,int y,int w,int h)
+		{
+			if (m_hwnd)
+				if (!SetWindowPos(m_hwnd, // target HWND
+								  NULL,   // HWND to insert ours after (ignored because of SWP_NOREPOSITION)
+								  x,y,    // new position
+								  w,h,    // new size
+								  SWP_NOREPOSITION|SWP_NOSIZE))
+					{
+						fw_log << "SetWindowPos failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+						return false;
+					}
+			return true;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::getRect(int &x,int &y,int &w,int &h)
+		{
+			if (m_hwnd)
+			{
+				RECT client_rect;
+				if (!GetClientRect(m_hwnd,&client_rect)) // retrieve client rect
+				{
+					fw_log << "GetClientRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+				
+				// transform it to screen coordinates
+				if (!ClientToScreen(m_hwnd,(POINT*)&client_rect.left) || !ClientToScreen(m_hwnd,(POINT*)&client_rect.right))
+				{
+					fw_log << "ClientToScreen failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+				
+				w = client_rect.right -client_rect.left;
+				h = client_rect.bottom-client_rect.top;
+				x = client_rect.left;
+				y = client_rect.top;
+			}
+			return true;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::setPosition(int x,int y)
+		{
+			if (m_hwnd)
+				if (!SetWindowPos(m_hwnd, // target HWND
+								  NULL,   // HWND to insert ours after (ignored because of SWP_NOREPOSITION)
+								  x,y,    // new position
+								  0,0,    // new size                  (ignored because of SWP_NOSIZE)
+								  SWP_NOREPOSITION|SWP_NOSIZE))
+					{
+						fw_log << "SetWindowPos failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+						return false;
+					}
+			return true;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::getPosition(int &x,int &y) const
+		{
+			if (m_hwnd)
+			{
+				RECT client_rect;
+				if (!GetClientRect(m_hwnd,&client_rect)) // retrieve client rect
+				{
+					fw_log << "GetClientRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+				
+				// transform it to screen coordinates
+				if (!ClientToScreen(m_hwnd,(POINT*)&client_rect.left) || !ClientToScreen(m_hwnd,(POINT*)&client_rect.right))
+				{
+					fw_log << "ClientToScreen failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+				
+				x = client_rect.left;
+				y = client_rect.top;
+			}
+			return true;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::setSize(int w,int h)
+		{
+			if (m_hwnd)
+			{
+				if (!adjustWindowSize(w,h,GetWindowLong(m_hwnd,GWL_STYLE)))
+					return false;
+				
+				if (!SetWindowPos(m_hwnd, // target HWND
+								  NULL,   // HWND to insert ours after (ignored because of SWP_NOREPOSITION)
+								  0,0,    // new position              (ignored because of SWP_NOMOVE)
+								  w,h,    // new size                  
+								  SWP_NOREPOSITION|SWP_NOMOVE))
+					{
+						fw_log << "SetWindowPos failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+						return false;
+					}		
+			}
+
+			return true;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::getSize(int &w,int &h) const
+		{
+			if (m_hwnd)
+			{
+				RECT client_rect;
+				if (!GetClientRect(m_hwnd,&client_rect)) // retrieve client rect
+				{
+					fw_log << "GetClientRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+				
+				// transform it to screen coordinates
+				if (!ClientToScreen(m_hwnd,(POINT*)&client_rect.left) || !ClientToScreen(m_hwnd,(POINT*)&client_rect.right))
+				{
+					fw_log << "ClientToScreen failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return false;
+				}
+				
+				w = client_rect.right -client_rect.left;
+				h = client_rect.bottom-client_rect.top;
+			}
+			return true;
+		}
+
+		////////////////////////////////////////////////////////////
 		HWND Window::getHandle() const
 		{
 			return m_hwnd;
