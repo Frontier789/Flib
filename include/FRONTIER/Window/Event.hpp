@@ -219,6 +219,8 @@ namespace fw
 		enum EventType {
 			Empty,          ///< The event is not filled
 			Closed,         ///< The window is closed
+			Minimize,       ///< The window was asked to minimize
+			Maximize,       ///< The window was asked to maximize
 			FocusLost,      ///< The window lost focus
 			FocusGained,    ///< The window gained focus
 			KeyPressed,     ///< A key is pressed (The key field can be used to track further information)

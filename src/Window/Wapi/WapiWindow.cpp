@@ -389,6 +389,27 @@ namespace fw
 					}
 				}
 				
+				case WM_SYSCOMMAND:
+				{
+					if (wParam == SC_MINIMIZE)
+					{
+						Event ev;
+						ev.type = Event::Minimize;
+						m_eventQueue.push(ev);
+						return 0;
+					}
+					
+					if (wParam == SC_MAXIMIZE)
+					{
+						Event ev;
+						ev.type = Event::Minimize;
+						m_eventQueue.push(ev);
+						return 0;
+					}
+					
+					return DefWindowProc(hwnd, msg, wParam, lParam);
+				}
+				
 				// by default let windows handle it
 				default:
 					return DefWindowProc(hwnd, msg, wParam, lParam);
