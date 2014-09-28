@@ -7,6 +7,69 @@
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
+	Keyboard::Key keyFromVK(unsigned int param)
+	{
+		if (param == VK_LEFT)      return Keyboard::Left;
+		if (param == VK_RIGHT)     return Keyboard::Right;
+		if (param == VK_DOWN)      return Keyboard::Down;
+		if (param == VK_UP)        return Keyboard::Up;
+		if (param == VK_ESCAPE)    return Keyboard::Escape;
+		if (param == VK_RETURN)    return Keyboard::Enter;
+		if (param == VK_SNAPSHOT)  return Keyboard::PrintScreen;
+		if (param == VK_SCROLL)    return Keyboard::ScrollLock;
+		if (param == VK_PAUSE)     return Keyboard::PauseBreak;
+		if (param == VK_BACK)      return Keyboard::Backspace;
+		if (param == VK_INSERT)    return Keyboard::Insert;
+		if (param == VK_DELETE)    return Keyboard::Delete;
+		if (param == VK_HOME)      return Keyboard::Home;
+		if (param == VK_END)       return Keyboard::End;
+		if (param == VK_PRIOR)     return Keyboard::PageUp;
+		if (param == VK_NEXT)      return Keyboard::PageDown;
+		if (param == VK_DIVIDE)    return Keyboard::Divide;
+		if (param == VK_MULTIPLY)  return Keyboard::Multiply;
+		if (param == VK_OEM_MINUS) return Keyboard::Minus;
+		if (param == VK_OEM_PLUS)  return Keyboard::Plus;
+		if (param == VK_OEM_COMMA) return Keyboard::Comma;
+		if (param == VK_TAB)       return Keyboard::Tab;
+		if (param == VK_CAPITAL)   return Keyboard::CapsLock;
+		if (param == VK_LSHIFT)    return Keyboard::LShift;
+		if (param == VK_RSHIFT)    return Keyboard::RShift;
+		if (param == VK_LCONTROL)  return Keyboard::LCtrl;
+		if (param == VK_RCONTROL)  return Keyboard::RCtrl;
+		if (param == VK_LWIN)      return Keyboard::LWindows;
+		if (param == VK_RWIN)      return Keyboard::RWindows;
+		if (param == VK_PRINT)     return Keyboard::Print;
+		if (param == VK_LMENU)     return Keyboard::LAlt;
+		if (param == VK_RMENU)     return Keyboard::RAlt;
+		if (param == VK_SPACE)     return Keyboard::Space;
+		
+		if (param>=0x30 && param<=0x39)
+			return Keyboard::Key(Keyboard::Num0+(param-0x30));
+		
+		if (param>=VK_NUMPAD0 && param<=VK_NUMPAD9)
+			return Keyboard::Key(Keyboard::Numpad0+(param-VK_NUMPAD0));
+		
+		if (param>=VK_F1 && param<=VK_F12)
+			return Keyboard::Key(Keyboard::F1+(param-VK_F1));
+		
+		if (param>=0x41 && param<=0x5A)
+			return Keyboard::Key(Keyboard::A+(param-0x41));
+		
+		return Keyboard::Unknown;
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Mouse::Button buttonFromVK(unsigned int param)
+	{
+		if (param == VK_LBUTTON)  return Mouse::Left;
+		if (param == VK_RBUTTON)  return Mouse::Right;
+		if (param == VK_MBUTTON)  return Mouse::Middle;
+		
+		return Mouse::Unknown;
+	}
+	
+	/////////////////////////////////////////////////////////////
 	std::string WapiGetLastError()
 	{
 		std::string ret;
@@ -195,6 +258,81 @@ namespace fw
 					return 0;
 				}
 				
+				// key pushed down
+				case WM_SYSKEYDOWN:
+				case WM_KEYDOWN:
+				{
+					// manually filter keyrepeat
+					if (!m_enableRepeat)
+					{
+						if (m_lastDown == wParam) 
+							return 0;
+						else
+							m_lastDown = wParam;
+					}
+					Event ev;
+					ev.type = Event::KeyPressed;
+					ev.key.code = keyFromVK(wParam);
+					ev.key.ctrl  = GetKeyState(VK_CONTROL);
+					ev.key.alt   = GetKeyState(VK_MENU);
+					ev.key.shift = GetKeyState(VK_SHIFT);
+					m_eventQueue.push(ev);
+					return 0;
+				}
+				
+				// key released up
+				case WM_SYSKEYUP:
+				case WM_KEYUP:
+				{
+					// remember to reset the last pressed key when released
+					m_lastDown = 0;
+					Event ev;
+					ev.type = Event::KeyReleased;
+					ev.key.code  = keyFromVK(wParam);
+					ev.key.ctrl  = GetKeyState(VK_CONTROL);
+					ev.key.alt   = GetKeyState(VK_MENU);
+					ev.key.shift = GetKeyState(VK_SHIFT);
+					m_eventQueue.push(ev);
+					return 0;
+				}
+				
+				// mouse button pressed
+				case WM_LBUTTONDOWN:
+				case WM_RBUTTONDOWN:
+				case WM_MBUTTONDOWN:
+				{
+					Event ev;
+					ev.type = Event::ButtonPressed;
+					if (msg==WM_LBUTTONDOWN)
+						ev.mouse.button = Mouse::Left;
+					if (msg==WM_RBUTTONDOWN)
+						ev.mouse.button = Mouse::Right;
+					if (msg==WM_MBUTTONDOWN)
+						ev.mouse.button = Mouse::Middle;
+					ev.mouse.x =  ((int)(short)LOWORD(lParam));
+					ev.mouse.y =  ((int)(short)HIWORD(lParam));
+					m_eventQueue.push(ev);
+					return 0;
+				}
+				
+				// mouse button released
+				case WM_LBUTTONUP:
+				case WM_RBUTTONUP:
+				case WM_MBUTTONUP:
+				{
+					Event ev;
+					ev.type = Event::ButtonReleased;
+					if (msg==WM_LBUTTONUP)
+						ev.mouse.button = Mouse::Left;
+					if (msg==WM_RBUTTONUP)
+						ev.mouse.button = Mouse::Right;
+					if (msg==WM_MBUTTONUP)
+						ev.mouse.button = Mouse::Middle;
+					ev.mouse.x =  ((int)(short)LOWORD(lParam));
+					ev.mouse.y =  ((int)(short)HIWORD(lParam));
+					m_eventQueue.push(ev);
+					return 0;
+				}
 				// area-hit test
 				case WM_NCHITTEST:
 				{
@@ -265,6 +403,8 @@ namespace fw
 		Window::Window() : m_hwnd(NULL),
 						   m_showCursor(true),
 						   m_resizeable(true),
+						   m_enableRepeat(false),
+						   m_lastDown(0),
 						   m_cursorHitTest(NULL)
 		{
 			
@@ -274,6 +414,8 @@ namespace fw
 		Window::Window(int x,int y,int w,int h,const std::string &title,unsigned int style) : m_hwnd(NULL),
 																							  m_showCursor(true),
 																							  m_resizeable(true),
+																							  m_enableRepeat(false),
+																							  m_lastDown(0),
 																							  m_cursorHitTest(NULL)
 		{
 			open(x,y,w,h,title,style);
@@ -354,6 +496,15 @@ namespace fw
 					return false;
 				}
 			}
+	
+			// set default cursor
+			m_showCursor = true;
+			
+			// disable keyrepeat
+			m_enableRepeat = false;
+			
+			// set last pressed key to unknown
+			m_lastDown = 0;
 			
 			return true;
 		}
@@ -747,6 +898,18 @@ namespace fw
 			ev = m_eventQueue.front();
 			m_eventQueue.pop();
 			return true;
+		}
+		
+		////////////////////////////////////////////////////////////
+		void Window::enableKeyRepeat(bool enable)
+		{
+			m_enableRepeat = enable;
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::isKeyRepeatEnabled() const
+		{
+			return m_enableRepeat;
 		}
 				
 		////////////////////////////////////////////////////////////

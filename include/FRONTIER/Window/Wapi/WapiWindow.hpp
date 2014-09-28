@@ -27,11 +27,13 @@ namespace fw
 		class Window
 		{
 			static unsigned int m_windowCount; ///< The number of windows open
-			bool cleanUp();    ///< Iternal function used to free resources
-			bool init();       ///< Iternal function used at initialization
-			HWND m_hwnd;       ///< The id (handle) of the window
-			bool m_showCursor; ///< Indicates whether the cursor is shown in the window
-			bool m_resizeable; ///< Indicates wheter the window can be resized on the borders
+			bool cleanUp();      ///< Iternal function used to free resources
+			bool init();         ///< Iternal function used at initialization
+			HWND m_hwnd;         ///< The id (handle) of the window
+			bool m_showCursor;   ///< Indicates whether the cursor is shown in the window
+			bool m_resizeable;   ///< Indicates whehter the window can be resized on the borders
+			bool m_enableRepeat; ///< Indicates whether key repeat is enabled
+			WPARAM m_lastDown;   ///< Contains the last pressed key
 			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that deduces the object and calls handleEvent
 			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that handles events of the window
 			std::queue<Event> m_eventQueue; ///< A queue holding the unhandled events
@@ -351,6 +353,25 @@ namespace fw
 			/// 
 			/////////////////////////////////////////////////////////////
 			bool waitEvent(Event &ev);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Enables or disables keyrepeat
+			/// 
+			/// If enabled, when a key is held down 
+			/// multiple press events will be sent
+			/// 
+			/// @param enable True to enable false to disable
+			/// 
+			/////////////////////////////////////////////////////////////
+			void enableKeyRepeat(bool enable=true);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Returns whether keyrepeat is enabled
+			/// 
+			/// @return True if enabled	
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool isKeyRepeatEnabled() const;
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Implicitly convert to HWND
