@@ -2,10 +2,11 @@
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
 #include <string>
+#include <iostream>
 
 namespace fw
 {
-	
+	/////////////////////////////////////////////////////////////
 	std::string WapiGetLastError()
 	{
 		std::string ret;
@@ -30,7 +31,8 @@ namespace fw
 		
 		return ret;
 	}
-
+	
+	/////////////////////////////////////////////////////////////
 	bool adjustWindowSize(int &w,int &h,DWORD style)
 	{
 		RECT Rct;
@@ -52,6 +54,7 @@ namespace fw
 		return true;
 	}
 	
+	/////////////////////////////////////////////////////////////
 	DWORD getDWORDfromStyle(int style)
 	{
 		// A resizeable window needs border
@@ -110,20 +113,70 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		LRESULT CALLBACK Window::forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
+			// Thankfully we recieve a pointer to the created window
+			// beacuse we set it in CreateWindow
+			if (msg == WM_NCCREATE) 
+			{
+				// Associate the pointer with the HWND as userdata
+				SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)((LPCREATESTRUCT)lParam)->lpCreateParams);
+				
+				return DefWindowProc(hwnd, msg, wParam, lParam); // Let windows do his thing
+			}
+			
+			// ALT key or F10 would pause the execution so we prevent windows from handling them
+			if ((msg == WM_SYSCOMMAND) && (wParam == SC_KEYMENU))
+				return 0;
+			
+			// we now can extract our window pointer from user data
+			Window *win = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+			
+			
+			if (win)
+				return win->handleEvent(hwnd,msg,wParam,lParam);
+			
+			
+			// If we did not handle the event then we pass it to windows
 			return DefWindowProc(hwnd, msg, wParam, lParam);
+		}
+		
+		////////////////////////////////////////////////////////////
+		LRESULT Window::handleEvent(HWND hwnd,UINT msg, WPARAM wParam, LPARAM lParam)
+		{
+			switch(msg)
+			{
+				// refresh cursor image
+				case WM_SETCURSOR:
+				{
+					if (LOWORD(lParam) == HTCLIENT)
+						if (!m_showCursor)
+						{
+							SetCursor(NULL);
+							return TRUE;
+						}
+
+					break;
+				}
+				
+				// by default let windows handle it
+				default:
+					return DefWindowProc(hwnd, msg, wParam, lParam);
+			}
+			return 0;
 		}
 		
 		////////////////////////////////////////////////////////////
 		unsigned int Window::m_windowCount = 0;
 
 		////////////////////////////////////////////////////////////
-		Window::Window() : m_hwnd(NULL)
+		Window::Window() : m_hwnd(NULL),
+						   m_showCursor(true)
 		{
 			
 		}
 		
 		////////////////////////////////////////////////////////////
-		Window::Window(int x,int y,int w,int h,const char *title,unsigned int style) : m_hwnd(NULL)
+		Window::Window(int x,int y,int w,int h,const char *title,unsigned int style) : m_hwnd(NULL),
+																					   m_showCursor(true)
 		{
 			open(x,y,w,h,title,style);
 		}
@@ -215,7 +268,8 @@ namespace fw
 								   title,
 								   createStyle,
 								   x,y,w,h,
-								   NULL,NULL,NULL,NULL);
+								   NULL,NULL,NULL,
+								   this); // set createdata to 'this'
 			
 			if(!m_hwnd)
 			{
@@ -236,6 +290,16 @@ namespace fw
 		void Window::close()
 		{
 			cleanUp();
+		}
+		
+		////////////////////////////////////////////////////////////
+		void Window::showCursor(bool show)
+		{
+			m_showCursor = show;
+			if (show)
+				SetCursor(LoadCursor(NULL,IDC_ARROW));
+			else
+				SetCursor(NULL);
 		}
 		
 		////////////////////////////////////////////////////////////

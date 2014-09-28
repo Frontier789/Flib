@@ -23,10 +23,12 @@ namespace fw
 		class Window
 		{
 			static unsigned int m_windowCount; ///< The number of windows open
-			bool cleanUp(); ///< Iternal function used to free resources
-			bool init();    ///< Iternal function used at initialization
-			HWND m_hwnd;    ///< The id (handle) of the window
-			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that handles Windows api events
+			bool cleanUp();    ///< Iternal function used to free resources
+			bool init();       ///< Iternal function used at initialization
+			HWND m_hwnd;       ///< The id (handle) of the window
+			bool m_showCursor; ///< Indicates whether the cursor is shown in the window
+			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that deduces the object and calls handleEvent
+			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that handles events of the window
 		public:
 			
 			typedef HWND Handle; ///< Used in fw::Window
@@ -84,6 +86,16 @@ namespace fw
 			/// 
 			/////////////////////////////////////////////////////////////
 			void close();
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Shows or hides the cursor in the window
+			/// 
+			/// By default it is shown
+			/// 
+			/// @param show The cursor is shown iff true
+			/// 
+			/////////////////////////////////////////////////////////////
+			void showCursor(bool show=true);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Implicitly convert to HWND
