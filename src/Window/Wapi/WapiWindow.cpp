@@ -389,8 +389,41 @@ namespace fw
 					}
 				}
 				
+				case WM_SIZE:
+				{
+					if (wParam==0) // dont process minimize and maximize
+					{
+						Event ev;
+						ev.type   = Event::Resize;
+						ev.size.w = LOWORD(lParam);
+						ev.size.h = HIWORD(lParam);
+						m_eventQueue.push(ev);
+						return 0;						
+					}
+					return DefWindowProc(hwnd, msg, wParam, lParam);
+				}
+				/*
+				case WM_SIZING:
+				{
+					fw_log << "WM_SIZING" << std::endl;
+					break;
+				}
+				
+				case WM_ENTERSIZEMOVE:
+				{
+					fw_log << "WM_ENTERSIZEMOVE" << std::endl;
+					break;
+				}
+				
+				case WM_EXITSIZEMOVE:
+				{
+					fw_log << "WM_EXITSIZEMOVE" << std::endl;
+					break;
+				}*/
+				
 				case WM_SYSCOMMAND:
 				{
+					// minimization request
 					if (wParam == SC_MINIMIZE)
 					{
 						Event ev;
@@ -399,10 +432,11 @@ namespace fw
 						return 0;
 					}
 					
+					// maximization request
 					if (wParam == SC_MAXIMIZE)
 					{
 						Event ev;
-						ev.type = Event::Minimize;
+						ev.type = Event::Maximize;
 						m_eventQueue.push(ev);
 						return 0;
 					}
@@ -504,7 +538,7 @@ namespace fw
 				winClass.hInstance     = GetModuleHandle(NULL);
 				winClass.hIcon         = NULL;
 				winClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-				winClass.hbrBackground = 0;
+				winClass.hbrBackground = NULL;
 				winClass.lpszMenuName  = NULL;
 				winClass.lpszClassName = FRONTIER_WINDOWS_CLASS_NAME; // The name of the class
 				

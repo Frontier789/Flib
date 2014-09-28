@@ -204,6 +204,20 @@ namespace fw
 	
 	/////////////////////////////////////////////////////////////
 	/// 
+	/// 	@brief Simple class used to store data about a Resize event
+	///
+	/// @ingroup Window
+	///
+	/////////////////////////////////////////////////////////////
+	class ResizeEvent
+	{
+	public:
+		int w; ///< new width
+		int h; ///< new height
+	};
+	
+	/////////////////////////////////////////////////////////////
+	/// 
 	/// 	@brief Class used to store properties of a window event
 	///
 	/// @ingroup Window
@@ -218,6 +232,7 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		enum EventType {
 			Empty,          ///< The event is not filled
+			Resize,         ///< The window's size is changed
 			Closed,         ///< The window is closed
 			Minimize,       ///< The window was asked to minimize
 			Maximize,       ///< The window was asked to maximize
@@ -242,6 +257,7 @@ namespace fw
 			KeyboardEvent key;   ///< used with KeyPressed KeyReleased events
 			ButtonEvent   mouse; ///< used with ButtonPressed ButtonReleased events
 			MouseEvent    pos;   ///< used with MouseMoved event
+			ResizeEvent   size;  ///< used with Resize event
 		};
 		
 		/////////////////////////////////////////////////////////////
