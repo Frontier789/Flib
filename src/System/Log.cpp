@@ -226,6 +226,13 @@ namespace fm
 	}
 	
 	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(const unsigned char &number)
+	{
+		putToLog(*this,number,m_newLog,m_canRecallLog,(*m_lastLog));
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
 	Log::reference Log::operator<<(const unsigned int &number)
 	{
 		putToLog(*this,number,m_newLog,m_canRecallLog,(*m_lastLog));

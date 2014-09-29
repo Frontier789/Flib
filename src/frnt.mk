@@ -31,14 +31,14 @@ ifeq ($(COMPILE_GRAPHICS),1)
 include f_graphics.mk
 endif
 
-#only include the submake if compile system module
-ifeq ($(COMPILE_SYSTEM),1)
-include f_system.mk
-endif
-
 #only include the submake if compile window module
 ifeq ($(COMPILE_WINDOW),1)
 include f_window.mk
+endif
+
+#only include the submake if compile system module
+ifeq ($(COMPILE_SYSTEM),1)
+include f_system.mk
 endif
 
 ifeq ($(COMPILE_MERGED),1)

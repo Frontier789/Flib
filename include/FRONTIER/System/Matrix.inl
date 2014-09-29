@@ -520,7 +520,7 @@ namespace fm
 		}
 		
 		/////////////////////////////////////////////////////////////
-		matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal,float farVal,StorageOrder storeOrder)
+		inline matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal,float farVal,StorageOrder storeOrder)
 		{
 			if (storeOrder==RowMajor)
 			{
