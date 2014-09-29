@@ -1,5 +1,5 @@
 #ifndef FRONTIER_POLAR_HPP_INCLUDED
-#define FRONTIER_POLAR_HPP_INCLUDED
+/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Angle.hpp>
 #define FRONTIER_POLAR

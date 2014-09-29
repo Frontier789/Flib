@@ -1,3 +1,19 @@
+//////////////////////////////////////////////////////////////////////////
+/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+///                                                                    ///
+/// Flib is licensed under the terms of GNU GPL.                       ///
+/// Therefore you may freely use it in your project,                   ///
+/// modify it, redistribute it without any warranty on the             ///
+/// condition that this disclaimer is not modified/removed.            ///
+/// You may not misclaim the origin of this software.                  ///
+///                                                                    ///
+/// If you use this software in your program/project a                 ///
+/// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
+/// is not required but highly appreciated.                            ///
+///                                                                    ///
+/// You should have recieved a copy of GNU GPL with this software      ///
+///                                                                    ///
+//////////////////////////////////////////////////////////////////////////
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
@@ -6,17 +22,17 @@
 namespace fg
 {
 
-	BufferType ArrayBuffer    = (BufferType)(0x8892); ///GL_ARRAY_BUFFER
-	BufferType IndexBuffer    = (BufferType)(0x8893); ///GL_ELEMENT_ARRAY_BUFFER
-	Usage Buffer::StaticDraw  = (Usage)(0x88E4); ///GL_STATIC_DRAW
-	Usage Buffer::StaticRead  = (Usage)(0x88E5); ///GL_STATIC_READ
-	Usage Buffer::StaticCopy  = (Usage)(0x88E6); ///GL_STATIC_WRITE
-	Usage Buffer::DynamicDraw = (Usage)(0x88E8); ///GL_DYNAMIC_DRAW
-	Usage Buffer::DynamicRead = (Usage)(0x88E9); ///GL_DYNAMIC_READ
-	Usage Buffer::DynamicCopy = (Usage)(0x88EA); ///GL_DYNAMIC_WRITE
-	Usage Buffer::StreamDraw  = (Usage)(0x88E0); ///GL_STREAM_DRAW
-	Usage Buffer::StreamRead  = (Usage)(0x88E1); ///GL_STREAM_READ
-	Usage Buffer::StreamCopy  = (Usage)(0x88E2); ///GL_STREAM_WRITE
+	BufferType ArrayBuffer    = (BufferType)(GL_ARRAY_BUFFER        );
+	BufferType IndexBuffer    = (BufferType)(GL_ELEMENT_ARRAY_BUFFER);
+	Usage Buffer::StaticDraw  = (Usage)(GL_STATIC_DRAW );
+	Usage Buffer::StaticRead  = (Usage)(GL_STATIC_READ );
+	Usage Buffer::StaticCopy  = (Usage)(GL_STATIC_COPY );
+	Usage Buffer::DynamicDraw = (Usage)(GL_DYNAMIC_DRAW);
+	Usage Buffer::DynamicRead = (Usage)(GL_DYNAMIC_READ);
+	Usage Buffer::DynamicCopy = (Usage)(GL_DYNAMIC_COPY);
+	Usage Buffer::StreamDraw  = (Usage)(GL_STREAM_DRAW );
+	Usage Buffer::StreamRead  = (Usage)(GL_STREAM_READ );
+	Usage Buffer::StreamCopy  = (Usage)(GL_STREAM_COPY );
 		
 	/// constructors /////////////////////////////////////////////////////////
 	Buffer::Buffer() : m_type(ArrayBuffer),
