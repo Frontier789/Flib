@@ -410,7 +410,7 @@ namespace fw
 					if (wParam==0) // dont process minimize and maximize
 					{
 						Event ev;
-						ev.type   = Event::Resize;
+						ev.type   = Event::Resized;
 						ev.size.w = LOWORD(lParam);
 						ev.size.h = HIWORD(lParam);
 						m_eventQueue.push(ev);
@@ -436,6 +436,16 @@ namespace fw
 					fw_log << "WM_EXITSIZEMOVE" << std::endl;
 					break;
 				}*/
+				
+				case WM_CHAR:
+				{
+					Event ev;
+					ev.type = Event::TextEntered;
+					ev.text.character  = (char)wParam;
+					ev.text.wcharacter = (wchar_t)wParam;
+					m_eventQueue.push(ev);
+					return 0;
+				}
 				
 				case WM_SYSCOMMAND:
 				{

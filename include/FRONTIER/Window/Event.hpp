@@ -220,7 +220,7 @@ namespace fw
 	
 	/////////////////////////////////////////////////////////////
 	/// 
-	/// 	@brief Simple class used to store data about a Resize event
+	/// 	@brief Simple class used to store data about a Resized event
 	///
 	/// @ingroup Window
 	///
@@ -230,6 +230,20 @@ namespace fw
 	public:
 		int w; ///< new width
 		int h; ///< new height
+	};
+	
+	/////////////////////////////////////////////////////////////
+	/// 
+	/// 	@brief Simple class used to store data about a TextEntered event
+	///
+	/// @ingroup Window
+	///
+	/////////////////////////////////////////////////////////////
+	class TextEvent
+	{
+	public:
+		char character;     ///< The entered character
+		wchar_t wcharacter; ///< The entered character (wide)
 	};
 	
 	/////////////////////////////////////////////////////////////
@@ -248,8 +262,8 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		enum EventType {
 			Empty,          ///< The event is not filled
-			Resize,         ///< The window's size is changed
 			Closed,         ///< The window is closed
+			Resized,        ///< The window's size is changed
 			Minimize,       ///< The window was asked to minimize
 			Maximize,       ///< The window was asked to maximize
 			FocusLost,      ///< The window lost focus
@@ -258,6 +272,7 @@ namespace fw
 			KeyReleased,    ///< A key is released (The key field can be used to track further information)
 			ButtonPressed,  ///< A mouse button is pressed (The mouse field can be used to track further information)
 			ButtonReleased, ///< A mouse button is released (The mouse field can be used to track further information)
+			TextEntered,    ///< A character is entered (not to be confused with KeyPressed)
 			MouseMoved      ///< The cursor is moved inside the window is released (The pos field can be used to track further information)
 		};
 		
@@ -274,6 +289,7 @@ namespace fw
 			ButtonEvent   mouse; ///< used with ButtonPressed ButtonReleased events
 			MouseEvent    pos;   ///< used with MouseMoved event
 			ResizeEvent   size;  ///< used with Resize event
+			TextEvent     text;  ///< used with TextEntered
 		};
 		
 		/////////////////////////////////////////////////////////////
