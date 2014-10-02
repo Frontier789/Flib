@@ -154,7 +154,7 @@ namespace fg
 		/// @return True if no error is occured
 		/// 
 		/////////////////////////////////////////////////////////////
-		bool create(Texture *colorAttachments,unsigned int count,const DepthBuffer &depthBuf);
+		bool create(Texture *colorAttachments,unsigned int count,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a framebuffer for usage

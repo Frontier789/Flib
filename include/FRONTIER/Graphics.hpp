@@ -35,6 +35,7 @@ namespace fg
 	
 }
 
+#include <FRONTIER/Graphics/Font.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
