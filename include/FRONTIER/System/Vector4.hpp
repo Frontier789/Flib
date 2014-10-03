@@ -187,31 +187,6 @@ namespace fm
 		vector4(const T (&XYZ)[3],const T &W=T(1));
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct 4D vector from 2D vector
-		///
-		/// This constructor sets the x,y to @a vec 's x and y
-		/// and uses @a Z and @a W to fill z and w
-		///
-		/// @param vec 2D vector to construct from
-		/// @param Z New value of z
-		/// @param W New value of w
-		///
-		/////////////////////////////////////////////////////////////
-		vector4(const vector2<T> &vec,const T &Z=T(),const T &W=T(1));
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct 4D vector from 3D vector
-		///
-		/// This constructor uses @a vec to fill the x, y and z fileds 
-		/// and sets the w field to @a W
-		///
-		/// @param vec 3D vector to construct from
-		/// @param W New value of w
-		///
-		/////////////////////////////////////////////////////////////
-		vector4(const vector3<T> &vec,const T &W=T(1));
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Construct 4D vector from vec 4D vector
 		///
 		/// @param vec 4D vector to construct from
@@ -231,8 +206,8 @@ namespace fm
 		/// @param W w's new value
 		///
 		/////////////////////////////////////////////////////////////
-		template<class T2,class T3,class T4>
-		explicit vector4(const vector2<T2> &vec,const T3 &Z=T3(0),const T4 &W=T4(1));
+		template<class T2>
+		vector4(const vector2<T2> &vec,const T2 &Z=T2(0),const T2 &W=T2(1));
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct 4D vector from 3D vector with different type
@@ -244,8 +219,8 @@ namespace fm
 		/// @param W w's new value
 		///
 		/////////////////////////////////////////////////////////////
-		template<class T2,class T3>
-		explicit vector4(const vector3<T2> &vec,const T3 &W=T3(1));
+		template<class T2>
+		vector4(const vector3<T2> &vec,const T2 &W=T2(1));
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Strips both coordinates from their signs
@@ -585,8 +560,8 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	vector4<T> &operator+=(vector4<T> &left,const vector4<T> &right);
+	template<class T,class T2>
+	vector4<T> &operator+=(vector4<T> &left,const vector4<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -598,8 +573,112 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	vector4<T> &operator-=(vector4<T> &left,const vector4<T> &right);
+	template<class T,class T2>
+	vector4<T> &operator-=(vector4<T> &left,const vector4<T2> &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator *=
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Reference to @a left
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> &operator*=(vector4<T> &left,const vector4<T2> &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator /=
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Reference to @a left
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> &operator/=(vector4<T> &left,const vector4<T2> &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator +
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise addition of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> operator+(const vector4<T> &left,const vector4<T2> &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator -
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise substraction of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> operator-(const vector4<T> &left,const vector4<T2> &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator *
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise addition of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> operator*(const vector4<T> &left,const vector4<T2> &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator /
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise substraction of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> operator/(const vector4<T> &left,const vector4<T2> &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator ==
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return True if @a left and @a right are the same
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	bool operator==(const vector4<T> &left,const vector4<T2> &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator !=
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return True if @a left and @a right are not the same
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	bool operator!=(const vector4<T> &left,const vector4<T> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -615,32 +694,6 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
-	/// @brief Overload of binary operator +
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return Memberwise addition of @a left and @a right
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	vector4<T> operator+(const vector4<T> &left,const vector4<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector4
-	/// @brief Overload of binary operator -
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return Memberwise substraction of @a left and @a right
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	vector4<T> operator-(const vector4<T> &left,const vector4<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector4
 	/// @brief Overload of binary operator *
 	///
 	/// @param left Left operand (scalar)
@@ -651,32 +704,6 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	vector4<T> operator*(const T &left,const vector4<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector4
-	/// @brief Overload of binary operator ==
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return True if @a left and @a right are the same
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	bool operator==(const vector4<T> &left,const vector4<T> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector4
-	/// @brief Overload of binary operator !=
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return True if @a left and @a right are not the same
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	bool operator!=(const vector4<T> &left,const vector4<T> &right);
 
 
 	typedef vector4<float> 		  vec4;

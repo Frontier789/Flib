@@ -75,10 +75,11 @@ namespace fm
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	inline vector4<T>::vector4(const vector2<T> &vec,const T &Z,const T &W) : x(vec.x),
-																			  y(vec.y),
-																			  z(Z),
-																			  w(W)
+	template<class T2>
+	inline vector4<T>::vector4(const vector2<T2> &vec,const T2 &Z,const T2 &W) : x(T(vec.x)),
+														                         y(T(vec.y)),
+														                         z(T(Z)),
+														                         w(T(W))
 	{
 
 	}
@@ -86,31 +87,8 @@ namespace fm
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	inline vector4<T>::vector4(const vector3<T> &vec,const T &W) : x(vec.x),
-																   y(vec.y),
-																   z(vec.z),
-																   w(W)
-	{
-
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2,class T3,class T4>
-	inline vector4<T>::vector4(const vector2<T2> &vec,const T3 &Z,const T4 &W) : x(vec.x),
-														                         y(vec.y),
-														                         z(Z),
-														                         w(W)
-	{
-
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2,class T3>
-	inline vector4<T>::vector4(const vector3<T2> &vec,const T3 &W) : x(T(vec.x)),
+	template<class T2>
+	inline vector4<T>::vector4(const vector3<T2> &vec,const T2 &W) : x(T(vec.x)),
 																	 y(T(vec.y)),
 																	 z(T(vec.z)),
 																	 w(T(W))
@@ -471,10 +449,9 @@ inline std::basic_istream<char, std::char_traits<char> > &operator>>(std::basic_
 
 namespace fm
 {
-
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector4<T> &operator+=(vector4<T> &left,const vector4<T> &right)
+	template<class T,class T2>
+	inline vector4<T> &operator+=(vector4<T> &left,const vector4<T2> &right)
 	{
 		left.x+=right.x;
 		left.y+=right.y;
@@ -482,10 +459,10 @@ namespace fm
 		left.w+=right.w;
 		return left;
 	}
-
+	
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector4<T> &operator-=(vector4<T> &left,const vector4<T> &right)
+	template<class T,class T2>
+	inline vector4<T> &operator-=(vector4<T> &left,const vector4<T2> &right)
 	{
 		left.x-=right.x;
 		left.y-=right.y;
@@ -493,35 +470,80 @@ namespace fm
 		left.w-=right.w;
 		return left;
 	}
-
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector4<T> operator-(const vector4<T> &vec)
+	template<class T,class T2>
+	inline vector4<T> &operator*=(vector4<T> &left,const vector4<T2> &right)
 	{
-		return vector4<T>(vec.x*T(-1),
-						  vec.y*T(-1),
-						  vec.z*T(-1),
-						  vec.w*T(-1));
+		left.x*=right.x;
+		left.y*=right.y;
+		left.z*=right.z;
+		left.w*=right.w;
+		return left;
 	}
-
+	
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector4<T> operator+(const vector4<T> &left,const vector4<T> &right)
+	template<class T,class T2>
+	inline vector4<T> &operator/=(vector4<T> &left,const vector4<T2> &right)
 	{
-		return vector4<T>(left.x+right.x,
-						  left.y+right.y,
-						  left.z+right.z,
-						  left.w+right.w);
+		left.x/=right.x;
+		left.y/=right.y;
+		left.z/=right.z;
+		left.w/=right.w;
+		return left;
 	}
-
+	
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector4<T> operator-(const vector4<T> &left,const vector4<T> &right)
+	template<class T,class T2>
+	inline vector4<T> operator+(const vector4<T> &left,const vector4<T2> &right)
 	{
-		return vector4<T>(left.x-right.x,
-						  left.y-right.y,
-						  left.z-right.z,
-						  left.w-right.w);
+		return vector4<T>(T(left.x+right.x),
+						  T(left.y+right.y),
+						  T(left.z+right.z),
+						  T(left.w+right.w));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector4<T> operator-(const vector4<T> &left,const vector4<T2> &right)
+	{
+		return vector4<T>(T(left.x-right.x),
+						  T(left.y-right.y),
+						  T(left.z-right.z),
+						  T(left.w-right.w));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector4<T> operator*(const vector4<T> &left,const vector4<T2> &right)
+	{
+		return vector4<T>(T(left.x*right.x),
+						  T(left.y*right.y),
+						  T(left.z*right.z),
+						  T(left.w*right.w));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector4<T> operator/(const vector4<T> &left,const vector4<T2> &right)
+	{
+		return vector4<T>(T(left.x/right.x),
+						  T(left.y/right.y),
+						  T(left.z/right.z),
+						  T(left.w/right.w));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline bool operator==(const vector4<T> &left,const vector4<T2> &right)
+	{
+		return left.x==right.x && left.y==right.y && left.z==right.z && left.w==right.w;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline bool operator!=(const vector4<T> &left,const vector4<T2> &right)
+	{
+		return left.x!=right.x || left.y!=right.y || left.z!=right.z || left.w!=right.w;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -533,19 +555,15 @@ namespace fm
 						  left*right.z,
 						  left*right.w);
 	}
-
+	
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline bool operator==(const vector4<T> &left,const vector4<T> &right)
+	inline vector4<T> operator-(const vector4<T> &vec)
 	{
-		return left.x==right.x && left.y==right.y && left.z==right.z && left.w==right.w;
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline bool operator!=(const vector4<T> &left,const vector4<T> &right)
-	{
-		return left.x!=right.x || left.y!=right.y || left.z!=right.z || left.w!=right.w;
+		return vector4<T>(vec.x*T(-1),
+						  vec.y*T(-1),
+						  vec.z*T(-1),
+						  vec.w*T(-1));
 	}
 }
 #endif

@@ -59,26 +59,6 @@ namespace fm
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	inline vector3<T>::vector3(const vector2<T> &other,const T &Z) : x(other.x),
-																	 y(other.y),
-																	 z(Z)
-	{
-
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T>::vector3(const vector4<T> &other) : x(other.x),
-	                                                      y(other.y),
-	                                                      z(other.z)
-	{
-
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
 	template<class T2>
 	inline vector3<T>::vector3(const vector3<T2> &other) : x(T(other.x)),
 	                                                       y(T(other.y)),
@@ -91,9 +71,9 @@ namespace fm
 	////////////////////////////////////////////////////////////
 	template<class T>
 	template<class T2>
-	inline vector3<T>::vector3(const vector2<T2> &other) : x(T(other.x)),
-														   y(T(other.y)),
-														   z(T())
+	inline vector3<T>::vector3(const vector2<T2> &other,const T2 &Z) : x(T(other.x)),
+																	   y(T(other.y)),
+																	   z(T(Z))
 	{
 
 	}
@@ -371,20 +351,20 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline vector3<T> vector3<T>::operator/(const T &scalar) const
-	{
-		return vector3<T>(x/scalar,
-						  y/scalar,
-						  z/scalar);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
 	inline vector3<T> vector3<T>::operator*(const T &scalar) const
 	{
 		return vector3<T>(x*scalar,
 						  y*scalar,
 						  z*scalar);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline vector3<T> vector3<T>::operator/(const T &scalar) const
+	{
+		return vector3<T>(x/scalar,
+						  y/scalar,
+						  z/scalar);
 	}
 }
 
@@ -412,52 +392,93 @@ inline std::basic_istream<char, std::char_traits<char> > &operator>>(std::basic_
 
 namespace fm
 {
-
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> &operator+=(vector3<T> &left,const vector3<T> &right)
+	template<class T,class T2>
+	inline vector3<T> &operator+=(vector3<T> &left,const vector3<T2> &right)
 	{
 		left.x+=right.x;
 		left.y+=right.y;
 		left.z+=right.z;
 		return left;
 	}
-
+	
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> &operator-=(vector3<T> &left,const vector3<T> &right)
+	template<class T,class T2>
+	inline vector3<T> &operator-=(vector3<T> &left,const vector3<T2> &right)
 	{
 		left.x-=right.x;
 		left.y-=right.y;
 		left.z-=right.z;
 		return left;
 	}
-
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> operator-(const vector3<T> &vec)
+	template<class T,class T2>
+	inline vector3<T> &operator*=(vector3<T> &left,const vector3<T2> &right)
 	{
-		return vector3<T>(vec.x*T(-1),
-						  vec.y*T(-1),
-						  vec.z*T(-1));
+		left.x*=right.x;
+		left.y*=right.y;
+		left.z*=right.z;
+		return left;
 	}
-
+	
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> operator+(const vector3<T> &left,const vector3<T> &right)
+	template<class T,class T2>
+	inline vector3<T> &operator/=(vector3<T> &left,const vector3<T2> &right)
 	{
-		return vector3<T>(left.x+right.x,
-						  left.y+right.y,
-						  left.z+right.z);
+		left.x/=right.x;
+		left.y/=right.y;
+		left.z/=right.z;
+		return left;
 	}
-
+	
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> operator-(const vector3<T> &left,const vector3<T> &right)
+	template<class T,class T2>
+	inline vector3<T> operator+(const vector3<T> &left,const vector3<T2> &right)
 	{
-		return vector3<T>(left.x-right.x,
-						  left.y-right.y,
-						  left.z-right.z);
+		return vector3<T>(T(left.x+right.x),
+						  T(left.y+right.y),
+						  T(left.z+right.z));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector3<T> operator-(const vector3<T> &left,const vector3<T2> &right)
+	{
+		return vector3<T>(T(left.x-right.x),
+						  T(left.y-right.y),
+						  T(left.z-right.z));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector3<T> operator*(const vector3<T> &left,const vector3<T2> &right)
+	{
+		return vector3<T>(T(left.x*right.x),
+						  T(left.y*right.y),
+						  T(left.z*right.z));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector3<T> operator/(const vector3<T> &left,const vector3<T2> &right)
+	{
+		return vector3<T>(T(left.x/right.x),
+						  T(left.y/right.y),
+						  T(left.z/right.z));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline bool operator==(const vector3<T> &left,const vector3<T2> &right)
+	{
+		return left.x==right.x && left.y==right.y && left.z==right.z;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline bool operator!=(const vector3<T> &left,const vector3<T2> &right)
+	{
+		return left.x!=right.x || left.y!=right.y || left.z!=right.z;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -468,19 +489,14 @@ namespace fm
 						  left*right.y,
 						  left*right.z);
 	}
-
+	
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline bool operator==(const vector3<T> &left,const vector3<T> &right)
+	inline vector3<T> operator-(const vector3<T> &vec)
 	{
-		return left.x==right.x && left.y==right.y && left.z==right.z;
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline bool operator!=(const vector3<T> &left,const vector3<T> &right)
-	{
-		return left.x!=right.x || left.y!=right.y || left.z!=right.z;
+		return vector3<T>(vec.x*T(-1),
+						  vec.y*T(-1),
+						  vec.z*T(-1));
 	}
 }
 namespace std
