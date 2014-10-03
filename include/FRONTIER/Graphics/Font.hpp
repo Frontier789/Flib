@@ -228,11 +228,12 @@ namespace fg
 		/// ttf font then an error is prompted to fg_log and object becomes invalid
 		/// 
 		/// @param fileName The name of the ttf file
+		/// @param size The initial size
 		/// 
 		/// @return True if everything went right false otherwise
 		/// 
 		/////////////////////////////////////////////////////////////
-		bool loadFromFile(const std::string &fileName);
+		bool loadFromFile(const std::string &fileName,unsigned int size=64);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the Font from a ttf file that loaded in memory
@@ -242,11 +243,12 @@ namespace fg
 		/// 
 		/// @param fileContent A pointer to the beggining of the file in memory
 		/// @param fileSizeInBytes The number of bytes in the loaded file
+		/// @param size The initial size
 		/// 
 		/// @return True if everything went right false otherwise
 		/// 
 		/////////////////////////////////////////////////////////////
-        bool loadFromMemory(const void *fileContent,unsigned int fileSizeInBytes);
+        bool loadFromMemory(const void *fileContent,unsigned int fileSizeInBytes,unsigned int size=64);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the mignification and magnification filter on the texture atlases
@@ -380,11 +382,12 @@ namespace fg
 		/// ttf font then an error is prompted to fg_log and object becomes invalid
 		/// 
 		/// @param fileName The name of the ttf file
+		/// @param size The initial size
 		/// 
 		/// @return True if everything went right false otherwise
 		/// 
 		/////////////////////////////////////////////////////////////
-		bool loadFromFile(const std::string &fileName);
+		bool loadFromFile(const std::string &fileName,unsigned int size=64);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the Font from a ttf file that loaded in memory
@@ -394,11 +397,12 @@ namespace fg
 		/// 
 		/// @param fileContent A pointer to the beggining of the file in memory
 		/// @param fileSizeInBytes The number of bytes in the loaded file
+		/// @param size The initial size
 		/// 
 		/// @return True if everything went right false otherwise
 		/// 
 		/////////////////////////////////////////////////////////////
-        bool loadFromMemory(const void *fileContent,unsigned int fileSizeInBytes);
+        bool loadFromMemory(const void *fileContent,unsigned int fileSizeInBytes,unsigned int size=64);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Render a glyph's image with the current size
