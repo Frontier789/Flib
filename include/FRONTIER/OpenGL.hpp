@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// <!--
 /// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
@@ -13,7 +13,7 @@
 ///                                                                    ///
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_OPENGL_HPP_INCLUDED
 #define FRONTIER_OPENGL_HPP_INCLUDED
 #include <FRONTIER/System/Log.hpp>
@@ -99,49 +99,8 @@ namespace fg
 #endif
 
 
-//////////////////////////////////
-/// Define GL types
-//////////////////////////////////
-#include <cstddef>
-#include <stdint.h>
-typedef unsigned int   GLenum;
-typedef unsigned char  GLboolean;
-typedef unsigned int   GLbitfield;
-typedef void           GLvoid;
-typedef signed char    GLbyte;
-typedef short          GLshort;
-typedef int            GLint;
-typedef unsigned char  GLubyte;
-typedef unsigned short GLushort;
-typedef unsigned int   GLuint;
-typedef int            GLsizei;
-typedef float          GLfloat;
-typedef float          GLclampf;
-typedef double         GLdouble;
-typedef double         GLclampd;
-typedef char           GLchar;
-typedef char           GLcharARB;
-#ifdef __APPLE__
-	typedef void        *GLhandleARB;
-#else
-	typedef unsigned int GLhandleARB;
-#endif
-
-typedef unsigned short GLhalfARB;
-typedef unsigned short GLhalf;
-typedef GLint          GLfixed;
-typedef std::ptrdiff_t GLintptr;
-typedef std::ptrdiff_t GLsizeiptr;
-typedef int64_t        GLint64;
-typedef uint64_t       GLuint64;
-typedef std::ptrdiff_t GLintptrARB;
-typedef std::ptrdiff_t GLsizeiptrARB;
-typedef int64_t        GLint64EXT;
-typedef uint64_t       GLuint64EXT;
-typedef struct __GLsync *GLsync;  
-
-
 #include <FRONTIER/Graphics/GL/GL_VALUES.h>
+#include <FRONTIER/Graphics/GL/GL_TYPES.hpp>
 #include <FRONTIER/Graphics/GL/GL_FUNCTIONS.h>
 
 
