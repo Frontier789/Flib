@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// <!--
 /// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
@@ -13,13 +13,13 @@
 ///                                                                    ///
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/OpenGL.hpp>
 #include <fstream>
-
+ 
 namespace fg
 {
 	/// compile shader objects /////////////////////////////////////////////////////////

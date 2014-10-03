@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// <!--
 /// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
@@ -13,7 +13,7 @@
 ///                                                                    ///
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_EVENT_HPP_INCLUDED
 #define FRONTIER_EVENT_HPP_INCLUDED
 
@@ -65,7 +65,7 @@ namespace fw
 			Down,        ///< The down key
 			Right,       ///< The right key
 			Escape,      ///< The escape key (Esc) key
-			Enter,       ///< The enter ('\n') key
+			Enter,       ///< The enter ('\\n') key
 			PrintScreen, ///< The print screen key
 			ScrollLock,  ///< The scrollock key
 			PauseBreak,  ///< The pause break key
@@ -81,7 +81,7 @@ namespace fw
 			Minus,       ///< The minus ('-') key
 			Plus,        ///< The plus ('+') key
 			Comma,       ///< The comma (',') key
-			Tab,         ///< The tab ('\t') key
+			Tab,         ///< The tab ('\\t') key
 			CapsLock,    ///< The caps lock key
 			LShift,      ///< The left shift key
 			RShift,      ///< The right shift key

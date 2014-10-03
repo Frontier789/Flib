@@ -1,5 +1,5 @@
-//////////////////////////////////////////////////////////////////////////
-/// Copyright (C) 2014 Frontier (fr0nt13r789@github.com)               ///
+////////////////////////////////////////////////////////////////////////// <!--
+/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -8,12 +8,12 @@
 /// You may not misclaim the origin of this software.                  ///
 ///                                                                    ///
 /// If you use this software in your program/project a                 ///
-/// note about it and an email for the author (fr0nt13r789@github.com) ///
+/// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
 /// is not required but highly appreciated.                            ///
-///                                                         mail       ///
+///                                                                    ///
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_WINDOW_MODULE_HPP_INCLUDED
 #define FRONTIER_WINDOW_MODULE_HPP_INCLUDED
 

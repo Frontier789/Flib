@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// <!--
 /// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
@@ -13,7 +13,7 @@
 ///                                                                    ///
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_VERTEX_HPP_INCLUDED
 #define FRONTIER_VERTEX_HPP_INCLUDED
 #define FRONTIER_VERTEX
@@ -53,6 +53,8 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @brief vertex class used to hold the attributes of a point
+	/// 
+	/// @ingroup System
 	/// 
 	/// The attributes consist of 
 	///		@li a position of posType 
