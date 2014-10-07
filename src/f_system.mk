@@ -10,7 +10,7 @@ OBJ_FILES+=$(OBJ_FILES_SYSTEM)
 # directory targets
 ###
 $(LIBPATH)/System: | $(LIBPATH)
-	$(CD) $(PATH_TO_ROOT); $(CD) $(LIBNAME); $(MKDIR) System
+	$(CD) $(PATH_TO_ROOT) && $(CD) $(LIBNAME) && $(MKDIR) System
 
 ###
 # source targets

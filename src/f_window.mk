@@ -10,7 +10,7 @@ OBJ_FILES+=$(OBJ_FILES_WINDOW)
 # directory targets
 ###
 $(LIBPATH)/Window: | $(LIBPATH)
-	$(CD) $(PATH_TO_ROOT); $(CD) $(LIBNAME); $(MKDIR) Window
+	$(CD) $(PATH_TO_ROOT) && $(CD) $(LIBNAME) && $(MKDIR) Window
 
 ###
 # source targets

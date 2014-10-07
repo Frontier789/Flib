@@ -16,10 +16,10 @@ endif
 # directory targets
 ###
 $(LIBPATH)/Graphics: | $(LIBPATH)
-	$(CD) $(PATH_TO_ROOT); $(CD) $(LIBNAME); $(MKDIR) Graphics
+	$(CD) $(PATH_TO_ROOT) && $(CD) $(LIBNAME) && $(MKDIR) Graphics
 	
 $(LIBPATH)/Graphics/ext: | $(LIBPATH)/Graphics
-	$(CD) $(PATH_TO_ROOT); $(CD) $(LIBNAME); $(CD) Graphics; $(MKDIR) ext
+	$(CD) $(PATH_TO_ROOT) && $(CD) $(LIBNAME) && $(CD) Graphics && $(MKDIR) ext
 
 ###
 # source targets

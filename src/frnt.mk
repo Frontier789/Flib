@@ -11,6 +11,11 @@ PATH_TO_LIB=$(PATH_TO_ROOT)
 PATH_TO_SRC=$(PATH_TO_ROOT)/src
 PATH_TO_INCLUDE=$(PATH_TO_ROOT)/include
 
+ifeq ($(LIBNAME),)
+	$(warning LIBNAME wasn't specified /using plain 'lib'/)
+LIBNAME=lib
+endif
+
 LIBPATH=$(PATH_TO_LIB)/$(LIBNAME)
 
 COMPILE_SYSTEM=1
@@ -20,9 +25,6 @@ COMPILE_WINDOW=1
 COMPILE_MERGED=1
 
 
-ifeq ($(LIBNAME),)
-	$(warning LIBNAME wasn't specified /using plain 'lib'/)
-endif
 
 all: MAKE_TARGETS | MAKE_DIR_TARGETS
 
@@ -60,8 +62,8 @@ $(LIBPATH)/libf.a: $(OBJ_FILES) | $(LIBPATH)
 ###
 # directory target
 ###
-$(PATH_TO_LIB)/$(LIBNAME):
-	$(CD) $(PATH_TO_ROOT); $(MKDIR) $(LIBNAME)
+$(LIBPATH):
+	$(CD) $(PATH_TO_ROOT) && $(MKDIR) $(LIBNAME)
 
 clean: clean-system clean-graphics clean-window clean-merged
 	
