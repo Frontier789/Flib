@@ -15,6 +15,8 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Event.hpp>
+#include <FRONTIER/Window/Wapi/WapiWindow.hpp>
+#include <FRONTIER/Window/FwLog.hpp>
 #include <windows.h>
 
 namespace fw
@@ -50,9 +52,9 @@ namespace fw
 		if (key == Keyboard::PageDown)     return VK_NEXT;
 		if (key == Keyboard::Divide)       return VK_DIVIDE;
 		if (key == Keyboard::Multiply)     return VK_MULTIPLY;
-		if (key == Keyboard::Minus)        return VK_OEM_MINUS;
-		if (key == Keyboard::Plus)         return VK_OEM_PLUS;
-		if (key == Keyboard::Comma)        return VK_OEM_COMMA;
+		if (key == Keyboard::Minus)        return 0xBD;//VK_OEM_MINUS;
+		if (key == Keyboard::Plus)         return 0xBB;//VK_OEM_PLUS;
+		if (key == Keyboard::Comma)        return 0xBC;//VK_OEM_COMMA;
 		if (key == Keyboard::Tab)          return VK_TAB;
 		if (key == Keyboard::CapsLock)     return VK_CAPITAL;
 		if (key == Keyboard::LShift)       return VK_LSHIFT;
@@ -97,5 +99,35 @@ namespace fw
 		if (!VKcode)
 			return false;
 		return GetAsyncKeyState(VKcode);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::vec2i Mouse::getPosition()
+	{
+		POINT p;
+		if (!GetCursorPos(&p))
+		{
+			fw_log << "GetCursorPos failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+			return fm::vec2u();
+		}
+		return fm::vec2u::loadxy(p);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::vec2i Mouse::getPosition(const fw::priv::Window &window)
+	{
+		POINT p;
+		if (!GetCursorPos(&p))
+		{
+			fw_log << "GetCursorPos failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+			return fm::vec2i();
+		}
+		
+		if (!ScreenToClient(window.getHandle(), &p))
+		{
+			fw_log << "ScreenToClient failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+			return fm::vec2i();
+		}
+		return fm::vec2i::loadxy(p);
 	}
 }

@@ -14,6 +14,7 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/Window/Event.hpp>
 #include <FRONTIER/Config.hpp>
 

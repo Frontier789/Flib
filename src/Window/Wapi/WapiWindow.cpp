@@ -43,9 +43,9 @@ namespace fw
 		if (param == VK_NEXT)      return Keyboard::PageDown;
 		if (param == VK_DIVIDE)    return Keyboard::Divide;
 		if (param == VK_MULTIPLY)  return Keyboard::Multiply;
-		if (param == VK_OEM_MINUS) return Keyboard::Minus;
-		if (param == VK_OEM_PLUS)  return Keyboard::Plus;
-		if (param == VK_OEM_COMMA) return Keyboard::Comma;
+		if (param == 0xBD) 		   return Keyboard::Minus;/*VK_OEM_MINUS;*/
+		if (param == 0xBB) 		   return Keyboard::Plus; /*VK_OEM_PLUS;*/ 
+		if (param == 0xBC) 		   return Keyboard::Comma;/*VK_OEM_COMMA;*/
 		if (param == VK_TAB)       return Keyboard::Tab;
 		if (param == VK_CAPITAL)   return Keyboard::CapsLock;
 		if (param == VK_LSHIFT)    return Keyboard::LShift;

@@ -17,6 +17,14 @@
 #ifndef FRONTIER_EVENT_HPP_INCLUDED
 #define FRONTIER_EVENT_HPP_INCLUDED
 
+#include <FRONTIER/System/macros/dont_include_inl_begin>
+
+#include <FRONTIER/System/Vector2.hpp>
+
+#include <FRONTIER/System/macros/dont_include_inl_end>
+
+#include <FRONTIER/Window/Window.hpp>
+
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
@@ -171,6 +179,22 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		static bool isButtonHeld(Button button);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the mouse distance from the upper left corner
+		///
+		/// @return Position of the mouse
+		///
+		/////////////////////////////////////////////////////////////
+		static fm::vec2i getPosition();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the mouse distance from the upper left corner
+		///
+		/// @return Position of the mouse
+		///
+		/////////////////////////////////////////////////////////////
+		static fm::vec2i getPosition(const fw::priv::Window &window);
 	};
 
 	/////////////////////////////////////////////////////////////

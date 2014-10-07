@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_WINDOW_HPP_INCLUDED
 #define FRONTIER_WINDOW_HPP_INCLUDED
+#include <FRONTIER/Config.hpp>
 
 namespace fw
 {
@@ -47,5 +48,21 @@ namespace fw
 		};
 	};
 }
+
+#ifdef FRONTIER_OS_WINDOWS
+	namespace fw
+	{
+		namespace Wapi
+		{
+			class Window;
+		}
+		namespace priv
+		{
+			typedef fw::Wapi::Window Window;
+		}
+	}
+#else
+	#warning No window
+#endif
 
 #endif // FRONTIER_WINDOW_HPP_INCLUDED
