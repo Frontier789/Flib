@@ -4,67 +4,59 @@ AR=ar
 CD=cd
 RM=rm
 
-CPPFLAGS+=-Wall -Os -Wfatal-errors -pedantic
+CXXFLAGS+=-Wall -Os -Wfatal-errors -pedantic -DFRONTIER_LIBBUILD 
+
+ifeq ($(LIBNAME),)
+LIBNAME=lib
+endif
 
 PATH_TO_ROOT=..
 PATH_TO_LIB=$(PATH_TO_ROOT)
 PATH_TO_SRC=$(PATH_TO_ROOT)/src
 PATH_TO_INCLUDE=$(PATH_TO_ROOT)/include
 
-ifeq ($(LIBNAME),)
-	$(warning LIBNAME wasn't specified /using plain 'lib'/)
-LIBNAME=lib
-endif
-
 LIBPATH=$(PATH_TO_LIB)/$(LIBNAME)
 
-COMPILE_SYSTEM=1
-COMPILE_GRAPHICS=1
-COMPILE_GL_HEADER=1
-COMPILE_WINDOW=1
-COMPILE_MERGED=1
+static: MAKE_STATIC_TARGETS
+dynamic: MAKE_DYNAMIC_TARGETS
 
-
-
-all: MAKE_TARGETS | MAKE_DIR_TARGETS
-
-#only include the submake if compile graphics module
-ifeq ($(COMPILE_GRAPHICS),1)
-include f_graphics.mk
-endif
-
-#only include the submake if compile window module
-ifeq ($(COMPILE_WINDOW),1)
-include f_window.mk
-endif
-
-#only include the submake if compile system module
-ifeq ($(COMPILE_SYSTEM),1)
+#include system submake
 include f_system.mk
-endif
 
-ifeq ($(COMPILE_MERGED),1)
-TARGETS+=$(LIBPATH)/libf.a
-clean-merged:
-	$(RM) $(LIBPATH)/libf.a
-else
-clean-merged:
-endif
+#include OpenGL submake
+include f_gl.mk
 
-MAKE_TARGETS: $(TARGETS) 
-MAKE_DIR_TARGETS: | $(DIR_TARGETS) 
+#include Window submake
+include f_window.mk
+
+#include Window submake
+include f_graphics.mk
+
+STATIC_TARGETS+=$(LIBPATH)/libf.a
+DYNAMIC_TARGETS+=$(LIBPATH)/f.dll $(LIBPATH)/libf-dll.a
+
+MAKE_STATIC_TARGETS: $(STATIC_TARGETS)
+MAKE_DYNAMIC_TARGETS: $(DYNAMIC_TARGETS)
 
 ###
-# directory target
+# static and dynamic targets
 ###
-$(LIBPATH)/libf.a: $(OBJ_FILES) | $(LIBPATH) 
-	$(AR) rcs $@ $(OBJ_FILES)
+$(LIBPATH)/libf.a: $(STATIC_OBJ_FILES) | $(LIBPATH) 
+	$(AR) rcs $@ $(STATIC_OBJ_FILES)
+
+$(LIBPATH)/f.dll $(LIBPATH)/f-dll.a: $(DYNAMIC_OBJ_FILES) | $(LIBPATH)
+	$(CXX) -shared -o $(LIBPATH)/f.dll $(DYNAMIC_OBJ_FILES) -lOpenGL32 -lgdi32 -Wl,--out-implib,$(LIBPATH)/libf-dll.a
+
 ###
 # directory target
 ###
 $(LIBPATH):
 	$(CD) $(PATH_TO_ROOT) && $(MKDIR) $(LIBNAME)
-
-clean: clean-system clean-graphics clean-window clean-merged
+	
+$(LIBPATH)/static: | $(LIBPATH)
+	$(CD) $(PATH_TO_ROOT) && $(CD) $(LIBNAME) && $(MKDIR) static
+	
+$(LIBPATH)/dynamic: | $(LIBPATH)
+	$(CD) $(PATH_TO_ROOT) && $(CD) $(LIBNAME) && $(MKDIR) dynamic
 	
 	

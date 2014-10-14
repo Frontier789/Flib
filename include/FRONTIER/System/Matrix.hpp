@@ -46,7 +46,7 @@ namespace fm
 		typedef matrix<W,H,T> &reference;
 		typedef const matrix<W,H,T> &const_reference;
 		enum {
-			dimensions = W*H ///< Public value indicating the amount of value_type's in the class
+			components = W*H ///< Public value indicating the amount of value_type's in the class
 		};
 
 

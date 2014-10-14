@@ -26,6 +26,8 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
+#include <FRONTIER/Config.hpp>
+
 #define FRONTIER_TEXTURE
 
 namespace fm
@@ -38,7 +40,7 @@ namespace fg
 {
 	namespace priv
 	{
-		void defaultSetTextureMatrixFunc(const fm::matrix<4,4,float> &m);
+		void FRONTIER_API defaultSetTextureMatrixFunc(const fm::matrix<4,4,float> &m);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -46,7 +48,7 @@ namespace fg
 	/// 	@brief Class used to handle OpenGL 2D textures 
 	///
 	/////////////////////////////////////////////////////////////
-	class Texture : public GlObject
+	class FRONTIER_API Texture : public GlObject
 	{
 		fm::vec2s m_realSize; ///< The actul size of the texture
 		fm::vec2s m_size;	  ///< The requested size of the texture
@@ -54,9 +56,12 @@ namespace fg
 		bool m_isSmooth;	  ///< If true then linear interpolation is used on magnifying
 		static void (*m_setTexMat)(const fm::matrix<4,4,float> &m); ///< Function used to set the texture matrix
 	public:
-
-		enum CoordinateSystem ///< Indicate what coordinate system the texture is bound
-		{
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Indicate what coordinate system the texture is bound
+		///
+		/////////////////////////////////////////////////////////////
+		enum CoordinateSystem {
 			Normalized, ///< Texture coordinates are in range [0;1],[0;1] 
 			Pixels		///< Texture coordinates are in range [0;w],[0;h]
 		};

@@ -1,3 +1,3 @@
 LIBNAME=libLinux
-CPPFLAGS+=-DFRONTIER_OS_LINUX
+PLATFORM=Linux
 include frnt.mk

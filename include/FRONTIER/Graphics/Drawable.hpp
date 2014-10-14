@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_DRAWABLE_HPP_INCLUDED
 #define FRONTIER_DRAWABLE_HPP_INCLUDED
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_DRAWABLE
 #include <cstddef>
 namespace fm
@@ -38,7 +39,7 @@ namespace fg
 	};
 	namespace priv
 	{
-		class Attribute
+		class FRONTIER_API Attribute
 		{
 		public:
 			fg::Buffer *buf;
@@ -52,20 +53,20 @@ namespace fg
 			unsigned int getSizeType() const;
 			static Attribute Empty;
 		};
-		void defaultDraw(const Attribute &pos,bool hasPos,
-					     const Attribute &clr,bool hasClr,
-					     const Attribute &texPos,bool hasTexPos,
-					     const Attribute &norm,bool hasNorm,
-					     fg::Primitive primitive,unsigned int vertexCount,void *indices,unsigned int indexSize);
-		class IndexPointer
+		void FRONTIER_API defaultDraw(const Attribute &pos,bool hasPos,
+									  const Attribute &clr,bool hasClr,
+									  const Attribute &texPos,bool hasTexPos,
+									  const Attribute &norm,bool hasNorm,
+									  fg::Primitive primitive,unsigned int vertexCount,void *indices,unsigned int indexSize);
+		class FRONTIER_API IndexPointer
 		{
 		public:
 			unsigned int size;
 			void *ptr;
 			IndexPointer();
-			IndexPointer(unsigned char *ptr);
+			IndexPointer(unsigned char  *ptr);
 			IndexPointer(unsigned short *ptr);
-			IndexPointer(unsigned int *ptr);
+			IndexPointer(unsigned int   *ptr);
 		};
 
 	}
@@ -74,11 +75,11 @@ namespace fg
 				     			 const priv::Attribute &,bool,
 				     			 const priv::Attribute &,bool,
 				     			 fg::Primitive primitive,unsigned int vertexCount,void *indices,unsigned int indexSize);
-	void setDrawFunc(drawFuncType func);
+	void FRONTIER_API setDrawFunc(drawFuncType func);
 	
-	void draw(priv::Attribute pos,priv::Attribute clr,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp=priv::IndexPointer());
-	void draw(priv::Attribute pos,priv::Attribute clr,priv::Attribute texPos,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp=priv::IndexPointer());
-	void draw(priv::Attribute pos,priv::Attribute clr,priv::Attribute texPos,priv::Attribute norm,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp=priv::IndexPointer());
+	void FRONTIER_API draw(priv::Attribute pos,priv::Attribute clr,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp=priv::IndexPointer());
+	void FRONTIER_API draw(priv::Attribute pos,priv::Attribute clr,priv::Attribute texPos,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp=priv::IndexPointer());
+	void FRONTIER_API draw(priv::Attribute pos,priv::Attribute clr,priv::Attribute texPos,priv::Attribute norm,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp=priv::IndexPointer());
 
 	template <class pt,class ct,class tpt,class nt>
 	void draw(const fm::vertex<pt,ct,tpt,nt> *vertices,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp=priv::IndexPointer());

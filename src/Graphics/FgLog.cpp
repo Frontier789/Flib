@@ -20,5 +20,5 @@
 namespace fg
 {
 	////////////////////////////////////////////////////////////
-	fm::Log fg_log = std::cout;
+	FRONTIER_API fm::Log fg_log = std::cout;
 }

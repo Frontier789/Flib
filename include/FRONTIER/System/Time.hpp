@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_TIME_HPP_INCLUDED
 #define FRONTIER_TIME_HPP_INCLUDED
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_TIME
 namespace fm
 {
@@ -24,7 +25,7 @@ namespace fm
 	/// @brief Class used to represent the amount of some time
 	///
 	/////////////////////////////////////////////////////////////
-	class Time
+	class FRONTIER_API Time
 	{
 		long m_amount; ///< A long value holding the time in Microseconds
 	public:
@@ -32,7 +33,7 @@ namespace fm
 		typedef Time &reference;
 		typedef const Time &const_reference;
 		enum {
-			dimensions = 1u ///< Public value indicating the amount of value_type's in the class
+			components = 1u ///< Public value indicating the amount of value_type's in the class
 		};
 		enum MeasureType {
 			Microseconds=1,   ///< Indicates that the passed value means microseconds
@@ -131,7 +132,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Time operator+(const Time &left,const Time &right);
+	Time FRONTIER_API operator+(const Time &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -143,7 +144,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Time operator-(const Time &left,const Time &right);
+	Time FRONTIER_API operator-(const Time &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -154,7 +155,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Time operator-(const Time &time);
+	Time FRONTIER_API operator-(const Time &time);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -166,7 +167,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Time operator*(const Time &left,const float &right);
+	Time FRONTIER_API operator*(const Time &left,const float &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -178,7 +179,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Time operator*(const float &left,const Time &right);
+	Time FRONTIER_API operator*(const float &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -190,7 +191,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Time operator/(const Time &left,const float &right);
+	Time FRONTIER_API operator/(const Time &left,const float &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -202,7 +203,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Time &operator+=(Time &left,const Time &right);
+	Time FRONTIER_API &operator+=(Time &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -214,7 +215,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Time &operator-=(Time &left,const Time &right);
+	Time FRONTIER_API &operator-=(Time &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -226,7 +227,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Time &operator*=(Time &left,const float &right);
+	Time FRONTIER_API &operator*=(Time &left,const float &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -238,7 +239,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Time &operator/=(Time &left,const float &right);
+	Time FRONTIER_API &operator/=(Time &left,const float &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -250,7 +251,7 @@ namespace fm
 	/// @return True if @a left and @a right are equal
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator==(const Time &left,const Time &right);
+	bool FRONTIER_API operator==(const Time &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -262,7 +263,7 @@ namespace fm
 	/// @return True if @a left and @a right are not equal
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator!=(const Time &left,const Time &right);
+	bool FRONTIER_API operator!=(const Time &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -274,7 +275,7 @@ namespace fm
 	/// @return True if @a left is smaller than @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator< (const Time &left,const Time &right);
+	bool FRONTIER_API operator< (const Time &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -286,7 +287,7 @@ namespace fm
 	/// @return True if @a left is smaller or equal than @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator<=(const Time &left,const Time &right);
+	bool FRONTIER_API operator<=(const Time &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -298,7 +299,7 @@ namespace fm
 	/// @return True if @a left is bigger than @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator> (const Time &left,const Time &right);
+	bool FRONTIER_API operator> (const Time &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -310,7 +311,7 @@ namespace fm
 	/// @return True if @a left is bigger or equal than @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator>=(const Time &left,const Time &right);
+	bool FRONTIER_API operator>=(const Time &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -321,7 +322,7 @@ namespace fm
 	/// @return The create fm::Time object
 	///
 	/////////////////////////////////////////////////////////////
-	Time microseconds(long Msecs);
+	Time FRONTIER_API microseconds(long Msecs);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -332,7 +333,7 @@ namespace fm
 	/// @return The create fm::Time object
 	///
 	/////////////////////////////////////////////////////////////
-	Time milliseconds(int msecs);
+	Time FRONTIER_API milliseconds(int msecs);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -343,7 +344,7 @@ namespace fm
 	/// @return The create fm::Time object
 	///
 	/////////////////////////////////////////////////////////////
-	Time seconds(float secs);
+	Time FRONTIER_API seconds(float secs);
 }
 #endif //FRONTIER_TIME_HPP_INCLUDED
 

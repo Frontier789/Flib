@@ -21,7 +21,7 @@
 
 namespace fg
 {
-	fm::Log glCheck_log = std::cout;
+	FRONTIER_API fm::Log glCheck_log = std::cout;
 	namespace priv
 	{
 		/// glCheckError /////////////////////////////////////////////////////////

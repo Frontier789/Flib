@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_SLEEP_HPP_INCLUDED
 #define FRONTIER_SLEEP_HPP_INCLUDED
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_SLEEP
 namespace fm
 {
@@ -27,6 +28,6 @@ namespace fm
 	/// @param duration Time amount to pause for
 	/// 
 	/////////////////////////////////////////////////////////////
-	void Sleep(const Time &duration);
+	void FRONTIER_API Sleep(const Time &duration);
 }
 #endif // FRONTIER_SLEEP_HPP_INCLUDED

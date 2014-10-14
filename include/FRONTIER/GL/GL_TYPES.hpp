@@ -16,49 +16,50 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_GL_TYPES_H_INCLUDED
 #define FRONTIER_GL_TYPES_H_INCLUDED
+#include <FRONTIER/Config.hpp>
 
-#include <cstddef>
-#include <stdint.h>
 
-typedef void           GLvoid;
 
-typedef char           GLchar;
-typedef char           GLcharARB;
-typedef signed char    GLbyte;
-typedef unsigned char  GLboolean;
-typedef unsigned char  GLubyte;
 
-typedef short          GLshort;
-typedef unsigned short GLushort;
+typedef void        GLvoid;
 
-typedef int            GLsizei;
-typedef int            GLint;
-typedef unsigned int   GLuint;
-typedef unsigned int   GLenum;
-typedef unsigned int   GLbitfield;
+typedef char        GLchar;
+typedef GLchar      GLcharARB;
+typedef fm::Int8    GLbyte;
+typedef fm::Uint8   GLboolean;
+typedef fm::Uint8   GLubyte;
 
-typedef float          GLfloat;
-typedef float          GLclampf;
-typedef double         GLdouble;
-typedef double         GLclampd;
+typedef fm::Int16   GLshort;
+typedef fm::Uint16  GLushort;
+
+typedef fm::Int32   GLsizei;
+typedef fm::Int32   GLint;
+typedef fm::Uint32  GLuint;
+typedef fm::Uint32  GLenum;
+typedef fm::Uint32  GLbitfield;
+                    
+typedef fm::Float32 GLfloat;
+typedef fm::Float32 GLclampf;
+typedef fm::Float64 GLdouble;
+typedef fm::Float64 GLclampd;
 
 #ifdef __APPLE__
 	typedef void        *GLhandleARB;
 #else
-	typedef unsigned int GLhandleARB;
+	typedef fm::Uint32   GLhandleARB;
 #endif
 
-typedef unsigned short GLhalfARB;
-typedef unsigned short GLhalf;
-typedef GLint          GLfixed;
-typedef std::ptrdiff_t GLintptr;
-typedef std::ptrdiff_t GLsizeiptr;
-typedef int64_t        GLint64;
-typedef uint64_t       GLuint64;
-typedef std::ptrdiff_t GLintptrARB;
-typedef std::ptrdiff_t GLsizeiptrARB;
-typedef int64_t        GLint64EXT;
-typedef uint64_t       GLuint64EXT;
+typedef fm::Uint16  GLhalf;
+typedef GLhalf      GLhalfARB;
+typedef GLint       GLfixed;
+typedef fm::Ptrdiff GLintptr;
+typedef fm::Size    GLsizeiptr;
+typedef fm::Int64   GLint64;
+typedef fm::Uint64  GLuint64;
+typedef GLintptr    GLintptrARB;
+typedef GLsizeiptr  GLsizeiptrARB;
+typedef GLint64     GLint64EXT;
+typedef GLuint64    GLuint64EXT;
 typedef struct __GLsync *GLsync;
 
 namespace fg

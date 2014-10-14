@@ -453,14 +453,14 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-    Shader::reference Shader::setAttribPointer(const std::string &name,unsigned int dimensions,unsigned long type,bool normalize,const void *pointer,unsigned int stride)
+    Shader::reference Shader::setAttribPointer(const std::string &name,unsigned int components,unsigned long type,bool normalize,const void *pointer,unsigned int stride)
     {
 		if (getGlId())
 		{
 			int location = getAttribLocation(name);
 			
 			if (location!=-1)
-				glCheck(glVertexAttribPointer(location,dimensions,type,normalize,stride,pointer));			
+				glCheck(glVertexAttribPointer(location,components,type,normalize,stride,pointer));			
 		}
 		return *this;
     }

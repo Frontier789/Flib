@@ -20,5 +20,5 @@
 namespace fw
 {
 	////////////////////////////////////////////////////////////
-	fm::Log fw_log = std::cout;
+	FRONTIER_API fm::Log fw_log = std::cout;
 }

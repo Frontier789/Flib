@@ -17,6 +17,7 @@
 #ifndef FRONTIER_FGLOG_HPP_INCLUDED
 #define FRONTIER_FGLOG_HPP_INCLUDED
 #include <FRONTIER/System/Log.hpp>
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_FGLOG
 namespace fg
 {
@@ -31,6 +32,6 @@ namespace fg
 	/// this instance
 	/// 
 	//////////////////////////////////
-    extern fm::Log fg_log;
+	FRONTIER_API extern fm::Log fg_log;
 }
 #endif // FRONTIER_FGLOG_HPP_INCLUDED

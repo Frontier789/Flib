@@ -21,19 +21,6 @@
 #include <FRONTIER/OpenGL.hpp>
 namespace fg
 {
-
-	BufferType ArrayBuffer    = (BufferType)(GL_ARRAY_BUFFER        );
-	BufferType IndexBuffer    = (BufferType)(GL_ELEMENT_ARRAY_BUFFER);
-	Usage Buffer::StaticDraw  = (Usage)(GL_STATIC_DRAW );
-	Usage Buffer::StaticRead  = (Usage)(GL_STATIC_READ );
-	Usage Buffer::StaticCopy  = (Usage)(GL_STATIC_COPY );
-	Usage Buffer::DynamicDraw = (Usage)(GL_DYNAMIC_DRAW);
-	Usage Buffer::DynamicRead = (Usage)(GL_DYNAMIC_READ);
-	Usage Buffer::DynamicCopy = (Usage)(GL_DYNAMIC_COPY);
-	Usage Buffer::StreamDraw  = (Usage)(GL_STREAM_DRAW );
-	Usage Buffer::StreamRead  = (Usage)(GL_STREAM_READ );
-	Usage Buffer::StreamCopy  = (Usage)(GL_STREAM_COPY );
-		
 	/// constructors /////////////////////////////////////////////////////////
 	Buffer::Buffer() : m_type(ArrayBuffer),
 					   m_usage(StaticDraw)
@@ -42,27 +29,27 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::Buffer(BufferType type,Usage usage) : m_type(type),
-												  m_usage(usage)
+	Buffer::Buffer(BufferType type,Buffer::Usage usage) : m_type(type),
+														  m_usage(usage)
 	{
 
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::Buffer(Usage usage,BufferType type) : m_type(type),
-												  m_usage(usage)
+	Buffer::Buffer(Buffer::Usage usage,BufferType type) : m_type(type),
+														  m_usage(usage)
 	{
 		
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::Buffer(const void *data,unsigned int bytesToCopy,BufferType type,Usage usage)
+	Buffer::Buffer(const void *data,unsigned int bytesToCopy,BufferType type,Buffer::Usage usage)
 	{
 		setData(data,bytesToCopy,type,usage);
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::Buffer(const void *data,unsigned int bytesToCopy,Usage usage,BufferType type)
+	Buffer::Buffer(const void *data,unsigned int bytesToCopy,Buffer::Usage usage,BufferType type)
 	{
 		setData(data,bytesToCopy,type,usage);
 	}
@@ -89,7 +76,7 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::reference Buffer::setData(const void *data,unsigned int bytesToCopy,Usage usage)
+	Buffer::reference Buffer::setData(const void *data,unsigned int bytesToCopy,Buffer::Usage usage)
 	{
 		return setData(data,bytesToCopy,m_type,usage);
 	}
@@ -108,7 +95,7 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	unsigned int getFallBackUsage(Usage usage)
+	unsigned int getFallBackUsage(Buffer::Usage usage)
 	{
 		if (usage==0x88E5) return 0x88E4;
 		if (usage==0x88E6) return 0x88E4;
@@ -125,7 +112,7 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::reference Buffer::setData(const void *data,unsigned int bytesToCopy,BufferType type,Usage usage)
+	Buffer::reference Buffer::setData(const void *data,unsigned int bytesToCopy,BufferType type,Buffer::Usage usage)
 	{
 		m_type = type;
 		m_usage = usage;

@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_LOG_HPP_INCLUDED
 #define FRONTIER_LOG_HPP_INCLUDED
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_LOG
 namespace std
 {
@@ -47,7 +48,7 @@ namespace fm
 	///			   log errors and warnings redirectibly from flib
 	///
 	/////////////////////////////////////////////////////////////
-	class Log
+	class FRONTIER_API Log
 	{
 		bool m_canRecallLog;        ///< If true, the last log can be accessed through getLastLog
 		bool m_newLog;              ///< Iternal variable

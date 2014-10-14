@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_ANGLE_HPP_INCLUDED
 #define FRONTIER_ANGLE_HPP_INCLUDED
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_ANGLE
 namespace fm
 {
@@ -24,7 +25,7 @@ namespace fm
 	/// @brief Class used to hold and convert the value of an angle
 	///
 	/////////////////////////////////////////////////////////////
-	class Angle
+	class FRONTIER_API Angle
 	{
 		float m_amount; ///< A float holding the angle always in radians
 	public:
@@ -32,7 +33,7 @@ namespace fm
 		typedef Angle &reference;
 		typedef const Angle &const_reference;
 		enum {
-			dimensions = 1u ///< Public value indicating the amount of value_type's in the class
+			components = 1u ///< Public value indicating the amount of value_type's in the class
 		};
 		/////////////////////////////////////////////////////////////
 		/// @brief Enumerated type used to decide if a float value
@@ -165,7 +166,7 @@ namespace fm
 	/// @return Result of the addition
 	///
 	/////////////////////////////////////////////////////////////
-	Angle operator+(const Angle &left,const Angle &right);
+	Angle FRONTIER_API operator+(const Angle &left,const Angle &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -177,7 +178,7 @@ namespace fm
 	/// @return Result of the substraction
 	///
 	/////////////////////////////////////////////////////////////
-	Angle operator-(const Angle &left,const Angle &right);
+	Angle FRONTIER_API operator-(const Angle &left,const Angle &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -189,7 +190,7 @@ namespace fm
 	/// @return Result of the multiplication
 	///
 	/////////////////////////////////////////////////////////////
-	Angle operator*(const Angle &left,const float &right);
+	Angle FRONTIER_API operator*(const Angle &left,const float &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -201,7 +202,7 @@ namespace fm
 	/// @return Result of the multiplication
 	///
 	/////////////////////////////////////////////////////////////
-    Angle operator*(const float &left,const Angle &right);
+    Angle FRONTIER_API operator*(const float &left,const Angle &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -213,7 +214,7 @@ namespace fm
 	/// @return Result of the division
 	///
 	/////////////////////////////////////////////////////////////
-	Angle operator/(const Angle &left,const float &right);
+	Angle FRONTIER_API operator/(const Angle &left,const float &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -225,7 +226,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Angle &operator+=(Angle &left,const Angle &right);
+	Angle FRONTIER_API &operator+=(Angle &left,const Angle &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -237,7 +238,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Angle &operator-=(Angle &left,const Angle &right);
+	Angle FRONTIER_API &operator-=(Angle &left,const Angle &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -249,7 +250,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Angle &operator*=(Angle &left,const float &right);
+	Angle FRONTIER_API &operator*=(Angle &left,const float &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -261,7 +262,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Angle &operator/=(Angle &left,const float &right);
+	Angle FRONTIER_API &operator/=(Angle &left,const float &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -273,7 +274,7 @@ namespace fm
 	/// @return True if @a left equals @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator==(const Angle &left,const Angle &right);
+	bool FRONTIER_API operator==(const Angle &left,const Angle &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -285,7 +286,7 @@ namespace fm
 	/// @return True if @a left does not equal @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator!=(const Angle &left,const Angle &right);
+	bool FRONTIER_API operator!=(const Angle &left,const Angle &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -297,7 +298,7 @@ namespace fm
 	/// @return True if @a left is smaller @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator< (const Angle &left,const Angle &right);
+	bool FRONTIER_API operator< (const Angle &left,const Angle &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -309,7 +310,7 @@ namespace fm
 	/// @return True if @a left is smaller or equal @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator<=(const Angle &left,const Angle &right);
+	bool FRONTIER_API operator<=(const Angle &left,const Angle &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -321,7 +322,7 @@ namespace fm
 	/// @return True if @a left is bigger @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator> (const Angle &left,const Angle &right);
+	bool FRONTIER_API operator> (const Angle &left,const Angle &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -333,7 +334,7 @@ namespace fm
 	/// @return True if @a left is bigger or equal @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator>=(const Angle &left,const Angle &right);
+	bool FRONTIER_API operator>=(const Angle &left,const Angle &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -344,7 +345,7 @@ namespace fm
 	/// @return The created instance of fm::Angle
 	///
 	/////////////////////////////////////////////////////////////
-	Angle degrees(float amount);
+	Angle FRONTIER_API degrees(float amount);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -355,7 +356,7 @@ namespace fm
 	/// @return The created instance of fm::Angle
 	///
 	/////////////////////////////////////////////////////////////
-	Angle radians(float amount);
+	Angle FRONTIER_API radians(float amount);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -366,7 +367,7 @@ namespace fm
 	/// @return The created instance of fm::Angle
 	///
 	/////////////////////////////////////////////////////////////
-	Angle deg(float amount);
+	Angle FRONTIER_API deg(float amount);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -377,12 +378,9 @@ namespace fm
 	/// @return The created instance of fm::Angle
 	///
 	/////////////////////////////////////////////////////////////
-	Angle rad(float amount);
+	Angle FRONTIER_API rad(float amount);
 }
-/////////////////////////////////////////////////////////////e
-/// @brief Overload some cmath functions with fm::Angle
-/// 
-/////////////////////////////////////////////////////////////
+
 namespace std
 {
 	/////////////////////////////////////////////////////////////
@@ -394,7 +392,8 @@ namespace std
 	/// @return <a href="http://en.wikipedia.org/wiki/Sine">sin</a>(angle)
 	///
 	/////////////////////////////////////////////////////////////
-    float sin(const fm::Angle &angle);
+    float FRONTIER_API sin(const fm::Angle &angle);
+    
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
 	/// @brief Overload of the std::cos with fm::Angle
@@ -404,7 +403,8 @@ namespace std
 	/// @return <a href="http://en.wikipedia.org/wiki/Cosine#Sine.2C_cosine_and_tangent">cos</a>(angle)
 	///
 	/////////////////////////////////////////////////////////////
-    float cos(const fm::Angle &angle);
+    float FRONTIER_API cos(const fm::Angle &angle);
+    
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
 	/// @brief Overload of the std::tan with fm::Angle
@@ -414,7 +414,8 @@ namespace std
 	/// @return <a href="http://en.wikipedia.org/wiki/Cosine#Sine.2C_cosine_and_tangent">tan</a>(angle)
 	///
 	/////////////////////////////////////////////////////////////
-    float tan(const fm::Angle &angle);
+    float FRONTIER_API tan(const fm::Angle &angle);
+    
 }
 
 #endif // FRONTIER_ANGLE_HPP_INCLUDED

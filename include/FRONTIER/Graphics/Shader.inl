@@ -21,10 +21,10 @@ namespace fg
 		template<class pt,class ct,class tpt,class nt>
 		inline unsigned int getStride()
 		{
-			return (pt::dimensions  ? sizeof(pt)  : 0)+
-				   (ct::dimensions  ? sizeof(ct)  : 0)+
-				   (tpt::dimensions ? sizeof(tpt) : 0)+
-				   (nt::dimensions  ? sizeof(nt)  : 0);
+			return (pt::components  ? sizeof(pt)  : 0)+
+				   (ct::components  ? sizeof(ct)  : 0)+
+				   (tpt::components ? sizeof(tpt) : 0)+
+				   (nt::components  ? sizeof(nt)  : 0);
 		}
 	}
 

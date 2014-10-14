@@ -24,6 +24,9 @@
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
 #include <FRONTIER/Window/Window.hpp>
+#include <FRONTIER/Config.hpp>
+
+#define FRONTIER_EVENT
 
 namespace fw
 {
@@ -34,7 +37,7 @@ namespace fw
 	/// @ingroup Window
 	///
 	/////////////////////////////////////////////////////////////
-	class Keyboard
+	class FRONTIER_API Keyboard
 	{
 	public:
 		/////////////////////////////////////////////////////////////
@@ -155,7 +158,7 @@ namespace fw
 	/// @ingroup Window
 	///
 	/////////////////////////////////////////////////////////////
-	class Mouse
+	class FRONTIER_API Mouse
 	{
 	public:
 		/////////////////////////////////////////////////////////////
@@ -204,7 +207,7 @@ namespace fw
 	/// @ingroup Window
 	///
 	/////////////////////////////////////////////////////////////
-	class KeyboardEvent
+	class FRONTIER_API KeyboardEvent
 	{
 	public:
 		Keyboard::Key code; ///< Identifies the key
@@ -220,7 +223,7 @@ namespace fw
 	/// @ingroup Window
 	///
 	/////////////////////////////////////////////////////////////
-	class ButtonEvent
+	class FRONTIER_API ButtonEvent
 	{
 	public:
 		Mouse::Button button; ///< Identifies the mouse button
@@ -235,7 +238,7 @@ namespace fw
 	/// @ingroup Window
 	///
 	/////////////////////////////////////////////////////////////
-	class MouseEvent
+	class FRONTIER_API MouseEvent
 	{
 	public:
 		int x; ///< X coordinate of the cursor
@@ -249,7 +252,7 @@ namespace fw
 	/// @ingroup Window
 	///
 	/////////////////////////////////////////////////////////////
-	class ResizeEvent
+	class FRONTIER_API ResizeEvent
 	{
 	public:
 		int w; ///< new width
@@ -263,7 +266,7 @@ namespace fw
 	/// @ingroup Window
 	///
 	/////////////////////////////////////////////////////////////
-	class TextEvent
+	class FRONTIER_API TextEvent
 	{
 	public:
 		char character;     ///< The entered character
@@ -277,9 +280,12 @@ namespace fw
 	/// @ingroup Window
 	///
 	/////////////////////////////////////////////////////////////
-	class Event
+	class FRONTIER_API Event
 	{
 	public:
+		typedef Event &reference;
+		typedef const Event &const_reference;
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Indicates what field of the event is present
 		///
@@ -288,8 +294,8 @@ namespace fw
 			Empty,          ///< The event is not filled
 			Closed,         ///< The window is closed
 			Resized,        ///< The window's size is changed
-			Minimize,       ///< The window was asked to minimize
-			Maximize,       ///< The window was asked to maximize
+			Minimized,      ///< The window was asked to minimize
+			Maximized,      ///< The window was asked to maximize
 			FocusLost,      ///< The window lost focus
 			FocusGained,    ///< The window gained focus
 			KeyPressed,     ///< A key is pressed (The key field can be used to track further information)
@@ -321,6 +327,14 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		Event();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Initialize event with a type
+		///
+		/// @param type The initial type
+		///
+		/////////////////////////////////////////////////////////////
+		Event(EventType type);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Use the event as a bool

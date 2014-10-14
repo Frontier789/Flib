@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_GLYPH_HPP_INCLUDED
 #define FRONTIER_GLYPH_HPP_INCLUDED
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_GLYPH
 namespace fg
 {
@@ -23,7 +24,7 @@ namespace fg
 	//////////////////////////////////
 	/// Glyph
 	//////////////////////////////////
-	class Glyph
+	class FRONTIER_API Glyph
 	{
 	public:
 		typedef Glyph &reference;
@@ -34,9 +35,15 @@ namespace fg
 		int yMin,xMin;
 
 		//////////////////////////////////
-		/// constructors
+		/// @brief Default constructor
+		///
 		//////////////////////////////////
 		Glyph();
+
+		//////////////////////////////////
+		/// @brief Construct the Glyph from its values
+		///
+		//////////////////////////////////
 		Glyph(const Texture *tex,unsigned int x,unsigned int y,unsigned int w,unsigned int h,int xMin,int yMin);
 	};
 }

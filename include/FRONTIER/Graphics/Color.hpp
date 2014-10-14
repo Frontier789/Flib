@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_COLOR_HPP_INCLUDED
 #define FRONTIER_COLOR_HPP_INCLUDED
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_COLOR
 namespace fm
 {
@@ -31,14 +32,14 @@ namespace fg
 	/// 	@brief Class used to hold a color's value in <a href="http://en.wikipedia.org/wiki/RGBA_color_space">RGBA color space</a>
 	///
 	/////////////////////////////////////////////////////////////
-	class Color
+	class FRONTIER_API Color
 	{
 	public:
 		typedef unsigned char value_type;
 		typedef Color &reference;
 		typedef const Color &const_reference;
 		enum {
-			dimensions = 4u ///< Public value indicating the amount of value_type's in the class
+			components = 4u ///< Public value indicating the amount of value_type's in the class
 		};
 
 		static Color White;     ///< 0xFFFFFFFF
@@ -218,7 +219,7 @@ namespace fg
 	/// @return reference to itself
 	///
 	/////////////////////////////////////////////////////////////
-	Color &operator+=(Color &left,const Color &right);
+	Color FRONTIER_API &operator+=(Color &left,const Color &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator -=
@@ -229,7 +230,7 @@ namespace fg
 	/// @return reference to itself
 	///
 	/////////////////////////////////////////////////////////////
-	Color &operator-=(Color &left,const Color &right);
+	Color FRONTIER_API &operator-=(Color &left,const Color &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator *=
@@ -240,7 +241,7 @@ namespace fg
 	/// @return reference to itself
 	///
 	/////////////////////////////////////////////////////////////
-	Color &operator*=(Color &left,float right);
+	Color FRONTIER_API &operator*=(Color &left,float right);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator /=
@@ -251,7 +252,7 @@ namespace fg
 	/// @return reference to itself
 	///
 	/////////////////////////////////////////////////////////////
-	Color &operator/=(Color &left,float right);
+	Color FRONTIER_API &operator/=(Color &left,float right);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator +
@@ -262,7 +263,7 @@ namespace fg
 	/// @return Result of the addition
 	///
 	/////////////////////////////////////////////////////////////
-	Color operator+(const Color &left,const Color &right);
+	Color FRONTIER_API operator+(const Color &left,const Color &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator -
@@ -273,7 +274,7 @@ namespace fg
 	/// @return Result of the substraction
 	///
 	/////////////////////////////////////////////////////////////
-	Color operator-(const Color &left,const Color &right);
+	Color FRONTIER_API operator-(const Color &left,const Color &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator *
@@ -284,7 +285,7 @@ namespace fg
 	/// @return Result of the multiplication
 	///
 	/////////////////////////////////////////////////////////////
-	Color operator*(const Color &left,float right);
+	Color FRONTIER_API operator*(const Color &left,float right);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator /
@@ -295,7 +296,7 @@ namespace fg
 	/// @return Result of the division
 	///
 	/////////////////////////////////////////////////////////////
-	Color operator/(const Color &left,float right);
+	Color FRONTIER_API operator/(const Color &left,float right);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator ==
@@ -306,7 +307,7 @@ namespace fg
 	/// @return True if the two colors are the same
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator==(const Color &left,const Color &right);
+	bool FRONTIER_API operator==(const Color &left,const Color &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator !=
@@ -317,7 +318,7 @@ namespace fg
 	/// @return True if the two colors are not the same
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator!=(const Color &left,const Color &right);
+	bool FRONTIER_API operator!=(const Color &left,const Color &right);
 }
 #endif //FRONTIER_COLOR_HPP_INCLUDED
 

@@ -34,7 +34,7 @@ namespace fg
 		/// 	@brief Simple class used to convert characters to codepoints
 		///
 		/////////////////////////////////////////////////////////////
-		class CodePoint
+		class FRONTIER_API CodePoint
 		{
 		public:
 			fm::Uint32 cp; ///< The value of the codepoint
@@ -75,7 +75,7 @@ namespace fg
 		/// 	@brief Class used to store glyph mapping on the font atlas
 		///
 		/////////////////////////////////////////////////////////////
-		class GlyphMap
+		class FRONTIER_API GlyphMap
 		{
 		public:
 			/////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ namespace fg
 			/// 	@brief Class used store data about a character that uniquely identifies it
 			///
 			/////////////////////////////////////////////////////////////
-			class Identifier
+			class FRONTIER_API Identifier
 			{
 			public:
 				CodePoint codePoint; ///< The codepoint of the character
@@ -120,7 +120,7 @@ namespace fg
 			/// 	@brief Class used to store data about a glyph-row in the font atlas
 			///
 			/////////////////////////////////////////////////////////////
-			class Row
+			class FRONTIER_API Row
 			{
 			public:
 				std::size_t start;  ///< The vertical offset of the row
@@ -174,7 +174,7 @@ namespace fg
 	/// @ingroup Graphics
 	/// 
 	//////////////////////////////////
-	class Font
+	class FRONTIER_API Font
 	{
 	public:
 		class Renderer;
@@ -183,7 +183,7 @@ namespace fg
 		/// @brief This POD class holds some typical data about a font
 		/// 
 		//////////////////////////////////
-		class Metrics
+		class FRONTIER_API Metrics
 		{
 		public:
 			int maxH;    ///< How high is the highest character
@@ -346,7 +346,7 @@ namespace fg
 	/// 	@brief The heart of the Font class, this renders the glyph images
 	/// 
 	//////////////////////////////////
-	class Font::Renderer : fm::NonCopyable
+	class FRONTIER_API Font::Renderer : fm::NonCopyable
 	{
 		bool  m_loaded;                           ///< Iternal data  
 		void *m_fontInfo;                         ///< Iternal data  

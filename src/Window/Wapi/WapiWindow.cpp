@@ -149,7 +149,7 @@ namespace fw
 			style |= Window::Titlebar|Window::Close;
 
 		// And a maximize button
-		if (style & Window::Maximaze)
+		if (style & Window::Maximize)
 			style |= Window::Titlebar|Window::Close;
 		
 		// A titlebar means border
@@ -176,7 +176,7 @@ namespace fw
 		if (style & Window::Minimize)
 			ret |= WS_MINIMIZEBOX;
 		
-		if (style & Window::Maximaze)
+		if (style & Window::Maximize)
 			ret |= WS_MAXIMIZEBOX;
 		
 		
@@ -218,6 +218,56 @@ namespace fw
 			return DefWindowProc(hwnd, msg, wParam, lParam);
 		}
 		
+		
+		LRESULT getHitTestResult(HWND hwnd,LPARAM lParam,LRESULT defResult,bool m_resizeable,LRESULT (*m_cursorHitTest)(const POINT &,const RECT  &,const RECT  &,bool,const LRESULT &))
+		{
+			if (!m_cursorHitTest) // if the user didn't specify a function 
+			{
+				if (!m_resizeable) // Only if we dont want resize
+				{
+					// tell him he is wrong when he thinks 
+					// the cursor is on something resizeable
+					if (defResult == HTBOTTOM ||
+						defResult == HTBOTTOMLEFT ||
+						defResult == HTBOTTOMRIGHT ||
+						defResult == HTLEFT ||
+						defResult == HTRIGHT ||
+						defResult == HTTOP ||
+						defResult == HTTOPLEFT ||
+						defResult == HTTOPRIGHT)
+							return HTBORDER; 
+				}
+				
+				return defResult;
+			}
+			else // if the user did specify a function 
+			{
+				// wheres the cursor
+				POINT mousePos;
+				mousePos.x = ((int)(short)LOWORD(lParam)); 
+				mousePos.y = ((int)(short)HIWORD(lParam));
+				
+				// get window's bounding rectangle
+				RECT windowRect;
+				if (!GetWindowRect(hwnd,&windowRect))
+				{
+					fw_log << "GetWindowRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return defResult;
+				}
+				
+				// get window's client area's bounding rectangle
+				RECT clientRect;
+				if (!GetClientRect(hwnd,&clientRect))
+				{
+					fw_log << "GetClientRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					return defResult;
+				}
+				
+				// and call the user defined function
+				return m_cursorHitTest(mousePos,windowRect,clientRect,m_resizeable,defResult);
+			}
+		}
+		
 		////////////////////////////////////////////////////////////
 		LRESULT Window::handleEvent(HWND hwnd,UINT msg, WPARAM wParam, LPARAM lParam)
 		{
@@ -226,27 +276,21 @@ namespace fw
 				// our window got focus
 				case WM_SETFOCUS:
 				{
-					Event ev;
-					ev.type = Event::FocusGained;
-					m_eventQueue.push(ev);
+					postEvent(Event::FocusGained);
 					return 0;
 				}
 				
 				// our window lost focus
 				case WM_KILLFOCUS:
 				{
-					Event ev;
-					ev.type = Event::FocusLost;
-					m_eventQueue.push(ev);
+					postEvent(Event::FocusLost);
 					return 0;	
 				}
 				
 				// our window was asked to close
 				case WM_CLOSE:
 				{
-					Event ev;
-					ev.type = Event::Closed;
-					m_eventQueue.push(ev);
+					postEvent(Event::Closed);
 					return 0;
 				}
 				
@@ -266,11 +310,10 @@ namespace fw
 				// mouse moved
 				case WM_MOUSEMOVE: 
 				{
-					Event ev;
-					ev.type = Event::MouseMoved;
+					Event ev(Event::MouseMoved);
 					ev.pos.x =  ((int)(short)LOWORD(lParam));
 					ev.pos.y =  ((int)(short)HIWORD(lParam));
-					m_eventQueue.push(ev);
+					postEvent(ev);
 					return 0;
 				}
 				
@@ -286,13 +329,12 @@ namespace fw
 						else
 							m_lastDown = wParam;
 					}
-					Event ev;
-					ev.type = Event::KeyPressed;
+					Event ev(Event::KeyPressed);
 					ev.key.code = keyFromVK(wParam);
 					ev.key.ctrl  = GetKeyState(VK_CONTROL);
 					ev.key.alt   = GetKeyState(VK_MENU);
 					ev.key.shift = GetKeyState(VK_SHIFT);
-					m_eventQueue.push(ev);
+					postEvent(ev);
 					return 0;
 				}
 				
@@ -302,13 +344,12 @@ namespace fw
 				{
 					// remember to reset the last pressed key when released
 					m_lastDown = 0;
-					Event ev;
-					ev.type = Event::KeyReleased;
+					Event ev(Event::KeyReleased);
 					ev.key.code  = keyFromVK(wParam);
 					ev.key.ctrl  = GetKeyState(VK_CONTROL);
 					ev.key.alt   = GetKeyState(VK_MENU);
 					ev.key.shift = GetKeyState(VK_SHIFT);
-					m_eventQueue.push(ev);
+					postEvent(ev);
 					return 0;
 				}
 				
@@ -317,17 +358,18 @@ namespace fw
 				case WM_RBUTTONDOWN:
 				case WM_MBUTTONDOWN:
 				{
-					Event ev;
-					ev.type = Event::ButtonPressed;
+					Event ev(Event::ButtonPressed);
+					
 					if (msg==WM_LBUTTONDOWN)
 						ev.mouse.button = Mouse::Left;
 					if (msg==WM_RBUTTONDOWN)
 						ev.mouse.button = Mouse::Right;
 					if (msg==WM_MBUTTONDOWN)
 						ev.mouse.button = Mouse::Middle;
+					
 					ev.mouse.x =  ((int)(short)LOWORD(lParam));
 					ev.mouse.y =  ((int)(short)HIWORD(lParam));
-					m_eventQueue.push(ev);
+					postEvent(ev);
 					return 0;
 				}
 				
@@ -336,114 +378,46 @@ namespace fw
 				case WM_RBUTTONUP:
 				case WM_MBUTTONUP:
 				{
-					Event ev;
-					ev.type = Event::ButtonReleased;
+					Event ev(Event::ButtonReleased);
+					
 					if (msg==WM_LBUTTONUP)
 						ev.mouse.button = Mouse::Left;
 					if (msg==WM_RBUTTONUP)
 						ev.mouse.button = Mouse::Right;
 					if (msg==WM_MBUTTONUP)
 						ev.mouse.button = Mouse::Middle;
+					
 					ev.mouse.x =  ((int)(short)LOWORD(lParam));
 					ev.mouse.y =  ((int)(short)HIWORD(lParam));
-					m_eventQueue.push(ev);
+					postEvent(ev);
 					return 0;
 				}
+				
 				// area-hit test
 				case WM_NCHITTEST:
 				{
-					if (!m_cursorHitTest) // if the user didn't specify a function 
-					{
-						if (!m_resizeable) // Only if we dont want resize
-						{
-							// ask windows what he thinks the cursor is on
-							LRESULT defResult = DefWindowProc(hwnd, msg, wParam, lParam);
-							
-							// tell him he is wrong when he thinks 
-							// the cursor is on something resizeable
-							if (defResult == HTBOTTOM ||
-								defResult == HTBOTTOMLEFT ||
-								defResult == HTBOTTOMRIGHT ||
-								defResult == HTLEFT ||
-								defResult == HTRIGHT ||
-								defResult == HTTOP ||
-								defResult == HTTOPLEFT ||
-								defResult == HTTOPRIGHT)
-									return HTBORDER; 
-									
-							return defResult;
-						}
-					}
-					else // if the user did specify a function 
-					{
-						// what windows would return
-						LRESULT defRet = DefWindowProc(hwnd, msg, wParam, lParam);
-						
-						// wheres the cursor
-						POINT mousePos;
-						mousePos.x = ((int)(short)LOWORD(lParam)); 
-						mousePos.y = ((int)(short)HIWORD(lParam));
-						
-						// get window's bounding rectangle
-						RECT windowRect;
-						if (!GetWindowRect(hwnd,&windowRect))
-						{
-							fw_log << "GetWindowRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
-							return defRet;
-						}
-						
-						// get window's client area's bounding rectangle
-						RECT clientRect;
-						if (!GetClientRect(hwnd,&clientRect))
-						{
-							fw_log << "GetClientRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
-							return defRet;
-						}
-						
-						// and call the user defined function
-						return m_cursorHitTest(mousePos,windowRect,clientRect,m_resizeable,defRet);
-					}
+					return getHitTestResult(hwnd,lParam,DefWindowProc(hwnd, msg, wParam, lParam),m_resizeable,m_cursorHitTest);
 				}
 				
 				case WM_SIZE:
 				{
 					if (wParam==0) // dont process minimize and maximize
 					{
-						Event ev;
-						ev.type   = Event::Resized;
+						Event ev(Event::Resized);
 						ev.size.w = LOWORD(lParam);
 						ev.size.h = HIWORD(lParam);
-						m_eventQueue.push(ev);
+						postEvent(ev);
 						return 0;						
 					}
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
-				/*
-				case WM_SIZING:
-				{
-					fw_log << "WM_SIZING" << std::endl;
-					break;
-				}
-				
-				case WM_ENTERSIZEMOVE:
-				{
-					fw_log << "WM_ENTERSIZEMOVE" << std::endl;
-					break;
-				}
-				
-				case WM_EXITSIZEMOVE:
-				{
-					fw_log << "WM_EXITSIZEMOVE" << std::endl;
-					break;
-				}*/
 				
 				case WM_CHAR:
 				{
-					Event ev;
-					ev.type = Event::TextEntered;
+					Event ev(Event::TextEntered);
 					ev.text.character  = (char)wParam;
 					ev.text.wcharacter = (wchar_t)wParam;
-					m_eventQueue.push(ev);
+					postEvent(ev);
 					return 0;
 				}
 				
@@ -452,28 +426,70 @@ namespace fw
 					// minimization request
 					if (wParam == SC_MINIMIZE)
 					{
-						Event ev;
-						ev.type = Event::Minimize;
-						m_eventQueue.push(ev);
+						postEvent(Event::Minimized);
 						return 0;
 					}
 					
 					// maximization request
 					if (wParam == SC_MAXIMIZE)
 					{
-						Event ev;
-						ev.type = Event::Maximize;
-						m_eventQueue.push(ev);
+						postEvent(Event::Maximized);
 						return 0;
 					}
 					
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
+				/*
+				case WM_NCLBUTTONDOWN:
+				{
+					LRESULT hitResult = getHitTestResult(hwnd,lParam,wParam,m_resizeable,m_cursorHitTest);
+					
+					if (hitResult == HTCAPTION)
+					{
+						m_moving = true;
+						GetCursorPos(&m_lastPos);
+					}
+					
+					return 0;
+				}
+				
+				case WM_NCLBUTTONUP:
+				{
+					m_moving = false;
+					
+					LRESULT hitResult = getHitTestResult(hwnd,lParam,wParam,m_resizeable,m_cursorHitTest);
+					
+					if (hitResult == HTCLOSE)
+					{
+						postEvent(Event::Closed);
+						return 0;
+					}
+					if (hitResult == HTMAXBUTTON)
+					{
+						if (isMaximized())
+						{
+							ShowWindow(hwnd,SW_RESTORE);
+							return 0;
+						}
+						
+						postEvent(Event::Maximized);
+						return 0;
+					}
+					if (hitResult == HTMINBUTTON)
+					{
+						postEvent(Event::Minimized);
+						return 0;
+					}
+					return 0;
+				}*/
+				
 				
 				// by default let windows handle it
 				default:
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 			}
+			
+			// shouldn't be reached
 			return 0;
 		}
 		
@@ -488,7 +504,7 @@ namespace fw
 						   m_lastDown(0),
 						   m_cursorHitTest(NULL)
 		{
-			
+			m_moving = false;
 		}
 		
 		////////////////////////////////////////////////////////////
@@ -672,12 +688,48 @@ namespace fw
 			if (m_hwnd)
 				ShowWindow(m_hwnd,SW_SHOWMINIMIZED);
 		}
+	
+		/////////////////////////////////////////////////////////////
+		bool Window::isMinimized() const
+		{
+			if (!m_hwnd)
+				return false;
+			
+			WINDOWPLACEMENT windowProp;
+			windowProp.length = sizeof(WINDOWPLACEMENT);
+			
+			if (!GetWindowPlacement(m_hwnd,&windowProp))
+			{
+				fw_log << "GetWindowPlacement failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+				return false;
+			}
+			
+			return windowProp.showCmd == SW_SHOWMINIMIZED;
+		}
 		
 		/////////////////////////////////////////////////////////////
 		void Window::maximize()
 		{
 			if (m_hwnd)
 				ShowWindow(m_hwnd,SW_SHOWMAXIMIZED);
+		}
+	
+		/////////////////////////////////////////////////////////////
+		bool Window::isMaximized() const
+		{
+			if (!m_hwnd)
+				return false;
+			
+			WINDOWPLACEMENT windowProp;
+			windowProp.length = sizeof(WINDOWPLACEMENT);
+			
+			if (!GetWindowPlacement(m_hwnd,&windowProp))
+			{
+				fw_log << "GetWindowPlacement failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+				return false;
+			}
+			
+			return windowProp.showCmd == SW_SHOWMAXIMIZED;
 		}
 		
 		/////////////////////////////////////////////////////////////
@@ -982,6 +1034,12 @@ namespace fw
 		}
 		
 		////////////////////////////////////////////////////////////
+		void Window::postEvent(const Event &ev)
+		{
+			m_eventQueue.push(ev);
+		}
+		
+		////////////////////////////////////////////////////////////
 		void Window::enableKeyRepeat(bool enable)
 		{
 			m_enableRepeat = enable;
@@ -991,6 +1049,18 @@ namespace fw
 		bool Window::isKeyRepeatEnabled() const
 		{
 			return m_enableRepeat;
+		}
+			
+		/////////////////////////////////////////////////////////////
+		void Window::enableResize(bool enable)
+		{
+			m_resizeable = enable;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		bool Window::isResizeEnabled() const
+		{
+			return m_resizeable;
 		}
 				
 		////////////////////////////////////////////////////////////

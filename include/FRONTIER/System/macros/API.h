@@ -14,43 +14,34 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 //////////////////////////////////////////////////////////////////////////
-#ifdef FRONTIER_DYNAMIC
+#include <FRONTIER/System/macros/OS.h>
 
-    #ifdef FRONTIER_OS_WINDOWS
+#ifndef FRONTIER_API
+	#ifdef FRONTIER_DYNAMIC
 
-        #define FRONTIER_API_EXPORT __declspec(dllexport)
-        #define FRONTIER_API_IMPORT __declspec(dllimport)
-
-        #ifdef _MSC_VER
-            #pragma warning(disable : 4251)
-        #endif
-
-    #else
-		
-		#ifdef __GNUC__
-			#if __GNUC__ >= 4
-
-				#define FRONTIER_API_EXPORT __attribute__ ((__visibility__ ("default")))
-				#define FRONTIER_API_IMPORT __attribute__ ((__visibility__ ("default")))
+		#ifdef FRONTIER_OS_WINDOWS
 			
-			#else
-			
-				#define FRONTIER_API_EXPORT
-				#define FRONTIER_API_IMPORT
-				
+			#ifdef FRONTIER_LIBBUILD
+				#define FRONTIER_API __declspec(dllexport)
+			#else 
+				#define FRONTIER_API __declspec(dllimport)
 			#endif
-        #else
+			
+			#ifdef _MSC_VER
+				#pragma warning(disable : 4251)
+			#endif
 
-            #define FRONTIER_API_EXPORT
-            #define FRONTIER_API_IMPORT
+		#else
+			
+			#if defined(__GNUC__) && __GNUC__ >= 4
+				#define FRONTIER_API __attribute__ ((__visibility__ ("default")))
+			#else
+				#define FRONTIER_API
+			#endif
 
-        #endif
+		#endif
 
-    #endif
-
-#else
-
-    #define FRONTIER_API_EXPORT
-    #define FRONTIER_API_IMPORT
-
+	#else
+		#define FRONTIER_API
+	#endif
 #endif

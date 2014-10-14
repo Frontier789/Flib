@@ -20,14 +20,15 @@
 #include <FRONTIER/System/macros/dont_include_inl_begin>
 
 #include <FRONTIER/System/type_traits/Enable_if.hpp>
-#include <FRONTIER/Graphics/GL/GL_TYPES.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/System/Matrix.hpp>
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/GL/GL_TYPES.hpp>
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
+
+#include <FRONTIER/Config.hpp>
 
 #define FRONTIER_SHADER
 #include <vector>
@@ -47,7 +48,7 @@ namespace fg
 	/// 	@brief Class used to handle OpenGL shader programs in language <a href="http://en.wikipedia.org/wiki/GLSL">GLSL</a>
 	/// 
 	/////////////////////////////////////////////////////////////
-	class Shader : public fm::NonCopyable, public GlObject
+	class FRONTIER_API Shader : public fm::NonCopyable, public GlObject
 	{
 		/////////////////////////////////////////////////////////////
 		/// @brief Class used to store data about uniform textures
@@ -58,7 +59,7 @@ namespace fg
 		/// This class is used iternally and you shouldn't worry about it
 		/// 
 		/////////////////////////////////////////////////////////////
-	    class TexUniformData
+	    class FRONTIER_API TexUniformData
 	    {
 	    public:
 			int location; ///< The "id" of the uniform
@@ -351,7 +352,7 @@ namespace fg
 		/// This function is mostly used iternally
 		/// 
 		/// @param name The name of the attribute
-		/// @param dimensions The number of components in the attribute
+		/// @param components The number of components in the attribute
 		/// @param type The type of data component (e.g. GL_FLOAT)
 		/// @param normalize Specify if the data should be normalized when accessed
 		/// @param pointer A pointer to the data
@@ -360,7 +361,7 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-        reference setAttribPointer(const std::string &name,unsigned int dimensions,unsigned long type,bool normalize,const void *pointer,unsigned int stride=0);
+        reference setAttribPointer(const std::string &name,unsigned int components,unsigned long type,bool normalize,const void *pointer,unsigned int stride=0);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec2 attributes

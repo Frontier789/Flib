@@ -22,7 +22,7 @@ namespace fg
 	{
 		template<class T>
 		Attribute::Attribute(const T *ptr,unsigned int stride) : buf(NULL),
-																 dim(T::dimensions),
+																 dim(T::components),
 																 size(sizeof(typename T::value_type)),
 																 stride(stride),
 																 ptr(ptr)
@@ -34,13 +34,13 @@ namespace fg
 	template <class pt,class ct,class tpt,class nt>
 	void draw(const fm::vertex<pt,ct,tpt,nt> *vertices,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp)
 	{
-		if (nt::dimensions)
+		if (nt::components)
 			draw(priv::Attribute((pt*)((unsigned char*)vertices),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 priv::Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 priv::Attribute((tpt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 priv::Attribute((nt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize+fm::vertex<pt,ct,tpt,nt>::texPosSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 vertexCount,primitive,indp);
-		else if (tpt::dimensions)
+		else if (tpt::components)
 			draw(priv::Attribute((pt*)((unsigned char*)vertices),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 priv::Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 priv::Attribute((tpt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),

@@ -26,7 +26,7 @@ namespace fw
 	/// @ingroup Window
 	/// 
 	/////////////////////////////////////////////////////////////
-	class Window
+	class FRONTIER_API Window
 	{
 	public:
 		/////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ namespace fw
 			Border     = 0x0000010,
 			Resize     = 0x0000100,
 			Minimize   = 0x0001000,
-			Maximaze   = 0x0010000,
+			Maximize   = 0x0010000,
 			Titlebar   = 0x0100000,
 			Fullscreen = 0x1000000,
 			Default    = 0x0111111
@@ -63,6 +63,13 @@ namespace fw
 	}
 #else
 	#warning No window
+	namespace fw
+	{
+		namespace priv
+		{
+			typedef int Window;
+		}
+	}
 #endif
 
 #endif // FRONTIER_WINDOW_HPP_INCLUDED

@@ -27,6 +27,8 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
+#include <FRONTIER/Config.hpp>
+
 #define FRONTIER_IMAGE
 #include <string>
 #include <vector>
@@ -37,7 +39,7 @@ namespace fg
 	/// 	@brief Class used to hold the pixels of an image
 	/// 
 	/////////////////////////////////////////////////////////////
-	class Image
+	class FRONTIER_API Image
 	{
 		std::vector<Color> m_pixels; ///< Hold all the pixels of the image
 		fm::vec2s m_size; ///< Holds the size of the image

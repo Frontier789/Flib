@@ -39,7 +39,7 @@ namespace fm
 		typedef vector3<T> &reference;
 		typedef const vector3<T> &const_reference;
 		enum {
-			dimensions = 3u ///< Public value indicating the amount of value_type's in the class
+			components = 3u ///< Public value indicating the amount of value_type's in the class
 		};
 		union {
 

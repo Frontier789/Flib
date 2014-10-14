@@ -28,7 +28,7 @@
 
 namespace fg
 {
-	extern fm::Log glCheck_log;
+	FRONTIER_API extern fm::Log glCheck_log;
 	
 	namespace priv
 	{
@@ -42,7 +42,7 @@ namespace fg
 		/// @param line The line from the call was made
 		/// 
 		//////////////////////////////////
-		void glCheckError(const char *file, unsigned int line);
+		void FRONTIER_API glCheckError(const char *file, unsigned int line);
 	}
 }
 #endif // FRONTIER_GLCHECK_HPP_INCLUDED

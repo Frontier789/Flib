@@ -26,6 +26,8 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
+#include <FRONTIER/Config.hpp>
+
 #define FRONTIER_FRAMEBUFFER
 #include <cstddef>
 namespace fm
@@ -43,7 +45,7 @@ namespace fg
 	/// 	@brief Class used to crae and handle OpenGL <a href="http://www.opengl.org/wiki/Framebuffer_Object">Framebuffers</a>
 	/// 
 	/////////////////////////////////////////////////////////////
-	class FrameBuffer : public fm::NonCopyable, public GlObject
+	class FRONTIER_API FrameBuffer : public fm::NonCopyable, public GlObject
 	{
 		unsigned int m_depthBufID; ///< The id of the depth buffer
 		void init(); ///< Iternal function used at setup
@@ -55,7 +57,7 @@ namespace fg
 		/// @brief Class used to store data about a depth buffer
 		/// 
 		/////////////////////////////////////////////////////////////
-		class DepthBuffer
+		class FRONTIER_API DepthBuffer
 		{
 		public:
 			std::size_t width;  ///< The width of the depth buffer

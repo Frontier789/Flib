@@ -1,40 +1,38 @@
 #files
 CPP_FILES_GRAPHICS := $(wildcard $(PATH_TO_SRC)/Graphics/*.cpp)
-OBJ_FILES_GRAPHICS := $(addprefix $(LIBPATH)/Graphics/,$(notdir $(CPP_FILES_GRAPHICS:.cpp=.o)))
+STATIC_OBJ_FILES_GRAPHICS  := $(addprefix $(LIBPATH)/static/Graphics/,$(notdir $(CPP_FILES_GRAPHICS:.cpp=.o)))
+DYNAMIC_OBJ_FILES_GRAPHICS := $(addprefix $(LIBPATH)/dynamic/Graphics/,$(notdir $(CPP_FILES_GRAPHICS:.cpp=.o)))
 
-TARGETS+=$(LIBPATH)/libf-graphics.a
-DIR_TARGETS+=$(LIBPATH)/Graphics
-OBJ_FILES+=$(OBJ_FILES_GRAPHICS)
-
-ifeq ($(COMPILE_GL_HEADER),1)
-OBJ_FILES_GRAPHICS+=$(LIBPATH)/Graphics/ext/GL_FUNCTIONS.o
-OBJ_FILES+=$(LIBPATH)/Graphics/ext/GL_FUNCTIONS.o
-DIR_TARGETS+=$(LIBPATH)/Graphics/ext
+ifeq ($(PLATFORM),Windows)
+	DYNAMIC_TARGETS+=$(LIBPATH)/f-graphics.dll $(LIBPATH)/libf-graphics-dll.a
 endif
+STATIC_TARGETS+=$(LIBPATH)/libf-graphics.a
+STATIC_OBJ_FILES+=$(STATIC_OBJ_FILES_GRAPHICS)
+DYNAMIC_OBJ_FILES+=$(DYNAMIC_OBJ_FILES_GRAPHICS)
 
 ###
 # directory targets
 ###
-$(LIBPATH)/Graphics: | $(LIBPATH)
-	$(CD) $(PATH_TO_ROOT) && $(CD) $(LIBNAME) && $(MKDIR) Graphics
-	
-$(LIBPATH)/Graphics/ext: | $(LIBPATH)/Graphics
-	$(CD) $(PATH_TO_ROOT) && $(CD) $(LIBNAME) && $(CD) Graphics && $(MKDIR) ext
+$(LIBPATH)/static/Graphics: | $(LIBPATH)/static
+	$(CD) $(PATH_TO_ROOT) && $(CD) $(LIBNAME) && $(CD) static && $(MKDIR) Graphics
+
+$(LIBPATH)/dynamic/Graphics: | $(LIBPATH)/dynamic
+	$(CD) $(PATH_TO_ROOT) && $(CD) $(LIBNAME) && $(CD) dynamic && $(MKDIR) Graphics
 
 ###
-# source targets
+# static and dynamic targets
 ###
-$(LIBPATH)/libf-graphics.a: $(OBJ_FILES_GRAPHICS)
+$(LIBPATH)/libf-graphics.a: $(STATIC_OBJ_FILES_GRAPHICS) | $(LIBPATH)
 	$(AR) rcs $@ $^
 
-$(LIBPATH)/Graphics/%.o: $(PATH_TO_SRC)/Graphics/%.cpp | $(LIBPATH)/Graphics 
-	$(CXX) $(CPPFLAGS) -I $(PATH_TO_INCLUDE) -c $< -o $@
-	
-$(LIBPATH)/Graphics/ext/%.o: $(PATH_TO_SRC)/Graphics/GL/%.cpp | $(LIBPATH)/Graphics/ext
-	$(CXX) $(CPPFLAGS) -I $(PATH_TO_INCLUDE) -c $< -o $@
+$(LIBPATH)/f-graphics.dll $(LIBPATH)/libf-graphics-dll.a: $(LIBPATH)/libf-system-dll.a $(LIBPATH)/libf-gl-dll.a $(DYNAMIC_OBJ_FILES_GRAPHICS) | $(LIBPATH)
+	$(CXX) -shared -o $(LIBPATH)/f-graphics.dll $(DYNAMIC_OBJ_FILES_GRAPHICS) -L $(LIBPATH) -lf-system.dll -lf-gl.dll -lOpenGL32 -lgdi32 -Wl,--out-implib,$(LIBPATH)/libf-graphics-dll.a
 
 ###
-# clean_targets
+# object targets
 ###
-clean-graphics:
-	$(RM) $(OBJ_FILES_GRAPHICS) $(LIBPATH)/libf-graphics.a
+$(LIBPATH)/static/Graphics/%.o: $(PATH_TO_SRC)/Graphics/%.cpp | $(LIBPATH)/static/Graphics
+	$(CXX) $(CXXFLAGS) -I $(PATH_TO_INCLUDE) -c $< -o $@
+	
+$(LIBPATH)/dynamic/Graphics/%.o: $(PATH_TO_SRC)/Graphics/%.cpp | $(LIBPATH)/dynamic/Graphics
+	$(CXX) $(CXXFLAGS) -I $(PATH_TO_INCLUDE) -DFRONTIER_DYNAMIC -c $< -o $@ 

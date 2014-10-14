@@ -38,7 +38,7 @@ namespace fm
 		typedef vector4<T> &reference;
 		typedef const vector4<T> &const_reference;
 		enum {
-			dimensions = 4u ///< Public value indicating the amount of value_type's in the class
+			components = 4u ///< Public value indicating the amount of value_type's in the class
 		};
 		
 		static vector4<T> White;     ///< 0xFFFFFFFF

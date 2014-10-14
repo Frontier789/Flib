@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_GLOBJECT_HPP_INCLUDED
 #define FRONTIER_GLOBJECT_HPP_INCLUDED
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_GLOBJECT
 namespace fg
 {
@@ -24,7 +25,7 @@ namespace fg
 	/// 	@brief Base class for opengl objects that have id such as texture, shader etc
 	/// 
 	//////////////////////////////////
-    class GlObject
+    class FRONTIER_API GlObject
     {
 		unsigned int m_id; ///< The id of the object
     public:

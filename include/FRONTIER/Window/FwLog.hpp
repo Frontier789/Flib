@@ -31,6 +31,6 @@ namespace fw
 	/// this instance
 	/// 
 	/////////////////////////////////////////////////////////////
-    extern fm::Log fw_log;
+    FRONTIER_API extern fm::Log fw_log;
 }
 #endif // FRONTIER_FWLOG_HPP_INCLUDED

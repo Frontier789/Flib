@@ -17,6 +17,7 @@
 #ifndef FRONTIER_CLOCK_HPP_INCLUDED
 #define FRONTIER_CLOCK_HPP_INCLUDED
 #include <FRONTIER/System/Time.hpp>
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_CLOCK
 namespace fm
 {
@@ -25,7 +26,7 @@ namespace fm
 	/// @brief A class that functions as a stop-watch
 	///
 	/////////////////////////////////////////////////////////////
-	class Clock
+	class FRONTIER_API Clock
 	{
 		Time m_startTime; ///< The time since we check the elapsed time
 		Time m_pauseTime; ///< The time when we stopped
@@ -34,7 +35,7 @@ namespace fm
 		typedef Clock &reference;
 		typedef const Clock &const_reference;
 		enum {
-			dimensions = 2u ///< Public value indicating the amount of value_type's in the class
+			components = 2u ///< Public value indicating the amount of value_type's in the class
 		};
 		
 		/////////////////////////////////////////////////////////////

@@ -18,6 +18,7 @@
 #define FRONTIER_BUFFER_HPP_INCLUDED
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_BUFFER
 #include <cstddef>
 namespace fg
@@ -25,33 +26,35 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	/// @brief Type used to hint OpenGL on buffer-usage
 	/////////////////////////////////////////////////////////////
-	enum BufferType{};
+	enum BufferType {
+		ArrayBuffer = 0x8892, ///< Means that the buffer is generic (may hold position color etc)
+		IndexBuffer = 0x8893  ///< Means that the buffer holds indices
+	};
 
-	/////////////////////////////////////////////////////////////
-	/// @brief Values used to hint OpenGL on the usage of the data
-	/////////////////////////////////////////////////////////////
-	enum Usage{};
-	
-	extern BufferType ArrayBuffer; ///< Means that the buffer is generic (may hold position color etc)
-	extern BufferType IndexBuffer; ///< Means that the buffer holds indices
 	
 	/////////////////////////////////////////////////////////////
 	/// 
 	/// 	@brief Class used to handle <a href="http://www.opengl.org/wiki/Buffer_Object">OpenGL buffer objects</a>
 	/// 
 	/////////////////////////////////////////////////////////////
-	class Buffer : public GlObject, public fm::NonCopyable
+	class FRONTIER_API Buffer : public GlObject, public fm::NonCopyable
 	{
 	public:
-		static Usage StaticDraw;  ///< The application will send data to OpenGL once        (Please note that this is only a hint)
-		static Usage StaticRead;  ///< OpenGL will send data to the application once        (Please note that this is only a hint)
-		static Usage StaticCopy;  ///< Data will be transferred inside OpenGL once          (Please note that this is only a hint)
-		static Usage DynamicDraw; ///< The application will send data to OpenGL frequently  (Please note that this is only a hint)
-		static Usage DynamicRead; ///< OpenGL will send data to the application frequently  (Please note that this is only a hint)
-		static Usage DynamicCopy; ///< Data will be transferred inside OpenGL frequently    (Please note that this is only a hint)
-		static Usage StreamDraw;  ///< The application will send data to OpenGL per frame   (Please note that this is only a hint)
-		static Usage StreamRead;  ///< OpenGL will send data to the application per frame   (Please note that this is only a hint)
-		static Usage StreamCopy;  ///< Data will be transferred inside OpenGL per frame     (Please note that this is only a hint)
+		/////////////////////////////////////////////////////////////
+		/// @brief Values used to hint OpenGL on the usage of the data
+		///
+		/////////////////////////////////////////////////////////////
+		enum Usage {
+			StaticDraw  = 0x88e4, ///< The application will send data to OpenGL once        (Please note that this is only a hint)
+			StaticRead  = 0x88e5, ///< OpenGL will send data to the application once        (Please note that this is only a hint)
+			StaticCopy  = 0x88e6, ///< Data will be transferred inside OpenGL once          (Please note that this is only a hint)
+			DynamicDraw = 0x88e8, ///< The application will send data to OpenGL frequently  (Please note that this is only a hint)
+			DynamicRead = 0x88e9, ///< OpenGL will send data to the application frequently  (Please note that this is only a hint)
+			DynamicCopy = 0x88ea, ///< Data will be transferred inside OpenGL frequently    (Please note that this is only a hint)
+			StreamDraw  = 0x88e0, ///< The application will send data to OpenGL per frame   (Please note that this is only a hint)
+			StreamRead  = 0x88e1, ///< OpenGL will send data to the application per frame   (Please note that this is only a hint)
+			StreamCopy  = 0x88e2  ///< Data will be transferred inside OpenGL per frame     (Please note that this is only a hint)
+		};
 	private:
 		BufferType m_type;		   ///< Type of the buffer
 		Usage m_usage;			   ///< Hinting for OpenGL on buffer usage
@@ -335,7 +338,7 @@ namespace fg
 	/// @return True if the two Buffers' ids are equal
 	/// 
 	/////////////////////////////////////////////////////////////
-	bool operator==(const Buffer &left,const Buffer &right);
+	bool FRONTIER_API operator==(const Buffer &left,const Buffer &right);
 	
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator !=
@@ -349,7 +352,7 @@ namespace fg
 	/// @return True if the two Buffers' ids are not equal
 	/// 
 	/////////////////////////////////////////////////////////////
-	bool operator!=(const Buffer &left,const Buffer &right);
+	bool FRONTIER_API operator!=(const Buffer &left,const Buffer &right);
 }
 
 #endif //FRONTIER_BUFFER_HPP_INCLUDED

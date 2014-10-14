@@ -99,9 +99,9 @@ namespace fg
 #endif
 
 
-#include <FRONTIER/Graphics/GL/GL_VALUES.h>
-#include <FRONTIER/Graphics/GL/GL_TYPES.hpp>
-#include <FRONTIER/Graphics/GL/GL_FUNCTIONS.h>
+#include <FRONTIER/GL/GL_VALUES.h>
+#include <FRONTIER/GL/GL_TYPES.hpp>
+#include <FRONTIER/GL/GL_FUNCTIONS.h>
 
 
 

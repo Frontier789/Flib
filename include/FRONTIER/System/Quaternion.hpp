@@ -34,7 +34,7 @@ namespace fm
 	/// @brief Class for using <a href="http://en.wikipedia.org/wiki/Quaternion">quaternions</a>
 	/// 
 	//////////////////////////////////
-	class Quat
+	class FRONTIER_API Quat
 	{
 	public:
 		float x, ///< 1st imaginary part
@@ -45,7 +45,7 @@ namespace fm
 		typedef Quat &reference;
 		typedef const Quat &const_reference;
 		enum {
-			dimensions = 4u ///< Public value indicating the amount of value_type's in the class
+			components = 4u ///< Public value indicating the amount of value_type's in the class
 		};
 
 
@@ -232,7 +232,7 @@ namespace fm
 	/// @return True if left's all components are equal to the corresponding right's component
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator==(const Quat &left,const Quat &right);
+	bool FRONTIER_API operator==(const Quat &left,const Quat &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat
@@ -244,7 +244,7 @@ namespace fm
 	/// @return True if at least one of left's components is not equal to the corresponding right's component
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator!=(const Quat &left,const Quat &right);
+	bool FRONTIER_API operator!=(const Quat &left,const Quat &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat
@@ -255,7 +255,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Quat operator- (const Quat &quat);
+	Quat FRONTIER_API operator- (const Quat &quat);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat
@@ -267,7 +267,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Quat operator+ (const Quat &left,const Quat &right);
+	Quat FRONTIER_API operator+ (const Quat &left,const Quat &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat
@@ -279,7 +279,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Quat operator* (const Quat &left,const Quat &right);
+	Quat FRONTIER_API operator* (const Quat &left,const Quat &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat fm::vector3
@@ -291,7 +291,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	vec3 operator* (const Quat &left,const vec3 &right);
+	vec3 FRONTIER_API operator* (const Quat &left,const vec3 &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat fm::vector4
@@ -303,7 +303,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	vec4 operator* (const Quat &left,const vec4 &right);
+	vec4 FRONTIER_API operator* (const Quat &left,const vec4 &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat
@@ -315,7 +315,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Quat operator* (const Quat &left,float right);
+	Quat FRONTIER_API operator* (const Quat &left,float right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat
@@ -327,7 +327,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Quat operator/ (const Quat &left,float right);
+	Quat FRONTIER_API operator/ (const Quat &left,float right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat
@@ -339,8 +339,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	
-	Quat &operator*=(Quat &left,const Quat &right);
+	Quat FRONTIER_API &operator*=(Quat &left,const Quat &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat
@@ -352,7 +351,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Quat &operator*=(Quat &left,float right);
+	Quat FRONTIER_API &operator*=(Quat &left,float right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat
@@ -364,7 +363,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Quat &operator/=(Quat &left,float right);
+	Quat FRONTIER_API &operator/=(Quat &left,float right);
 }
 
 #endif //FRONTIER_QUATERNION_HPP_INCLUDED

@@ -17,6 +17,7 @@
 #ifndef FRONTIER_WAPI_WINDOW_INCLUDED
 #define FRONTIER_WAPI_WINDOW_INCLUDED
 #include <FRONTIER/Window/Event.hpp>
+#include <FRONTIER/Config.hpp>
 #define FRONTIER_WAPI_WINDOW
 #include <windows.h>
 #include <string>
@@ -46,16 +47,20 @@ namespace fw
 		/// 	@brief Class used to open, resize and process events of a window in winOS
 		///
 		/////////////////////////////////////////////////////////////
-		class Window
+		class FRONTIER_API Window
 		{
 			static unsigned int m_windowCount; ///< The number of windows open
 			bool cleanUp();      ///< Iternal function used to free resources
 			bool init();         ///< Iternal function used at initialization
 			HWND m_hwnd;         ///< The id (handle) of the window
 			bool m_showCursor;   ///< Indicates whether the cursor is shown in the window
-			bool m_resizeable;   ///< Indicates whehter the window can be resized on the borders
+			bool m_resizeable;   ///< Indicates whether the window can be resized on the borders
 			bool m_enableRepeat; ///< Indicates whether key repeat is enabled
 			WPARAM m_lastDown;   ///< Contains the last pressed key
+			
+			bool m_moving;
+			POINT m_lastPos;
+			
 			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that deduces the object and calls handleEvent
 			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that handles events of the window
 			std::queue<Event> m_eventQueue; ///< A queue holding the unhandled events
@@ -73,6 +78,8 @@ namespace fw
 									   bool resizeable,
 									   const LRESULT &defResult);
 		public:
+			typedef Window &reference;
+			typedef const Window &const_reference;
 			
 			typedef HWND Handle; ///< Used in fw::Window
 			
@@ -169,10 +176,26 @@ namespace fw
 			void minimize();
 			
 			/////////////////////////////////////////////////////////////
+			/// @brief Discover whether the window is minimized
+			/// 
+			/// @return True if the window is minimized
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool isMinimized() const;
+			
+			/////////////////////////////////////////////////////////////
 			/// @brief Maximazes the window
 			/// 
 			/////////////////////////////////////////////////////////////
 			void maximize();
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Discover whether the window is maximized
+			/// 
+			/// @return True if the window is maximized
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool isMaximized() const;
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Brings window in front
@@ -377,6 +400,14 @@ namespace fw
 			bool waitEvent(Event &ev);
 			
 			/////////////////////////////////////////////////////////////
+			/// @brief Adds a new event to the back of the event queue
+			/// 
+			/// @param ev The new event
+			/// 
+			/////////////////////////////////////////////////////////////
+			void postEvent(const Event &ev);
+			
+			/////////////////////////////////////////////////////////////
 			/// @brief Enables or disables keyrepeat
 			/// 
 			/// If enabled, when a key is held down 
@@ -394,6 +425,22 @@ namespace fw
 			/// 
 			/////////////////////////////////////////////////////////////
 			bool isKeyRepeatEnabled() const;
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Enables or disables resize of the window
+			/// 
+			/// @param enable True to enable false to disable
+			/// 
+			/////////////////////////////////////////////////////////////
+			void enableResize(bool enable=true);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Returns whether resize is enabled
+			/// 
+			/// @return True if enabled	
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool isResizeEnabled() const;
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Implicitly convert to HWND
