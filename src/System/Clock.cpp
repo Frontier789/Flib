@@ -15,24 +15,30 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/Clock.hpp>
-#include <ctime>
+#include <FRONTIER/Config.hpp>
 
+
+#ifdef FRONTIER_OS_WINDOWS
+	#include "Wapi/WapiClock.cpp"
+#elif defined(FRONTIER_OS_LINUX)
+	#include "Posix/PosixClock.cpp"
+#else
+	#include "Generic/PosixClock.cpp"
+#endif
+
+
+	
 namespace fm
 {
-	Time getStdTime()
-	{
-		return seconds(((double)std::clock()) / ((double)CLOCKS_PER_SEC));
-	}
-	
     /// /////////////////////////////////////////////////////////
-    Clock::Clock() : m_startTime(getStdTime()),
+    Clock::Clock() : m_startTime(getCurrentTime()),
 					 m_pauseTime(seconds(-1))
     {
     	
     }
 	
     /// Constructors /////////////////////////////////////////////////////////
-    Clock::Clock(bool paused) : m_startTime(getStdTime()),
+    Clock::Clock(bool paused) : m_startTime(getCurrentTime()),
 								m_pauseTime(paused ? seconds(-1) : m_startTime)
     {
     	
@@ -48,7 +54,7 @@ namespace fm
     
     
     ////////////////////////////////////////////////////////////
-    Clock::Clock(const Time &startTime,bool paused) : m_startTime(getStdTime()),
+    Clock::Clock(const Time &startTime,bool paused) : m_startTime(getCurrentTime()-startTime),
 													  m_pauseTime(paused ? seconds(-1) : m_startTime)
     {
     	
@@ -60,7 +66,7 @@ namespace fm
     {
 		if (isPaused())
     		return m_pauseTime - m_startTime;
-    	return getStdTime() - m_startTime;
+    	return getCurrentTime() - m_startTime;
     }
     
     
@@ -68,7 +74,7 @@ namespace fm
     Clock::reference Clock::pause()
     {
 		if (!isPaused())
-			m_pauseTime = getStdTime();
+			m_pauseTime = getCurrentTime();
 		return *this;
     }
     
@@ -77,8 +83,8 @@ namespace fm
     Clock::reference Clock::unPause()
     {
 		if (isPaused())
-			m_startTime = getStdTime() - m_pauseTime + m_startTime,
-			m_pauseTime = getStdTime();
+			m_startTime = getCurrentTime() - getTime(),
+			m_pauseTime = seconds(-1);
 		return *this;
     }
     
@@ -94,10 +100,9 @@ namespace fm
     Clock::reference Clock::setTime(const Time &elapsed)
     {
 		if (isPaused())
-			m_pauseTime = getStdTime(),
 			m_startTime = m_pauseTime-elapsed;
 		else
-			m_startTime = getStdTime()-elapsed;
+			m_startTime = getCurrentTime()-elapsed;
     	return *this;
     }
     

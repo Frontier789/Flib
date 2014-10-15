@@ -26,7 +26,7 @@ $(LIBPATH)/libf-gl.a: $(STATIC_OBJ_FILES_GL) | $(LIBPATH)
 	$(AR) rcs $@ $^
 
 $(LIBPATH)/f-gl.dll $(LIBPATH)/libf-gl-dll.a: $(LIBPATH)/libf-system-dll.a $(DYNAMIC_OBJ_FILES_GL) | $(LIBPATH)
-	$(CXX) -shared -o $(LIBPATH)/f-gl.dll $(DYNAMIC_OBJ_FILES_GL) -L $(LIBPATH) -lf-system.dll -lOpenGL32 -Wl,--out-implib,$(LIBPATH)/libf-gl-dll.a
+	$(CXX) -shared -o $(LIBPATH)/f-gl.dll $(DYNAMIC_OBJ_FILES_GL) -L $(LIBPATH) -lf-system-dll -lOpenGL32 -Wl,--out-implib,$(LIBPATH)/libf-gl-dll.a
 
 ###
 # object targets
