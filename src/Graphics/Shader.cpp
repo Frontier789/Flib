@@ -14,9 +14,14 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Graphics/Shader.hpp>
+#include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
+#include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
+#include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/Vector3.hpp>
+#include <FRONTIER/System/Vector4.hpp>
+#include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/OpenGL.hpp>
 #include <fstream>
  

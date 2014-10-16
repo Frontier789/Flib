@@ -14,8 +14,8 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/macros/OS.h>
 #include <FRONTIER/System/Clock.hpp>
-#include <FRONTIER/Config.hpp>
 
 
 #ifdef FRONTIER_OS_WINDOWS

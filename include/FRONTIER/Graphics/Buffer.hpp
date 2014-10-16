@@ -18,7 +18,8 @@
 #define FRONTIER_BUFFER_HPP_INCLUDED
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_BUFFER
 #include <cstddef>
 namespace fg
@@ -104,7 +105,7 @@ namespace fg
 		/// @param usage The usage hint of the new buffer
 		/// 
 		/////////////////////////////////////////////////////////////
-		Buffer(const void *data,std::size_t bytesToCopy,BufferType type=ArrayBuffer,Usage usage=StaticDraw);
+		Buffer(const void *data,fm::Size bytesToCopy,BufferType type=ArrayBuffer,Usage usage=StaticDraw);
 	
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct buffer with given type
@@ -117,7 +118,7 @@ namespace fg
 		/// @param type The type of the new buffer
 		/// 
 		/////////////////////////////////////////////////////////////
-		Buffer(const void *data,std::size_t bytesToCopy,Usage usage,BufferType type=ArrayBuffer);
+		Buffer(const void *data,fm::Size bytesToCopy,Usage usage,BufferType type=ArrayBuffer);
 	
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -140,7 +141,7 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		template<class T,std::size_t S>
+		template<class T,fm::Size S>
 		reference setData(const T (&data)[S]);
 	
 		/////////////////////////////////////////////////////////////
@@ -156,7 +157,7 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		template<class T,std::size_t S>
+		template<class T,fm::Size S>
 		reference setData(const T (&data)[S],Usage usage);
 	
 		/////////////////////////////////////////////////////////////
@@ -172,7 +173,7 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		template<class T,std::size_t S>
+		template<class T,fm::Size S>
 		reference setData(const T (&data)[S],BufferType type);
 	
 		/////////////////////////////////////////////////////////////
@@ -185,7 +186,7 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		template<class T,std::size_t S>
+		template<class T,fm::Size S>
 		reference setData(const T (&data)[S],BufferType type,Usage usage);
 	
 		/////////////////////////////////////////////////////////////
@@ -197,7 +198,7 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference setData(const void *data,std::size_t bytesToCopy);
+		reference setData(const void *data,fm::Size bytesToCopy);
 	
 		/////////////////////////////////////////////////////////////
 		/// @brief Set data and type
@@ -209,7 +210,7 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference setData(const void *data,std::size_t bytesToCopy,BufferType type);
+		reference setData(const void *data,fm::Size bytesToCopy,BufferType type);
 	
 		/////////////////////////////////////////////////////////////
 		/// @brief Set data and usage hint
@@ -221,7 +222,7 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference setData(const void *data,std::size_t bytesToCopy,Usage usage);
+		reference setData(const void *data,fm::Size bytesToCopy,Usage usage);
 	
 		/////////////////////////////////////////////////////////////
 		/// @brief Set data, type and Usage
@@ -234,7 +235,7 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference setData(const void *data,std::size_t bytesToCopy,BufferType type,Usage usage);
+		reference setData(const void *data,fm::Size bytesToCopy,BufferType type,Usage usage);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Change data in the buffer
@@ -246,7 +247,7 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference updateData(const void *data,std::size_t bytesToCopy,std::size_t byteOffset=0);
+		reference updateData(const void *data,fm::Size bytesToCopy,fm::Size byteOffset=0);
 	
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the buffer for usage

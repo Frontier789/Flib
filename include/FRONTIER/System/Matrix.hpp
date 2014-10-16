@@ -25,8 +25,9 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
+#include <FRONTIER/System/StorageOrder.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
 #define FRONTIER_MATRIX
-#include <cstddef>
 namespace fm
 {
 	class Angle;
@@ -37,16 +38,16 @@ namespace fm
 	///			   <a href="http://en.wikipedia.org/wiki/Matrix_%28mathematics%29">matricess</a>
 	///
 	/////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T = float>
+	template<fm::Size W,fm::Size H,class T = float>
 	class matrix
 	{
 		T m_data[W][H]; ///< 2D array holding the data of the matrix
 	public:
-		typedef T value_type;
+		typedef T component_type;
 		typedef matrix<W,H,T> &reference;
 		typedef const matrix<W,H,T> &const_reference;
 		enum {
-			components = W*H ///< Public value indicating the amount of value_type's in the class
+			components = W*H ///< Public value indicating the amount of component_type's in the class
 		};
 
 
@@ -101,7 +102,7 @@ namespace fm
 		/// @return Value at [x][y] or T(), if x is out of [0,W[ or y is out of [0,H[
 		///
 		/////////////////////////////////////////////////////////////
-		T at(std::size_t x,std::size_t y) const;
+		T at(fm::Size x,fm::Size y) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set element with bound check
@@ -115,7 +116,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference set(std::size_t x,std::size_t y,const T &value);
+		reference set(fm::Size x,fm::Size y,const T &value);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set matrix to <a href="http://en.wikipedia.org/wiki/Identity_matrix">identity</a>
@@ -169,7 +170,7 @@ namespace fm
 		/// @return Converted matrix
 		///
 		/////////////////////////////////////////////////////////////
-		template<std::size_t W2,std::size_t H2,class T2>
+		template<fm::Size W2,fm::Size H2,class T2>
 		matrix<W2,H2,T2> convert() const;
 
 		/////////////////////////////////////////////////////////////
@@ -182,7 +183,7 @@ namespace fm
 		/// @return Converted matrix
 		///
 		/////////////////////////////////////////////////////////////
-		template<std::size_t W2,std::size_t H2>
+		template<fm::Size W2,fm::Size H2>
 		matrix<W2,H2,T> convert() const;
 
 		/////////////////////////////////////////////////////////////
@@ -196,7 +197,7 @@ namespace fm
 		/// @return Pointer to the first element of the @a index -th row
 		///
 		/////////////////////////////////////////////////////////////
-		T *operator[](std::size_t index);
+		T *operator[](fm::Size index);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Access(r only) a row of the matrix
@@ -209,7 +210,7 @@ namespace fm
 		/// @return Pointer to the first element of the @a index -th row
 		///
 		/////////////////////////////////////////////////////////////
-		const T *operator[](std::size_t index) const;
+		const T *operator[](fm::Size index) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the data of the matrix
@@ -302,7 +303,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	matrix<W,H,T> operator*(const T &left,const matrix<W,H,T> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -315,7 +316,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T,std::size_t H2>
+	template<fm::Size W,fm::Size H,class T,fm::Size H2>
 	matrix<W,H2,T> operator*(const matrix<W,H,T> &left,const matrix<H,H2,T> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -328,7 +329,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	matrix<W,H,T> operator+(const matrix<W,H,T> &left,const matrix<W,H,T> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -341,7 +342,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	matrix<W,H,T> operator-(const matrix<W,H,T> &left,const matrix<W,H,T> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -353,7 +354,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	matrix<W,H,T> operator-(const matrix<W,H,T> &mat);
 
 	/////////////////////////////////////////////////////////////
@@ -366,7 +367,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	matrix<W,H,T> &operator+=(matrix<W,H,T> &left,const matrix<W,H,T> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -379,7 +380,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	matrix<W,H,T> &operator-=(matrix<W,H,T> &left,const matrix<W,H,T> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -392,7 +393,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	matrix<W,H,T> &operator*=(matrix<W,H,T> &left,const matrix<H,H,T> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -405,8 +406,8 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<std::size_t W ,std::size_t H ,class T,
-             std::size_t W2,std::size_t H2,class T2>
+	template<fm::Size W ,fm::Size H ,class T,
+             fm::Size W2,fm::Size H2,class T2>
 	bool operator==(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -419,8 +420,8 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<std::size_t W ,std::size_t H ,class T,
-             std::size_t W2,std::size_t H2,class T2>
+	template<fm::Size W ,fm::Size H ,class T,
+             fm::Size W2,fm::Size H2,class T2>
 	bool operator!=(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right);
 
 
@@ -525,7 +526,7 @@ namespace fm
 
 
 
-
+	
 
 	/////////////////////////////////////////////////////////////
 	///
@@ -534,15 +535,6 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	namespace MATRIX
 	{
-		/////////////////////////////////////////////////////////////
-		/// @brief Enum that indicates the order the data is stored in matrices
-		///
-		/////////////////////////////////////////////////////////////
-		enum StorageOrder{
-			RowMajor,	///< Indicates that the data is stored in <a href="http://en.wikipedia.org/wiki/Row-major_order#Row-major_order">row-major order</a>
-			ColumnMajor ///< Indicates that the data is stored in <a href="http://en.wikipedia.org/wiki/Row-major_order#Column-major_order">column-major order</a>
-		};
-
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
 		/// @brief Calculates the <a href="http://en.wikipedia.org/wiki/Determinant">determinant</a> of a square matrix
@@ -555,7 +547,7 @@ namespace fm
 		/// @return The determinant
 		///
 		/////////////////////////////////////////////////////////////
-		template<std::size_t N>
+		template<fm::Size N>
 		float det(const matrix<N,N,float> &mat);
 
 		/////////////////////////////////////////////////////////////
@@ -567,7 +559,7 @@ namespace fm
 		/// @return The matrix of minors
 		///
 		/////////////////////////////////////////////////////////////
-		template<std::size_t N,class T>
+		template<fm::Size N,class T>
 		matrix<N,N,T> minorMat(const matrix<N,N,T> &mat);
 
 		/////////////////////////////////////////////////////////////
@@ -579,7 +571,7 @@ namespace fm
 		/// @return The adjugate
 		///
 		/////////////////////////////////////////////////////////////
-		template<std::size_t N,class T>
+		template<fm::Size N,class T>
 		matrix<N,N,T> adj(const matrix<N,N,T> &mat);
 
 		/////////////////////////////////////////////////////////////
@@ -591,7 +583,7 @@ namespace fm
 		/// @return The inverse
 		///
 		/////////////////////////////////////////////////////////////
-		template<std::size_t N,class T>
+		template<fm::Size N,class T>
 		matrix<N,N,T> inverse(const matrix<N,N,T> &mat);
 
 		/////////////////////////////////////////////////////////////
@@ -603,7 +595,7 @@ namespace fm
 		/// @return The inverse
 		///
 		/////////////////////////////////////////////////////////////
-		template<std::size_t W,std::size_t H,class T>
+		template<fm::Size W,fm::Size H,class T>
 		matrix<H,W,T> transpose(const matrix<W,H,T> &mat);
 
 		/////////////////////////////////////////////////////////////
@@ -615,7 +607,7 @@ namespace fm
 		/// @return The trace
 		///
 		/////////////////////////////////////////////////////////////
-		template<std::size_t N,class T>
+		template<fm::Size N,class T>
 		T trace(const matrix<N,N,T> &mat);
 
 		/////////////////////////////////////////////////////////////
@@ -1014,7 +1006,7 @@ namespace fm
 /// @ingroup System
 ///
 /// fm::matrix is a templated class for manipulating matrices
-/// it is capable of storing really big (as big as std::size_t can be) data and
+/// it is capable of storing really big (as big as fm::Size can be) data and
 /// can operte on custom types (default is float)
 ///
 /// The template parameter T is the type of the data fields. It

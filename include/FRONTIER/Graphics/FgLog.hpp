@@ -16,8 +16,8 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_FGLOG_HPP_INCLUDED
 #define FRONTIER_FGLOG_HPP_INCLUDED
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/System/Log.hpp>
-#include <FRONTIER/Config.hpp>
 #define FRONTIER_FGLOG
 namespace fg
 {

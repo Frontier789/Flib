@@ -14,7 +14,10 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 //////////////////////////////////////////////////////////////////////////
-#ifndef FRONTIER_OS_KNOWN
+#ifndef FRONTIER_OS_H_INCLUDED
+#define FRONTIER_OS_H_INCLUDED
+#define FRONTIER_OS
+
 	#if defined( _WIN16) 	 || \
 		defined( _WIN32) 	 || \
 		defined( _WIN64) 	 || \
@@ -106,10 +109,9 @@
 			#endif
 
 	#endif
-#endif
 
-#ifndef FRONTIER_OS_KNOWN
 	#ifndef FRONTIER_OS_UNKNOWN
 		#define FRONTIER_OS_UNKNOWN
 	#endif
-#endif
+
+#endif // FRONTIER_OS_H_INCLUDED

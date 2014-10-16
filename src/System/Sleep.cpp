@@ -14,9 +14,9 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/macros/OS.h>
 #include <FRONTIER/System/Sleep.hpp>
 #include <FRONTIER/System/Time.hpp>
-#include <FRONTIER/Config.hpp>
 
 #if __cplusplus >= 201103L
 	#include <thread>

@@ -15,6 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
@@ -61,14 +62,14 @@ bool checkFramebufferStatus(fg::FrameBuffer *fbo)
 namespace fg
 {
 	////////////////////////////////////////////////////////////
-	FrameBuffer::DepthBuffer::DepthBuffer(const fm::vec2s &size) : width(*((std::size_t*)&size)),
-																   height(*((std::size_t*)&size+1))
+	FrameBuffer::DepthBuffer::DepthBuffer(const fm::vec2s &size) : width(*((fm::Size*)&size)),
+																   height(*((fm::Size*)&size+1))
 	{
 		
 	}
 
 	////////////////////////////////////////////////////////////
-	FrameBuffer::DepthBuffer::DepthBuffer(const std::size_t &w,const std::size_t &h) : width(w),
+	FrameBuffer::DepthBuffer::DepthBuffer(const fm::Size &w,const fm::Size &h) : width(w),
 																					   height(h)
 	{
 		

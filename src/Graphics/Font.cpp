@@ -14,6 +14,7 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
 #include <FRONTIER/System/Vector2.hpp>
@@ -244,7 +245,7 @@ namespace fg
 			fm::vec2 maxSize(Texture::getMaximumSize());
 			fm::vec2 newSize = gmap.atlas.getSize();
 			newSize.h = std::max(newSize.h*2.0,newSize.h+glyphImg.getSize().h*2.0);
-			newSize.w = std::min(std::max(newSize.w*2,glyphImg.getSize().w*2)  ,maxSize.w); // we can let width be maxSize.w, because we then crate a new row instead
+			newSize.w = std::min(std::max(newSize.w*2,(float)glyphImg.getSize().w*2)  ,maxSize.w); // we can let width be maxSize.w, because we then crate a new row instead
 			if (newSize.h > maxSize.h)
 			{
 				fg_log << "fg::Font is out of Texture space" << std::endl;
@@ -371,7 +372,7 @@ namespace fg
 		{
 			// find the end of the file
 			in.seekg(0, std::ios::end);
-			std::size_t length = in.tellg();
+			fm::Size length = in.tellg();
 			if (in.fail())
 			{
 				fg_log << "failed to find eof in " << fileName << std::endl;

@@ -16,7 +16,8 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_GL_TYPES_H_INCLUDED
 #define FRONTIER_GL_TYPES_H_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/TYPES.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
 
 
 

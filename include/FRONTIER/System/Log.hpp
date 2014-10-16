@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_LOG_HPP_INCLUDED
 #define FRONTIER_LOG_HPP_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_LOG
 namespace std
 {

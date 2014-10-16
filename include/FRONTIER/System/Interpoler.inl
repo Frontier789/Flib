@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_INTERPOLER_INL_INCLUDED
 #define FRONTIER_INTERPOLER_INL_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
 #include <cmath>
 namespace fm
 {
@@ -353,7 +353,7 @@ namespace fm
 	{
 		Interpoler<Linear,VAL,T> ret;
 		ret.resize(Interpoler_Base<VAL,T>::size());
-		for(std::size_t i=0;i<Interpoler_Base<VAL,T>::size();i++)
+		for(fm::Size i=0;i<Interpoler_Base<VAL,T>::size();i++)
 			ret.setPt(i,Interpoler_Base<VAL,T>::getT(i),Interpoler_Base<VAL,T>::getVal(i)+other(Interpoler_Base<VAL,T>::getT(i)));
 		return ret;
 	}
@@ -364,7 +364,7 @@ namespace fm
 	{
 		Interpoler<Linear,VAL,T> ret;
 		ret.resize(Interpoler_Base<VAL,T>::size());
-		for(std::size_t i=0;i<Interpoler_Base<VAL,T>::size();i++)
+		for(fm::Size i=0;i<Interpoler_Base<VAL,T>::size();i++)
 			ret.setPt(i,Interpoler_Base<VAL,T>::getT(i),Interpoler_Base<VAL,T>::getVal(i)*ratio);
 		return ret;
 	}
@@ -402,7 +402,7 @@ namespace fm
 		if (!m_data.size())
 			return VAL();
         const T *dt=NULL;
-		std::size_t mindti=0;
+		fm::Size mindti=0;
 		C(m_data.size())
             if (!dt || std::abs(m_data[i].t-t)<std::abs(*dt - t))
                 dt = &m_data[i].t,
@@ -430,7 +430,7 @@ namespace fm
 	{
 		Interpoler<Nearest,VAL,T> ret;
 		ret.resize(Interpoler_Base<VAL,T>::size());
-		for(std::size_t i=0;i<Interpoler_Base<VAL,T>::size();i++)
+		for(fm::Size i=0;i<Interpoler_Base<VAL,T>::size();i++)
 			ret.setPt(i,Interpoler_Base<VAL,T>::getT(i),Interpoler_Base<VAL,T>::getVal(i)+other(Interpoler_Base<VAL,T>::getT(i)));
 		return ret;
 	}
@@ -441,7 +441,7 @@ namespace fm
 	{
 		Interpoler<Nearest,VAL,T> ret;
 		ret.resize(Interpoler_Base<VAL,T>::size());
-		for(std::size_t i=0;i<Interpoler_Base<VAL,T>::size();i++)
+		for(fm::Size i=0;i<Interpoler_Base<VAL,T>::size();i++)
 			ret.setPt(i,Interpoler_Base<VAL,T>::getT(i),Interpoler_Base<VAL,T>::getVal(i)*ratio);
 		return ret;
 	}

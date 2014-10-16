@@ -23,8 +23,8 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Window/Window.hpp>
-#include <FRONTIER/Config.hpp>
 
 #define FRONTIER_EVENT
 

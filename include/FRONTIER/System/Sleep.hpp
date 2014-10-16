@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_SLEEP_HPP_INCLUDED
 #define FRONTIER_SLEEP_HPP_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_SLEEP
 namespace fm
 {

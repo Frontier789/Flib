@@ -16,14 +16,15 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_DRAWABLE_INL_INCLUDED
 #define FRONTIER_DRAWABLE_INL_INCLUDED
+#include <FRONTIER/System/macros/SIZE.hpp>
 namespace fg
 {
 	namespace priv
 	{
 		template<class T>
-		Attribute::Attribute(const T *ptr,unsigned int stride) : buf(NULL),
+		Attribute::Attribute(const T *ptr,unsigned int stride) : buf(0),
 																 dim(T::components),
-																 size(sizeof(typename T::value_type)),
+																 size(sizeof(typename T::component_type)),
 																 stride(stride),
 																 ptr(ptr)
 		{
@@ -51,7 +52,7 @@ namespace fg
 				 vertexCount,primitive,indp);
 	}
 
-	template <class pt,class ct,class tpt,class nt,std::size_t S>
+	template <class pt,class ct,class tpt,class nt,fm::Size S>
 	void draw(const fm::vertex<pt,ct,tpt,nt> (&vertices)[S],fg::Primitive primitive,priv::IndexPointer indp)
 	{
 		draw(vertices,S,primitive,indp);

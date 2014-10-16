@@ -20,7 +20,9 @@
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/Glyph.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/TYPES.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_FONT
 #include <string>
 #include <vector>
@@ -123,9 +125,9 @@ namespace fg
 			class FRONTIER_API Row
 			{
 			public:
-				std::size_t start;  ///< The vertical offset of the row
-				std::size_t height; ///< The height of the row
-				std::size_t width;  ///< Indicates how long is the row filled
+				fm::Size start;  ///< The vertical offset of the row
+				fm::Size height; ///< The height of the row
+				fm::Size width;  ///< Indicates how long is the row filled
 				
 				/////////////////////////////////////////////////////////////
 				/// @brief Default constructor
@@ -141,7 +143,7 @@ namespace fg
 				/// @param width Indicates how long is the row filled
 				/// 
 				/////////////////////////////////////////////////////////////
-				Row(std::size_t start,std::size_t height,std::size_t width=0);
+				Row(fm::Size start,fm::Size height,fm::Size width=0);
 			};
 			std::vector<Row> rows;                 ///< Holds the data of the rows in the texture atlas
 			std::map<Identifier,Glyph> glyphTable; ///< Maps Identifiers to Glyphs

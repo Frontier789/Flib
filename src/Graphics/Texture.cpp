@@ -15,12 +15,12 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/FgLog.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Rect.hpp>
-#include <FRONTIER/Config.hpp>
 #include <FRONTIER/OpenGL.hpp>
 #include "TextureSaver.hpp"
 #include <cstring>
@@ -79,7 +79,7 @@ namespace fg
 
 
 	/// functions /////////////////////////////////////////////////////////
-	bool Texture::create(std::size_t width,std::size_t height)
+	bool Texture::create(fm::Size width,fm::Size height)
 	{
 		if (!(width && height))
 		{
@@ -90,7 +90,7 @@ namespace fg
 
 
 		fm::vec2s realSize = getValidSize(fm::vec2s(width,height));
-		std::size_t maxSize = getMaximumSize();
+		fm::Size maxSize = getMaximumSize();
 
 
 
@@ -224,7 +224,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Color *pixels,std::size_t x,std::size_t y,std::size_t w,std::size_t h)
+	Texture::reference Texture::update(const Color *pixels,fm::Size x,fm::Size y,fm::Size w,fm::Size h)
 	{
 		if (pixels && getGlId())
 		{
@@ -238,14 +238,14 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Color *pixels,std::size_t x,std::size_t y,fm::vec2s size)
+	Texture::reference Texture::update(const Color *pixels,fm::Size x,fm::Size y,fm::vec2s size)
 	{
 		return update(pixels,x,y,size.w,size.h);
 	}
 
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Color *pixels,fm::vec2s pos,std::size_t w,std::size_t h)
+	Texture::reference Texture::update(const Color *pixels,fm::vec2s pos,fm::Size w,fm::Size h)
 	{
 		return update(pixels,pos.x,pos.y,w,h);
 	}
@@ -331,7 +331,7 @@ namespace fg
 			const Color *src = &allPixels[0];
 			Color *dst = ret.getPixelsPtr();
 
-			C((std::size_t)m_size.h)
+			C((fm::Size)m_size.h)
 			{
 				std::memcpy(dst,src,m_size.w*sizeof(Color));
 				src += m_realSize.w,
@@ -418,7 +418,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	std::size_t Texture::getMaximumSize()
+	fm::Size Texture::getMaximumSize()
 	{
 		GLint size;
 		glCheck(glGetIntegerv(GL_MAX_TEXTURE_SIZE,&size));

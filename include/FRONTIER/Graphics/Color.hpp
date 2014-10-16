@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_COLOR_HPP_INCLUDED
 #define FRONTIER_COLOR_HPP_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_COLOR
 namespace fm
 {
@@ -35,11 +35,11 @@ namespace fg
 	class FRONTIER_API Color
 	{
 	public:
-		typedef unsigned char value_type;
+		typedef unsigned char component_type;
 		typedef Color &reference;
 		typedef const Color &const_reference;
 		enum {
-			components = 4u ///< Public value indicating the amount of value_type's in the class
+			components = 4u ///< Public value indicating the amount of component_type's in the class
 		};
 
 		static Color White;     ///< 0xFFFFFFFF

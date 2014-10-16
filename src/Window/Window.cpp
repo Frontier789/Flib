@@ -14,7 +14,7 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 //////////////////////////////////////////////////////////////////////////
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/OS.h>
 
 #ifdef FRONTIER_OS_WINDOWS
 	#include "Wapi/WapiWindow.cpp"

@@ -17,8 +17,8 @@
 #ifndef FRONTIER_THREAD_HPP_INCLUDED
 #define FRONTIER_THREAD_HPP_INCLUDED
 #include <FRONTIER/System/NonCopyable.hpp>
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/System/Time.hpp>
-#include <FRONTIER/Config.hpp>
 #define FRONTIER_THREAD
 
 namespace fm

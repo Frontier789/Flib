@@ -1,7 +1,7 @@
 #ifndef FRONTIER_WAPI_GLCONTEXT_INCLUDED
 #define FRONTIER_WAPI_GLCONTEXT_INCLUDED
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Window/GLContext.hpp>
-#include <FRONTIER/Config.hpp>
 #define FRONTIER_WAPI_GLCONTEXT
 #include <windows.h>
 #include <string>

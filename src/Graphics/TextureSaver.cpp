@@ -16,7 +16,6 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include "TextureSaver.hpp"
 #include <FRONTIER/Graphics/GLCheck.hpp>
-#include <FRONTIER/Config.hpp>
 #include <FRONTIER/OpenGL.hpp>
 namespace fg
 {

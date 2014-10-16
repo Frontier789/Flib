@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_GLYPH_HPP_INCLUDED
 #define FRONTIER_GLYPH_HPP_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_GLYPH
 namespace fg
 {

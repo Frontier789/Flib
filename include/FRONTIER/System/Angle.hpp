@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_ANGLE_HPP_INCLUDED
 #define FRONTIER_ANGLE_HPP_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_ANGLE
 namespace fm
 {
@@ -29,11 +29,11 @@ namespace fm
 	{
 		float m_amount; ///< A float holding the angle always in radians
 	public:
-		typedef float value_type;
+		typedef float component_type;
 		typedef Angle &reference;
 		typedef const Angle &const_reference;
 		enum {
-			components = 1u ///< Public value indicating the amount of value_type's in the class
+			components = 1u ///< Public value indicating the amount of component_type's in the class
 		};
 		/////////////////////////////////////////////////////////////
 		/// @brief Enumerated type used to decide if a float value

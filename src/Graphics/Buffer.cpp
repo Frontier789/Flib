@@ -17,7 +17,6 @@
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
-#include <FRONTIER/Config.hpp>
 #include <FRONTIER/OpenGL.hpp>
 namespace fg
 {

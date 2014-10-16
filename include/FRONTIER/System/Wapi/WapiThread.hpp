@@ -15,7 +15,7 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/API.h>
 #include <windows.h>
 
 namespace fm

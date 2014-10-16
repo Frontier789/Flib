@@ -26,13 +26,14 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/API.h>
 
 #define FRONTIER_TEXTURE
 
 namespace fm
 {
-	template<std::size_t,std::size_t,class>
+	template<fm::Size,fm::Size,class>
 	class matrix;
 }
 
@@ -131,7 +132,7 @@ namespace fg
 		/// @return True if no error occured
 		///
 		/////////////////////////////////////////////////////////////
-		bool create(std::size_t width,std::size_t height);
+		bool create(fm::Size width,fm::Size height);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief (re)create the texture with given size
@@ -244,7 +245,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Color *pixels,std::size_t x,std::size_t y,std::size_t w,std::size_t h);
+		reference update(const Color *pixels,fm::Size x,fm::Size y,fm::Size w,fm::Size h);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the content of the texture
@@ -260,7 +261,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Color *pixels,std::size_t x,std::size_t y,fm::vec2s size);
+		reference update(const Color *pixels,fm::Size x,fm::Size y,fm::vec2s size);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the content of the texture
@@ -276,7 +277,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Color *pixels,fm::vec2s pos,std::size_t w,std::size_t h);
+		reference update(const Color *pixels,fm::vec2s pos,fm::Size w,fm::Size h);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the content of the texture
@@ -440,7 +441,7 @@ namespace fg
 		/// @return Maximum size of a texture
 		///
 		/////////////////////////////////////////////////////////////
-		static std::size_t getMaximumSize();
+		static fm::Size getMaximumSize();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the size of the texture
@@ -497,8 +498,8 @@ namespace fg
 /// 
 /// fg::Image img;
 /// img.create(500,500);
-/// for (std::size_t x=0;x<img.getSize().w;x++)
-/// 	for (std::size_t y=0;y<img.getSize().h;y++)
+/// for (fm::Size x=0;x<img.getSize().w;x++)
+/// 	for (fm::Size y=0;y<img.getSize().h;y++)
 /// 		img.setPixel(x,y,(y%50<25 ? (x%50<25) : ((49-(x%50))<25)) ? fg::Color(80,80,80) : fg::Color(200,200,200));
 /// 
 /// fg::Texture tex(img);

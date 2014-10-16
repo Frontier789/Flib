@@ -16,8 +16,8 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_WAPI_WINDOW_INCLUDED
 #define FRONTIER_WAPI_WINDOW_INCLUDED
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Window/Event.hpp>
-#include <FRONTIER/Config.hpp>
 #define FRONTIER_WAPI_WINDOW
 #include <windows.h>
 #include <string>

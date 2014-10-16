@@ -14,6 +14,7 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <FRONTIER/Graphics/FgLog.hpp>
@@ -22,22 +23,23 @@
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Rect.hpp>
-#include <FRONTIER/Config.hpp>
 #include "stb_image/stb_image_write.h"
 #include "stb_image/stb_image.h"
 #include "jpge/jpge.cpp"
 #include <cstring>
+#include <string>
 namespace fg
 {
 	/// constructors /////////////////////////////////////////////////////////
-	Image::Image() : m_size(0,0)
+	Image::Image() : m_sizeW(0),
+					 m_sizeH(0)
 	{
 
 	}
 
 
 	////////////////////////////////////////////////////////////
-	Image::Image(std::size_t width,std::size_t height,const Color &color)
+	Image::Image(fm::Size width,fm::Size height,const Color &color)
 	{
 		create(width,height,color);
 	}
@@ -46,30 +48,38 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	Image::Image(const fm::vec2s &size,const Color &color)
 	{
-		create(size,color);
+		create(size.w,size.h,color);
 	}
 
 
 	////////////////////////////////////////////////////////////
-	Image::Image(const Image &copy,const fm::rect2u sourceRect)
+	Image::Image(const Image &copy)
 	{
-		create(sourceRect.area() ? sourceRect.size : fm::vec2s(copy.getSize())-sourceRect.pos);
-		copyFrom(copy,0,0,sourceRect);
+		create(copy);
+	}
+
+
+	////////////////////////////////////////////////////////////
+	Image::Image(const Image &copy,const fm::rect2s &sourceRect)
+	{
+		create(copy,sourceRect);
 	}
 
 
 
 	/// functions /////////////////////////////////////////////////////////
-	typename Image::reference Image::create(std::size_t width,std::size_t height,const Color &color)
+	typename Image::reference Image::create(fm::Size width,fm::Size height,const Color &color)
 	{
 		if (width && height)
 		{
-			m_size(width,height);
+			m_sizeW = width;
+			m_sizeH = height;
 			m_pixels.resize(0),
 			m_pixels.resize(width*height,color);
 		}
 		else
-			m_size(0,0),
+			m_sizeW = 0,
+			m_sizeH = 0,
 			m_pixels.clear();
 		return *this;
 	}
@@ -83,15 +93,17 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::create(std::size_t width,std::size_t height,const Color *pixels)
+	typename Image::reference Image::create(fm::Size width,fm::Size height,const Color *pixels)
 	{
 		if (width && height)
 		{
-			m_size(width,height);
+			m_sizeW = width;
+			m_sizeH = height;
 			m_pixels = std::vector<Color>((Color *)pixels,((Color *)pixels)+width*height);
 		}
 		else
-			m_size(0,0),
+			m_sizeW = 0,
+			m_sizeH = 0,
 			m_pixels.clear();
 		return *this;
 	}
@@ -105,7 +117,16 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-    typename Image::reference Image::create(const Image &copy,const fm::rect2u sourceRect)
+    typename Image::reference Image::create(const Image &copy)
+	{
+		create(copy.getSize());
+		copyFrom(copy,0,0,fm::rect2s(0,0,0,0));
+		return *this;
+	}
+
+
+	////////////////////////////////////////////////////////////
+    typename Image::reference Image::create(const Image &copy,const fm::rect2s &sourceRect)
 	{
 		create(sourceRect.area() ? sourceRect.size : fm::vec2s(copy.getSize())-sourceRect.pos);
 		copyFrom(copy,0,0,sourceRect);
@@ -114,110 +135,141 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::copy(const Image &source,std::size_t destX,std::size_t destY,const fm::rect2u &sourceRect,bool useAlpha)
-	{
-		if (!source.m_size.w || !source.m_size.h || !m_size.w || !m_size.h)
-			return *this;
-
-		fm::rect2u sRect = sourceRect;
-
-		if (!sRect.size.w || !sRect.size.h)
-		{
-			sRect.pos.x  = 0;
-			sRect.pos.y  = 0;
-			sRect.size.w = source.m_size.w;
-			sRect.size.h = source.m_size.h;
-		}
-		else
-		{
-			if (sRect.pos.x  < 0) sRect.pos.x = 0;
-			if (sRect.pos.y  < 0) sRect.pos.y = 0;
-			if (sRect.size.w > source.m_size.x) sRect.size.w = source.m_size.x;
-			if (sRect.size.h > source.m_size.y) sRect.size.h = source.m_size.y;
-		}
-
-		std::size_t width  = sRect.size.w;
-		std::size_t height = sRect.size.h;
-		if (destX + width  > m_size.x) width  = m_size.x - destX;
-		if (destY + height > m_size.y) height = m_size.y - destY;
-
-
-		if (width<=0 || height<=0)
-			return *this;
-
-
-		if (useAlpha)
-		{
-			Cx(width)
-			{
-				Cy(height)
-				{
-					fm::vec4 src = source.getPixel(sourceRect.pos+fm::vec2s(x,y));
-					fm::vec4 dst = getPixel(destX+x,destY+y);
-					float alpha = src.a+dst.a*(1-src.a);
-					setPixel(destX+x,destY+y,fm::vec4(fm::vec3(src*src.a+dst*dst.a*(1.f-src.a))/alpha,alpha));
-				}
-			}
-		}
-		else
-		{
-			C(height)
-				std::memcpy(&getPixel(destX,destY+i), &source.getPixel(sourceRect.pos.x,sourceRect.pos.y+i), width*sizeof(Color));
-		}
-		return *this;
-	}
-
-
-	////////////////////////////////////////////////////////////
-	typename Image::reference Image::copy(const Image &source,const fm::vec2s &destPos,const fm::rect2u &sourceRect,bool useAlpha)
-	{
-		return this->copy(source,destPos.x,destPos.y,sourceRect,useAlpha);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	void Image::copyTo(Image &destination,const fm::vec2s &destPos,const fm::rect2u &sourceRect,bool useAlpha) const
+	void Image::copyTo(Image &destination,const fm::vec2s &destPos,const fm::rect2s &sourceRect,bool useAlpha) const
 	{
 		destination.copyFrom(*this,destPos,sourceRect,useAlpha);
 	}
 
 
 	////////////////////////////////////////////////////////////
-	void Image::copyTo(Image &destination,std::size_t destX,std::size_t destY,const fm::rect2u &sourceRect,bool useAlpha) const
+	void Image::copyTo(Image &destination,fm::Size destX,fm::Size destY,const fm::rect2s &sourceRect,bool useAlpha) const
 	{
 		destination.copyFrom(*this,destX,destY,sourceRect,useAlpha);
 	}
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::copyFrom(const Image &source,const fm::vec2s &destPos,const fm::rect2u &sourceRect,bool useAlpha)
+	typename Image::reference Image::copyFrom(const Image &source,fm::Size destX,fm::Size destY,const fm::rect2s &sourceRect,bool useAlpha)
 	{
-		return this->copy(source,destPos,sourceRect,useAlpha);
+		// only copy if the source is valid
+		if (!source.m_sizeW || !source.m_sizeH/* || !m_sizeW || !m_sizeH*/)
+			return *this;
+		
+		// copy the source rect so we can adjust it
+		fm::rect2s sRect = sourceRect;
+		
+		// ah! we want to copy the whole image!
+		if (!sRect.area())
+		{
+			sRect.pos(0,0);
+			sRect.size(m_sizeW,m_sizeH);
+		}
+		else
+		{
+			// do not be out of the source
+			if (sRect.size.w + sRect.pos.x > source.m_sizeW) sRect.size.w = source.m_sizeW - sRect.pos.x;
+			if (sRect.size.h + sRect.pos.y > source.m_sizeH) sRect.size.h = source.m_sizeH - sRect.pos.y;
+		}
+		
+		// do not be out of the destination
+		if (destX + sRect.size.w > m_sizeW) sRect.size.w = m_sizeW - destX;
+		if (destY + sRect.size.h > m_sizeH) sRect.size.h = m_sizeH - destY;
+		
+		// use alpha mixing
+		if (useAlpha)
+		{
+			/// used technique: http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending
+			/// for EVERY PIXEL -> slow
+			Cxy(sRect.size.w,sRect.size.h)
+			{
+				// get the source pixell
+				fm::vec4 src = source.getPixel(sourceRect.pos+fm::vec2s(x,y));
+				
+				// get the destination pixell
+				fm::vec4 dst = getPixel(destX+x,destY+y);
+				
+				// compute result alpha
+				float alpha = src.a+dst.a*(1-src.a);
+				
+				// avoid division by 0
+				if (!alpha)
+					setPixel(destX+x,destY+y,fm::vec4(0,0,0,0));
+				else
+					setPixel(destX+x,destY+y,fm::vec4(fm::vec3(src*src.a+dst*dst.a*(1.f-src.a))/alpha,alpha));
+			}
+		}
+		else
+		{
+			fm::Size copyBytesPerRow = sRect.size.w*sizeof(Color);
+			
+			// we can use memcpy which is a lot faster
+			if (sRect.size.w == m_sizeW && sRect.size.w == source.m_sizeW)
+				std::memcpy(&getPixel(destX,destY),&source.getPixel(sourceRect.pos.x,sourceRect.pos.y), copyBytesPerRow*sRect.size.h);
+			else
+				C(sRect.size.h)
+					std::memcpy(&getPixel(destX,destY+i), &source.getPixel(sourceRect.pos.x,sourceRect.pos.y+i), copyBytesPerRow);
+		}
+		return *this;
 	}
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::copyFrom(const Image &source,std::size_t destX,std::size_t destY,const fm::rect2u &sourceRect,bool useAlpha)
+	typename Image::reference Image::copyFrom(const Image &source,const fm::vec2s &destPos,const fm::rect2s &sourceRect,bool useAlpha)
 	{
-		return this->copy(source,destX,destY,sourceRect,useAlpha);
+		return copyFrom(source,destPos.x,destPos.y,sourceRect,useAlpha);
+	}
+
+
+	////////////////////////////////////////////////////////////
+	void Image::copyTo(Image &destination,const fm::vec2s &destPos,bool useAlpha) const
+	{
+		destination.copyFrom(*this,destPos,fm::rect2s(0,0,0,0),useAlpha);
+	}
+
+
+	////////////////////////////////////////////////////////////
+	void Image::copyTo(Image &destination,fm::Size destX,fm::Size destY,bool useAlpha) const
+	{
+		destination.copyFrom(*this,destX,destY,fm::rect2s(0,0,0,0),useAlpha);
+	}
+
+
+	////////////////////////////////////////////////////////////
+	typename Image::reference Image::copyFrom(const Image &source,fm::Size destX,fm::Size destY,bool useAlpha)
+	{
+		return copyFrom(source,destX,destY,fm::rect2s(0,0,0,0),useAlpha);
+	}
+
+
+	////////////////////////////////////////////////////////////
+	typename Image::reference Image::copyFrom(const Image &source,const fm::vec2s &destPos,bool useAlpha)
+	{
+		return copyFrom(source,destPos.x,destPos.y,fm::rect2s(0,0,0,0),useAlpha);
 	}
 
 
 	////////////////////////////////////////////////////////////
 	bool Image::loadFromFile(const std::string &filename)
 	{
+		// empty current pixels
 		m_pixels.clear();
 
-
+		// ask stbi to load the file
 		int width, height, channels;
-		unsigned char* ptr = stbi_load(filename.c_str(), &width, &height, &channels, STBI_rgb_alpha);
-
+		unsigned char *ptr = stbi_load(filename.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+		
+		// if he succeeded
 		if (ptr && width && height)
 		{
-			m_size(width,height);
+			// copy the data
+			m_sizeW = width;
+			m_sizeH = height;
 			m_pixels.resize(width * height * 4);
 			memcpy(&m_pixels[0], ptr, m_pixels.size());
+			
+			// let stbi free its used memory
 			stbi_image_free(ptr);
+			
 			return true;
 		}
 		else
@@ -229,16 +281,16 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	fm::vec2 Image::getSize() const
+	const fm::vec2s &Image::getSize() const
 	{
-		return m_size;
+		return *((fm::vec2s*)&m_sizeW);
 	}
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::setPixel(std::size_t x,std::size_t y,const Color &color)
+	typename Image::reference Image::setPixel(fm::Size x,fm::Size y,const Color &color)
 	{
-		m_pixels[x+y*m_size.w] = color;
+		m_pixels[x+y*m_sizeW] = color;
 		return *this;
 	}
 
@@ -251,9 +303,9 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	const Color &Image::getPixel(std::size_t x,std::size_t y) const
+	const Color &Image::getPixel(fm::Size x,fm::Size y) const
 	{
-		return m_pixels[x+y*m_size.w];
+		return m_pixels[x+y*m_sizeW];
 	}
 
 
@@ -265,9 +317,9 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	Color &Image::getPixel(std::size_t x,std::size_t y)
+	Color &Image::getPixel(fm::Size x,fm::Size y)
 	{
-		return m_pixels[x+y*m_size.w];
+		return m_pixels[x+y*m_sizeW];
 	}
 
 
@@ -295,9 +347,9 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	typename Image::reference Image::flipHorizontally()
 	{
-		Cx(m_size.w/2.f)
-			Cy(m_size.h)
-				std::swap(m_pixels[x+y*m_size.w],m_pixels[(m_size.w-x-1)+y*m_size.w]);
+		Cx(m_sizeW/2.f)
+			Cy(m_sizeH)
+				std::swap(m_pixels[x+y*m_sizeW],m_pixels[(m_sizeW-x-1)+y*m_sizeW]);
 		return *this;
 	}
 
@@ -305,9 +357,9 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	typename Image::reference Image::flipVertically()
 	{
-		Cx(m_size.w)
-			Cy(m_size.h/2.f)
-				std::swap(m_pixels[x+y*m_size.w],m_pixels[x+(m_size.h-y-1)*m_size.w]);
+		Cx(m_sizeW)
+			Cy(m_sizeH/2.f)
+				std::swap(m_pixels[x+y*m_sizeW],m_pixels[x+(m_sizeH-y-1)*m_sizeW]);
 		return *this;
 	}
 
@@ -315,33 +367,36 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	bool Image::saveToFile(const std::string &filename)
 	{
-		if (!m_pixels.empty() && (m_size.x > 0) && (m_size.y > 0))
+		// if the image is valid
+		if (!m_pixels.empty() && (m_sizeW > 0) && (m_sizeH > 0))
 		{
+			// find the extension
 			int dotPos = filename.find_last_of(".");
 			std::string extension = filename.substr(dotPos+1,filename.size()-dotPos);
-
+			
+			// lowercase
 			C(extension.length())
 				extension[i] = (extension[i]>='A' && extension[i]<='Z') ? (extension[i]-'A'+'a') : extension[i];
 
 			if (extension == "bmp")
 			{
 				// BMP format
-				if (stbi_write_bmp(filename.c_str(), m_size.w, m_size.h, 4, &m_pixels[0]))
+				if (stbi_write_bmp(filename.c_str(), m_sizeW, m_sizeH, 4, &m_pixels[0]))
 					return true;
 			}
 			else if (extension == "tga")
 			{
 				// TGA format
-				if (stbi_write_tga(filename.c_str(), m_size.w, m_size.h, 4, &m_pixels[0]))
+				if (stbi_write_tga(filename.c_str(), m_sizeW, m_sizeH, 4, &m_pixels[0]))
 					return true;
 			}
 			else if(extension == "png")
 			{
 				// PNG format
-				if (stbi_write_png(filename.c_str(), m_size.w, m_size.h, 4, &m_pixels[0],0))
+				if (stbi_write_png(filename.c_str(), m_sizeW, m_sizeH, 4, &m_pixels[0],0))
 					return true;
 			}
-			else if(extension == "jpg" || extension == "jpeg")
+			else if(extension == "jpg" || extension == "jpeg") // its a bit more messy
 			{
 				bool success = true;
 				jpge::cfile_stream dst_stream;
@@ -351,23 +406,23 @@ namespace fg
 				else
 				{
 					jpge::jpeg_encoder dst_image;
-					if (!dst_image.init(&dst_stream,m_size.w,m_size.h,4,jpge::params()))
+					if (!dst_image.init(&dst_stream,m_sizeW,m_sizeH,4,jpge::params()))
 						success = false;
 					else
 					{
-						for (std::size_t pass_index = 0; pass_index < dst_image.get_total_passes(); pass_index++)
+						for (fm::Size pass_index = 0; pass_index < dst_image.get_total_passes(); pass_index++)
 						{
-							C(m_size.h)
+							C(m_sizeH)
 							{
-								const unsigned char *pBuf = (unsigned char *)(&m_pixels[0]) + (std::size_t)(i*m_size.w*4);
+								const unsigned char *pBuf = (unsigned char *)(&m_pixels[0]) + (fm::Size)(i*m_sizeW*4);
 								if (!dst_image.process_scanline(pBuf))
 									success = false,
-									i = m_size.h+1,
-									pass_index = dst_image.get_total_passes() +1;
+									i = m_sizeH+1,
+									pass_index = dst_image.get_total_passes() + 1;
 							}
 							if (!dst_image.process_scanline(NULL))
 									success = false,
-									pass_index = dst_image.get_total_passes() +1;
+									pass_index = dst_image.get_total_passes() + 1;
 						}
 						if (success)
 						{
@@ -382,10 +437,11 @@ namespace fg
 			else
 			{
 				std::string pngfilename=filename+".png";
-				//Unknown extension so we output it as png
+				
+				// Unknown extension so we output it as png
 				fg_log << "Unknown extension \"" << extension <<"\" changed output name to "<<pngfilename<<std::endl;
 
-				if (stbi_write_png(pngfilename.c_str(), m_size.w, m_size.h, 4, &m_pixels[0],0))
+				if (stbi_write_png(pngfilename.c_str(), m_sizeW, m_sizeH, 4, &m_pixels[0],0))
 					return true;
 			}
 		}

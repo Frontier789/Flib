@@ -18,6 +18,7 @@
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/Config.hpp>
 #include <cmath>
 namespace fm
 {

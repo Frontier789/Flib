@@ -34,11 +34,11 @@ namespace fm
 	class vector4
 	{
 	public:
-		typedef T value_type;
+		typedef T component_type;
 		typedef vector4<T> &reference;
 		typedef const vector4<T> &const_reference;
 		enum {
-			components = 4u ///< Public value indicating the amount of value_type's in the class
+			components = 4u ///< Public value indicating the amount of component_type's in the class
 		};
 		
 		static vector4<T> White;     ///< 0xFFFFFFFF

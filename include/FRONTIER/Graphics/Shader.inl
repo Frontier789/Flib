@@ -38,15 +38,7 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class pt,class ct,class tpt,class nt>
-	inline typename fm::enable_if<fg::is_GLDataType<pt >::value,Shader::reference>::type Shader::setAttribPointer(const std::string &posName,const fm::vertex<pt,ct,tpt,nt> *pointer)
-	{
-		setAttribPointer(posName,&pointer[0].pos,priv::getStride<pt,ct,tpt,nt>());
-		return *this;
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class pt,class ct,class tpt,class nt>
-	inline typename fm::enable_if<fg::is_GLDataType<pt >::value ||
+	inline typename fm::enable_if<fg::is_GLDataType<pt >::value &&
 								  fg::is_GLDataType<ct >::value,Shader::reference>::type Shader::setAttribPointer(const std::string &posName,
 																												  const std::string &clrName,const fm::vertex<pt,ct,tpt,nt> *pointer)
 	{
@@ -57,8 +49,8 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class pt,class ct,class tpt,class nt>
-	inline typename fm::enable_if<fg::is_GLDataType<pt >::value ||
-								  fg::is_GLDataType<ct >::value ||
+	inline typename fm::enable_if<fg::is_GLDataType<pt >::value &&
+								  fg::is_GLDataType<ct >::value &&
 								  fg::is_GLDataType<tpt>::value,Shader::reference>::type Shader::setAttribPointer(const std::string &posName,
 																												  const std::string &clrName,
 																												  const std::string &texPosName,const fm::vertex<pt,ct,tpt,nt> *pointer)
@@ -71,9 +63,9 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class pt,class ct,class tpt,class nt>
-	inline typename fm::enable_if<fg::is_GLDataType<pt >::value ||
-								  fg::is_GLDataType<ct >::value ||
-								  fg::is_GLDataType<tpt>::value ||
+	inline typename fm::enable_if<fg::is_GLDataType<pt >::value &&
+								  fg::is_GLDataType<ct >::value &&
+								  fg::is_GLDataType<tpt>::value &&
 								  fg::is_GLDataType<nt >::value,Shader::reference>::type Shader::setAttribPointer(const std::string &posName,
 																												  const std::string &clrName,
 																												  const std::string &texPosName,

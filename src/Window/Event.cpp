@@ -14,9 +14,9 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/macros/OS.h>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/Window/Event.hpp>
-#include <FRONTIER/Config.hpp>
 
 #ifdef FRONTIER_OS_WINDOWS
 	#include "Wapi/WapiEvent.cpp"

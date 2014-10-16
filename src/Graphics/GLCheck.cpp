@@ -14,8 +14,8 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Graphics/GLCheck.hpp>
-#include <FRONTIER/Config.hpp>
 #include <FRONTIER/OpenGL.hpp>
 #include <iostream>
 

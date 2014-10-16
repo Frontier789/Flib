@@ -14,8 +14,8 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/macros/OS.h>
 #include <FRONTIER/OpenGL.hpp>
-#include <FRONTIER/Config.hpp>
 #include <iostream>
 
 namespace fg

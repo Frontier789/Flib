@@ -16,9 +16,9 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_DRAWABLE_HPP_INCLUDED
 #define FRONTIER_DRAWABLE_HPP_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_DRAWABLE
-#include <cstddef>
 namespace fm
 {
 	template<class,class,class,class>
@@ -83,7 +83,7 @@ namespace fg
 
 	template <class pt,class ct,class tpt,class nt>
 	void draw(const fm::vertex<pt,ct,tpt,nt> *vertices,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp=priv::IndexPointer());
-	template <class pt,class ct,class tpt,class nt,std::size_t S>
+	template <class pt,class ct,class tpt,class nt,fm::Size S>
 	void draw(const fm::vertex<pt,ct,tpt,nt> (&vertices)[S],fg::Primitive primitive,priv::IndexPointer indp=priv::IndexPointer());
 	
 	template<class T>

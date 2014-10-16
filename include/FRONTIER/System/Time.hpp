@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_TIME_HPP_INCLUDED
 #define FRONTIER_TIME_HPP_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_TIME
 namespace fm
 {
@@ -29,11 +29,11 @@ namespace fm
 	{
 		long m_amount; ///< A long value holding the time in Microseconds
 	public:
-		typedef long value_type;
+		typedef long component_type;
 		typedef Time &reference;
 		typedef const Time &const_reference;
 		enum {
-			components = 1u ///< Public value indicating the amount of value_type's in the class
+			components = 1u ///< Public value indicating the amount of component_type's in the class
 		};
 		enum MeasureType {
 			Microseconds=1,   ///< Indicates that the passed value means microseconds

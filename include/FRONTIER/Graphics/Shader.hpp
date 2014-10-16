@@ -20,15 +20,15 @@
 #include <FRONTIER/System/macros/dont_include_inl_begin>
 
 #include <FRONTIER/System/type_traits/Enable_if.hpp>
+#include <FRONTIER/System/StorageOrder.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
-#include <FRONTIER/Graphics/Texture.hpp>
-#include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/GL/GL_TYPES.hpp>
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/API.h>
 
 #define FRONTIER_SHADER
 #include <vector>
@@ -37,12 +37,28 @@
 
 namespace fm
 {
-	template<class posType,class clrType,class texPosType,class normType> 
+	template<class,class,class,class> 
 	class vertex;
+	
+	template<class> class vector2;
+	template<class> class vector3;
+	template<class> class vector4;
+	
+	typedef vector2<float> vec2;
+	typedef vector3<float> vec3;
+	typedef vector4<float> vec4;
+	
+	template<fm::Size W,fm::Size H,class T>
+	class matrix;
+	
+	typedef matrix<3,3,float> mat3;
+	typedef matrix<4,4,float> mat4;
 }
 
 namespace fg
 {
+	class Texture;
+	
 	/////////////////////////////////////////////////////////////
 	/// 
 	/// 	@brief Class used to handle OpenGL shader programs in language <a href="http://en.wikipedia.org/wiki/GLSL">GLSL</a>
@@ -215,31 +231,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
         int getAttribLocation(const std::string &name);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the pointer data associated with an attribute
-		/// 
-		/// If the shader program is invalid no error will be prompted
-		/// and the shader program will not be modified
-		///
-		/// if @a posName does not correspond to an active attribute in 
-		/// the shader program an error is prompted to 
-		/// fg_log and -1 is returned
-		/// 
-		/// After successfully calling this function
-		/// a call to glDrawArrays, glDrawElements or fg::draw family
-		/// with this shader program being bound will use
-		/// this data
-		/// 
-		/// @param posName The name of the position attribute
-		/// @param pointer A pointer to the data stored in fm::vertex
-		/// 
-		/// @return reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-        template<class pt,class ct,class tpt,class nt>
-		typename fm::enable_if<fg::is_GLDataType<pt >::value,reference>::type setAttribPointer(const std::string &posName,const fm::vertex<pt,ct,tpt,nt> *pointer);
-
+        
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with two attributes
 		/// 
@@ -264,7 +256,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
         template<class pt,class ct,class tpt,class nt>
-		typename fm::enable_if<fg::is_GLDataType<pt >::value ||
+		typename fm::enable_if<fg::is_GLDataType<pt >::value &&
 							   fg::is_GLDataType<ct >::value,reference>::type setAttribPointer(const std::string &posName,
 																							   const std::string &clrName,const fm::vertex<pt,ct,tpt,nt> *pointer);
 
@@ -293,8 +285,8 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
         template<class pt,class ct,class tpt,class nt>
-		typename fm::enable_if<fg::is_GLDataType<pt >::value ||
-							   fg::is_GLDataType<ct >::value ||
+		typename fm::enable_if<fg::is_GLDataType<pt >::value &&
+							   fg::is_GLDataType<ct >::value &&
 							   fg::is_GLDataType<tpt>::value,reference>::type setAttribPointer(const std::string &posName,
 																							   const std::string &clrName,
 																							   const std::string &texPosName,const fm::vertex<pt,ct,tpt,nt> *pointer);
@@ -325,9 +317,9 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
         template<class pt,class ct,class tpt,class nt>
-		typename fm::enable_if<fg::is_GLDataType<pt >::value ||
-							   fg::is_GLDataType<ct >::value ||
-							   fg::is_GLDataType<tpt>::value ||
+		typename fm::enable_if<fg::is_GLDataType<pt >::value &&
+							   fg::is_GLDataType<ct >::value &&
+							   fg::is_GLDataType<tpt>::value &&
 							   fg::is_GLDataType<nt >::value,reference>::type setAttribPointer(const std::string &posName,
 																							   const std::string &clrName,
 																							   const std::string &texPosName,
@@ -362,7 +354,33 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
         reference setAttribPointer(const std::string &name,unsigned int components,unsigned long type,bool normalize,const void *pointer,unsigned int stride=0);
-		
+		        
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the pointer data associated with a one dimensional attribute
+		/// 
+		/// If the shader program is invalid no error will be prompted
+		/// and the shader program will not be modified
+		///
+		/// if @a name does not 
+		/// correspond to an active attribute in 
+		/// the shader program an error is prompted to 
+		/// fg_log and -1 is returned
+		/// 
+		/// After successfully calling this function
+		/// a call to glDrawArrays, glDrawElements or fg::draw family
+		/// with this shader program being bound will use
+		/// this data
+		/// 
+		/// @param name The name of the attribute
+		/// @param pointer A pointer to the data
+		/// @param stride Byte offset between the beginning of two attributes
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class T>
+        typename fm::enable_if<fg::is_GLDataType<T>::value,reference>::type setAttribPointer(const std::string &name,const T *pointer,unsigned int stride=0);
+        
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec2 attributes
 		/// 
@@ -440,32 +458,6 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		template<class T>
         typename fm::enable_if<fg::is_GLDataType<T>::value,reference>::type setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride=0);
-        
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the pointer data associated with a one dimensional attribute
-		/// 
-		/// If the shader program is invalid no error will be prompted
-		/// and the shader program will not be modified
-		///
-		/// if @a name does not 
-		/// correspond to an active attribute in 
-		/// the shader program an error is prompted to 
-		/// fg_log and -1 is returned
-		/// 
-		/// After successfully calling this function
-		/// a call to glDrawArrays, glDrawElements or fg::draw family
-		/// with this shader program being bound will use
-		/// this data
-		/// 
-		/// @param name The name of the attribute
-		/// @param pointer A pointer to the data stored in fm::vec4
-		/// @param stride Byte offset between the beginning of two attributes
-		/// 
-		/// @return reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-		template<class T>
-        typename fm::enable_if<fg::is_GLDataType<T>::value,reference>::type setAttribPointer(const std::string &name,const T *pointer,unsigned int stride=0);
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a float uniform

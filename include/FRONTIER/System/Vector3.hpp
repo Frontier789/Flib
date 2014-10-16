@@ -16,8 +16,8 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_VECTOR3_HPP_INCLUDED
 #define FRONTIER_VECTOR3_HPP_INCLUDED
+#include <FRONTIER/System/macros/SIZE.hpp>
 #define FRONTIER_VECTOR3
-#include <cstddef>
 namespace fm
 {
 	template<class> class vector4;
@@ -35,11 +35,11 @@ namespace fm
 	class vector3
 	{
 	public:
-		typedef T value_type;
+		typedef T component_type;
 		typedef vector3<T> &reference;
 		typedef const vector3<T> &const_reference;
 		enum {
-			components = 3u ///< Public value indicating the amount of value_type's in the class
+			components = 3u ///< Public value indicating the amount of component_type's in the class
 		};
 		union {
 
@@ -673,7 +673,7 @@ namespace fm
 	typedef vector3<float> 		  vec3f;
 	typedef vector3<int>   		  vec3i;
 	typedef vector3<unsigned int> vec3u;
-	typedef vector3<std::size_t>  vec3s;
+	typedef vector3<fm::Size>     vec3s;
 
 }
 

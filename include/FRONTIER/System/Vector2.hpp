@@ -16,8 +16,8 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_VECTOR2_HPP_INCLUDED
 #define FRONTIER_VECTOR2_HPP_INCLUDED
+#include <FRONTIER/System/macros/SIZE.hpp>
 #define FRONTIER_VECTOR2
-#include <cstddef>
 namespace fm
 {
 	template<class> class vector4;
@@ -35,11 +35,11 @@ namespace fm
 	class vector2
 	{
 	public:
-		typedef T value_type;
+		typedef T component_type;
 		typedef vector2<T> &reference;
 		typedef const vector2<T> &const_reference;
 		enum {
-			components = 2u ///< Public value indicating the amount of value_type's in the class
+			components = 2u ///< Public value indicating the amount of component_type's in the class
 		};
 		union {
 
@@ -710,7 +710,7 @@ namespace fm
 	typedef vector2<float> 		  vec2f;
 	typedef vector2<int>   		  vec2i;
 	typedef vector2<unsigned int> vec2u;
-	typedef vector2<std::size_t>  vec2s;
+	typedef vector2<fm::Size>     vec2s;
 
 }
 
@@ -745,7 +745,7 @@ namespace std
 /// @li fm::vector2<float> is fm::vec2f
 /// @li fm::vector2<int> is fm::vec2i
 /// @li fm::vector2<unsigned int> is fm::vec2u
-/// @li fm::vector2<std::size_t> is fm::vec2s
+/// @li fm::vector2<fm::Size> is fm::vec2s
 ///
 /// The fm::vector2 class posesses a simple yet feature rich interface, its x and y members
 /// can be accessed directly and they have aliases such as w,h,r,c and it

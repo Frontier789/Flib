@@ -14,9 +14,11 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 //////////////////////////////////////////////////////////////////////////
+#ifndef FRONTIER_API_H_INCLUDED
+#define FRONTIER_API_H_INCLUDED
 #include <FRONTIER/System/macros/OS.h>
+#define FRONTIER_API
 
-#ifndef FRONTIER_API
 	#ifdef FRONTIER_DYNAMIC
 
 		#ifdef FRONTIER_OS_WINDOWS
@@ -44,4 +46,5 @@
 	#else
 		#define FRONTIER_API
 	#endif
-#endif
+	
+#endif // FRONTIER_API_H_INCLUDED

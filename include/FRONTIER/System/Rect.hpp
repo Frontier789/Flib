@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_RECT_HPP_INCLUDED
 #define FRONTIER_RECT_HPP_INCLUDED
+#include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #define FRONTIER_RECT
 namespace fm
@@ -29,11 +30,11 @@ namespace fm
     class rect
     {
     public:
-		typedef T value_type;
+		typedef T component_type;
         typedef rect<T> &reference;
         typedef const rect<T> &const_reference;
 		enum {
-			components = 4u ///< Public value indicating the amount of value_type's in the class
+			components = 4u ///< Public value indicating the amount of component_type's in the class
 		};
 		vector2<T> pos;  ///< The position of the rectangle
 		vector2<T> size; ///< The size of the rectangle
@@ -189,6 +190,7 @@ namespace fm
     typedef rect<float> 		 rect2f;
     typedef rect<int>   		 rect2i;
     typedef rect<unsigned int>   rect2u;
+    typedef rect<fm::Size>  	 rect2s;
 }
 #endif // FRONTIER_RECT_HPP
 

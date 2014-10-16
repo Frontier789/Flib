@@ -16,12 +16,13 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_MATRIX_INL_INCLUDED
 #define FRONTIER_MATRIX_INL_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/C.hpp>
 #include <cmath>
 namespace fm
 {
 	/// constructors /////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T>::matrix(const matrix<W,H,T> &mat)
 	{
 		Cx(W)Cy(H)
@@ -30,7 +31,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T>::matrix(const T (&data)[W][H])
 	{
 		Cx(W)Cy(H)
@@ -39,7 +40,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T>::matrix(const T (&data)[W*H])
 	{
 		Cx(W)Cy(H)
@@ -48,7 +49,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T>::matrix(const T &all)
 	{
 		reset(all);
@@ -56,7 +57,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T>::matrix()
 	{
 		reset();
@@ -64,16 +65,16 @@ namespace fm
 
 
 	/// functions /////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
-	inline T matrix<W,H,T>::at(std::size_t x,std::size_t y) const
+	template<fm::Size W,fm::Size H,class T>
+	inline T matrix<W,H,T>::at(fm::Size x,fm::Size y) const
 	{
 		return (x<W && y<H && x>=0 && y>=0) ? m_data[x][y] : T();
 	}
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
-	inline typename matrix<W,H,T>::reference matrix<W,H,T>::set(std::size_t x,std::size_t y,const T &value)
+	template<fm::Size W,fm::Size H,class T>
+	inline typename matrix<W,H,T>::reference matrix<W,H,T>::set(fm::Size x,fm::Size y,const T &value)
 	{
 		if (x<W && y<H && x>=0 && y>=0)
 			m_data[x][y]=value;
@@ -82,7 +83,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline typename matrix<W,H,T>::reference matrix<W,H,T>::reset()
 	{
 		Cx(W)Cy(H)
@@ -92,7 +93,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline typename matrix<W,H,T>::reference matrix<W,H,T>::reset(T all)
 	{
 		Cx(W)Cy(H)
@@ -102,7 +103,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<H,W,T> matrix<W,H,T>::transpose() const
 	{
 		matrix<H,W,T> ret;
@@ -113,7 +114,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T> matrix<W,H,T>::byComp(const matrix<W,H,T> &mat) const
 	{
 		matrix<W,H,T> ret;
@@ -124,8 +125,8 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
-	template<std::size_t W2,std::size_t H2,class T2>
+	template<fm::Size W,fm::Size H,class T>
+	template<fm::Size W2,fm::Size H2,class T2>
 	inline matrix<W2,H2,T2> matrix<W,H,T>::convert() const
 	{
 		matrix<W2,H2,T2> ret;
@@ -136,23 +137,23 @@ namespace fm
 
 
 	/// operators /////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
-	inline T *matrix<W,H,T>::operator[](std::size_t index)
+	template<fm::Size W,fm::Size H,class T>
+	inline T *matrix<W,H,T>::operator[](fm::Size index)
 	{
 		return m_data[index];
 	}
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
-	inline const T *matrix<W,H,T>::operator[](std::size_t index) const
+	template<fm::Size W,fm::Size H,class T>
+	inline const T *matrix<W,H,T>::operator[](fm::Size index) const
 	{
 		return m_data[index];
 	}
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline typename matrix<W,H,T>::reference matrix<W,H,T>::operator()(const T (&data)[W][H])
 	{
 		Cx(W)Cy(H)
@@ -162,7 +163,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline typename matrix<W,H,T>::reference matrix<W,H,T>::operator()(const T (&data)[W*H])
 	{
 		Cx(W)Cy(H)
@@ -172,7 +173,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T> matrix<W,H,T>::operator*(const T &value) const
 	{
 		matrix<W,H,T> ret;
@@ -183,7 +184,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T> matrix<W,H,T>::operator/(const T &value) const
 	{
 		matrix<W,H,T> ret;
@@ -194,7 +195,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline typename matrix<W,H,T>::reference matrix<W,H,T>::operator*=(const T &value)
 	{
 		Cx(W)Cy(H)
@@ -204,7 +205,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline typename matrix<W,H,T>::reference matrix<W,H,T>::operator/=(const T &value)
 	{
 		Cx(W)Cy(H)
@@ -216,7 +217,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T,std::size_t H2>
+	template<fm::Size W,fm::Size H,class T,fm::Size H2>
 	inline matrix<W,H2,T> operator*(const matrix<W,H,T> &left,const matrix<H,H2,T> &right)
 	{
 		matrix<W,H2,T> ret = matrix<W,H2,T>(T());
@@ -230,7 +231,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T> operator+(const matrix<W,H,T> &left,const matrix<W,H,T> &right)
 	{
 		matrix<W,H,T> ret;
@@ -241,7 +242,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T> operator-(const matrix<W,H,T> &left,const matrix<W,H,T> &right)
 	{
 		matrix<W,H,T> ret;
@@ -252,7 +253,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T> operator-(const matrix<W,H,T> &mat)
 	{
 		matrix<W,H,T> ret;
@@ -263,7 +264,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T> &operator+=(matrix<W,H,T> &left,const matrix<W,H,T> &right)
 	{
 		Cx(W)Cy(H)
@@ -273,7 +274,7 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T> &operator-=(matrix<W,H,T> &left,const matrix<W,H,T> &right)
 	{
 		Cx(W)Cy(H)
@@ -282,7 +283,7 @@ namespace fm
 	}
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W,std::size_t H,class T>
+	template<fm::Size W,fm::Size H,class T>
 	inline matrix<W,H,T> &operator*=(matrix<W,H,T> &left,const matrix<H,H,T> &right)
 	{
 		left = left * right;
@@ -291,8 +292,8 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W ,std::size_t H ,class T,
-			 std::size_t W2,std::size_t H2,class T2>
+	template<fm::Size W ,fm::Size H ,class T,
+			 fm::Size W2,fm::Size H2,class T2>
 	inline bool operator==(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right)
 	{
 		if (W!=W2 || H!=H2)
@@ -306,8 +307,8 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<std::size_t W ,std::size_t H ,class T,
-			 std::size_t W2,std::size_t H2,class T2>
+	template<fm::Size W ,fm::Size H ,class T,
+			 fm::Size W2,fm::Size H2,class T2>
 	inline bool operator!=(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right)
 	{
 		if (W!=W2 || H!=H2)
@@ -318,7 +319,7 @@ namespace fm
 				return true;
 		return false;
 	}
-	template<std::size_t W,std::size_t H,class T> matrix<W,H,T> matrix<W,H,T>::identity = matrix<W,H,T>();
+	template<fm::Size W,fm::Size H,class T> matrix<W,H,T> matrix<W,H,T>::identity = matrix<W,H,T>();
 
 
 
@@ -326,7 +327,7 @@ namespace fm
 	namespace MATRIX
 	{
 		////////////////////////////////////////////////////////////
-		template<std::size_t N>
+		template<fm::Size N>
 		inline float det(const matrix<N,N,float> &mat)
 		{
 			float ret = 0;
@@ -335,8 +336,8 @@ namespace fm
 			{
 				matrix<N-1u,N-1u,float> mx;
 				int d=0;
-				for (std::size_t dx=1;dx<N;dx++)
-					for (std::size_t dy=0;dy<N;dy++)
+				for (fm::Size dx=1;dx<N;dx++)
+					for (fm::Size dy=0;dy<N;dy++)
 						if (dy!=y)
 							mx[d%(N-1)][int(d/(N-1))] = mat[dx][dy],d++;
 				ret += det<N-1u>(mx)*mat[0][y]*wsgn;
@@ -360,7 +361,7 @@ namespace fm
 		}
 
 		////////////////////////////////////////////////////////////
-		template<std::size_t N,class T>
+		template<fm::Size N,class T>
 		inline matrix<N,N,T> minorMat(const matrix<N,N,T> &mat)
 		{
 			matrix<N,N,T> ret;
@@ -368,8 +369,8 @@ namespace fm
 			{
 				matrix<N-1u,N-1u,T> mx;
 				int d=0;
-				for (std::size_t dx=0;dx<N;dx++)
-					for (std::size_t dy=0;dy<N;dy++)
+				for (fm::Size dx=0;dx<N;dx++)
+					for (fm::Size dy=0;dy<N;dy++)
 						if (dx!=x && dy!=y)
 							mx[d%(N-1)][int(d/(N-1))] = mat[dx][dy],d++;
 				ret[x][y] = det<N-1>(mx);
@@ -380,7 +381,7 @@ namespace fm
 
 
 		////////////////////////////////////////////////////////////
-		template<std::size_t N,class T>
+		template<fm::Size N,class T>
 		inline matrix<N,N,T> adj(const matrix<N,N,T> &mat)
 		{
 			matrix<N,N,T> ret = minorMat(mat);
@@ -391,7 +392,7 @@ namespace fm
 
 
 		////////////////////////////////////////////////////////////
-		template<std::size_t N,class T>
+		template<fm::Size N,class T>
 		inline matrix<N,N,T> inverse(const matrix<N,N,T> &mat)
 		{
 			return adj(mat)/det(mat);
@@ -399,7 +400,7 @@ namespace fm
 
 
 		////////////////////////////////////////////////////////////
-		template<std::size_t W,std::size_t H,class T>
+		template<fm::Size W,fm::Size H,class T>
 		inline matrix<H,W,T> transpose(const matrix<W,H,T> &mat)
 		{
 			return mat.transpose();
@@ -407,7 +408,7 @@ namespace fm
 
 
 		////////////////////////////////////////////////////////////
-		template<std::size_t N,class T>
+		template<fm::Size N,class T>
 		inline T trace(const matrix<N,N,T> &mat)
 		{
 			T ret = 0;
@@ -662,7 +663,7 @@ namespace std
 }
 
 ////////////////////////////////////////////////////////////
-template<std::size_t W,std::size_t H,class T>
+template<fm::Size W,fm::Size H,class T>
 inline std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_ostream<char, std::char_traits<char> > &out, const fm::matrix<W,H,T> &mat)
 {
 	Cx(W)
@@ -677,7 +678,7 @@ inline std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_
 }
 
 ////////////////////////////////////////////////////////////
-template<std::size_t W,std::size_t H,class T>
+template<fm::Size W,fm::Size H,class T>
 inline std::basic_istream<char, std::char_traits<char> > &operator>>(std::basic_istream<char, std::char_traits<char> > &in, fm::matrix<W,H,T> &mat)
 {
 	Cx(W) Cy(H)

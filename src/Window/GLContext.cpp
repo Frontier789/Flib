@@ -1,5 +1,5 @@
 #include <FRONTIER/Window/GLContext.hpp>
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/OS.h>
 
 namespace fw
 {

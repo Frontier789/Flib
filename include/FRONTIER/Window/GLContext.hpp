@@ -1,6 +1,6 @@
 #ifndef FRONTIER_GLCONTEXT_INCLUDED
 #define FRONTIER_GLCONTEXT_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_GLCONTEXT
 
 namespace fw

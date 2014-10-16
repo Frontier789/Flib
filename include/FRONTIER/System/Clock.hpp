@@ -16,8 +16,8 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_CLOCK_HPP_INCLUDED
 #define FRONTIER_CLOCK_HPP_INCLUDED
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/System/Time.hpp>
-#include <FRONTIER/Config.hpp>
 #define FRONTIER_CLOCK
 namespace fm
 {
@@ -31,11 +31,11 @@ namespace fm
 		Time m_startTime; ///< The time since we check the elapsed time
 		Time m_pauseTime; ///< The time when we stopped
 	public:
-		typedef Time value_type;
+		typedef Time component_type;
 		typedef Clock &reference;
 		typedef const Clock &const_reference;
 		enum {
-			components = 2u ///< Public value indicating the amount of value_type's in the class
+			components = 2u ///< Public value indicating the amount of component_type's in the class
 		};
 		
 		/////////////////////////////////////////////////////////////

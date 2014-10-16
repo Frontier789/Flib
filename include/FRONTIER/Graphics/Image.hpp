@@ -20,18 +20,39 @@
 #include <FRONTIER/System/macros/dont_include_inl_begin>
 
 #include <FRONTIER/Graphics/Color.hpp>
-#include <FRONTIER/System/Vector2.hpp>
-#include <FRONTIER/System/Vector3.hpp>
-#include <FRONTIER/System/Vector4.hpp>
-#include <FRONTIER/System/Rect.hpp>
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
-#include <FRONTIER/Config.hpp>
-
+#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_IMAGE
-#include <string>
 #include <vector>
+
+namespace fm
+{
+	template<class>
+	class vector2;
+	
+	typedef vector2<fm::Size> vec2s;
+	
+	template<class>
+    class rect;
+    
+    typedef rect<fm::Size> rect2s;
+}
+
+namespace std
+{
+    template<typename>
+    class char_traits;
+	template<typename>
+    class allocator;
+	template<typename,typename,typename> 
+	class basic_string;
+	
+	typedef basic_string<char,std::char_traits<char>,std::allocator<char> > string;
+}
+
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
@@ -42,7 +63,8 @@ namespace fg
 	class FRONTIER_API Image
 	{
 		std::vector<Color> m_pixels; ///< Hold all the pixels of the image
-		fm::vec2s m_size; ///< Holds the size of the image
+		fm::Size m_sizeW; ///< Holds the width  of the image
+		fm::Size m_sizeH; ///< Holds the height of the image
 	public:
 		typedef Image &reference;
 		typedef const Image &const_reference;
@@ -63,7 +85,7 @@ namespace fg
 		/// @param color The color to fill with
 		///
 		/////////////////////////////////////////////////////////////
-		Image(std::size_t width,std::size_t height,const Color &color = Color::White);
+		Image(fm::Size width,fm::Size height,const Color &color = Color::White);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct an image of given size and fill it with given color
@@ -75,6 +97,14 @@ namespace fg
 		explicit Image(const fm::vec2s &size,const Color &color = Color::White);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Copy a whole image
+		///
+		/// @param copy The source image
+		///
+		/////////////////////////////////////////////////////////////
+		Image(const Image &copy);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Construct an image as a subimage of an existing one
 		///
 		/// If @a sourceRect has a size of (0,0) it is understood as to copy the
@@ -84,7 +114,7 @@ namespace fg
 		/// @param sourceRect The rect to be copied
 		///
 		/////////////////////////////////////////////////////////////
-		Image(const Image &copy,const fm::rect2u sourceRect=fm::rect2u(0,0,0,0));
+		Image(const Image &copy,const fm::rect2s &sourceRect);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the image with given size and fill with given color
@@ -99,7 +129,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference create(std::size_t width,std::size_t height,const Color &color = Color::White);
+		reference create(fm::Size width,fm::Size height,const Color &color = Color::White);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the image with given size and fill with given color
@@ -128,7 +158,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference create(std::size_t width,std::size_t height,const Color *pixels);
+		reference create(fm::Size width,fm::Size height,const Color *pixels);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the image with given size and given data
@@ -145,44 +175,21 @@ namespace fg
 		reference create(const fm::vec2s &size,const Color *pixels);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Recreate an image as a copy of an existing one
+		///
+		/// @param copy The source image
+		///
+		/////////////////////////////////////////////////////////////
+		reference create(const Image &copy);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Recreate an image as a subimage of an existing one
 		///
 		/// @param copy The source image
 		/// @param sourceRect The rect to be copied
 		///
 		/////////////////////////////////////////////////////////////
-		reference create(const Image &copy,const fm::rect2u sourceRect=fm::rect2u(0,0,0,0));
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Copy an image to this image
-		/// 
-		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
-		/// 
-		/// @param source The source image
-		/// @param destPos The destination position 
-		/// @param sourceRect The rectangle to be copied
-		/// @param useAlpha If true then alpha-blending will be used
-		///
-		/// @return reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference copy(const Image &source,const fm::vec2s &destPos,const fm::rect2u &sourceRect = fm::rect2u(0,0,0,0),bool useAlpha=false);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Copy an image to this image
-		/// 
-		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
-		/// 
-		/// @param source The source image
-		/// @param destX The x dimension of the destination position 
-		/// @param destY The y dimension of the destination position 
-		/// @param sourceRect The rectangle to be copied
-		/// @param useAlpha If true then alpha-blending will be used
-		///
-		/// @return reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference copy(const Image &source,std::size_t destX,std::size_t destY,const fm::rect2u &sourceRect = fm::rect2u(0,0,0,0),bool useAlpha=false);
+		reference create(const Image &copy,const fm::rect2s &sourceRect);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy from this image
@@ -195,7 +202,7 @@ namespace fg
 		/// @param useAlpha If true then alpha-blending will be used
 		///
 		/////////////////////////////////////////////////////////////
-		void copyTo(Image &destination,const fm::vec2s &destPos,const fm::rect2u &sourceRect = fm::rect2u(0,0,0,0),bool useAlpha=false) const;
+		void copyTo(Image &destination,const fm::vec2s &destPos,const fm::rect2s &sourceRect,bool useAlpha=false) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy from this image
@@ -209,7 +216,7 @@ namespace fg
 		/// @param useAlpha If true then alpha-blending will be used
 		///
 		/////////////////////////////////////////////////////////////
-		void copyTo(Image &destination,std::size_t destX,std::size_t destY,const fm::rect2u &sourceRect = fm::rect2u(0,0,0,0),bool useAlpha=false) const;
+		void copyTo(Image &destination,fm::Size destX,fm::Size destY,const fm::rect2s &sourceRect,bool useAlpha=false) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy an image to this image
@@ -224,7 +231,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference copyFrom(const Image &source,const fm::vec2s &destPos,const fm::rect2u &sourceRect = fm::rect2u(0,0,0,0),bool useAlpha=false);
+		reference copyFrom(const Image &source,const fm::vec2s &destPos,const fm::rect2s &sourceRect,bool useAlpha=false);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy an image to this image
@@ -240,7 +247,61 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference copyFrom(const Image &source,std::size_t destX,std::size_t destY,const fm::rect2u &sourceRect = fm::rect2u(0,0,0,0),bool useAlpha=false);
+		reference copyFrom(const Image &source,fm::Size destX,fm::Size destY,const fm::rect2s &sourceRect,bool useAlpha=false);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy this image
+		/// 
+		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
+		/// 
+		/// @param destination The target image
+		/// @param destPos The destination position 
+		/// @param useAlpha If true then alpha-blending will be used
+		///
+		/////////////////////////////////////////////////////////////
+		void copyTo(Image &destination,const fm::vec2s &destPos,bool useAlpha=false) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy this image
+		/// 
+		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
+		/// 
+		/// @param destination The target image
+		/// @param destX The x dimension of the destination position 
+		/// @param destY The y dimension of the destination position 
+		/// @param useAlpha If true then alpha-blending will be used
+		///
+		/////////////////////////////////////////////////////////////
+		void copyTo(Image &destination,fm::Size destX,fm::Size destY,bool useAlpha=false) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy a whole image to this image
+		/// 
+		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
+		/// 
+		/// @param source The source image
+		/// @param destPos The destination position 
+		/// @param useAlpha If true then alpha-blending will be used
+		///
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference copyFrom(const Image &source,const fm::vec2s &destPos,bool useAlpha=false);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy a whole image to this image
+		/// 
+		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
+		/// 
+		/// @param source The source image
+		/// @param destX The x dimension of the destination position 
+		/// @param destY The y dimension of the destination position 
+		/// @param useAlpha If true then alpha-blending will be used
+		///
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference copyFrom(const Image &source,fm::Size destX,fm::Size destY,bool useAlpha=false);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load image from a file 
@@ -280,7 +341,7 @@ namespace fg
 		/// @return The size of the image
 		/// 
 		/////////////////////////////////////////////////////////////
-		fm::vec2 getSize() const;
+		const fm::vec2s &getSize() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change a pixel of the image
@@ -296,7 +357,7 @@ namespace fg
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference setPixel(std::size_t x,std::size_t y,const Color &color);
+		reference setPixel(fm::Size x,fm::Size y,const Color &color);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change a pixel of the image
@@ -322,7 +383,7 @@ namespace fg
 		/// @return The color of the pixel
 		/// 
 		/////////////////////////////////////////////////////////////
-		const Color &getPixel(std::size_t x,std::size_t y) const;
+		const Color &getPixel(fm::Size x,fm::Size y) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the color of a pixel
@@ -333,7 +394,7 @@ namespace fg
 		/// @return The color of the pixel
 		/// 
 		/////////////////////////////////////////////////////////////
-		Color &getPixel(std::size_t x,std::size_t y);
+		Color &getPixel(fm::Size x,fm::Size y);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the color of a pixel
@@ -402,8 +463,8 @@ namespace fg
 /// 
 /// fg::Image img;
 /// img.create(500,500);
-/// for (std::size_t x=0;x<img.getSize().w;x++)
-/// 	for (std::size_t y=0;y<img.getSize().h;y++)
+/// for (fm::Size x=0;x<img.getSize().w;x++)
+/// 	for (fm::Size y=0;y<img.getSize().h;y++)
 /// 		img.setPixel(x,y,(y%50<25 ? (x%50<25) : ((49-(x%50))<25)) ? fg::Color(80,80,80) : fg::Color(200,200,200));
 /// img.saveToFile("chessBoard.png");
 ///

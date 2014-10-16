@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_QUATERNION_HPP_INCLUDED
 #define FRONTIER_QUATERNION_HPP_INCLUDED
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/API.h>
 
 #include <FRONTIER/System/macros/dont_include_inl_begin>
 
@@ -41,11 +41,11 @@ namespace fm
 			  y, ///< 2nd imaginary part
 			  z, ///< 3rd imaginary part
 			  w; ///< Real part
-		typedef float value_type;
+		typedef float component_type;
 		typedef Quat &reference;
 		typedef const Quat &const_reference;
 		enum {
-			components = 4u ///< Public value indicating the amount of value_type's in the class
+			components = 4u ///< Public value indicating the amount of component_type's in the class
 		};
 
 

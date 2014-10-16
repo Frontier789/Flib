@@ -26,7 +26,8 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/API.h>
 
 #define FRONTIER_FRAMEBUFFER
 #include <cstddef>
@@ -60,8 +61,8 @@ namespace fg
 		class FRONTIER_API DepthBuffer
 		{
 		public:
-			std::size_t width;  ///< The width of the depth buffer
-			std::size_t height; ///< The height of the depth buffer
+			fm::Size width;  ///< The width of the depth buffer
+			fm::Size height; ///< The height of the depth buffer
 		
 			/////////////////////////////////////////////////////////////
 			/// @brief Construct the depth buffer from its size
@@ -78,7 +79,7 @@ namespace fg
 			/// @param h The height of the depth buffer
 			/// 
 			/////////////////////////////////////////////////////////////
-			DepthBuffer(const std::size_t &w,const std::size_t &h);
+			DepthBuffer(const fm::Size &w,const fm::Size &h);
 		
 			/////////////////////////////////////////////////////////////
 			/// @brief Indicates that no depth buffer is present
@@ -200,7 +201,7 @@ namespace fg
 /// @code
 /// fm::vert2f verts[360];
 /// 
-/// for (std::size_t i=0;i<360;i++)
+/// for (fm::Size i=0;i<360;i++)
 /// 	verts[i].clr = fm::vec4::Blue,
 /// 	verts[i].pos = fm::pol2(std::cos(fm::deg(i*4.f)),fm::deg(i));
 /// 
