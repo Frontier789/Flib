@@ -1,4 +1,3 @@
-#include <FRONTIER/System/NonCopyable.hpp>
 ////////////////////////////////////////////////////////////////////////// <!--
 /// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
 ///                                                                    ///
@@ -15,7 +14,12 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#ifndef FRONTIER_WAPITHREAD_HPP_INCLUDED
+#define FRONTIER_WAPITHREAD_HPP_INCLUDED
+#include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/System/TlsPtr.hpp>
+#define FRONTIER_WAPITHREAD
 #include <windows.h>
 
 namespace fm
@@ -24,19 +28,25 @@ namespace fm
 	{
 		class ThreadFuntionCaller;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Implementation of fm::Thread for windows
+	/// 
+	/////////////////////////////////////////////////////////////
 	namespace Wapi
 	{
 		class FRONTIER_API Thread : public fm::NonCopyable
 		{
-			static DWORD __stdcall startThread(void *param);
-			HANDLE m_id;
-			volatile LONG  m_isExiting;
-			fm::priv::ThreadFuntionCaller *m_storage;
-			void cleanUp();
-			bool create(fm::priv::ThreadFuntionCaller *runner);
+			static fm::TlsPtr<fm::Thread> m_currentThread;      ///< Holds the current thread
+			static DWORD __stdcall startThread(void *param);    ///< The entry point of a new thread
+			HANDLE m_id;                                        ///< The id of the thread
+			mutable volatile LONG m_isExiting;                  ///< Stores whether the thread is are exiting
+			void cleanUp();                                     ///< Iternal cleaning function
+			bool create(fm::priv::ThreadFuntionCaller *runner); ///< Iternal runner function
 		public:
 			typedef Thread &reference;
 			typedef const Thread &const_reference;
+			
 			Thread();
 			bool start();
 			
@@ -45,7 +55,7 @@ namespace fm
 			bool join();
 			bool join(const fm::Time &timeOut);
 			
-			bool isExiting() const;
+			static bool isExiting(const Thread *thread);
 			void requestExit();
 			
 			bool forceExit();
@@ -56,3 +66,5 @@ namespace fm
 		};
 	}
 }
+
+#endif // FRONTIER_WAPITHREAD_HPP_INCLUDED

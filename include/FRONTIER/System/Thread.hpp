@@ -33,8 +33,10 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Thread : public fm::NonCopyable
 	{
-		void *m_impl;            ///< Stores a pointer to the undelying implementation
-		bool init(void *m_func); ///< Iternal function
+		void *m_impl;      	     ///< Stores a pointer to the undelying implementation
+		bool init(void *); 	     ///< Iternal function
+		void cleanUp();    	     ///< Iternal function
+		void *m_storage;   	     ///< Iternal value used to store the calling data
 	public:
 		typedef Thread &reference;
 		typedef const Thread &const_reference;
@@ -258,6 +260,8 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Starts running the thread
 		/// 
+		/// You have to call fm::Thread::create before fm::Thread::start
+		/// 
 		/// @return True if the thread is running after this call
 		/// 
 		/////////////////////////////////////////////////////////////
@@ -277,7 +281,10 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Blocks until The thread is finished
 		/// 
-		/// @return True if everything went right
+		/// If the thread wasn't running before this call 
+		/// True is returned
+		/// 
+		/// @return True if the thread is not running after this call
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool join();
@@ -285,7 +292,10 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Blocks until The thread is finished or @a timeOut amount of time passes
 		/// 
-		/// @return True if everything went right
+		/// If the thread wasn't running before this call 
+		/// True is returned
+		/// 
+		/// @return True if the thread is not running after this call
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool join(const fm::Time &timeOut);

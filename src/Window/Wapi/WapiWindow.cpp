@@ -17,6 +17,7 @@
 #include <FRONTIER/Window/Wapi/WapiWindow.hpp>
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
+#include "fwWapiPrintLastError.hpp"
 #include <string>
 #include <iostream>
 
@@ -86,32 +87,6 @@ namespace fw
 	}
 	
 	/////////////////////////////////////////////////////////////
-	std::string WapiGetLastError()
-	{
-		std::string ret;
-		char *errorText; // FormatMessage allocates memory automatically for us
-		DWORD err=GetLastError();
-		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_IGNORE_INSERTS,
-					   NULL,
-					   err,
-					   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-					   (LPTSTR)&errorText,0,NULL);
-		if (errorText)
-		{
-			// if we got any description then we convert it to string
-			ret=std::string(errorText);
-			::LocalFree(errorText); //we free up the allocated memory
-		}
-		
-		while (ret.length() && (ret[ret.length()-1]=='\t' || 
-								ret[ret.length()-1]==' '  || 
-								ret[ret.length()-1]=='\r' || 
-								ret[ret.length()-1]=='\n') ) ret.resize(ret.length()-1);
-		
-		return ret;
-	}
-	
-	/////////////////////////////////////////////////////////////
 	bool adjustWindowSize(int &w,int &h,DWORD style)
 	{
 		RECT Rct;
@@ -123,7 +98,7 @@ namespace fw
 		// we want to specify the client rect not the whole window rect 
 		if (!AdjustWindowRect(&Rct,style,FALSE))
 		{
-			fw_log << "AdjustWindowRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+			fw::WapiPrintLastError(fw_log,AdjustWindowRect);
 			return false;
 		}
 		
@@ -251,7 +226,7 @@ namespace fw
 				RECT windowRect;
 				if (!GetWindowRect(hwnd,&windowRect))
 				{
-					fw_log << "GetWindowRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,GetWindowRect);
 					return defResult;
 				}
 				
@@ -259,7 +234,7 @@ namespace fw
 				RECT clientRect;
 				if (!GetClientRect(hwnd,&clientRect))
 				{
-					fw_log << "GetClientRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,GetClientRect);
 					return defResult;
 				}
 				
@@ -439,6 +414,8 @@ namespace fw
 					
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
+				
+				
 				/*
 				case WM_NCLBUTTONDOWN:
 				{
@@ -446,9 +423,21 @@ namespace fw
 					
 					if (hitResult == HTCAPTION)
 					{
-						m_moving = true;
-						GetCursorPos(&m_lastPos);
+						
 					}
+					else if (hitResult == HTLEFT        || 
+						     hitResult == HTTOPLEFT     || 
+						     hitResult == HTTOP         || 
+						     hitResult == HTTOPRIGHT    || 
+						     hitResult == HTRIGHT       || 
+						     hitResult == HTBOTTOMRIGHT || 
+							 hitResult == HTBOTTOM      || 
+							 hitResult == HTBOTTOMLEFT)
+					{
+						
+					}
+					else
+						return DefWindowProc(hwnd,msg,hitResult,lParam);
 					
 					return 0;
 				}
@@ -459,29 +448,28 @@ namespace fw
 					
 					LRESULT hitResult = getHitTestResult(hwnd,lParam,wParam,m_resizeable,m_cursorHitTest);
 					
-					if (hitResult == HTCLOSE)
+					if (hitResult == HTCAPTION)
 					{
-						postEvent(Event::Closed);
-						return 0;
-					}
-					if (hitResult == HTMAXBUTTON)
-					{
-						if (isMaximized())
-						{
-							ShowWindow(hwnd,SW_RESTORE);
-							return 0;
-						}
 						
-						postEvent(Event::Maximized);
-						return 0;
 					}
-					if (hitResult == HTMINBUTTON)
+					else if (hitResult == HTLEFT        || 
+						     hitResult == HTTOPLEFT     || 
+						     hitResult == HTTOP         || 
+						     hitResult == HTTOPRIGHT    || 
+						     hitResult == HTRIGHT       || 
+						     hitResult == HTBOTTOMRIGHT || 
+							 hitResult == HTBOTTOM      || 
+							 hitResult == HTBOTTOMLEFT)
 					{
-						postEvent(Event::Minimized);
-						return 0;
+						
 					}
+					else
+						return DefWindowProc(hwnd,msg,hitResult,lParam);
+						
 					return 0;
 				}*/
+				
+				
 				
 				
 				// by default let windows handle it
@@ -504,7 +492,7 @@ namespace fw
 						   m_lastDown(0),
 						   m_cursorHitTest(NULL)
 		{
-			m_moving = false;
+			
 		}
 		
 		////////////////////////////////////////////////////////////
@@ -550,14 +538,14 @@ namespace fw
 							return true;
 						else
 						{
-							fw_log << "UnregisterClassA failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+							fw::WapiPrintLastError(fw_log,UnregisterClassA);
 							return false;
 						}
 					}
 				}
 				else
 				{
-					fw_log << "DestroyWindow failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,DestroyWindow);
 					return false;
 				}
 			}
@@ -589,7 +577,7 @@ namespace fw
 					return true;
 				else
 				{
-					fw_log << "RegisterClassA failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,RegisterClassA);
 					return false;
 				}
 			}
@@ -640,7 +628,7 @@ namespace fw
 			if(!m_hwnd)
 			{
 				// yet again if we fail...
-				fw_log << "CreateWindow failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+				fw::WapiPrintLastError(fw_log,CreateWindow);
 				return false;
 			}
 			
@@ -700,7 +688,7 @@ namespace fw
 			
 			if (!GetWindowPlacement(m_hwnd,&windowProp))
 			{
-				fw_log << "GetWindowPlacement failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+				fw::WapiPrintLastError(fw_log,GetWindowPlacement);
 				return false;
 			}
 			
@@ -725,7 +713,7 @@ namespace fw
 			
 			if (!GetWindowPlacement(m_hwnd,&windowProp))
 			{
-				fw_log << "GetWindowPlacement failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+				fw::WapiPrintLastError(fw_log,GetWindowPlacement);
 				return false;
 			}
 			
@@ -740,14 +728,14 @@ namespace fw
 				// bring the window to front
 				if (!SetActiveWindow(m_hwnd))
 				{
-					fw_log << "SetActiveWindow failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,SetActiveWindow);
 					return false;
 				}
 				
 				// set keyboard focus
 				if (!SetFocus(m_hwnd))
 				{
-					fw_log << "SetFocus failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,SetFocus);
 					return false;
 				}
 			}
@@ -774,7 +762,7 @@ namespace fw
 								  w,h,    // new size
 								  SWP_NOREPOSITION|SWP_NOSIZE))
 					{
-						fw_log << "SetWindowPos failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
 					}
 			return true;
@@ -788,14 +776,14 @@ namespace fw
 				RECT client_rect;
 				if (!GetClientRect(m_hwnd,&client_rect)) // retrieve client rect
 				{
-					fw_log << "GetClientRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,GetClientRect);
 					return false;
 				}
 				
 				// transform it to screen coordinates
 				if (!ClientToScreen(m_hwnd,(POINT*)&client_rect.left) || !ClientToScreen(m_hwnd,(POINT*)&client_rect.right))
 				{
-					fw_log << "ClientToScreen failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,ClientToScreen);
 					return false;
 				}
 				
@@ -817,7 +805,7 @@ namespace fw
 								  0,0,    // new size                  (ignored because of SWP_NOSIZE)
 								  SWP_NOREPOSITION|SWP_NOSIZE))
 					{
-						fw_log << "SetWindowPos failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
 					}
 			return true;
@@ -831,14 +819,14 @@ namespace fw
 				RECT client_rect;
 				if (!GetClientRect(m_hwnd,&client_rect)) // retrieve client rect
 				{
-					fw_log << "GetClientRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,GetClientRect);
 					return false;
 				}
 				
 				// transform it to screen coordinates
 				if (!ClientToScreen(m_hwnd,(POINT*)&client_rect.left) || !ClientToScreen(m_hwnd,(POINT*)&client_rect.right))
 				{
-					fw_log << "ClientToScreen failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,ClientToScreen);
 					return false;
 				}
 				
@@ -862,7 +850,7 @@ namespace fw
 								  w,h,    // new size                  
 								  SWP_NOREPOSITION|SWP_NOMOVE))
 					{
-						fw_log << "SetWindowPos failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
 					}		
 			}
@@ -878,14 +866,14 @@ namespace fw
 				RECT client_rect;
 				if (!GetClientRect(m_hwnd,&client_rect)) // retrieve client rect
 				{
-					fw_log << "GetClientRect failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,GetClientRect);
 					return false;
 				}
 				
 				// transform it to screen coordinates
 				if (!ClientToScreen(m_hwnd,(POINT*)&client_rect.left) || !ClientToScreen(m_hwnd,(POINT*)&client_rect.right))
 				{
-					fw_log << "ClientToScreen failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,ClientToScreen);
 					return false;
 				}
 				
@@ -901,7 +889,7 @@ namespace fw
 			if (m_hwnd)
 				if (!SetWindowTextA(m_hwnd,title.c_str()))
 				{
-					fw_log << "SetWindowText failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,SetWindowText);
 					return false;
 				}
 			return true;
@@ -913,7 +901,7 @@ namespace fw
 			if (m_hwnd)
 				if (!SetWindowTextW(m_hwnd,title.c_str()))
 				{
-					fw_log << "SetWindowText failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,SetWindowText);
 					return false;
 				}
 			return true;
@@ -930,7 +918,7 @@ namespace fw
 				{
 					 // we must delete allocated memory!
 					delete ret;
-					fw_log << "GetWindowText failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,GetWindowText);
 					return false;
 				}
 				title = std::string(ret);
@@ -950,7 +938,7 @@ namespace fw
 				{
 					 // we must delete allocated memory!
 					delete ret;
-					fw_log << "GetWindowText failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,GetWindowText);
 					return false;
 				}
 				title = std::wstring(ret);
@@ -1021,7 +1009,7 @@ namespace fw
 				// (this event may not be a window event but a thread event that is the while loop for)
 				if (GetMessage(&msg, NULL, 0, 0)==-1)
 				{
-					fw_log << "GetMessage failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,GetMessage);
 					return false;
 				}
 				TranslateMessage(&msg);

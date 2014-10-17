@@ -14,9 +14,10 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Window/Event.hpp>
 #include <FRONTIER/Window/Wapi/WapiWindow.hpp>
+#include <FRONTIER/Window/Event.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
+#include "fwWapiPrintLastError.hpp"
 #include <windows.h>
 
 namespace fw
@@ -107,7 +108,7 @@ namespace fw
 		POINT p;
 		if (!GetCursorPos(&p))
 		{
-			fw_log << "GetCursorPos failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+			fw::WapiPrintLastError(fw_log,GetCursorPos);
 			return fm::vec2u();
 		}
 		return fm::vec2u::loadxy(p);
@@ -119,13 +120,13 @@ namespace fw
 		POINT p;
 		if (!GetCursorPos(&p))
 		{
-			fw_log << "GetCursorPos failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+			fw::WapiPrintLastError(fw_log,GetCursorPos);
 			return fm::vec2i();
 		}
 		
 		if (!ScreenToClient(window.getHandle(), &p))
 		{
-			fw_log << "ScreenToClient failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+			fw::WapiPrintLastError(fw_log,ScreenToClient);
 			return fm::vec2i();
 		}
 		return fm::vec2i::loadxy(p);

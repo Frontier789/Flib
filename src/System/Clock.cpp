@@ -23,7 +23,7 @@
 #elif defined(FRONTIER_OS_LINUX)
 	#include "Posix/PosixClock.cpp"
 #else
-	#include "Generic/PosixClock.cpp"
+	#include "Generic/GenericClock.cpp"
 #endif
 
 

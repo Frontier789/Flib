@@ -58,9 +58,6 @@ namespace fw
 			bool m_enableRepeat; ///< Indicates whether key repeat is enabled
 			WPARAM m_lastDown;   ///< Contains the last pressed key
 			
-			bool m_moving;
-			POINT m_lastPos;
-			
 			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that deduces the object and calls handleEvent
 			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Iternal function that handles events of the window
 			std::queue<Event> m_eventQueue; ///< A queue holding the unhandled events

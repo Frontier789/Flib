@@ -1,5 +1,6 @@
 #include <FRONTIER/Window/Wapi/WapiGlContext.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
+#include "fwWapiPrintLastError.hpp"
 
 #define WGL_CONTEXT_MAJOR_VERSION_ARB             0x2091
 #define WGL_CONTEXT_MINOR_VERSION_ARB             0x2092
@@ -52,13 +53,13 @@ namespace fw
 						if (!m_contextCount)
 							if (!UnregisterClassA(FRONTIER_DUMMY_WINDOW_CLASS, GetModuleHandle(NULL)))
 							{
-								fw_log << "UnregisterClassA failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+								fw::WapiPrintLastError(fw_log,UnregisterClassA);
 								return false;
 							}
 					}
 					else
 					{
-						fw_log << "DestroyWindow failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+						fw::WapiPrintLastError(fw_log,DestroyWindow);
 						return false;
 					}
 				}
@@ -70,7 +71,7 @@ namespace fw
 			{
 				if (!wglDeleteContext(m_hglrc))
 				{
-					fw_log << "wglDeleteContext failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,wglDeleteContext);
 					return false;
 				}
 				m_hglrc = NULL;
@@ -104,7 +105,7 @@ namespace fw
 			m_hdc = GetDC(windowHandle);
 			if (!m_hdc) // Check for errors
 			{
-				fw::fw_log << "GetDC failed (lastError=\"" << fw::WapiGetLastError() << "\")" << std::endl;
+				fw::WapiPrintLastError(fw_log,GetDC);
 				return false;
 			}
 			
@@ -148,7 +149,7 @@ namespace fw
 				m_hglrc = wglCreateContext(m_hdc);
 				if (!m_hglrc)
 				{
-					fw::fw_log << "wglCreateContext failed (lastError=\"" << fw::WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,wglCreateContext);
 					return false;
 				}
 				
@@ -197,7 +198,7 @@ namespace fw
 				// Tell windows we have a class
 				if (!RegisterClassA(&winClass))
 				{
-					fw_log << "RegisterClassA failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,RegisterClassA);
 					return false;
 				}
 			}
@@ -211,7 +212,7 @@ namespace fw
 			
 			if (!hwnd)
 			{
-				fw_log << "CreateWindowA failed (lastError=\"" << WapiGetLastError() << "\")" << std::endl;
+				fw::WapiPrintLastError(fw_log,CreateWindowA);
 				return false;
 			}
 			
@@ -232,7 +233,7 @@ namespace fw
 			
 			if (!result) // Check for errors
 			{
-				fw::fw_log << "wglMakeCurrent failed (lastError=\"" << fw::WapiGetLastError() << "\")" << std::endl;
+				fw::WapiPrintLastError(fw_log,wglMakeCurrent);
 				return false;
 			}
 			
@@ -245,7 +246,7 @@ namespace fw
 			if (m_hdc && m_hglrc)
 				if (!SwapBuffers(m_hdc))
 				{
-					fw::fw_log << "SwapBuffers failed (lastError=\"" << fw::WapiGetLastError() << "\")" << std::endl;
+					fw::WapiPrintLastError(fw_log,SwapBuffers);
 					return false;
 				}
 			return true;
@@ -283,7 +284,7 @@ namespace fw
 			int formatID = ChoosePixelFormat(m_hdc, &descriptor);
 			if (!formatID)
 			{
-				fw::fw_log << "Failed to find a suitable pixel format for device context -- cannot create OpenGL context" << std::endl;
+				fw::WapiPrintLastError(fw_log,to find a suitable pixel format for device context -- cannot create OpenGL context);
 				return false;
 			}
 
@@ -299,7 +300,7 @@ namespace fw
 			// Set the chosen pixel format
 			if (!SetPixelFormat(m_hdc, formatID, &obtainedFormat))
 			{
-				fw::fw_log << "Failed to set pixel format for device context -- cannot create OpenGL context" << std::endl;
+				fw::WapiPrintLastError(fw_log,to set pixel format for device context -- cannot create OpenGL context);
 				return false;
 			}
 

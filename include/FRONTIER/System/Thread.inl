@@ -46,8 +46,8 @@ namespace fm
 			R (*m_func)();
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorage0(R (*m_func)(),fm::Thread *m_owner) : m_func(m_func),
-																	  ThreadFuntionCaller(m_owner)
+			inline ParamStorage0(R (*m_func)(),fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																	  m_func(m_func)
 			{
 				
 			}
@@ -67,9 +67,9 @@ namespace fm
 			P1 m_param1;
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorage1(R (*m_func)(),P1 m_param1,fm::Thread *m_owner) : m_func(m_func),
-																				  m_param1(m_param1),
-																				  ThreadFuntionCaller(m_owner)
+			inline ParamStorage1(R (*m_func)(P1),P1 m_param1,fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																					m_func(m_func),
+																					m_param1(m_param1)
 			{
 				
 			}
@@ -90,10 +90,10 @@ namespace fm
 			P2 m_param2;
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorage2(R (*m_func)(P1,P2),P1 m_param1,P2 m_param2,fm::Thread *m_owner) : m_func(m_func),
+			inline ParamStorage2(R (*m_func)(P1,P2),P1 m_param1,P2 m_param2,fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																								   m_func(m_func),
 																								   m_param1(m_param1),
-																								   m_param2(m_param2),
-																								   ThreadFuntionCaller(m_owner)
+																								   m_param2(m_param2)
 			{
 				
 			}
@@ -115,11 +115,11 @@ namespace fm
 			P3 m_param3;
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorage3(R (*m_func)(P1,P2,P3),P1 m_param1,P2 m_param2,P3 m_param3,fm::Thread *m_owner) : m_func(m_func),
+			inline ParamStorage3(R (*m_func)(P1,P2,P3),P1 m_param1,P2 m_param2,P3 m_param3,fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																												  m_func(m_func),
 																												  m_param1(m_param1),
 																												  m_param2(m_param2),
-																												  m_param3(m_param3),
-																												  ThreadFuntionCaller(m_owner)
+																												  m_param3(m_param3)
 			{
 				
 			}
@@ -142,12 +142,12 @@ namespace fm
 			P4 m_param4;
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorage4(R (*m_func)(P1,P2,P3,P4),P1 m_param1,P2 m_param2,P3 m_param3,P4 m_param4,fm::Thread *m_owner) : m_func(m_func),
+			inline ParamStorage4(R (*m_func)(P1,P2,P3,P4),P1 m_param1,P2 m_param2,P3 m_param3,P4 m_param4,fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																																 m_func(m_func),
 																																 m_param1(m_param1),
 																																 m_param2(m_param2),
 																																 m_param3(m_param3),
-																																 m_param4(m_param4),
-																																 ThreadFuntionCaller(m_owner)
+																																 m_param4(m_param4)
 			{
 				
 			}
@@ -171,13 +171,13 @@ namespace fm
 			P5 m_param5;
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorage5(R (*m_func)(P1,P2,P3,P4,P5),P1 m_param1,P2 m_param2,P3 m_param3,P4 m_param4,P5 m_param5,fm::Thread *m_owner) : m_func(m_func),
+			inline ParamStorage5(R (*m_func)(P1,P2,P3,P4,P5),P1 m_param1,P2 m_param2,P3 m_param3,P4 m_param4,P5 m_param5,fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																																				m_func(m_func),
 																																				m_param1(m_param1),
 																																			    m_param2(m_param2),
 																																			    m_param3(m_param3),
 																																			    m_param4(m_param4),
-																																			    m_param5(m_param5),
-																																			    ThreadFuntionCaller(m_owner)
+																																			    m_param5(m_param5)
 			{
 				
 			}
@@ -199,9 +199,9 @@ namespace fm
 			CLASS *m_object;
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorageO0(R (CLASS::*m_func)(),CLASS *m_object,fm::Thread *m_owner) : m_func(m_func),
-																							  m_object(m_object),
-																							  ThreadFuntionCaller(m_owner)
+			inline ParamStorageO0(R (CLASS::*m_func)(),CLASS *m_object,fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																							  m_func(m_func),
+																							  m_object(m_object)
 			{
 				
 			}
@@ -222,10 +222,10 @@ namespace fm
 			CLASS *m_object;
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorageO1(R (CLASS::*m_func)(),P1 m_param1,CLASS *m_object,fm::Thread *m_owner) : m_func(m_func),
-																										  m_param1(m_param1),
-																										  m_object(m_object),
-																										  ThreadFuntionCaller(m_owner)
+			inline ParamStorageO1(R (CLASS::*m_func)(P1),P1 m_param1,CLASS *m_object,fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																										    m_func(m_func),
+																										    m_param1(m_param1),
+																											m_object(m_object)
 			{
 				
 			}
@@ -247,11 +247,11 @@ namespace fm
 			CLASS *m_object;
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorageO2(R (CLASS::*m_func)(P1,P2),P1 m_param1,P2 m_param2,CLASS *m_object,fm::Thread *m_owner) : m_func(m_func),
+			inline ParamStorageO2(R (CLASS::*m_func)(P1,P2),P1 m_param1,P2 m_param2,CLASS *m_object,fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																														   m_func(m_func),
 																														   m_param1(m_param1),
 																														   m_param2(m_param2),
-																														   m_object(m_object),
-																														   ThreadFuntionCaller(m_owner)
+																														   m_object(m_object)
 			{
 				
 			}
@@ -274,12 +274,12 @@ namespace fm
 			CLASS *m_object;
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorageO3(R (CLASS::*m_func)(P1,P2,P3),P1 m_param1,P2 m_param2,P3 m_param3,CLASS *m_object,fm::Thread *m_owner) : m_func(m_func),
+			inline ParamStorageO3(R (CLASS::*m_func)(P1,P2,P3),P1 m_param1,P2 m_param2,P3 m_param3,CLASS *m_object,fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																																		  m_func(m_func),
 																																		  m_param1(m_param1),
 																																		  m_param2(m_param2),
 																																		  m_param3(m_param3),
-																																		  m_object(m_object),
-																																		  ThreadFuntionCaller(m_owner)
+																																		  m_object(m_object)
 			{
 				
 			}
@@ -303,13 +303,13 @@ namespace fm
 			CLASS *m_object;
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorageO4(R (CLASS::*m_func)(P1,P2,P3,P4),P1 m_param1,P2 m_param2,P3 m_param3,P4 m_param4,CLASS *m_object,fm::Thread *m_owner) : m_func(m_func),
+			inline ParamStorageO4(R (CLASS::*m_func)(P1,P2,P3,P4),P1 m_param1,P2 m_param2,P3 m_param3,P4 m_param4,CLASS *m_object,fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																																						 m_func(m_func),
 																																						 m_param1(m_param1),
 																																						 m_param2(m_param2),
 																																						 m_param3(m_param3),
 																																						 m_param4(m_param4),
-																																						 m_object(m_object),
-																																						 ThreadFuntionCaller(m_owner)
+																																						 m_object(m_object)
 			{
 				
 			}
@@ -334,14 +334,14 @@ namespace fm
 			CLASS *m_object;
 		public:
 			/////////////////////////////////////////////////////////////
-			inline ParamStorageO5(R (CLASS::*m_func)(P1,P2,P3,P4,P5),P1 m_param1,P2 m_param2,P3 m_param3,P4 m_param4,P5 m_param5,CLASS *m_object,fm::Thread *m_owner) : m_func(m_func),
+			inline ParamStorageO5(R (CLASS::*m_func)(P1,P2,P3,P4,P5),P1 m_param1,P2 m_param2,P3 m_param3,P4 m_param4,P5 m_param5,CLASS *m_object,fm::Thread *m_owner) : ThreadFuntionCaller(m_owner),
+																																										m_func(m_func),
 																																										m_param1(m_param1),
 																																										m_param2(m_param2),
 																																										m_param3(m_param3),
 																																										m_param4(m_param4),
 																																										m_param5(m_param5),
-																																										m_object(m_object),
-																																										ThreadFuntionCaller(m_owner)
+																																										m_object(m_object)
 			{
 				
 			}

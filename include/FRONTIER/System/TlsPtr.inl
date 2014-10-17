@@ -14,137 +14,102 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#ifndef FRONTIER_WAPITLSPTR_INL_INCLUDED
+#define FRONTIER_WAPITLSPTR_INL_INCLUDED
 #include <FRONTIER/System/macros/OS.h>
-#include <FRONTIER/System/Thread.hpp>
 
 #ifdef FRONTIER_OS_WINDOWS
-	#include "Wapi/WapiThread.cpp"
+	#include "Wapi/WapiTlsPtr.hpp"
 	namespace fm
 	{
 		namespace priv
 		{
-			typedef fm::Wapi::Thread Thread;
+			typedef fm::Wapi::TlsPtr TlsPtr;
 		}
 	}
 #else
-	#ifndef FRONTIER_NO_THREAD
-		#warning No Thread!
-		#define FRONTIER_NO_THREAD
+	#ifndef FRONTIER_NO_TLSPTR
+		#warning No TlsPtr!
+		#define FRONTIER_NO_TLSPTR
 	#endif
 #endif
 
-#ifndef FRONTIER_NO_THREAD
+#ifndef FRONTIER_NO_TLSPTR
 
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
-	void Thread::cleanUp()
+	template<class T>
+	TlsPtr<T>::TlsPtr() : m_impl(new fm::priv::TlsPtr)
 	{
-		// delete the caller data
-		delete (fm::priv::ThreadFuntionCaller*)m_storage;
-		m_storage = NULL;
 		
-		// delete the implementation (it's destructor takes care of it)
-		delete (priv::Thread*)m_impl;
-		m_impl = NULL;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	TlsPtr<T>::~TlsPtr()
+	{
+		delete (fm::priv::TlsPtr*)m_impl;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	T *TlsPtr<T>::operator->()
+	{
+		return (T*)((fm::priv::TlsPtr*)m_impl)->getPtr();
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	const T *TlsPtr<T>::operator->() const
+	{
+		return (const T*)((const fm::priv::TlsPtr*)m_impl)->getPtr();
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	T &TlsPtr<T>::operator*()
+	{
+		return *((T*)((fm::priv::TlsPtr*)m_impl)->getPtr());
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	const T &TlsPtr<T>::operator*() const
+	{
+		return *((const T*)((const fm::priv::TlsPtr*)m_impl)->getPtr());
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	typename TlsPtr<T>::reference TlsPtr<T>::operator=(T *pointer)
+	{
+		((fm::priv::TlsPtr*)m_impl)->setPtr(pointer);
+		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	bool TlsPtr<T>::isValid() const
+	{
+		return ((fm::priv::TlsPtr*)m_impl)->isValid();
 	}
 	
 	/////////////////////////////////////////////////////////////
-	bool Thread::init(void *storage)
+	template<class T>
+	TlsPtr<T>::operator T*()
 	{
-		// clean start
-		cleanUp();
-		
-		m_storage = storage;
-		
-		m_impl = new priv::Thread;
-		
-		if (!((priv::Thread*)m_impl)->create((fm::priv::ThreadFuntionCaller*)m_storage))
-		{
-			cleanUp();
-			return false;
-		}
-		
-		return true;
+		return (T*)((fm::priv::TlsPtr*)m_impl)->getPtr();
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Thread::Thread() : m_impl(NULL),
-					   m_storage(NULL)
+	template<class T>
+	TlsPtr<T>::operator const T*() const
 	{
-		
-	}
-	
-	/////////////////////////////////////////////////////////////
-	Thread::~Thread()
-	{
-		cleanUp();
-	}
-
-	/////////////////////////////////////////////////////////////
-	bool Thread::start()
-	{
-		if (m_impl)
-			return ((priv::Thread*)m_impl)->start();
-		return false;
-	}
-
-	/////////////////////////////////////////////////////////////
-	Thread *Thread::getCurrentThread()
-	{
-		return priv::Thread::m_currentThread;
-	}
-
-	/////////////////////////////////////////////////////////////
-	bool Thread::join()
-	{
-		if (m_impl)
-			return ((priv::Thread*)m_impl)->join();
-		return true;
-	}
-
-	/////////////////////////////////////////////////////////////
-	bool Thread::join(const Time &timeOut)
-	{
-		if (m_impl)
-			return ((priv::Thread*)m_impl)->join(timeOut);
-		return true;
-	}
-
-	/////////////////////////////////////////////////////////////
-	bool Thread::isExiting(const Thread *thread)
-	{
-		if (thread)
-			return priv::Thread::isExiting((priv::Thread*)(thread->getImpl()));
-		return false;
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Thread::requestExit()
-	{
-		if (m_impl)
-			((priv::Thread*)m_impl)->requestExit();
-	}
-	
-	/////////////////////////////////////////////////////////////
-	void *Thread::getImpl()
-	{
-		return m_impl;
-	}
-	
-	/////////////////////////////////////////////////////////////
-	const void *Thread::getImpl() const
-	{
-		return m_impl;
-	}
-
-	/////////////////////////////////////////////////////////////
-	bool Thread::forceExit()
-	{
-		if (m_impl)
-			return ((priv::Thread*)m_impl)->forceExit();
-		return true;
+		return (const T*)((const fm::priv::TlsPtr*)m_impl)->getPtr();
 	}
 }
 
-#endif // FRONTIER_NO_THREAD
+#endif
+
+#endif // FRONTIER_WAPITLSPTR_HPP_INCLUDED
