@@ -24,7 +24,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	Time::Time(const long double &value,MeasureType type) : m_amount(value*(long double)type)
+	Time::Time(const double &value,MeasureType type) : m_amount(value*(long double)type)
 	{
 		
 	}
@@ -36,38 +36,38 @@ namespace fm
 	}
 
 	/// Functions //////////////////////////////////////////////////////////
-	long Time::asMicroseconds() const
+	double Time::asMicroseconds() const
 	{
 		return m_amount;
 	}
 
 	/////////////////////////////////////////////////////////////
-	int Time::asMilliseconds() const
+	double Time::asMilliseconds() const
 	{
 		return m_amount/1000.0;
 	}
 
 	/////////////////////////////////////////////////////////////
-	float Time::asSeconds() const
+	double Time::asSeconds() const
 	{
 		return m_amount/1000.0/1000.0;
 	}
 	
 
 	/////////////////////////////////////////////////////////////
-	long Time::asMicsecs() const
+	double Time::asMicsecs() const
 	{
 		return m_amount;
 	}
 
 	/////////////////////////////////////////////////////////////
-	int Time::asMilsecs() const
+	double Time::asMilsecs() const
 	{
 		return m_amount/1000.0;
 	}
 
 	/////////////////////////////////////////////////////////////
-	float Time::asSecs() const
+	double Time::asSecs() const
 	{
 		return m_amount/1000.0/1000.0;
 	}

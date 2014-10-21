@@ -27,9 +27,9 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Time
 	{
-		long m_amount; ///< A long value holding the time in Microseconds
+		double m_amount; ///< A double precision value holding the time in Microseconds
 	public:
-		typedef long component_type;
+		typedef double component_type;
 		typedef Time &reference;
 		typedef const Time &const_reference;
 		enum {
@@ -56,7 +56,7 @@ namespace fm
 		/// @param type  The @a type decides how @a value is interpreted
 		///
 		/////////////////////////////////////////////////////////////
-		Time(const long double &value,MeasureType type);
+		Time(const double &value,MeasureType type);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy constructor
@@ -72,7 +72,7 @@ namespace fm
 		/// @return Represented value as microseconds
 		///
 		/////////////////////////////////////////////////////////////
-		long asMicroseconds() const;
+		double asMicroseconds() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get time value as milliseconds
@@ -80,7 +80,7 @@ namespace fm
 		/// @return Represented value as milliseconds
 		///
 		/////////////////////////////////////////////////////////////
-		int asMilliseconds() const;
+		double asMilliseconds() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get time value as seconds
@@ -88,7 +88,7 @@ namespace fm
 		/// @return Represented value as seconds
 		///
 		/////////////////////////////////////////////////////////////
-		float asSeconds() const;
+		double asSeconds() const;
 		
 
 		/////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ namespace fm
 		/// @return Represented value as microseconds
 		///
 		/////////////////////////////////////////////////////////////
-		long asMicsecs() const;
+		double asMicsecs() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get time value as milliseconds
@@ -105,7 +105,7 @@ namespace fm
 		/// @return Represented value as milliseconds
 		///
 		/////////////////////////////////////////////////////////////
-		int asMilsecs() const;
+		double asMilsecs() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get time value as seconds
@@ -113,7 +113,7 @@ namespace fm
 		/// @return Represented value as seconds
 		///
 		/////////////////////////////////////////////////////////////
-		float asSecs() const;
+		double asSecs() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Static const value indicating a time value of 0

@@ -49,200 +49,200 @@ namespace fm
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		~Thread();
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
-		/// 
+		///
 		/// @return If @a func is NULL or the iternal function fails false
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R>
 		bool create(R (*func)());
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
 		/// @param param1 The 1st parameter to pass to the function
-		/// 
+		///
 		/// @return If @a func is NULL or the iternal function fails false
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1>
 		bool create(R (*func)(P1),P1 param1);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
 		/// @param param1 The 1st parameter to pass to the function
 		/// @param param2 The 2nd parameter to pass to the function
-		/// 
+		///
 		/// @return If @a func is NULL or the iternal function fails false
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2>
 		bool create(R (*func)(P1,P2),P1 param1,P2 param2);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
 		/// @param param1 The 1st parameter to pass to the function
 		/// @param param2 The 2nd parameter to pass to the function
 		/// @param param3 The 3rd parameter to pass to the function
-		/// 
+		///
 		/// @return If @a func is NULL or the iternal function fails false
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2,class P3>
 		bool create(R (*func)(P1,P2,P3),P1 param1,P2 param2,P3 param3);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
 		/// @param param1 The 1st parameter to pass to the function
 		/// @param param2 The 2nd parameter to pass to the function
 		/// @param param3 The 3rd parameter to pass to the function
 		/// @param param4 The 4th parameter to pass to the function
-		/// 
+		///
 		/// @return If @a func is NULL or the iternal function fails false
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2,class P3,class P4>
 		bool create(R (*func)(P1,P2,P3,P4),P1 param1,P2 param2,P3 param3,P4 param4);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
 		/// @param param1 The 1st parameter to pass to the function
 		/// @param param2 The 2nd parameter to pass to the function
 		/// @param param3 The 3rd parameter to pass to the function
 		/// @param param4 The 4th parameter to pass to the function
 		/// @param param5 The 5th parameter to pass to the function
-		/// 
+		///
 		/// @return If @a func is NULL or the iternal function fails false
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2,class P3,class P4,class P5>
 		bool create(R (*func)(P1,P2,P3,P4,P5),P1 param1,P2 param2,P3 param3,P4 param4,P5 param5);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
 		/// @param object The object which member-function is to be called
-		/// 
+		///
 		/// @return True if everything went right
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class CLASS>
 		bool create(CLASS *object,R (CLASS::*func)());
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
 		/// @param param1 The 1st parameter to pass to the function
 		/// @param object The object which member-function is to be called
-		/// 
+		///
 		/// @return True if everything went right
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class CLASS>
 		bool create(CLASS *object,R (CLASS::*func)(P1),P1 param1);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
 		/// @param param1 The 1st parameter to pass to the function
 		/// @param param2 The 2nd parameter to pass to the function
 		/// @param object The object which member-function is to be called
-		/// 
+		///
 		/// @return True if everything went right
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2,class CLASS>
 		bool create(CLASS *object,R (CLASS::*func)(P1,P2),P1 param1,P2 param2);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
 		/// @param param1 The 1st parameter to pass to the function
 		/// @param param2 The 2nd parameter to pass to the function
 		/// @param param3 The 3rd parameter to pass to the function
 		/// @param object The object which member-function is to be called
-		/// 
+		///
 		/// @return True if everything went right
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2,class P3,class CLASS>
 		bool create(CLASS *object,R (CLASS::*func)(P1,P2,P3),P1 param1,P2 param2,P3 param3);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
 		/// @param param1 The 1st parameter to pass to the function
 		/// @param param2 The 2nd parameter to pass to the function
 		/// @param param3 The 3rd parameter to pass to the function
 		/// @param param4 The 4th parameter to pass to the function
 		/// @param object The object which member-function is to be called
-		/// 
+		///
 		/// @return True if everything went right
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2,class P3,class P4,class CLASS>
 		bool create(CLASS *object,R (CLASS::*func)(P1,P2,P3,P4),P1 param1,P2 param2,P3 param3,P4 param4);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the thread but not start it
-		/// 
+		///
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
-		/// 
+		///
 		/// @param func The starting point of the new thread
 		/// @param param1 The 1st parameter to pass to the function
 		/// @param param2 The 2nd parameter to pass to the function
@@ -250,19 +250,20 @@ namespace fm
 		/// @param param4 The 4th parameter to pass to the function
 		/// @param param5 The 5th parameter to pass to the function
 		/// @param object The object which member-function is to be called
-		/// 
+		///
 		/// @return True if everything went right
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2,class P3,class P4,class P5,class CLASS>
 		bool create(CLASS *object,R (CLASS::*func)(P1,P2,P3,P4,P5),P1 param1,P2 param2,P3 param3,P4 param4,P5 param5);
 		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Starts running the thread
 		/// 
 		/// You have to call fm::Thread::create before fm::Thread::start
 		/// 
-		/// @return True if the thread is running after this call
+		/// @return True iff the thread is running after this call
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool start();
@@ -284,7 +285,7 @@ namespace fm
 		/// If the thread wasn't running before this call 
 		/// True is returned
 		/// 
-		/// @return True if the thread is not running after this call
+		/// @return True iff the thread is not running after this call
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool join();
@@ -295,7 +296,7 @@ namespace fm
 		/// If the thread wasn't running before this call 
 		/// True is returned
 		/// 
-		/// @return True if the thread is not running after this call
+		/// @return True iff the thread is not running after this call
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool join(const fm::Time &timeOut);
@@ -309,7 +310,7 @@ namespace fm
 		/// 
 		/// @param thread The target thread (if NULL, false is returned)
 		/// 
-		/// @return True if exiting was requested
+		/// @return True iff exiting was requested
 		/// 
 		/////////////////////////////////////////////////////////////
 		static bool isExiting(const Thread *thread);
@@ -358,7 +359,7 @@ namespace fm
 		/// killing a thread almost always leads to resource leaks
 		/// E.g. on windows xp the used function guaranteed not to free the thread's stack
 		/// 
-		/// @return True if everything went right
+		/// @return True iff everything went right
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool forceExit(); //// !MAY CAUSE MEMORY LEAK!
