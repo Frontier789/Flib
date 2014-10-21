@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_WAPI_WINDOW_INCLUDED
 #define FRONTIER_WAPI_WINDOW_INCLUDED
+#include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Window/Event.hpp>
 #define FRONTIER_WAPI_WINDOW
@@ -30,12 +31,6 @@
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
-	/// @brief Get last windows api error string
-	///
-	/////////////////////////////////////////////////////////////
-	std::string WapiGetLastError();
-	
-	/////////////////////////////////////////////////////////////
 	///
 	/// 	@brief Windows-only classes are held in this namespace
 	///
@@ -47,7 +42,7 @@ namespace fw
 		/// 	@brief Class used to open, resize and process events of a window in winOS
 		///
 		/////////////////////////////////////////////////////////////
-		class FRONTIER_API Window
+		class FRONTIER_API Window : public fm::NonCopyable
 		{
 			static unsigned int m_windowCount; ///< The number of windows open
 			bool cleanUp();      ///< Iternal function used to free resources

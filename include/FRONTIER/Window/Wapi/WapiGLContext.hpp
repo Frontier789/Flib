@@ -1,20 +1,14 @@
 #ifndef FRONTIER_WAPI_GLCONTEXT_INCLUDED
 #define FRONTIER_WAPI_GLCONTEXT_INCLUDED
-#include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Window/GLContext.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_WAPI_GLCONTEXT
 #include <windows.h>
 #include <string>
 
 namespace fw
 {
-	/////////////////////////////////////////////////////////////
-	/// @brief Get last windows api error string
-	/// 
-	/// @return The last error's string
-	/////////////////////////////////////////////////////////////
-	std::string WapiGetLastError();
-	
 	namespace Wapi
 	{
 		/////////////////////////////////////////////////////////////
@@ -23,7 +17,7 @@ namespace fw
 		/// Upon error every function of this class prints to fw::fw_log
 		/// 
 		/////////////////////////////////////////////////////////////
-		class FRONTIER_API GlContext
+		class FRONTIER_API GlContext : public fm::NonCopyable
 		{
 			HDC   m_hdc;    ///< The handle of the device context
 			HWND  m_hwnd;   ///< The handle of the window

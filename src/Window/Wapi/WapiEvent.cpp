@@ -14,10 +14,10 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Window/Wapi/fwWapiPrintLastError.hpp>
 #include <FRONTIER/Window/Wapi/WapiWindow.hpp>
 #include <FRONTIER/Window/Event.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
-#include "fwWapiPrintLastError.hpp"
 #include <windows.h>
 
 namespace fw

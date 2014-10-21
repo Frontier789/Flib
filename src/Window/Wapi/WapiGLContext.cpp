@@ -1,6 +1,6 @@
+#include <FRONTIER/Window/Wapi/fwWapiPrintLastError.hpp>
 #include <FRONTIER/Window/Wapi/WapiGlContext.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
-#include "fwWapiPrintLastError.hpp"
 
 #define WGL_CONTEXT_MAJOR_VERSION_ARB             0x2091
 #define WGL_CONTEXT_MINOR_VERSION_ARB             0x2092
