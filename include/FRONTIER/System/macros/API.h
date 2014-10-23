@@ -17,7 +17,6 @@
 #ifndef FRONTIER_API_H_INCLUDED
 #define FRONTIER_API_H_INCLUDED
 #include <FRONTIER/System/macros/OS.h>
-#define FRONTIER_API
 
 	#ifdef FRONTIER_DYNAMIC
 
