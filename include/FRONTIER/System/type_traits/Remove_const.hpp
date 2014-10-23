@@ -27,7 +27,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-    class remove_const
+    class Remove_const
     {
    	public:
    		typedef T type;
@@ -35,10 +35,10 @@ namespace fm
     
     /// @cond DOXYGEN_HIDE
     template<class U>
-	class remove_const<const U>
+	class Remove_const<const U>
     {
    	public:
-   		typedef typename remove_const<U>::type type;
+   		typedef typename Remove_const<U>::type type;
     };
     /// @endcond
 }

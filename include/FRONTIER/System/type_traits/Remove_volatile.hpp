@@ -27,7 +27,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-    class remove_volatile
+    class Remove_volatile
     {
    	public:
    		typedef T type;
@@ -35,10 +35,10 @@ namespace fm
     
     /// @cond DOXYGEN_HIDE
     template<class U>
-	class remove_volatile<volatile U>
+	class Remove_volatile<volatile U>
     {
    	public:
-   		typedef typename remove_volatile<U>::type type;
+   		typedef typename Remove_volatile<U>::type type;
     };
     /// @endcond
 }

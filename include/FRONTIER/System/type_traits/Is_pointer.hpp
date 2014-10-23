@@ -27,7 +27,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	class is_pointer
+	class Is_pointer
 	{
 	public:
 		enum {
@@ -37,7 +37,7 @@ namespace fm
 	
 	/// @cond DOXYGEN_HIDE
 	template<class U>
-	class is_pointer<U*>
+	class Is_pointer<U*>
 	{
 	public:
 		enum {

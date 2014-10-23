@@ -27,7 +27,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	class is_void
+	class Is_void
 	{
 	public:
 		enum {
@@ -37,7 +37,7 @@ namespace fm
 	
 	/// @cond DOXYGEN_HIDE
 	template<>
-	class is_void<void>
+	class Is_void<void>
 	{
 	public:
 		enum{

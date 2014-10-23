@@ -27,7 +27,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<bool B,class T = void>
-	class enable_if
+	class Enable_if
 	{
 	public:
 		typedef T type; ///< Alias to T if B is true
@@ -35,7 +35,7 @@ namespace fm
 	
 	/// @cond DOXYGEN_HIDE
 	template<class U>
-	class enable_if<false,U>
+	class Enable_if<false,U>
 	{
 		
 	};
@@ -43,7 +43,7 @@ namespace fm
 }
 
 ////////////////////////////////////////////////////////////
-/// @class fm::enable_if
+/// @class fm::Enable_if
 /// 
 /// Usage example:
 /// @code
@@ -52,7 +52,7 @@ namespace fm
 /// #include <iostream>
 /// 
 /// template<class T>
-/// fm::enable_if<fm::is_arithmetic<T>,void>::type addFive(T &target)
+/// fm::Enable_if<fm::is_arithmetic<T>,void>::type addFive(T &target)
 /// {
 /// 	target+=5;
 /// }

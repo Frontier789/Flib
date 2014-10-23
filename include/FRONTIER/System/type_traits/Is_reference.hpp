@@ -27,7 +27,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	class is_reference
+	class Is_reference
 	{
 	public:
 		enum {
@@ -37,7 +37,7 @@ namespace fm
 	
 	/// @cond DOXYGEN_HIDE
 	template<class U>
-	class is_reference<U&>
+	class Is_reference<U&>
 	{
 	public:
 		enum {

@@ -27,7 +27,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T,class U>
-	class is_same
+	class Is_same
 	{
 	public:
 		enum {
@@ -37,7 +37,7 @@ namespace fm
 	
 	/// @cond DOXYGEN_HIDE
 	template<class E>
-	class is_same<E,E>
+	class Is_same<E,E>
 	{
 	public:
 		enum {

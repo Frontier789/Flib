@@ -29,12 +29,12 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	class is_arithmetic
+	class Is_arithmetic
 	{
 	public:
 		enum {
-			value /** @cond DOXYGEN_HIDE */ = fm::is_integral<T>::value ||
-											  fm::is_floating_point<T>::value /** @endcond */ ///< True if T is a arithmetic type (integer or floating point)
+			value /** @cond DOXYGEN_HIDE */ = fm::Is_integral<T>::value ||
+											  fm::Is_floating_point<T>::value /** @endcond */ ///< True if T is a arithmetic type (integer or floating point)
 		};
 	};
 }

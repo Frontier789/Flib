@@ -27,7 +27,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-    class remove_cv
+    class Remove_cv
     {
    	public:
    		typedef T type;
@@ -35,17 +35,17 @@ namespace fm
     
     /// @cond DOXYGEN_HIDE
     template<class U>
-	class remove_cv<const U>
+	class Remove_cv<const U>
     {
    	public:
-   		typedef typename remove_cv<U>::type type;
+   		typedef typename Remove_cv<U>::type type;
     };
     
     template<class U>
-	class remove_cv<volatile U>
+	class Remove_cv<volatile U>
     {
    	public:
-   		typedef typename remove_cv<U>::type type;
+   		typedef typename Remove_cv<U>::type type;
     };
     /// @endcond
 }

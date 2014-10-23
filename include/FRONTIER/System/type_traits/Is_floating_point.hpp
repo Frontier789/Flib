@@ -27,7 +27,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	class is_floating_point
+	class Is_floating_point
 	{
 	public:
 		enum {
@@ -37,7 +37,7 @@ namespace fm
 	
 	/// @cond DOXYGEN_HIDE
 	template<>
-	class is_floating_point<float>
+	class Is_floating_point<float>
 	{
 	public:
 		enum {
@@ -46,7 +46,7 @@ namespace fm
 	};
 	
 	template<>
-	class is_floating_point<double>
+	class Is_floating_point<double>
 	{
 	public:
 		enum {
@@ -55,7 +55,7 @@ namespace fm
 	};
 	
 	template<>
-	class is_floating_point<long double>
+	class Is_floating_point<long double>
 	{
 	public:
 		enum {

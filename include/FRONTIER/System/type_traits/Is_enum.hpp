@@ -34,7 +34,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-    class is_enum
+    class Is_enum
     {
 		/// @cond DOXYGEN_HIDE
         struct charX2
@@ -47,13 +47,13 @@ namespace fm
     public:
         enum {
 			value /** @cond DOXYGEN_HIDE */ = sizeof(check<T>(0)) == sizeof(charX2)
-                && !fm::is_arithmetic    <T>::value
-                && !fm::is_pointer       <T>::value
-                && !fm::is_reference     <T>::value
-                && !fm::is_array         <T>::value
-                && !fm::is_member_pointer<T>::value
-                && !fm::is_function      <T>::value
-				&& !fm::is_void          <T>::value /** @endcond */ ///< True if T is a enumeration
+                && !fm::Is_arithmetic    <T>::value
+                && !fm::Is_pointer       <T>::value
+                && !fm::Is_reference     <T>::value
+                && !fm::Is_array         <T>::value
+                && !fm::Is_member_pointer<T>::value
+                && !fm::Is_function      <T>::value
+				&& !fm::Is_void          <T>::value /** @endcond */ ///< True if T is a enumeration
         };
     };
 }

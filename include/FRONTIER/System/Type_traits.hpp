@@ -14,15 +14,23 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/type_traits/Is_member_function_pointer.hpp>
+#include <FRONTIER/System/type_traits/Has_component_type.hpp>
 #include <FRONTIER/System/type_traits/Is_floating_point.hpp>
 #include <FRONTIER/System/type_traits/Is_member_pointer.hpp>
+#include <FRONTIER/System/type_traits/Remove_volatile.hpp>
+#include <FRONTIER/System/type_traits/Remove_pointer.hpp>
+#include <FRONTIER/System/type_traits/Has_components.hpp>
 #include <FRONTIER/System/type_traits/Is_arithmetic.hpp>
 #include <FRONTIER/System/type_traits/Is_reference.hpp>
+#include <FRONTIER/System/type_traits/Remove_const.hpp>
 #include <FRONTIER/System/type_traits/Is_integral.hpp>
 #include <FRONTIER/System/type_traits/Is_function.hpp>
 #include <FRONTIER/System/type_traits/Is_pointer.hpp>
 #include <FRONTIER/System/type_traits/Enable_if.hpp>
+#include <FRONTIER/System/type_traits/Remove_cv.hpp>
 #include <FRONTIER/System/type_traits/Is_array.hpp>
+#include <FRONTIER/System/type_traits/Is_const.hpp>
 #include <FRONTIER/System/type_traits/Is_void.hpp>
 #include <FRONTIER/System/type_traits/Is_same.hpp>
 #include <FRONTIER/System/type_traits/Is_enum.hpp>

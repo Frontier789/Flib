@@ -21,7 +21,7 @@
 /// @cond DOXYGEN_HIDE
 #define IS_INTEGRAL_CREATE_TRUE_CASE(TYPE)  \
 template<>                     			    \
-class is_integral<TYPE>        			    \
+class Is_integral<TYPE>        			    \
 {                              				\
 public:                        				\
 	enum{                      				\
@@ -38,7 +38,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	class is_integral
+	class Is_integral
 	{
 	public:
 		enum {

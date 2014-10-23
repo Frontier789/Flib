@@ -16,35 +16,44 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_HAS_COMPONENTS_HPP_INCLUDED
 #define FRONTIER_HAS_COMPONENTS_HPP_INCLUDED
+#include <FRONTIER/System/type_traits/Is_integral.hpp>
 #include <FRONTIER/System/type_traits/Enable_if.hpp>
 #include <FRONTIER/System/type_traits/Is_enum.hpp>
 #define FRONTIER_HAS_COMPONENTS
 
 namespace fm
 {
-	namespace priv
+	/////////////////////////////////////////////////////////////
+	/// @brief Has a member enum 'value' that is true iff T::components is a enum or a integral type
+	/// 
+	/// @ingroup System
+	/// 
+	/////////////////////////////////////////////////////////////
+	template<typename T>
+	class Has_components
 	{
-		template<typename T>
-		class HasComponentsHelper
+		/// @cond DOXYGEN_HIDE
+		class charX2
 		{
-			class charX2
-			{
-				char a[2];
-			};
-			
-			typedef charX2 NO;
-			typedef char   YES;
-			
-			template<class U> 
-			static typename fm::enable_if<fm::is_enum<typename U::components>::value,YES>::type Test(void*);
-			
-			template<class U> 
-			static NO  Test(...);
-			
-		public:
-			static const bool value = sizeof(Test<T>(0)) == sizeof(YES);
+			char a[2];
 		};
-	}
+		
+		typedef charX2 NO;
+		typedef char   YES;
+		
+		template<class U> 
+		static typename fm::Enable_if<fm::Is_enum<typename U::components>::value || 
+									  fm::Is_integral<typename U::components>,YES>::type Test(void*);
+		
+		template<class U> 
+		static NO Test(...);
+		/// @endcond
+		
+	public:
+		enum {
+			value /** @cond DOXYGEN_HIDE */ = sizeof(Test<T>(0)) == sizeof(YES)/** @endcond */ ///< True iff T::components is a enum or a integral type
+		};
+	};
 }
 
 #endif // FRONTIER_HAS_COMPONENTS_HPP_INCLUDED

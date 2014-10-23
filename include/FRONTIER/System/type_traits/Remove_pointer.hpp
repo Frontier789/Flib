@@ -14,48 +14,33 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_IS_MEMBER_FUNCTION_POINTER_HPP_INCLUDED
-#define FRONTIER_IS_MEMBER_FUNCTION_POINTER_HPP_INCLUDED
-#include <FRONTIER/System/type_traits/Is_function.hpp>
-#include <FRONTIER/System/type_traits/Remove_cv.hpp>
-#define FRONTIER_IS_MEMBER_FUNCTION_POINTER
+#ifndef FRONTIER_REMOVE_POINTER_HPP_INCLUDED
+#define FRONTIER_REMOVE_POINTER_HPP_INCLUDED
+#define FRONTIER_REMOVE_POINTER
 
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
-	/// @brief Has a member enum 'value' that is true if the template parameter is a pointer to a member function
+	/// @brief Has a member typedef 'type' which is the same what T points to (if T is not a pointer then 'type' matches T)
 	/// 
 	/// @ingroup System
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-    class Is_member_function_pointer
+    class Remove_pointer
     {
-    	/// @cond DOXYGEN_HIDE
-		template<class U>
-		class Is_member_function_pointer_helper
-		{
-		public:
-			enum {
-				value = false
-			};
-		};
- 
-		template<class U, class R>
-		class Is_member_function_pointer_helper<U R::*>
-		{
-		public:
-			enum {
-				value = fm::Is_function<U>::value
-			};
-		};
-		/// @endcond
-		
-    public:
-        enum {
-			value /** @cond DOXYGEN_HIDE */ = Is_member_function_pointer_helper<typename fm::Remove_cv<T>::type>::value/** @endcond */ ///< True if T is a enumeration
-        };
+   	public:
+   		typedef T type;
     };
+    
+    /// @cond DOXYGEN_HIDE
+    template<class U>
+	class Remove_pointer<U*>
+    {
+   	public:
+   		typedef U type;
+    };
+    /// @endcond
 }
 
-#endif // FRONTIER_IS_MEMBER_FUNCTION_POINTER_HPP_INCLUDED
+#endif // FRONTIER_REMOVE_POINTER_HPP_INCLUDED

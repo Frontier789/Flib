@@ -27,7 +27,7 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	class is_array
+	class Is_array
 	{
 	public:
 		enum {
@@ -37,7 +37,7 @@ namespace fm
 	
 	/// @cond DOXYGEN_HIDE
 	template<class U,int I>
-	class is_array<U[I]>
+	class Is_array<U[I]>
 	{
 	public:
 		enum {

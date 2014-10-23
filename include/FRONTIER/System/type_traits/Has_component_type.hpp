@@ -21,35 +21,42 @@
 
 namespace fm
 {
-	namespace priv
+	/////////////////////////////////////////////////////////////
+	/// @brief Has a member enum 'value' that is true iff T::component_type is a type
+	/// 
+	/// @ingroup System
+	/// 
+	/////////////////////////////////////////////////////////////
+	template<typename T>
+	class HasComponentsHelper
 	{
-		template<typename T>
-		class HasComponentsHelper
+		/// @cond DOXYGEN_HIDE
+		class charX2
 		{
-			class charX2
-			{
-				char a[2];
-			};
-			
-			typedef charX2 NO;
-			typedef char   YES;
-			
-			template<class T>
-			class SFINAE
-			{
-				
-			};
-			
-			template<class U> 
-			static YES Test(SFINAE<U::component_type>*);
-			
-			template<class U> 
-			static NO  Test(...);
-			
-		public:
-			static const bool value = sizeof(Test<T>(0)) == sizeof(YES);
+			char a[2];
 		};
-	}
+		
+		typedef charX2 NO;
+		typedef char   YES;
+		
+		template<class T>
+		class SFINAE
+		{
+			
+		};
+		
+		template<class U> 
+		static YES Test(SFINAE<U::component_type>*);
+		
+		template<class U> 
+		static NO  Test(...);
+		/// @endcond
+		
+	public:
+		enum {
+			value /** @cond DOXYGEN_HIDE */ = sizeof(Test<T>(0)) == sizeof(YES)/** @endcond */ ///< True iff T::component_type is a type
+		};
+	};
 }
 
 #endif // FRONTIER_HAS_COMPONENTS_HPP_INCLUDED
