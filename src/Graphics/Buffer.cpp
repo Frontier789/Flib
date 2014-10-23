@@ -56,16 +56,16 @@ namespace fg
 	/// destructors /////////////////////////////////////////////////////////
 	Buffer::~Buffer()
 	{
-		if (glIsBuffer(getGlId()))
-			glCheck(glDeleteBuffers(1,&getGlId()));
+		if (glIsBufferARB(getGlId()))
+			glCheck(glDeleteBuffersARB(1,&getGlId()));
 		
 	}
 
 	/// functions /////////////////////////////////////////////////////////
 	void Buffer::init()
 	{
-		if (!glIsBuffer(getGlId()))
-			glCheck(glGenBuffers(1,&getGlId()));
+		if (!glIsBufferARB(getGlId()))
+			glCheck(glGenBuffersARB(1,&getGlId()));
 	}
 
 	////////////////////////////////////////////////////////////
@@ -89,23 +89,23 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	unsigned int typeToGetBinding(BufferType type)
 	{
-		return type == IndexBuffer ? 0x8895 : ///GL_ELEMENT_ARRAY_BUFFER
-									 0x8894;  ///GL_ARRAY_BUFFER_BINDING 
+		return type == IndexBuffer ? GL_ELEMENT_ARRAY_BUFFER_ARB : 
+									 GL_ARRAY_BUFFER_BINDING_ARB;
 	}
 
 	////////////////////////////////////////////////////////////
 	unsigned int getFallBackUsage(Buffer::Usage usage)
 	{
-		if (usage==0x88E5) return 0x88E4;
-		if (usage==0x88E6) return 0x88E4;
-		
-		if (usage==0x88E8) return 0x88E4;
-		if (usage==0x88E9) return 0x88E5;
-		if (usage==0x88EA) return 0x88E6;
-		
-		if (usage==0x88E0) return 0x88E4;
-		if (usage==0x88E1) return 0x88E5;
-		if (usage==0x88E2) return 0x88E6;
+		if (usage==GL_STATIC_READ_ARB) return GL_STATIC_DRAW_ARB;
+		if (usage==GL_STATIC_COPY_ARB) return GL_STATIC_DRAW_ARB;
+		           
+		if (usage==GL_DYNAMIC_DRAW_ARB) return GL_STATIC_DRAW_ARB;
+		if (usage==GL_DYNAMIC_READ_ARB) return GL_STATIC_READ_ARB;
+		if (usage==GL_DYNAMIC_COPY_ARB) return GL_STATIC_COPY_ARB;
+		           
+		if (usage==GL_STREAM_DRAW_ARB) return GL_STATIC_DRAW_ARB;
+		if (usage==GL_STREAM_READ_ARB) return GL_STATIC_READ_ARB;
+		if (usage==GL_STREAM_COPY_ARB) return GL_STATIC_COPY_ARB;
 		
 		return 0;
 	}
@@ -122,21 +122,21 @@ namespace fg
 		int boundBuffer=0;
 		
 		glCheck(glGetIntegerv(typeToGetBinding(m_type),&boundBuffer));
-		glCheck(glBindBuffer(m_type,getGlId()));
+		glCheck(glBindBufferARB(m_type,getGlId()));
 		
-		glBufferData(m_type,bytesToCopy,data,m_usage);
+		glBufferDataARB(m_type,bytesToCopy,data,m_usage);
 		
 		unsigned int errCode = glGetError();
 		if (errCode)
 		{
-			if (errCode==0x505) ///GL_OUT_OF_MEMORY
+			if (errCode == GL_OUT_OF_MEMORY)
 				fg_log << "Error: couldn't set data of the buffer because OpenGL is out of memory" << std::endl;
-			if (errCode==0x500) ///GL_INVALID_ENUM
-				glCheck(glBufferData(m_type,bytesToCopy,data,getFallBackUsage(m_usage)));
+			if (errCode == GL_INVALID_ENUM)
+				glCheck(glBufferDataARB(m_type,bytesToCopy,data,getFallBackUsage(m_usage)));
 		}
 		
 
-		glCheck(glBindBuffer(m_type,boundBuffer));
+		glCheck(glBindBufferARB(m_type,boundBuffer));
 		return *this;
 	}
 
@@ -150,10 +150,10 @@ namespace fg
 		
 		glCheck(glGetIntegerv(typeToGetBinding(m_type),&boundBuffer));
 		
-		glCheck(glBindBuffer(m_type,getGlId()));
-		glCheck(glBufferSubData(m_type,byteOffset,bytesToCopy,data));
+		glCheck(glBindBufferARB(m_type,getGlId()));
+		glCheck(glBufferSubDataARB(m_type,byteOffset,bytesToCopy,data));
 		
-		glCheck(glBindBuffer(m_type,boundBuffer));
+		glCheck(glBindBufferARB(m_type,boundBuffer));
 		
 		return *this;
 	}
@@ -179,7 +179,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	void Buffer::bind(const Buffer *buffer,BufferType targetType)
 	{
-		glCheck(glBindBuffer(targetType,buffer ? buffer->getGlId() : 0));
+		glCheck(glBindBufferARB(targetType,buffer ? buffer->getGlId() : 0));
 	}
 
 	////////////////////////////////////////////////////////////
@@ -198,9 +198,8 @@ namespace fg
 	bool Buffer::isAvailable()
 	{
 		int testBound;
-		glGetIntegerv(0x8894, ///GL_ARRAY_BUFFER_BINDING
-							  &testBound);
-		return (glGetError()==0x000);
+		glGetIntegerv(GL_ARRAY_BUFFER_BINDING_ARB,&testBound);
+		return (glGetError()==GL_NO_ERROR);
 	}
 
 	////////////////////////////////////////////////////////////

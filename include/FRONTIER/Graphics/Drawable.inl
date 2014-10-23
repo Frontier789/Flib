@@ -19,57 +19,84 @@
 #include <FRONTIER/System/macros/SIZE.hpp>
 namespace fg
 {
-	namespace priv
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline Attribute::Attribute(const T *ptr,unsigned short stride) : m_ptr(ptr),
+																	  m_buffer(0),
+																	  m_components(T::components),
+																	  m_bytesPerComponent(sizeof(typename T::component_type)),
+																	  m_bytesPerVertex(stride)
 	{
-		template<class T>
-		Attribute::Attribute(const T *ptr,unsigned int stride) : buf(0),
-																 dim(T::components),
-																 size(sizeof(typename T::component_type)),
-																 stride(stride),
-																 ptr(ptr)
-		{
-	
-		}
+
 	}
 
+	/////////////////////////////////////////////////////////////
 	template <class pt,class ct,class tpt,class nt>
-	void draw(const fm::vertex<pt,ct,tpt,nt> *vertices,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp)
+	inline void draw(const fm::vertex<pt,ct,tpt,nt> *vertices,
+					 fm::Size vertexCount,
+					 fg::Primitive primitive,
+					 const Texture *texture,
+					 const Shader *shader,
+					 const IndexPointer &indices)
 	{
 		if (nt::components)
-			draw(priv::Attribute((pt*)((unsigned char*)vertices),sizeof(fm::vertex<pt,ct,tpt,nt>)),
-				 priv::Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
-				 priv::Attribute((tpt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
-				 priv::Attribute((nt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize+fm::vertex<pt,ct,tpt,nt>::texPosSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
-				 vertexCount,primitive,indp);
+			draw(Attribute((pt*)((unsigned char*)vertices),sizeof(fm::vertex<pt,ct,tpt,nt>)),
+				 Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
+				 Attribute((tpt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
+				 Attribute((nt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize+fm::vertex<pt,ct,tpt,nt>::texPosSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
+				 vertexCount,primitive,texture,shader,indices);
 		else if (tpt::components)
-			draw(priv::Attribute((pt*)((unsigned char*)vertices),sizeof(fm::vertex<pt,ct,tpt,nt>)),
-				 priv::Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
-				 priv::Attribute((tpt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
-				 vertexCount,primitive,indp);
+			draw(Attribute((pt*)((unsigned char*)vertices),sizeof(fm::vertex<pt,ct,tpt,nt>)),
+				 Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
+				 Attribute((tpt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
+				 Attribute::Unused,
+				 vertexCount,primitive,texture,shader,indices);
 		else 
-			draw(priv::Attribute((pt*)((unsigned char*)vertices),sizeof(fm::vertex<pt,ct,tpt,nt>)),
-				 priv::Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
-				 vertexCount,primitive,indp);
+			draw(Attribute((pt*)((unsigned char*)vertices),sizeof(fm::vertex<pt,ct,tpt,nt>)),
+				 Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
+				 Attribute::Unused,
+				 Attribute::Unused,
+				 vertexCount,primitive,texture,shader,indices);
 	}
 
-	template <class pt,class ct,class tpt,class nt,fm::Size S>
-	void draw(const fm::vertex<pt,ct,tpt,nt> (&vertices)[S],fg::Primitive primitive,priv::IndexPointer indp)
+	/////////////////////////////////////////////////////////////
+	template <class pt,class ct,class tpt,class nt>
+	inline void draw(const fm::vertex<pt,ct,tpt,nt> *vertices,
+					 fm::Size vertexCount,
+					 fg::Primitive primitive,
+					 const IndexPointer &indices)
 	{
-		draw(vertices,S,primitive,indp);
+		draw(vertices,vertexCount,primitive,0,0,indices);
 	}
-
+	
+	/////////////////////////////////////////////////////////////
+	template <class pt,class ct,class tpt,class nt,fm::Size vertexCount>
+	inline void draw(const fm::vertex<pt,ct,tpt,nt> (&vertices)[vertexCount],
+					 fg::Primitive primitive,
+					 const Texture *texture,
+					 const Shader *shader)
+	{
+		draw(vertices,vertexCount,primitive,texture,shader,IndexPointer());
+	}
+	
+	/////////////////////////////////////////////////////////////
 	template<class T>
-	priv::Attribute attr(const T *ptr,unsigned int stride=0)
+	Attribute Attr(const T *ptr,unsigned short stride)
 	{
-		return priv::Attribute(ptr,stride);
+		return Attribute(ptr,stride);
 	}
-
+	
+	/////////////////////////////////////////////////////////////
 	template<class T>
-	priv::Attribute attr(fg::Buffer &buf,unsigned int offset=0,unsigned int stride=0)
+	Attribute Attr(fg::Buffer &buf,fm::Ptrdiff offset,unsigned char stride)
 	{
-		priv::Attribute ret( (T*)0,stride );
-		ret.buf = &buf;
-		ret.ptr = (void*)offset;
+		Attribute ret;
+		ret.m_ptr = (const void*)offset;
+		ret.m_buffer = buf;
+		ret.m_components = T::components;
+		ret.m_bytesPerComponent = sizeof(typename T::component_type);
+		ret.m_bytesPerVertex = sizeof(T);
+		
 		return ret;
 	}
 }

@@ -17,22 +17,60 @@
 #ifndef FRONTIER_WAPITLSPTR_HPP_INCLUDED
 #define FRONTIER_WAPITLSPTR_HPP_INCLUDED
 #include <FRONTIER/System/NonCopyable.hpp>
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_WAPITLSPTR
 
 namespace fm
 {
 	namespace Wapi
 	{
-		class TlsPtr : public fm::NonCopyable
+		/////////////////////////////////////////////////////////////
+		/// @brief Windows specific implementation of thread-local-storage
+		/// 
+		/////////////////////////////////////////////////////////////
+		class FRONTIER_API TlsPtr : public fm::NonCopyable
 		{
-			void *m_id;
-			bool init();
-			bool cleanUp();
+			void *m_id;     ///< The id of the container
+			bool init();    ///< Iternal function used at initialization
+			bool cleanUp(); ///< Iternal function used at destruction
 		public:
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Default constructor
+			/// 
+			/////////////////////////////////////////////////////////////
 			TlsPtr();
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Default destructor
+			/// 
+			/////////////////////////////////////////////////////////////
 			~TlsPtr();
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Set the stored data
+			/// 
+			/// @param ptr The new value
+			/// 
+			/// @return True iff everything went right
+			/// 
+			/////////////////////////////////////////////////////////////
 			bool setPtr(void *ptr);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Get the stored data
+			/// 
+			/// @return The currently stored value (NULL by default)
+			/// 
+			/////////////////////////////////////////////////////////////
 			void *getPtr() const;
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Find out if a iternal error happened
+			/// 
+			/// @return True iff no error happend
+			/// 
+			/////////////////////////////////////////////////////////////
 			bool isValid() const;
 		};
 	}

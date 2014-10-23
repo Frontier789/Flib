@@ -167,13 +167,9 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	bool FrameBuffer::isAvailable()
 	{
-		#ifdef GL_FRAMEBUFFER_BINDING
-			int testBound;
-			glGetIntegerv(GL_FRAMEBUFFER_BINDING,&testBound);
-			return glGetError();
-		#else
-			return false;
-		#endif
+		GLint testBound;
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING,&testBound);
+		return glGetError()==GL_NO_ERROR;
 	}
 
 	////////////////////////////////////////////////////////////

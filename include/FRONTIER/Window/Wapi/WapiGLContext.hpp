@@ -3,9 +3,9 @@
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Window/GLContext.hpp>
 #include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/System/TlsPtr.hpp>
 #define FRONTIER_WAPI_GLCONTEXT
 #include <windows.h>
-#include <string>
 
 namespace fw
 {
@@ -26,7 +26,6 @@ namespace fw
 			fw::GlContext::Settings m_settings; ///< The attributes of the context
 			bool setPixelFormat(); ///< Iternal function
 			bool m_ownWindow;      ///< Indicates whether the context holds a dummy window
-			
 			static unsigned int m_contextCount; ///< Holds the number of contexts with dummy windows
 			
 		public:

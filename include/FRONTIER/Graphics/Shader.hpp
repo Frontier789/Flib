@@ -23,7 +23,7 @@
 #include <FRONTIER/System/StorageOrder.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
-#include <FRONTIER/GL/GL_TYPES.hpp>
+#include <FRONTIER/GL/Is_GLDataType.hpp>
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
@@ -256,7 +256,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
         template<class pt,class ct,class tpt,class nt>
-		typename fm::enable_if<fg::is_GLDataType<pt >::value &&
+		typename fm::Enable_if<fg::is_GLDataType<pt >::value &&
 							   fg::is_GLDataType<ct >::value,reference>::type setAttribPointer(const std::string &posName,
 																							   const std::string &clrName,const fm::vertex<pt,ct,tpt,nt> *pointer);
 
@@ -285,7 +285,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
         template<class pt,class ct,class tpt,class nt>
-		typename fm::enable_if<fg::is_GLDataType<pt >::value &&
+		typename fm::Enable_if<fg::is_GLDataType<pt >::value &&
 							   fg::is_GLDataType<ct >::value &&
 							   fg::is_GLDataType<tpt>::value,reference>::type setAttribPointer(const std::string &posName,
 																							   const std::string &clrName,
@@ -317,7 +317,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
         template<class pt,class ct,class tpt,class nt>
-		typename fm::enable_if<fg::is_GLDataType<pt >::value &&
+		typename fm::Enable_if<fg::is_GLDataType<pt >::value &&
 							   fg::is_GLDataType<ct >::value &&
 							   fg::is_GLDataType<tpt>::value &&
 							   fg::is_GLDataType<nt >::value,reference>::type setAttribPointer(const std::string &posName,
@@ -379,7 +379,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-        typename fm::enable_if<fg::is_GLDataType<T>::value,reference>::type setAttribPointer(const std::string &name,const T *pointer,unsigned int stride=0);
+        typename fm::Enable_if<fg::is_GLDataType<T>::value,reference>::type setAttribPointer(const std::string &name,const T *pointer,unsigned int stride=0);
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec2 attributes
@@ -405,7 +405,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-        typename fm::enable_if<fg::is_GLDataType<T>::value,reference>::type setAttribPointer(const std::string &name,const fm::vector2<T> *pointer,unsigned int stride=0);
+        typename fm::Enable_if<fg::is_GLDataType<T>::value,reference>::type setAttribPointer(const std::string &name,const fm::vector2<T> *pointer,unsigned int stride=0);
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec3 attributes
@@ -431,7 +431,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-        typename fm::enable_if<fg::is_GLDataType<T>::value,reference>::type setAttribPointer(const std::string &name,const fm::vector3<T> *pointer,unsigned int stride=0);
+        typename fm::Enable_if<fg::is_GLDataType<T>::value,reference>::type setAttribPointer(const std::string &name,const fm::vector3<T> *pointer,unsigned int stride=0);
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec4 attributes
@@ -457,7 +457,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-        typename fm::enable_if<fg::is_GLDataType<T>::value,reference>::type setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride=0);
+        typename fm::Enable_if<fg::is_GLDataType<T>::value,reference>::type setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride=0);
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a float uniform

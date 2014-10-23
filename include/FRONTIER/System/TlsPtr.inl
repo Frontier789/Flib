@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_WAPITLSPTR_INL_INCLUDED
 #define FRONTIER_WAPITLSPTR_INL_INCLUDED
+#include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/OS.h>
 
 #ifdef FRONTIER_OS_WINDOWS
@@ -56,35 +57,35 @@ namespace fm
 	template<class T>
 	T *TlsPtr<T>::operator->()
 	{
-		return (T*)((fm::priv::TlsPtr*)m_impl)->getPtr();
+		return (T*)(UintPtr)((fm::priv::TlsPtr*)m_impl)->getPtr();
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	const T *TlsPtr<T>::operator->() const
 	{
-		return (const T*)((const fm::priv::TlsPtr*)m_impl)->getPtr();
+		return (const T*)(UintPtr)((const fm::priv::TlsPtr*)m_impl)->getPtr();
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	T &TlsPtr<T>::operator*()
 	{
-		return *((T*)((fm::priv::TlsPtr*)m_impl)->getPtr());
+		return *((T*)(UintPtr)((fm::priv::TlsPtr*)m_impl)->getPtr());
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	const T &TlsPtr<T>::operator*() const
 	{
-		return *((const T*)((const fm::priv::TlsPtr*)m_impl)->getPtr());
+		return *((const T*)(UintPtr)((const fm::priv::TlsPtr*)m_impl)->getPtr());
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	typename TlsPtr<T>::reference TlsPtr<T>::operator=(T *pointer)
 	{
-		((fm::priv::TlsPtr*)m_impl)->setPtr(pointer);
+		((fm::priv::TlsPtr*)m_impl)->setPtr((void*)(UintPtr)pointer);
 		return *this;
 	}
 
@@ -99,14 +100,21 @@ namespace fm
 	template<class T>
 	TlsPtr<T>::operator T*()
 	{
-		return (T*)((fm::priv::TlsPtr*)m_impl)->getPtr();
+		return (T*)(UintPtr)((fm::priv::TlsPtr*)m_impl)->getPtr();
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	TlsPtr<T>::operator const T*() const
 	{
-		return (const T*)((const fm::priv::TlsPtr*)m_impl)->getPtr();
+		return (const T*)(UintPtr)((const fm::priv::TlsPtr*)m_impl)->getPtr();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	TlsPtr<T>::operator bool() const
+	{
+		return ((const fm::priv::TlsPtr*)m_impl)->getPtr()!=0;
 	}
 }
 

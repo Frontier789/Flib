@@ -16,127 +16,232 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
+#include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
+#include <FRONTIER/System/TlsPtr.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
 namespace fg
 {
-	namespace priv
+	/////////////////////////////////////////////////////////////
+	Attribute::Attribute() : m_ptr(NULL),
+							 m_buffer(NULL),
+							 m_components(0),
+							 m_bytesPerComponent(0),
+							 m_bytesPerVertex(0)
 	{
-		Attribute::Attribute() : buf(NULL),
-					  			 dim(0),
-					  			 size(0),
-					  			 stride(0),
-					  			 ptr(NULL)
-		{
-	
-		}
-		unsigned int Attribute::getSizeType() const
-		{
-			#ifdef GL_FLOAT
-			if (size==sizeof(GLfloat))
-				return GL_FLOAT;
-			#endif
-	
-			#ifdef GL_SHORT
-			if (size==sizeof(GLshort))
-				return GL_SHORT;
-			#endif
-	
-			#ifdef GL_INT
-			if (size==sizeof(GLint))
-				return GL_INT;
-			#endif
-	
-			#ifdef GL_DOUBLE
-			if (size==sizeof(GLdouble))
-				return GL_DOUBLE;
-			#endif
-	
-			return 0;
-		}
 
-		Attribute Attribute::Empty = Attribute();
-
-		void defaultDraw(const Attribute &pos,bool hasPos,
-					  	 const Attribute &clr,bool hasClr,
-					  	 const Attribute &texPos,bool hasTexPos,
-					  	 const Attribute &norm,bool hasNorm,
-					  	 fg::Primitive primitive,unsigned int vertexCount,void *indices,unsigned int indexSize)
-		{
-			bool inited=false;
-			if (!inited)
-				glCheck(glEnableClientState(GL_VERTEX_ARRAY)),
-				glCheck(glEnableClientState(GL_COLOR_ARRAY)),
-				glCheck(glEnableClientState(GL_TEXTURE_COORD_ARRAY)),
-				inited = true;
-				
-			if (hasPos)
-			{
-				fg::Buffer::bind(pos.buf,fg::ArrayBuffer);
-				if (pos.dim && pos.size && (pos.buf || pos.ptr))
-					glCheck(glVertexPointer(pos.dim,pos.getSizeType(),pos.stride,pos.ptr));
-			}
-		
-			if (hasClr)
-			{
-				fg::Buffer::bind(clr.buf,fg::ArrayBuffer);
-				if (clr.dim && clr.size && (clr.buf || clr.ptr))
-					glCheck(glColorPointer(clr.dim,clr.getSizeType(),clr.stride,clr.ptr));
-			}
-		
-			if (hasTexPos)
-			{
-				fg::Buffer::bind(texPos.buf,fg::ArrayBuffer);
-				if (texPos.dim && texPos.size && (texPos.buf || texPos.ptr))
-					glCheck(glTexCoordPointer(texPos.dim,texPos.getSizeType(),texPos.stride,texPos.ptr));
-			}
-		
-			if (hasNorm)
-			{
-				fg::Buffer::bind(norm.buf,fg::ArrayBuffer);
-				if (norm.dim && norm.size && (norm.buf || norm.ptr))
-					glCheck(glNormalPointer(norm.getSizeType(),norm.stride,norm.ptr));
-			}
-			if (indices && indexSize)
-				glCheck(glDrawElements(primitive,vertexCount,indexSize==sizeof(GLbyte) ? GL_UNSIGNED_BYTE : (indexSize==sizeof(GLshort) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT),indices));
-			else
-				glCheck(glDrawArrays(primitive,0,vertexCount));
-		}
-		IndexPointer::IndexPointer() : size(0u),
-						 			   ptr(NULL)
-		{
-
-		}
-		IndexPointer::IndexPointer(unsigned char *ptr) : size(sizeof(GLbyte)),
-										   				 ptr(ptr)
-		{
-			
-		}
-		IndexPointer::IndexPointer(unsigned short *ptr) : size(sizeof(GLshort)),
-										    			  ptr(ptr)
-		{
-			
-		}
-		IndexPointer::IndexPointer(unsigned int *ptr) : size(sizeof(GLint)),
-										  				ptr(ptr)
-		{
-			
-		}
-		drawFuncType drawFunc = defaultDraw;
 	}
-	void draw(priv::Attribute pos,priv::Attribute clr,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp)
+	
+	/////////////////////////////////////////////////////////////
+	bool Attribute::isUsed() const
 	{
-		priv::drawFunc(pos,true,clr,true,priv::Attribute(),false,priv::Attribute(),false,primitive,vertexCount,indp.ptr,indp.size);
+		return (m_components && m_bytesPerComponent && (m_buffer || m_ptr));
 	}
-
-	void draw(priv::Attribute pos,priv::Attribute clr,priv::Attribute texPos,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp)
+	
+	/////////////////////////////////////////////////////////////
+	GLenum getSizeType(const Attribute &attr)
 	{
-		priv::drawFunc(pos,true,clr,true,texPos,true,priv::Attribute(),false,primitive,vertexCount,indp.ptr,indp.size);
+		if (attr.m_bytesPerComponent == sizeof(GLfloat))
+			return GL_FLOAT;
+		
+		if (attr.m_bytesPerComponent == sizeof(GLshort))
+			return GL_SHORT;
+		
+		if (attr.m_bytesPerComponent == sizeof(GLint))
+			return GL_INT;
+		
+		if (attr.m_bytesPerComponent == sizeof(GLdouble))
+			return GL_DOUBLE;
+
+		return 0;
 	}
-
-	void draw(priv::Attribute pos,priv::Attribute clr,priv::Attribute texPos,priv::Attribute norm,unsigned int vertexCount,fg::Primitive primitive,priv::IndexPointer indp)
+	
+	/////////////////////////////////////////////////////////////
+	GLenum getSizeType(const IndexPointer &indexptr)
 	{
-		priv::drawFunc(pos,true,clr,true,texPos,true,norm,true,primitive,vertexCount,indp.ptr,indp.size);
+		if (indexptr.m_bytesPerIndex == sizeof(GLbyte))
+			return GL_UNSIGNED_BYTE;
+		
+		if (indexptr.m_bytesPerIndex == sizeof(GLshort))
+			return GL_UNSIGNED_SHORT;
+		
+		if (indexptr.m_bytesPerIndex == sizeof(GLuint))
+			return GL_UNSIGNED_INT;
+
+		return 0;
+	}
+		
+	/////////////////////////////////////////////////////////////
+	Attribute Attribute::Unused = Attribute();
+
+	/////////////////////////////////////////////////////////////
+	IndexPointer::IndexPointer() : m_bytesPerIndex(0),
+								   m_buffer(NULL),
+								   m_ptr(NULL)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	IndexPointer::IndexPointer(const unsigned char *ptr) : m_bytesPerIndex(sizeof(unsigned char)),
+														   m_buffer(NULL),
+														   m_ptr(ptr)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	IndexPointer::IndexPointer(const unsigned short *ptr) : m_bytesPerIndex(sizeof(unsigned short)),
+															m_buffer(NULL),
+															m_ptr(ptr)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	IndexPointer::IndexPointer(const unsigned int *ptr) : m_bytesPerIndex(sizeof(unsigned int)),
+														  m_buffer(NULL),
+														  m_ptr(ptr)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	IndexPointer::IndexPointer(const void *ptr,unsigned char bytesPerIndex,const fg::Buffer *buffer) : m_bytesPerIndex(bytesPerIndex),
+																									   m_buffer(buffer),
+																									   m_ptr(ptr)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void priv::defaultDraw(const Attribute &pos,
+						   const Attribute &clr,
+						   const Attribute &texPos,
+						   const Attribute &norm,
+						   fm::Size vertexCount,
+						   fg::Primitive primitive,
+						   const Texture *texture,
+						   const Shader *shader,
+						   const IndexPointer &indices)
+	{
+		if (pos.isUsed())
+		{
+			fg::Buffer::bind(pos.m_buffer,fg::ArrayBuffer);
+			glCheck(glVertexPointer(pos.m_components,getSizeType(pos),pos.m_bytesPerVertex,pos.m_ptr));
+		}
+	
+		if (clr.isUsed())
+		{
+			fg::Buffer::bind(clr.m_buffer,fg::ArrayBuffer);
+			glCheck(glColorPointer(clr.m_components,getSizeType(clr),clr.m_bytesPerVertex,clr.m_ptr));
+		}
+	
+		if (texPos.isUsed())
+		{
+			fg::Buffer::bind(texPos.m_buffer,fg::ArrayBuffer);
+			glCheck(glTexCoordPointer(texPos.m_components,getSizeType(texPos),texPos.m_bytesPerVertex,texPos.m_ptr));
+		}
+	
+		if (norm.isUsed())
+		{
+			fg::Buffer::bind(norm.m_buffer,fg::ArrayBuffer);
+			glCheck(glNormalPointer(getSizeType(norm),norm.m_bytesPerVertex,norm.m_ptr));
+		}
+		
+		fg::Texture::bind(texture);
+		
+		if (indices.m_bytesPerIndex && (indices.m_ptr || indices.m_buffer))
+		{
+			fg::Buffer::bind(indices.m_buffer,fg::IndexBuffer);
+			glCheck(glDrawElements(primitive,vertexCount,getSizeType(indices),indices.m_ptr));
+		}
+		else
+			glCheck(glDrawArrays(primitive,0,vertexCount));
+	}
+	
+	fm::TlsPtr<drawFuncType> drawerFuncPtr;
+	
+	/////////////////////////////////////////////////////////////
+	void setDrawFunc(drawFuncType *func)
+	{
+		drawerFuncPtr = func;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void draw(const Attribute &pos,
+			  const Attribute &clr,
+			  fm::Size vertexCount,
+			  fg::Primitive primitive,
+			  const Texture *texture,
+			  const Shader *shader,
+			  const IndexPointer &indices)
+	{
+		draw(pos,
+			 clr,
+			 Attribute::Unused,
+			 Attribute::Unused,
+			 vertexCount,
+			 primitive,
+			 texture,
+			 shader,
+			 indices);
+	}
+	
+	
+	/////////////////////////////////////////////////////////////
+	void draw(const Attribute &pos,
+			  const Attribute &clr,
+			  const Attribute &texPos,
+			  fm::Size vertexCount,
+			  fg::Primitive primitive,
+			  const Texture *texture,
+			  const Shader *shader,
+			  const IndexPointer &indices)
+	{
+		draw(pos,
+			 clr,
+			 texPos,
+			 Attribute::Unused,
+			 vertexCount,
+			 primitive,
+			 texture,
+			 shader,
+			 indices);
+	}
+	
+	
+	/////////////////////////////////////////////////////////////
+	void draw(const Attribute &pos,
+			  const Attribute &clr,
+			  const Attribute &texPos,
+			  const Attribute &norm,
+			  fm::Size vertexCount,
+			  fg::Primitive primitive,
+			  const Texture *texture,
+			  const Shader *shader,
+			  const IndexPointer &indices)
+	{
+		if (drawerFuncPtr)
+			(*drawerFuncPtr)(pos,
+							 clr,
+							 texPos,
+							 norm,
+							 vertexCount,
+							 primitive,
+							 texture,
+							 shader,
+							 indices);
+		else
+			priv::defaultDraw(pos,
+							  clr,
+							  texPos,
+							  norm,
+							  vertexCount,
+							  primitive,
+							  texture,
+							  shader,
+							  indices);
 	}
 }

@@ -473,13 +473,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
     bool Shader::isAvailable()
     {
-    	#ifdef GL_SHADING_LANGUAGE_VERSION
-        	std::string glslVer = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
-        	if (glGetError() != GL_NO_ERROR)
-        		return false;
-        	return (glslVer.size()>0);
-        #else
-        	return false;
-        #endif
+		std::string glslVer = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
+		return (glGetError()==GL_NO_ERROR && glslVer.size()>0);
     }
 }

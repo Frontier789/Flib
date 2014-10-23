@@ -38,7 +38,7 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class pt,class ct,class tpt,class nt>
-	inline typename fm::enable_if<fg::is_GLDataType<pt >::value &&
+	inline typename fm::Enable_if<fg::is_GLDataType<pt >::value &&
 								  fg::is_GLDataType<ct >::value,Shader::reference>::type Shader::setAttribPointer(const std::string &posName,
 																												  const std::string &clrName,const fm::vertex<pt,ct,tpt,nt> *pointer)
 	{
@@ -49,7 +49,7 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class pt,class ct,class tpt,class nt>
-	inline typename fm::enable_if<fg::is_GLDataType<pt >::value &&
+	inline typename fm::Enable_if<fg::is_GLDataType<pt >::value &&
 								  fg::is_GLDataType<ct >::value &&
 								  fg::is_GLDataType<tpt>::value,Shader::reference>::type Shader::setAttribPointer(const std::string &posName,
 																												  const std::string &clrName,
@@ -63,7 +63,7 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class pt,class ct,class tpt,class nt>
-	inline typename fm::enable_if<fg::is_GLDataType<pt >::value &&
+	inline typename fm::Enable_if<fg::is_GLDataType<pt >::value &&
 								  fg::is_GLDataType<ct >::value &&
 								  fg::is_GLDataType<tpt>::value &&
 								  fg::is_GLDataType<nt >::value,Shader::reference>::type Shader::setAttribPointer(const std::string &posName,
@@ -80,28 +80,28 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline typename fm::enable_if<fg::is_GLDataType<T>::value,Shader::reference>::type Shader::setAttribPointer(const std::string &name,const T *pointer,unsigned int stride)
+	inline typename fm::Enable_if<fg::is_GLDataType<T>::value,Shader::reference>::type Shader::setAttribPointer(const std::string &name,const T *pointer,unsigned int stride)
 	{
 		return setAttribPointer(name,1,fg::is_GLDataType<T>::enumVal,0,pointer,stride);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline typename fm::enable_if<fg::is_GLDataType<T>::value,Shader::reference>::type Shader::setAttribPointer(const std::string &name,const fm::vector2<T> *pointer,unsigned int stride)
+	inline typename fm::Enable_if<fg::is_GLDataType<T>::value,Shader::reference>::type Shader::setAttribPointer(const std::string &name,const fm::vector2<T> *pointer,unsigned int stride)
 	{
 		return setAttribPointer(name,2,fg::is_GLDataType<T>::enumVal,0,pointer,stride);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline typename fm::enable_if<fg::is_GLDataType<T>::value,Shader::reference>::type Shader::setAttribPointer(const std::string &name,const fm::vector3<T> *pointer,unsigned int stride)
+	inline typename fm::Enable_if<fg::is_GLDataType<T>::value,Shader::reference>::type Shader::setAttribPointer(const std::string &name,const fm::vector3<T> *pointer,unsigned int stride)
 	{
 		return setAttribPointer(name,3,fg::is_GLDataType<T>::enumVal,0,pointer,stride);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline typename fm::enable_if<fg::is_GLDataType<T>::value,Shader::reference>::type Shader::setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride)
+	inline typename fm::Enable_if<fg::is_GLDataType<T>::value,Shader::reference>::type Shader::setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride)
 	{
 		return setAttribPointer(name,4,fg::is_GLDataType<T>::enumVal,0,pointer,stride);
 	}

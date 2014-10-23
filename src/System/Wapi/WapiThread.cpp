@@ -17,7 +17,6 @@
 #include <FRONTIER/System/Wapi/WapiThread.hpp>
 #include <FRONTIER/System/FmLog.hpp>
 #include "fmWapiPrintLastError.hpp"
-#include <string>
 
 namespace fm
 {

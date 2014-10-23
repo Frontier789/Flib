@@ -18,6 +18,7 @@
 #include <FRONTIER/System/Thread.hpp>
 
 #ifdef FRONTIER_OS_WINDOWS
+	#include "Wapi/fmWapiPrintLastError.cpp"
 	#include "Wapi/WapiThread.cpp"
 	namespace fm
 	{
