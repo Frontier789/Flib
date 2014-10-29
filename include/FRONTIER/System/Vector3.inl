@@ -348,24 +348,6 @@ namespace fm
 		z/=scalar;
 		return *this;
 	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> vector3<T>::operator*(const T &scalar) const
-	{
-		return vector3<T>(x*scalar,
-						  y*scalar,
-						  z*scalar);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> vector3<T>::operator/(const T &scalar) const
-	{
-		return vector3<T>(x/scalar,
-						  y/scalar,
-						  z/scalar);
-	}
 }
 
 namespace std
@@ -433,38 +415,72 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline vector3<T> operator+(const vector3<T> &left,const vector3<T2> &right)
+	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,+)> operator+(const vector3<T> &left,const vector3<T2> &right)
 	{
-		return vector3<T>(T(left.x+right.x),
-						  T(left.y+right.y),
-						  T(left.z+right.z));
+		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,+) retT;
+		return vector3<retT>(left.x+right.x,
+							 left.y+right.y,
+							 left.z+right.z);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline vector3<T> operator-(const vector3<T> &left,const vector3<T2> &right)
+	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,-)> operator-(const vector3<T> &left,const vector3<T2> &right)
 	{
-		return vector3<T>(T(left.x-right.x),
-						  T(left.y-right.y),
-						  T(left.z-right.z));
+		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,-) retT;
+		return vector3<retT>(left.x-right.x,
+							 left.y-right.y,
+							 left.z-right.z);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline vector3<T> operator*(const vector3<T> &left,const vector3<T2> &right)
+	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector3<T> &left,const vector3<T2> &right)
 	{
-		return vector3<T>(T(left.x*right.x),
-						  T(left.y*right.y),
-						  T(left.z*right.z));
+		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,*) retT;
+		return vector3<retT>(left.x*right.x,
+							 left.y*right.y,
+							 left.z*right.z);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline vector3<T> operator/(const vector3<T> &left,const vector3<T2> &right)
+	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector3<T> &left,const vector3<T2> &right)
 	{
-		return vector3<T>(T(left.x/right.x),
-						  T(left.y/right.y),
-						  T(left.z/right.z));
+		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,/) retT;
+		return vector3<retT>(left.x/right.x,
+							 left.y/right.y,
+							 left.z/right.z);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector3<T> &left,const T2 &right)
+	{
+		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,*) retT;
+		return vector3<retT>(left.x*right,
+							 left.y*right,
+							 left.z*right);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector3<T> &left,const T2 &right)
+	{
+		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,/) retT;
+		return vector3<retT>(left.x/right,
+							 left.y/right,
+							 left.z/right);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const T &left,const vector3<T2> &right)
+	{
+		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,*) retT;
+		return vector3<retT>(left*right.x,
+							 left*right.y,
+							 left*right.z);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -479,15 +495,6 @@ namespace fm
 	inline bool operator!=(const vector3<T> &left,const vector3<T2> &right)
 	{
 		return left.x!=right.x || left.y!=right.y || left.z!=right.z;
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> operator*(const T &left,const vector3<T> &right)
-	{
-		return vector3<T>(left*right.x,
-						  left*right.y,
-						  left*right.z);
 	}
 	
 	/////////////////////////////////////////////////////////////

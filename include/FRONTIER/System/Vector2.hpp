@@ -16,8 +16,9 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_VECTOR2_HPP_INCLUDED
 #define FRONTIER_VECTOR2_HPP_INCLUDED
-#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/type_traits/Will_result_in.hpp>
 #define FRONTIER_VECTOR2
+
 namespace fm
 {
 	template<class> class vector4;
@@ -217,7 +218,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Project the vector to @a target
 		///
-		/// target * (v <B>Â·</B> target) / |v|^2;
+		/// target * (v <B>·</B> target) / |v|^2;
 		///
 		/// @param target The vector to project to
 		///
@@ -229,7 +230,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Reflect the vector on @a target
 		///
-		/// v * (v <B>Â·</B> target) / |v|^2 - v;
+		/// v * (v <B>·</B> target) / |v|^2 - v;
 		///
 		/// @param target The vector to reflect on
 		///
@@ -464,30 +465,6 @@ namespace fm
         const T &operator[](unsigned int index) const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Overload of binary operator *
-		///
-		/// Memberwise multiplication of a vector by @a scalar
-		///
-		/// @param scalar Value to scale by
-		///
-		/// @return Resulting vector
-		///
-		/////////////////////////////////////////////////////////////
-		vector2<T> operator*(const T &scalar) const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Overload of binary operator /
-		///
-		/// Memberwise division of a vector by @a scalar
-		///
-		/// @param scalar Value to devide by
-		///
-		/// @return Resulting vector
-		///
-		/////////////////////////////////////////////////////////////
-		vector2<T> operator/(const T &scalar) const;
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator *=
 		///
 		/// @param scalar The multiplicant
@@ -613,7 +590,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	vector2<T> operator+(const vector2<T> &left,const vector2<T2> &right);
+	vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,+)> operator+(const vector2<T> &left,const vector2<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector2
@@ -626,7 +603,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	vector2<T> operator-(const vector2<T> &left,const vector2<T2> &right);
+	vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,-)> operator-(const vector2<T> &left,const vector2<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector2
@@ -639,7 +616,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	vector2<T> operator*(const vector2<T> &left,const vector2<T2> &right);
+	vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector2<T> &left,const vector2<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector2
@@ -652,7 +629,46 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	vector2<T> operator/(const vector2<T> &left,const vector2<T2> &right);
+	vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector2<T> &left,const vector2<T2> &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector2
+	/// @brief Overload of binary operator *
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (scalar)
+	///
+	/// @return Memberwise multiplication of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector2<T> &left,const T2 &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector2
+	/// @brief Overload of binary operator /
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (scalar)
+	///
+	/// @return Memberwise division of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector2<T> &left,const T2 &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector2
+	/// @brief Overload of binary operator *
+	///
+	/// @param left Left operand (scalar)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise multiplication with @a other
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const T &left,const vector2<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector2
@@ -692,25 +708,11 @@ namespace fm
 	template<class T>
 	vector2<T> operator-(const vector2<T> &vec);
 
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector2
-	/// @brief Overload of binary operator *
-	///
-	/// @param left Left operand (scalar)
-	/// @param right Right operand (vector)
-	///
-	/// @return Memberwise multiplication with @a other
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	vector2<T> operator*(const T &left,const vector2<T> &right);
-
 
 	typedef vector2<float> 		  vec2;
 	typedef vector2<float> 		  vec2f;
 	typedef vector2<int>   		  vec2i;
 	typedef vector2<unsigned int> vec2u;
-	typedef vector2<fm::Size>     vec2s;
 
 }
 
