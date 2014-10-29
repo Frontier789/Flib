@@ -91,9 +91,31 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
+	typename TlsPtr<T>::reference TlsPtr<T>::set(T *pointer)
+	{
+		((fm::priv::TlsPtr*)m_impl)->setPtr((void*)(UintPtr)pointer);
+		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
 	bool TlsPtr<T>::isValid() const
 	{
 		return ((fm::priv::TlsPtr*)m_impl)->isValid();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	T *TlsPtr<T>::get()
+	{
+		return (T*)(UintPtr)((fm::priv::TlsPtr*)m_impl)->getPtr();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	const T *TlsPtr<T>::get() const
+	{
+		return (const T*)(UintPtr)((const fm::priv::TlsPtr*)m_impl)->getPtr();
 	}
 	
 	/////////////////////////////////////////////////////////////

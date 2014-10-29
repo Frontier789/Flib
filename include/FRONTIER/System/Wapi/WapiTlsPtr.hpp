@@ -31,8 +31,8 @@ namespace fm
 		class FRONTIER_API TlsPtr : public fm::NonCopyable
 		{
 			void *m_id;     ///< The id of the container
-			bool init();    ///< Iternal function used at initialization
-			bool cleanUp(); ///< Iternal function used at destruction
+			bool init();    ///< Internal function used at initialization
+			bool cleanUp(); ///< Internal function used at destruction
 		public:
 			
 			/////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ namespace fm
 			void *getPtr() const;
 			
 			/////////////////////////////////////////////////////////////
-			/// @brief Find out if a iternal error happened
+			/// @brief Find out if a internal error happened
 			/// 
 			/// @return True iff no error happend
 			/// 

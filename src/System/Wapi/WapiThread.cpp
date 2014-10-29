@@ -22,8 +22,6 @@ namespace fm
 {
 	namespace Wapi
 	{
-		fm::TlsPtr<fm::Thread> Thread::m_currentThread;
-
 		/////////////////////////////////////////////////////////////
 		DWORD __stdcall Thread::startThread(void *param)
 		{
@@ -31,7 +29,7 @@ namespace fm
 			
 			if (caller)
 			{
-				m_currentThread = caller->m_owner;
+				caller->m_currentThreadPtr->set(caller->m_owner);
 				caller->callFunc();
 			}
 			
@@ -47,12 +45,6 @@ namespace fm
 
 		void Thread::cleanUp()
 		{
-			// ask the thread to exit
-			requestExit();
-			
-			// wait for it
-			join();
-			
 			// since the thread is not running at this point
 			// we can safely set it by =
 			m_isExiting = 0;
@@ -101,7 +93,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		Thread *Thread::getCurrentThread()
 		{
-			return (Thread*)(m_currentThread->getImpl());
+			return (Thread*)(fm::Thread::getCurrentThread()->getImpl());
 		}
 
 		/////////////////////////////////////////////////////////////

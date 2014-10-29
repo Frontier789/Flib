@@ -56,7 +56,7 @@ namespace fm
 		/// @brief Locks the mutex
 		/// 
 		/// Blocks until the mutex is not available for lock.
-		/// Upon iternal error the mutex is NOT locked and false is returned
+		/// Upon internal error the mutex is NOT locked and false is returned
 		/// 
 		/// @return True iff everything went right
 		/// 

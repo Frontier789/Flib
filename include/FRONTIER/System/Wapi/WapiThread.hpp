@@ -18,7 +18,6 @@
 #define FRONTIER_WAPITHREAD_HPP_INCLUDED
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/API.h>
-#include <FRONTIER/System/TlsPtr.hpp>
 #define FRONTIER_WAPITHREAD
 #include <windows.h>
 
@@ -37,12 +36,11 @@ namespace fm
 	{
 		class FRONTIER_API Thread : public fm::NonCopyable
 		{
-			static fm::TlsPtr<fm::Thread> m_currentThread;      ///< Holds the current thread
 			static DWORD __stdcall startThread(void *param);    ///< The entry point of a new thread
 			HANDLE m_id;                                        ///< The id of the thread
 			mutable volatile LONG m_isExiting;                  ///< Stores whether the thread is are exiting
-			void cleanUp();                                     ///< Iternal cleaning function
-			bool create(fm::priv::ThreadFuntionCaller *runner); ///< Iternal runner function
+			void cleanUp();                                     ///< Internal cleaning function
+			bool create(fm::priv::ThreadFuntionCaller *runner); ///< Internal runner function
 		public:
 			typedef Thread &reference;
 			typedef const Thread &const_reference;

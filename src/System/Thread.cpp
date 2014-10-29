@@ -38,9 +38,17 @@
 
 namespace fm
 {
+	fm::TlsPtr<fm::Thread> Thread::m_currentThread;
+
 	/////////////////////////////////////////////////////////////
 	void Thread::cleanUp()
 	{
+		// ask the thread to exit
+		requestExit();
+		
+		// wait for it
+		join();
+		
 		// delete the caller data
 		delete (fm::priv::ThreadFuntionCaller*)m_storage;
 		m_storage = NULL;
@@ -56,8 +64,10 @@ namespace fm
 		// clean start
 		cleanUp();
 		
+		// save the caller object
 		m_storage = storage;
 		
+		// create new implementation object
 		m_impl = new priv::Thread;
 		
 		if (!((priv::Thread*)m_impl)->create((fm::priv::ThreadFuntionCaller*)m_storage))
@@ -93,7 +103,7 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	Thread *Thread::getCurrentThread()
 	{
-		return priv::Thread::m_currentThread;
+		return (Thread*)m_currentThread;
 	}
 
 	/////////////////////////////////////////////////////////////

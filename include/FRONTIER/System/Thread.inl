@@ -26,8 +26,10 @@ namespace fm
 		{
 		public:
 			fm::Thread *m_owner;
+			fm::TlsPtr<fm::Thread> *m_currentThreadPtr;
 			
-			inline ThreadFuntionCaller(fm::Thread *m_owner) : m_owner(m_owner)
+			inline ThreadFuntionCaller(fm::Thread *m_owner) : m_owner(m_owner),
+															  m_currentThreadPtr(&m_owner->m_currentThread)
 			{
 				
 			}

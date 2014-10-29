@@ -18,11 +18,16 @@
 #define FRONTIER_THREAD_HPP_INCLUDED
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/System/TlsPtr.hpp>
 #include <FRONTIER/System/Time.hpp>
 #define FRONTIER_THREAD
 
 namespace fm
 {
+	namespace priv
+	{
+		class ThreadFuntionCaller;
+	}
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to launch and manage a new thread (see <a href="http://en.wikipedia.org/wiki/Thread_%28computing%29">this wikipedia article</a> for further information)
 	/// 
@@ -33,10 +38,11 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Thread : public fm::NonCopyable
 	{
-		void *m_impl;      	     ///< Stores a pointer to the undelying implementation
-		bool init(void *); 	     ///< Iternal function
-		void cleanUp();    	     ///< Iternal function
-		void *m_storage;   	     ///< Iternal value used to store the calling data
+		static fm::TlsPtr<fm::Thread> m_currentThread; ///< Holds the current thread
+		void *m_impl;      ///< Stores a pointer to the undelying implementation
+		bool init(void *); ///< Internal function
+		void cleanUp();    ///< Internal function
+		void *m_storage;   ///< Internal value used to store the calling data
 	public:
 		typedef Thread &reference;
 		typedef const Thread &const_reference;
@@ -61,7 +67,7 @@ namespace fm
 		///
 		/// @param func The starting point of the new thread
 		///
-		/// @return If @a func is NULL or the iternal function fails false
+		/// @return If @a func is NULL or the internal function fails false
 		///
 		/////////////////////////////////////////////////////////////
 		template<class R>
@@ -76,7 +82,7 @@ namespace fm
 		/// @param func The starting point of the new thread
 		/// @param param1 The 1st parameter to pass to the function
 		///
-		/// @return If @a func is NULL or the iternal function fails false
+		/// @return If @a func is NULL or the internal function fails false
 		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1>
@@ -92,7 +98,7 @@ namespace fm
 		/// @param param1 The 1st parameter to pass to the function
 		/// @param param2 The 2nd parameter to pass to the function
 		///
-		/// @return If @a func is NULL or the iternal function fails false
+		/// @return If @a func is NULL or the internal function fails false
 		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2>
@@ -109,7 +115,7 @@ namespace fm
 		/// @param param2 The 2nd parameter to pass to the function
 		/// @param param3 The 3rd parameter to pass to the function
 		///
-		/// @return If @a func is NULL or the iternal function fails false
+		/// @return If @a func is NULL or the internal function fails false
 		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2,class P3>
@@ -127,7 +133,7 @@ namespace fm
 		/// @param param3 The 3rd parameter to pass to the function
 		/// @param param4 The 4th parameter to pass to the function
 		///
-		/// @return If @a func is NULL or the iternal function fails false
+		/// @return If @a func is NULL or the internal function fails false
 		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2,class P3,class P4>
@@ -146,7 +152,7 @@ namespace fm
 		/// @param param4 The 4th parameter to pass to the function
 		/// @param param5 The 5th parameter to pass to the function
 		///
-		/// @return If @a func is NULL or the iternal function fails false
+		/// @return If @a func is NULL or the internal function fails false
 		///
 		/////////////////////////////////////////////////////////////
 		template<class R,class P1,class P2,class P3,class P4,class P5>
@@ -363,6 +369,9 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool forceExit(); //// !MAY CAUSE MEMORY LEAK!
+		
+		
+		friend class fm::priv::ThreadFuntionCaller;
 	};	
 }
 

@@ -60,6 +60,15 @@ namespace fm
 	typedef priv::TypeSelectorAtLeast<priv::Uintlist,sizeof(sizeof(void*))*fm::priv::bits_in_byte::value>::type Size;
 	typedef priv::TypeSelectorAtLeast<priv::Uintlist,sizeof(void*)*fm::priv::bits_in_byte::value>::type UintPtr;
 	typedef priv::TypeSelectorAtLeast<priv::Intlist,sizeof(void*)*fm::priv::bits_in_byte::value>::type IntPtr;
+	
+	template<class> class vector2;
+	template<class> class vector3;
+	template<class> class vector4;
+	
+	/////////////////////////////////////////////////////////////
+	typedef vector2<Size> vec2s;
+	typedef vector3<Size> vec3s;
+	typedef vector4<Size> vec4s;
 }
 
 #endif // FRONTIER_SIZE_HPP_INCLUDED
