@@ -22,9 +22,9 @@ namespace fw
 			HDC   m_hdc;    ///< The handle of the device context
 			HWND  m_hwnd;   ///< The handle of the window
 			HGLRC m_hglrc;  ///< The handle of the OpenGL rednering context
-			bool cleanUp(); ///< Iternal function that cleans up resources
+			bool cleanUp(); ///< Internal function that cleans up resources
 			fw::GlContext::Settings m_settings; ///< The attributes of the context
-			bool setPixelFormat(); ///< Iternal function
+			bool setPixelFormat(); ///< Internal function
 			bool m_ownWindow;      ///< Indicates whether the context holds a dummy window
 			static unsigned int m_contextCount; ///< Holds the number of contexts with dummy windows
 			

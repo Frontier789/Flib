@@ -27,13 +27,13 @@
 #include <cmath>
 namespace fg
 {
-	
+
 	////////////////////////////////////////////////////////////
 	priv::CodePoint::CodePoint()
 	{
-		
+
 	}
-	
+
 	////////////////////////////////////////////////////////////
 	priv::CodePoint::CodePoint(char c)
 	{
@@ -47,18 +47,18 @@ namespace fg
 			cp = (fm::Uint32)character;
 
 		#else // otherwise we'll use std::locale
-			
+
 			cp = (fm::Uint32)(std::use_facet< std::ctype<wchar_t> >(std::locale()).widen(c));
 
 		#endif
 	}
-	
+
 	////////////////////////////////////////////////////////////
 	priv::CodePoint::CodePoint(wchar_t c) : cp(c)
 	{
-		
+
 	}
-	
+
 	////////////////////////////////////////////////////////////
 	priv::CodePoint::operator fm::Uint32()
 	{
@@ -96,7 +96,7 @@ namespace fg
 	{
 
 	}
-	
+
 	////////////////////////////////////////////////////////////
 	priv::GlyphMap::Row *findGlyphPlace(priv::GlyphMap &gmap,const Image &glyphImg)
 	{
@@ -106,7 +106,7 @@ namespace fg
 				gmap.rows[i].height <= glyphImg.getSize().h*1.3 +2 &&
 				gmap.rows[i].width+1+glyphImg.getSize().w < gmap.atlas.getSize().w)
 					return &gmap.rows[i]; // if so we found it
-		
+
 		// if there is not a single row
 		if (!gmap.rows.size() && glyphImg.getSize().h+2 < gmap.atlas.getSize().h)
 		{
@@ -122,11 +122,11 @@ namespace fg
 			}
 		return NULL;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/// constructors /////////////////////////////////////////////////////////
     Font::Font() : m_refCount(NULL),
                    m_renderer(NULL),
@@ -192,13 +192,13 @@ namespace fg
     Glyph Font::getGlyph(priv::CodePoint letter,unsigned int style) const
     {
     	if (!m_renderer)
-			return Glyph(NULL,0,0,0,0,0,0);
-		
+			return Glyph();
+
 		// we try finding it in the dictionary
         std::map<priv::GlyphMap::Identifier,Glyph>::const_iterator it=(*m_glyphMaps)[m_renderer->m_currentSize].glyphTable.find(priv::GlyphMap::Identifier(letter,style));
 		if (it!=(*m_glyphMaps)[m_renderer->m_currentSize].glyphTable.end())
 			return it->second;
-		
+
 		// no match, create it
 		return createGlyph(letter,m_renderer->m_currentSize,style);
     }
@@ -211,30 +211,30 @@ namespace fg
             return Image();
         return m_renderer->renderGlyph(letter,style,leftDown);
     }
-    
+
 	////////////////////////////////////////////////////////////
     Glyph Font::createGlyph(priv::CodePoint codePoint, unsigned int characterSize,unsigned int style) const
     {
 		if (!m_renderer || !m_glyphMaps)
-			return Glyph(NULL,0,0,0,0,0,0);
-		
+			return Glyph();
+
 		// note if we dont have a dictionary for this size yet
 		bool newTex = m_glyphMaps->find(characterSize)==m_glyphMaps->end();
-		
+
 		// notify renderer
 		setSize(characterSize);
-		
+
 		priv::GlyphMap &gmap = (*m_glyphMaps)[characterSize];
 
 		if (newTex) // if the dictionary is new we create a small image for it
 			gmap.atlas.loadFromImage(Image(characterSize*1.5,characterSize*1.2,Color(0,0,0,0))),
 			gmap.atlas.setRepeated(false),
 			gmap.atlas.setSmooth(false);
-		
+
 		// render the glyph
 		fm::vec2 leftDown;
 		Image glyphImg = renderGlyph(codePoint,style,&leftDown);
-		
+
 		// find out which row we'll insert to
 		priv::GlyphMap::Row *rowToInsert = findGlyphPlace(gmap,glyphImg);
 
@@ -251,9 +251,9 @@ namespace fg
 				fg_log << "fg::Font is out of Texture space" << std::endl;
 				return Glyph();
 			}
-			
+
 			/** the S_L_O_W part **/
-			
+
 			Image newImg;
 			Image oldImg = gmap.atlas.copyToImage(); // copy back the texture
 			newImg.create(newSize,Color(0,0,0,0));  //  create bigger new image
@@ -261,15 +261,24 @@ namespace fg
 			gmap.atlas.loadFromImage(newImg);     //    send the new texture to gl
 			rowToInsert = findGlyphPlace(gmap,glyphImg);
 		}
-		
+
 		if (!rowToInsert) // theorically can never happen, but i dont like dereferencing NULL
-			return Glyph(NULL,0,0,0,0,0,0);
-		
+			return Glyph();
+
+		glyphImg.flipVertically();
+
 		// Finally update the texture with the new glyph
 		gmap.atlas.update(glyphImg,rowToInsert->width+1,rowToInsert->start+1);
 		rowToInsert->width+=glyphImg.getSize().w+1;
-		gmap.glyphTable[priv::GlyphMap::Identifier(codePoint,style)] = Glyph(&gmap.atlas,rowToInsert->width-glyphImg.getSize().w,rowToInsert->start+1,glyphImg.getSize().w,glyphImg.getSize().h,leftDown.x,leftDown.y);
-		return gmap.glyphTable[priv::GlyphMap::Identifier(codePoint,style)];
+
+		fg::Glyph &ret = gmap.glyphTable[priv::GlyphMap::Identifier(codePoint,style)];
+
+		fg::Texture *atlas = &gmap.atlas;
+		fm::vec2u pos(rowToInsert->width-glyphImg.getSize().w,rowToInsert->start+1);
+
+		ret = Glyph(atlas,pos,glyphImg.getSize(),leftDown);
+
+		return ret;
     }
 
 
@@ -330,18 +339,18 @@ namespace fg
 	    return (*m_glyphMaps)[m_renderer->m_currentSize].atlas;
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
 
 	////////////////////////////////////////////////////////////
 	Font::Renderer::Renderer() : m_loaded     (false),
@@ -352,7 +361,7 @@ namespace fg
 								 m_minH       (0),
 								 m_lineGap    (0)
 	{
-		
+
 	}
 
 	////////////////////////////////////////////////////////////
@@ -379,13 +388,13 @@ namespace fg
 				m_loaded = false;
 				return false;
 			}
-			
+
 			// we now know how many characters to expect
 			m_fileContent.resize(length);
-			
+
 			// find the begining of the file
 			in.seekg(0, std::ios::beg);
-			
+
 			// read length number of characters
 			in.read((char*)&m_fileContent[0],length);
 			if (in.fail())
@@ -402,7 +411,7 @@ namespace fg
 			m_loaded = false;
 			return false;
 		}
-			
+
 		// ask stbtt to initialize (the file may not be a valid ttf)
 		if (!stbtt_InitFont((stbtt_fontinfo*)m_fontInfo,&m_fileContent[0],0))
 		{
@@ -410,10 +419,10 @@ namespace fg
 			m_loaded = false;
 			return false;
 		}
-		
+
 		m_loaded = true;
 		setSize(size); // set default size
-		
+
 		return true;
 	}
 
@@ -422,10 +431,10 @@ namespace fg
 	{
 		if (!m_fontInfo)
 			 m_fontInfo = new stbtt_fontinfo;
-		
+
 		// copy the whole data as stbtt needs it when rasterizing
 		m_fileContent = std::vector<unsigned char>((const unsigned char*)fileContent,((const unsigned char*)fileContent)+fileSizeInBytes);
-		
+
 		// ask stbtt to initialize (the data may not be a valid ttf)
 		if (!stbtt_InitFont((stbtt_fontinfo*)m_fontInfo,&m_fileContent[0],0))
 		{
@@ -433,10 +442,10 @@ namespace fg
 			m_loaded = false;
 			return false;
 		}
-		
+
 		m_loaded = true;
 		setSize(size); // set default size
-		
+
 		return true;
 	}
 
@@ -445,12 +454,12 @@ namespace fg
 	{
 		if (!m_loaded)
 			return Image();
-		
+
 		// if rendering upper/lower index decrease size
 		unsigned int originalSize = m_currentSize;
 		if ((style & Style::Subscript) xor (style & Style::Superscript))
 			setSize(m_currentSize*.7);
-		
+
 		// find out the size of the glyph image
 		int xmin,ymin,xmax,ymax;
 		stbtt_GetCodepointBitmapBox((stbtt_fontinfo*)m_fontInfo, letter, m_scale, m_scale, &xmin, &ymax, &xmax, &ymin);
@@ -459,15 +468,15 @@ namespace fg
 		ymax*=-1;
 
 		unsigned int w=(xmax-xmin),h=(ymax-ymin);
-		
+
 		// initialize plain data for the monochrome bitmap
 		std::vector<unsigned char> bitmap;
 		bitmap.resize(w*h);
-		
+
 		// ask stbtt to rasterize
 		stbtt_MakeCodepointBitmap((stbtt_fontinfo*)m_fontInfo,&bitmap[0],w,h,w,m_scale,m_scale,letter);
-		
-		// if stbtt fails 
+
+		// if stbtt fails
 		if (w==0 && h==0)
 			return Image();
 
@@ -481,7 +490,7 @@ namespace fg
 			{
 				int db=0,sum=0;
 				int ax=int(x)-1,ay=int(y)-1;
-				
+
 				// calculate the neighbour average (increase a bit)
 				for(int x1=-1;x1<=1;x1++)for(int y1=-1;y1<=1;y1++)
 				{
@@ -492,15 +501,15 @@ namespace fg
 						db++;
 					}
 				}
-				
+
 				// write it back (check for too big value)
 				bitmap[x+y*(w+2)] = std::min(255.0,db ? sum : 0.0);
 			}
-			
+
 			// update glyph image details
 			w+=2,h+=2,xmax++,xmin--,xmax++,ymin--;
 		}
-		
+
 		// manually italicise if requested
 		if (style & Style::Italic)
 		{
@@ -522,11 +531,11 @@ namespace fg
 			}
 			C(newW*h)
 				bitmap[i] = std::min(255,int(bitmap[i]));
-			
+
 			// update width
 			w = newW;
 		}
-		
+
 		// manually underline if requested
 		if (style & Style::Underlined)
 		{
@@ -541,13 +550,13 @@ namespace fg
 				ymin = lineMax-lineW;
 				h = ymax-ymin;
 			}
-			
+
 			// simply set the value to one for every pixel in the line
 			Cx(w)
 				Cy((unsigned int)(lineW))
 					bitmap[x+(ymax-lineMax+y)*w] = 255;
 		}
-		
+
 		// manually strike through if requested
 		if (style & Style::Crossed)
 		{
@@ -565,13 +574,13 @@ namespace fg
 				ymax = lineMin+lineW;
 				h = ymax-ymin;
 			}
-			
+
 			// simply set the value to one for every pixel in the line
 			Cx(w)
 				Cy((unsigned int)(lineW))
 					bitmap[x+(ymax-lineMin+y)*w] = 255;
 		}
-		
+
 		// manually create outline through if requested
 		if (style & Style::Outline)
 		{
@@ -583,7 +592,7 @@ namespace fg
 				int db=0,sum=0;
 				int ax=int(x)-1,ay=int(y)-1;
 				int curVal = fm::rect2i(0,0,w-1,h-1).contains(fm::vec2(ax,ay)) ? obitmap[ax+ay*w] : 0;
-				
+
 				// this algorithm uses the difference between the neighbour pixels (the bigger the difference the bigger the output will be)
 				for(int x1=-1;x1<=1;x1++)for(int y1=-1;y1<=1;y1++)
 				{
@@ -595,15 +604,15 @@ namespace fg
 						db++;
 					}
 				}
-				
+
 				// do some scaling on the value and clamp it to [0;255]
 				bitmap[x+y*(w+2)] = std::min(255.0,db ? sum/db*1.6 : 0.0)/*std::min(255.0,db ? std::pow(sum/db,1.1) : 0.0)*(curVal < 230 ? 1 : .5)*/;
 			}
-			
+
 			// update glyph image details
 			w+=2,h+=2,xmax++,xmin--,xmax++,ymin--;
 		}
-		
+
 		// manually create upper index if requested
 		if (style & Style::Superscript && !(style & Style::Subscript))
 		{
@@ -611,7 +620,7 @@ namespace fg
 			ymax+=h/2.f;
 			h+=h/2.f;
 		}
-		
+
 		// manually create lower index if requested
 		if (style & Style::Subscript && !(style & Style::Superscript))
 		{
@@ -647,7 +656,7 @@ namespace fg
 		ret.maxH = m_maxH;
 		ret.minH = m_minH;
 		ret.lineGap = m_lineGap;
-		
+
 		return ret;
 	}
 

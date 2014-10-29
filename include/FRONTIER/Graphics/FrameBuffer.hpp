@@ -49,7 +49,7 @@ namespace fg
 	class FRONTIER_API FrameBuffer : public fm::NonCopyable, public GlObject
 	{
 		unsigned int m_depthBufID; ///< The id of the depth buffer
-		void init(); ///< Iternal function used at setup
+		void init(); ///< Internal function used at setup
 	public:
 		typedef FrameBuffer &reference;
 		typedef const FrameBuffer &const_reference;

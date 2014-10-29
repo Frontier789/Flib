@@ -59,7 +59,7 @@ namespace fg
 	private:
 		BufferType m_type;		   ///< Type of the buffer
 		Usage m_usage;			   ///< Hinting for OpenGL on buffer usage
-		void init(); ///< Iternal function used to create the OpenGL id
+		void init(); ///< Internal function used to create the OpenGL id
 	public:
 		typedef Buffer &reference;
 		typedef const Buffer &const_reference;

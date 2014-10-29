@@ -15,22 +15,41 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/Glyph.hpp>
+#include <FRONTIER/System/Vector2.hpp>
 namespace fg
 {
     /// constructors /////////////////////////////////////////////////////////
-    Glyph::Glyph() {}
+	Glyph::Glyph() : tex(0)
+	{
+
+	}
+
+    ////////////////////////////////////////////////////////////
+	Glyph::Glyph(const Glyph &copy) : tex(copy.tex),
+									  pos(copy.pos),
+									  size(copy.size),
+									  leftdown(copy.leftdown)
+	{
+		
+	}
 
 
     ////////////////////////////////////////////////////////////
 	Glyph::Glyph(const Texture *tex,unsigned int x,unsigned int y,unsigned int w,unsigned int h,int xMin,int yMin) : tex(tex),
-                                                                                                                     x(x),
-                                                                                                                     y(y),
-                                                                                                                     w(w),
-                                                                                                                     h(h),
-                                                                                                                     yMin(yMin),
-                                                                                                                     xMin(xMin)
+                                                                                                                     pos(x,y),
+                                                                                                                     size(w,h),
+                                                                                                                     leftdown(yMin,xMin)
     {
 
     }
+
+	//////////////////////////////////
+	Glyph::Glyph(const Texture *tex,const fm::vec2u &pos,const fm::vec2u &size,const fm::vec2i &leftdown) : tex(tex),
+																											pos(pos),
+																											size(size),
+																											leftdown(leftdown)
+	{
+
+	}
 }
 

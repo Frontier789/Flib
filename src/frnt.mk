@@ -4,6 +4,8 @@ AR=ar
 CD=cd
 RM=rm
 
+#CXXFLAGS+= -pg -g -fno-inline-functions
+
 CXXFLAGS+=-Wall -Os -Wfatal-errors -pedantic -DFRONTIER_LIBBUILD 
 
 ifeq ($(LIBNAME),)

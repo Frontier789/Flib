@@ -17,12 +17,20 @@
 #ifndef FRONTIER_GLYPH_HPP_INCLUDED
 #define FRONTIER_GLYPH_HPP_INCLUDED
 #include <FRONTIER/System/macros/API.h>
+
+#include <FRONTIER/System/macros/dont_include_inl_begin>
+
+#include <FRONTIER/System/Vector2.hpp>
+
+#include <FRONTIER/System/macros/dont_include_inl_end>
+
 #define FRONTIER_GLYPH
 namespace fg
 {
 	class Texture;
 	//////////////////////////////////
-	/// Glyph
+	/// @brief Class used to hold information about a glyph
+	///
 	//////////////////////////////////
 	class FRONTIER_API Glyph
 	{
@@ -30,9 +38,10 @@ namespace fg
 		typedef Glyph &reference;
 		typedef const Glyph &const_reference;
 
-		const Texture *tex;
-		unsigned int x,y,w,h;
-		int yMin,xMin;
+		const Texture *tex; ///< The texture in which the glyph is defined
+		fm::vec2u pos;      ///< The position in the texture in pixels
+		fm::vec2u size;     ///< The size in the texture in pixels
+		fm::vec2i leftdown; ///< The difference from the leftdown corner
 
 		//////////////////////////////////
 		/// @brief Default constructor
@@ -41,10 +50,22 @@ namespace fg
 		Glyph();
 
 		//////////////////////////////////
+		/// @brief Copy constructor
+		///
+		//////////////////////////////////
+		Glyph(const_reference copy);
+
+		//////////////////////////////////
 		/// @brief Construct the Glyph from its values
 		///
 		//////////////////////////////////
 		Glyph(const Texture *tex,unsigned int x,unsigned int y,unsigned int w,unsigned int h,int xMin,int yMin);
+
+		//////////////////////////////////
+		/// @brief Construct the Glyph from its values
+		///
+		//////////////////////////////////
+		Glyph(const Texture *tex,const fm::vec2u &pos,const fm::vec2u &size,const fm::vec2i &leftdown);
 	};
 }
 #endif

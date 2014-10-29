@@ -51,10 +51,10 @@ namespace fm
 	class FRONTIER_API Log
 	{
 		bool m_canRecallLog;        ///< If true, the last log can be accessed through getLastLog
-		bool m_newLog;              ///< Iternal variable
+		bool m_newLog;              ///< Internal variable
 		std::string *m_lastLog;     ///< Contains the last sent log
 		std::string *m_name;        ///< The name of the log (can be changed)
-		std::string *m_tmp;	        ///< Iternally used temrory object
+		std::string *m_tmp;	        ///< Internally used temrory object
 		bool m_promptName;          ///< If true then at every time logging @a m_name will be prompted (initially false)
 		std::ostream *m_os;         ///< Pointer to the current target output stream
 	public:

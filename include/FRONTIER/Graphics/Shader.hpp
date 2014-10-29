@@ -72,7 +72,7 @@ namespace fg
 		/// Uniforms are "global" variables in GLSL   
 		/// they can only be modified by the application (not from shader program)
 		/// 
-		/// This class is used iternally and you shouldn't worry about it
+		/// This class is used internally and you shouldn't worry about it
 		/// 
 		/////////////////////////////////////////////////////////////
 	    class FRONTIER_API TexUniformData
@@ -85,7 +85,7 @@ namespace fg
 			/////////////////////////////////////////////////////////////
 			/// @brief Default constructor
 			/// 
-			/// Again, this is iternal stuff
+			/// Again, this is internal stuff
 			/// 
 			/// @param location location
 			/// @param slot slot
@@ -99,8 +99,8 @@ namespace fg
 		std::map<std::string, int> m_attribs;    ///< The "id" of the attributes and their name
 		std::map<std::string, TexUniformData > m_textures; ///< The state and name of the texture uniforms
 		unsigned int m_texCount; ///< The number of bound textures
-		bool link(); ///< Iternal function used to link the compiled shaders to the shader program
-		void init(); ///< Iternal function used at setup
+		bool link(); ///< Internal function used to link the compiled shaders to the shader program
+		void init(); ///< Internal function used at setup
     public:
         typedef Shader &reference;
         typedef const Shader &const_reference;
@@ -207,7 +207,7 @@ namespace fg
 		/// correspond to an active uniform in the shader program 
 		/// an error is prompted to fg_log and -1 is returned
 		/// 
-		/// This function is mostly used iternally
+		/// This function is mostly used internally
 		/// 
 		/// @param name The name of the uniform to find
 		/// 
@@ -223,7 +223,7 @@ namespace fg
 		/// correspond to an active attribute in the shader program 
 		/// an error is prompted to fg_log and -1 is returned
 		/// 
-		/// This function is mostly used iternally
+		/// This function is mostly used internally
 		/// 
 		/// @param name The name of the attribute to find
 		/// 
@@ -341,7 +341,7 @@ namespace fg
 		/// with this shader program being bound will use
 		/// this data
 		/// 
-		/// This function is mostly used iternally
+		/// This function is mostly used internally
 		/// 
 		/// @param name The name of the attribute
 		/// @param components The number of components in the attribute
@@ -847,7 +847,7 @@ namespace fg
 		/// valid OpenGL shader and can be attached to a shader program
 		/// and it should be deleted using glDeleteShader by the caller
 		/// 
-		/// This function is used iternally and
+		/// This function is used internally and
 		/// you should only call this if you know
 		/// exactly what you are doing
 		/// 
@@ -870,7 +870,7 @@ namespace fg
 		/// valid OpenGL shader and can be attached to a shader program
 		/// and it should be deleted using glDeleteShader by the caller
 		/// 
-		/// This function is used iternally and
+		/// This function is used internally and
 		/// you should only call this if you know
 		/// exactly what you are doing
 		/// 

@@ -330,13 +330,13 @@ namespace fg
     private:
     	
 		/////////////////////////////////////////////////////////////
-		/// @brief Iternal function used to clean up the resources
+		/// @brief Internal function used to clean up the resources
 		/// 
 		/////////////////////////////////////////////////////////////
         void cleanUp();
         
 		/////////////////////////////////////////////////////////////
-		/// @brief Iternal function used to initialize the resources
+		/// @brief Internal function used to initialize the resources
 		/// 
 		/////////////////////////////////////////////////////////////
 		void init();
@@ -350,14 +350,14 @@ namespace fg
 	//////////////////////////////////
 	class FRONTIER_API Font::Renderer : fm::NonCopyable
 	{
-		bool  m_loaded;                           ///< Iternal data  
-		void *m_fontInfo;                         ///< Iternal data  
-		mutable float m_scale;                    ///< Iternal data  
-		mutable unsigned int m_currentSize;       ///< Iternal data  
-        mutable int m_maxH;                       ///< Iternal data 
-        mutable int m_minH;                       ///< Iternal data 
-        mutable int m_lineGap;                    ///< Iternal data 
-		std::vector<unsigned char> m_fileContent; ///< Iternal data  
+		bool  m_loaded;                           ///< Internal data  
+		void *m_fontInfo;                         ///< Internal data  
+		mutable float m_scale;                    ///< Internal data  
+		mutable unsigned int m_currentSize;       ///< Internal data  
+        mutable int m_maxH;                       ///< Internal data 
+        mutable int m_minH;                       ///< Internal data 
+        mutable int m_lineGap;                    ///< Internal data 
+		std::vector<unsigned char> m_fileContent; ///< Internal data  
 	public:
 		typedef Renderer &reference;
 		typedef const Renderer &const_reference;

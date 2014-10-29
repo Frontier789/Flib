@@ -17,7 +17,13 @@
 #ifndef FRONTIER_RECT_HPP_INCLUDED
 #define FRONTIER_RECT_HPP_INCLUDED
 #include <FRONTIER/System/macros/SIZE.hpp>
+
+#include <FRONTIER/System/macros/dont_include_inl_begin>
+
 #include <FRONTIER/System/Vector2.hpp>
+
+#include <FRONTIER/System/macros/dont_include_inl_end>
+
 #define FRONTIER_RECT
 namespace fm
 {

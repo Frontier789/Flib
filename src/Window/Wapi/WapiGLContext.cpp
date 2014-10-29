@@ -229,7 +229,7 @@ namespace fw
 			if (m_hdc && m_hglrc && active)
 				result = wglMakeCurrent(m_hdc,m_hglrc); // Then activate it
 			else
-				result = wglMakeCurrent(NULL,NULL);     // Otherwise deactivate the current
+				result = wglMakeCurrent(m_hdc,NULL);     // Otherwise deactivate the current
 			
 			if (!result) // Check for errors
 			{

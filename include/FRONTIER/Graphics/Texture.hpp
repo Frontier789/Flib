@@ -474,7 +474,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Convert size to real size
 		///
-		/// This function is private and used iternally
+		/// This function is private and used internally
 		///
 		/// @param size size
 		///

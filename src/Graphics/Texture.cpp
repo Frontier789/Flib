@@ -36,12 +36,12 @@ namespace fg
 		}
 	}
 	void (*Texture::m_setTexMat)(const fm::mat4 &m) = priv::defaultSetTextureMatrixFunc;
-	
+
 	/// constructor /////////////////////////////////////////////////////////
 	Texture::Texture() : m_isRepeated(false),
 						 m_isSmooth(false)
 	{
-		
+
 	}
 
 
@@ -61,7 +61,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	Texture::Texture(const Image &img) : m_isRepeated(false),
 										 m_isSmooth(false)
-	
+
 	{
 		loadFromImage(img);
 	}
@@ -98,15 +98,15 @@ namespace fg
 		if (realSize.w > maxSize || realSize.h > maxSize)
 		{
 			fg_log << "Couldn't create texture with size ("<<width<<";"<<height<<").\n"
-					  << "Because its iternal size ("<<realSize.w<<";"<<realSize.h<<")"
+					  << "Because its internal size ("<<realSize.w<<";"<<realSize.h<<")"
 					  <<"is bigger than the maximum ("<<maxSize<<";"<<maxSize<<")"<<std::endl;
 			return false;
 		}
 
-		
+
 		m_realSize = realSize;
 		m_size(width,height);
-		
+
 		if (glIsTexture(getGlId()) == GL_FALSE)
 		{
 			GLuint glId;
@@ -116,7 +116,7 @@ namespace fg
 		priv::TextureSaver save;
 
 		glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
-		
+
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 		if (glGetError() != GL_NO_ERROR)
@@ -124,7 +124,7 @@ namespace fg
 			glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,(!m_isRepeated) ? GL_REPEAT : GL_CLAMP_TO_EDGE));
 			glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,(!m_isRepeated) ? GL_REPEAT : GL_CLAMP_TO_EDGE));
 		}
-		
+
 		glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
 		glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
 		glCheck(glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,m_realSize.w,m_realSize.h,0,GL_RGBA,GL_UNSIGNED_BYTE, NULL));
@@ -175,7 +175,7 @@ namespace fg
 				priv::TextureSaver save;
 
 				glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
-				
+
 				glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 				if (glGetError() != GL_NO_ERROR)
@@ -291,7 +291,7 @@ namespace fg
 	{
 		if (!getGlId())
 			return Image();
-		
+
 		#ifdef GL_FRAMEBUFFER_BINDING
 		GLint framebuffer;
 		glGetIntegerv(GL_FRAMEBUFFER_BINDING,&framebuffer);
@@ -307,16 +307,16 @@ namespace fg
 			glCheck(glReadPixels(0,0,m_size.w,m_size.h,GL_RGBA,GL_UNSIGNED_BYTE,ret.getPixelsPtr()));
 			glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
 			glDeleteFramebuffers(1,&fb_id);
-			return ret;			
+			return ret;
 		}
 		#endif
-		
+
 		#ifdef glGetTexImage
-		
+
 		priv::TextureSaver save;
 		Image ret;
 		ret.create(m_size);
-		
+
 		if (m_size == m_realSize)
 		{
 			glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
@@ -341,7 +341,7 @@ namespace fg
 
 		return ret;
 		#endif
-		
+
 		fg_log << "Error no available method found to retrieve teture data " << std::endl;
 
 		return Image(m_size,fg::Color::White);
@@ -445,7 +445,7 @@ namespace fg
 	fm::vec2s Texture::getValidSize(const fm::vec2s &size)
 	{
 		const GLubyte *ver = glGetString(GL_VERSION);
-		if (ver[0] > '1')
+		if (ver && ver[0] > '1')
 			return size;
 
 		fm::vec2s ret(1,1);
