@@ -151,23 +151,6 @@ namespace fg
 		};
 	}
 	
-	/////////////////////////////////////////////////////////////
-	/// @brief Namespace used to hold values that indicate the style of a text
-	/// 
-	/////////////////////////////////////////////////////////////
-	namespace Style
-	{
-		enum {
-			Regular     = 0x0000000, ///< Indicates that the text is regular
-			Underlined  = 0x0000001, ///< Indicates that the text is underlined
-			Crossed     = 0x0000010, ///< Indicates that the text is striked through
-			Outline     = 0x0000100, ///< Indicates that the text is an outline
-			Bold        = 0x0001000, ///< Indicates that the text is emboldened
-			Italic      = 0x0010000, ///< Indicates that the text is itlicized
-			Superscript = 0x0100000, ///< Indicates that the text is saller and is stituated above th baseline
-			Subscript   = 0x1000000  ///< Indicates that the text is saller and is stituated below the baseline
-        };
-	}
 	
 	//////////////////////////////////
 	/// 
@@ -179,6 +162,22 @@ namespace fg
 	class FRONTIER_API Font
 	{
 	public:
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Values that indicate the style of a text
+		/// 
+		/////////////////////////////////////////////////////////////
+		enum Style {
+			Regular     = 0x0000000, ///< Indicates that the text is regular
+			Underlined  = 0x0000001, ///< Indicates that the text is underlined
+			Crossed     = 0x0000010, ///< Indicates that the text is striked through
+			Outline     = 0x0000100, ///< Indicates that the text is an outline
+			Bold        = 0x0001000, ///< Indicates that the text is emboldened
+			Italic      = 0x0010000, ///< Indicates that the text is itlicized
+			Superscript = 0x0100000, ///< Indicates that the text is saller and is stituated above th baseline
+			Subscript   = 0x1000000  ///< Indicates that the text is saller and is stituated below the baseline
+        };
+        
 		class Renderer;
 		
 		//////////////////////////////////
@@ -274,7 +273,7 @@ namespace fg
 		/// @return The glyph
 		/// 
 		/////////////////////////////////////////////////////////////
-        Glyph getGlyph(priv::CodePoint letter,unsigned int type = Style::Regular) const;
+        Glyph getGlyph(priv::CodePoint letter,unsigned int type = Font::Regular) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Render a glyph's image with the current size
@@ -288,7 +287,7 @@ namespace fg
 		/// @return The rendered image
 		/// 
 		/////////////////////////////////////////////////////////////
-        Image renderGlyph(priv::CodePoint letter,unsigned int type = Style::Regular,fm::vector2<float> *leftDown=NULL) const;
+        Image renderGlyph(priv::CodePoint letter,unsigned int type = Font::Regular,fm::vector2<float> *leftDown=NULL) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a glyph with given size
@@ -302,7 +301,7 @@ namespace fg
 		/// @return The glyph
 		/// 
 		/////////////////////////////////////////////////////////////
-        Glyph createGlyph(priv::CodePoint codePoint, unsigned int characterSize,unsigned int type = Style::Regular) const;
+        Glyph createGlyph(priv::CodePoint codePoint, unsigned int characterSize,unsigned int type = Font::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get information about the font metrics 
@@ -420,7 +419,7 @@ namespace fg
 		/// @return The rendered image
 		/// 
 		/////////////////////////////////////////////////////////////
-        Image renderGlyph(priv::CodePoint letter,unsigned int type = Style::Regular,fm::vector2<float> *leftDown=NULL) const;
+        Image renderGlyph(priv::CodePoint letter,unsigned int type = Font::Regular,fm::vector2<float> *leftDown=NULL) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get information about the font metrics 

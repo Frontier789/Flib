@@ -262,10 +262,10 @@ namespace fg
 			rowToInsert = findGlyphPlace(gmap,glyphImg);
 		}
 
-		if (!rowToInsert) // theorically can never happen, but i dont like dereferencing NULL
+		if (!rowToInsert) // theorically can never happen
 			return Glyph();
 
-		glyphImg.flipVertically();
+		//glyphImg.flipVertically();
 
 		// Finally update the texture with the new glyph
 		gmap.atlas.update(glyphImg,rowToInsert->width+1,rowToInsert->start+1);
@@ -277,6 +277,7 @@ namespace fg
 		fm::vec2u pos(rowToInsert->width-glyphImg.getSize().w,rowToInsert->start+1);
 
 		ret = Glyph(atlas,pos,glyphImg.getSize(),leftDown);
+		
 
 		return ret;
     }
@@ -457,7 +458,7 @@ namespace fg
 
 		// if rendering upper/lower index decrease size
 		unsigned int originalSize = m_currentSize;
-		if ((style & Style::Subscript) xor (style & Style::Superscript))
+		if ((style & Font::Subscript) xor (style & Font::Superscript))
 			setSize(m_currentSize*.7);
 
 		// find out the size of the glyph image
@@ -481,7 +482,7 @@ namespace fg
 			return Image();
 
 		// manually embolden if requested
-		if (style & Style::Bold)
+		if (style & Font::Bold)
 		{
 			// we'll need a bigger bitmap
 			std::vector<unsigned char> obitmap = bitmap;
@@ -511,7 +512,7 @@ namespace fg
 		}
 
 		// manually italicise if requested
-		if (style & Style::Italic)
+		if (style & Font::Italic)
 		{
 			// the width will end up being width+height*offset
 			float offset=.2;
@@ -537,7 +538,7 @@ namespace fg
 		}
 
 		// manually underline if requested
-		if (style & Style::Underlined)
+		if (style & Font::Underlined)
 		{
 			// if the line would be out of the image (take account the y offset like in '~' as the leeter might not "sit" on the baseline)
 			int lineW=int(m_maxH/10.f);
@@ -558,7 +559,7 @@ namespace fg
 		}
 
 		// manually strike through if requested
-		if (style & Style::Crossed)
+		if (style & Font::Crossed)
 		{
 			// if the line would be out of the image
 			int lineW=int(m_maxH/10.f);
@@ -582,7 +583,7 @@ namespace fg
 		}
 
 		// manually create outline through if requested
-		if (style & Style::Outline)
+		if (style & Font::Outline)
 		{
 			// we'll end up with a bigger bitmap
 			std::vector<unsigned char> obitmap = bitmap;
@@ -614,7 +615,7 @@ namespace fg
 		}
 
 		// manually create upper index if requested
-		if (style & Style::Superscript && !(style & Style::Subscript))
+		if (style & Font::Superscript && !(style & Font::Subscript))
 		{
 			bitmap.resize(w*(h+h/2.f),0);
 			ymax+=h/2.f;
@@ -622,7 +623,7 @@ namespace fg
 		}
 
 		// manually create lower index if requested
-		if (style & Style::Subscript && !(style & Style::Superscript))
+		if (style & Font::Subscript && !(style & Font::Superscript))
 		{
 			bitmap.resize(w*(h+h/2.f),0);
 			ymin-=h/2.f;
@@ -633,7 +634,7 @@ namespace fg
 		}
 
 		// set the size back if we rendered index
-		if ((style & Style::Subscript) xor (style & Style::Superscript))
+		if ((style & Font::Subscript) xor (style & Font::Superscript))
 			setSize(originalSize);
 
 		// create the image from the monochrome bitmap
