@@ -28,6 +28,11 @@
 #define FRONTIER_WINDOWS_CLASS_NAME "FLIB_CLASS"
 #define FRONTIER_WINDOWS_WCLASS_NAME L"FLIB_CLASS"
 
+namespace fg
+{
+	class Image;
+}
+
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
@@ -53,8 +58,9 @@ namespace fw
 			bool m_resizeable;   ///< Indicates whether the window can be resized on the borders
 			bool m_enableRepeat; ///< Indicates whether key repeat is enabled
 			WPARAM m_lastDown;   ///< Contains the last pressed key
-			LONG m_lastStyle;    ///< Internal variable used when going to fullscreen
-			LONG m_lastExStyle;  ///< Internal variable used when going to fullscreen
+			LONG m_style;        ///< Internal variable used when going to fullscreen
+			LONG m_exStyle;      ///< Internal variable used when going to fullscreen
+			HICON m_icon;        ///< The last set icon
 
 			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that deduces the object and calls handleEvent
 			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that handles events of the window
@@ -102,21 +108,6 @@ namespace fw
 			Window(int x,int y,int w,int h,const std::string &title,unsigned int style);
 
 			/////////////////////////////////////////////////////////////
-			/// @brief Construct the window from its attributes
-			///
-			/// Upon internal error a message is prompted to fw::Wapi::log
-			///
-			/// @param x X position of the window
-			/// @param y Y position of the window
-			/// @param w Width of the window
-			/// @param h Height of the window
-			/// @param title Title of the window
-			/// @param style Style of the window (see fw::WindowStyle)
-			///
-			/////////////////////////////////////////////////////////////
-			Window(int x,int y,int w,int h,const std::wstring &title,unsigned int style);
-
-			/////////////////////////////////////////////////////////////
 			/// @brief (Re)Open the window
 			///
 			/// Upon internal error a message is prompted to fw::Wapi::log
@@ -132,23 +123,6 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			bool open(int x,int y,int w,int h,const std::string &title,unsigned int style);
-
-			/////////////////////////////////////////////////////////////
-			/// @brief (Re)Open the window
-			///
-			/// Upon internal error a message is prompted to fw::Wapi::log
-			///
-			/// @param x X position of the window
-			/// @param y Y position of the window
-			/// @param w Width of the window
-			/// @param h Height of the window
-			/// @param title Title of the window
-			/// @param style Style of the window (see fw::WindowStyle)
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool open(int x,int y,int w,int h,const std::wstring &title,unsigned int style);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Default destructor
@@ -447,10 +421,20 @@ namespace fw
 			/// 
 			/// If @a width x @a height should be a valid monitor resolution 
 			/// 
-			/// @return True iff the window got fullscreen
+			/// @return True iff the operation was successful
 			///
 			/////////////////////////////////////////////////////////////
-			bool setFullscreen(unsigned int width,unsigned int height,bool fullscreen = true);
+			bool setFullscreen(int width,int height,bool fullscreen = true);
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Set the small and the big icon of the window
+			/// 
+			/// @param icon The new icon
+			/// 
+			/// @return True iff the operation was successful
+			///
+			/////////////////////////////////////////////////////////////
+			void setIcon(const fg::Image &icon);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Implicitly convert to HWND

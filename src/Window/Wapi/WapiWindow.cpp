@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Wapi/fwWapiPrintLastError.hpp>
 #include <FRONTIER/Window/Wapi/WapiWindow.hpp>
+#include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
 #include <string>
@@ -322,25 +323,22 @@ namespace fw
 				case WM_NCHITTEST:
 				{
 					LRESULT defResult = DefWindowProc(hwnd, msg, wParam, lParam);
+					
+					// in case we dont want resize we change to simple border upon finding resizeable part
+					if (!m_resizeable)
+						if (defResult == HTBOTTOM ||
+							defResult == HTBOTTOMLEFT ||
+							defResult == HTBOTTOMRIGHT ||
+							defResult == HTLEFT ||
+							defResult == HTRIGHT ||
+							defResult == HTTOP ||
+							defResult == HTTOPLEFT ||
+							defResult == HTTOPRIGHT)
+								defResult = HTBORDER;
+					
+					
 					if (!m_cursorHitTest) // if the user didn't specify a function
-					{
-						if (!m_resizeable) // Only if we dont want resize
-						{
-							// tell him he is wrong when he thinks
-							// the cursor is on something resizeable
-							if (defResult == HTBOTTOM ||
-								defResult == HTBOTTOMLEFT ||
-								defResult == HTBOTTOMRIGHT ||
-								defResult == HTLEFT ||
-								defResult == HTRIGHT ||
-								defResult == HTTOP ||
-								defResult == HTTOPLEFT ||
-								defResult == HTTOPRIGHT)
-									return HTBORDER;
-						}
-
 						return defResult;
-					}
 					else // if the user did specify a function
 					{
 						// wheres the cursor
@@ -472,6 +470,7 @@ namespace fw
 						   m_resizeable(true),
 						   m_enableRepeat(false),
 						   m_lastDown(0),
+						   m_icon(NULL),
 						   m_cursorHitTest(NULL)
 		{
 
@@ -483,16 +482,8 @@ namespace fw
 																							  m_resizeable(true),
 																							  m_enableRepeat(false),
 																							  m_lastDown(0),
+																							  m_icon(NULL),
 																							  m_cursorHitTest(NULL)
-		{
-			open(x,y,w,h,title,style);
-		}
-
-		////////////////////////////////////////////////////////////
-		Window::Window(int x,int y,int w,int h,const std::wstring &title,unsigned int style) : m_hwnd(NULL),
-																							   m_showCursor(true),
-																							   m_resizeable(true),
-																							   m_cursorHitTest(NULL)
 		{
 			open(x,y,w,h,title,style);
 		}
@@ -531,6 +522,12 @@ namespace fw
 					return false;
 				}
 			}
+			
+			// destroy icon
+			if (m_icon)
+				DestroyIcon(m_icon),
+				m_icon = NULL;
+			
 			return true;
 		}
 
@@ -578,52 +575,88 @@ namespace fw
 
 		
 		////////////////////////////////////////////////////////////
-		bool Window::setFullscreen(unsigned int width,unsigned int height,bool fullscreen)
+		bool Window::setFullscreen(int width,int height,bool fullscreen)
 		{
-			if (fullscreen)
+			if (m_hwnd)
 			{
-				int w,h;
-				getSize(w,h);
-				
-				LONG m_lastStyle = GetWindowLongPtrA(m_hwnd, GWL_STYLE);
-				SetWindowLongPtr(m_hwnd, GWL_STYLE, m_lastStyle&~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU));
+				if (fullscreen)
+				{
+					// assume we want the screen resolution
+					if (!width || !height)
+					{
+						// find the monitor of the window
+						HMONITOR hMonitor = MonitorFromWindow(m_hwnd,MONITOR_DEFAULTTONULL);
+						MONITORINFO monInfo;
+						monInfo.cbSize = sizeof(monInfo);
+						
+						if (!hMonitor)
+						{
+							fw_log << "Couldn't find the corresponding monitor (Wapi,fullscreen)" << std::endl;
+							return false;
+						}
+						
+						if (!GetMonitorInfo(hMonitor,&monInfo))
+						{
+							fw::WapiPrintLastError(fw_log,GetWindowPlacement);
+							return false;
+						}
+						
+						// set width and height to match the monitor's
+						width  = monInfo.rcMonitor.right  - monInfo.rcMonitor.left;
+						height = monInfo.rcMonitor.bottom - monInfo.rcMonitor.top;
+					}
+					
+					// take off the decor
+					SetWindowLongPtr(m_hwnd, GWL_STYLE,(m_style | WS_VISIBLE) &~ (WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU));
+					
+					// set topmost
+					if (!SetWindowPos(m_hwnd, HWND_TOPMOST, 0,0,width,height,SWP_FRAMECHANGED | SWP_NOMOVE))
+					{
+						fw::WapiPrintLastError(fw_log,SetWindowPos);
+						return false;
+					}
+				}
+				else
+				{
+					// put decor back
+					SetWindowLongPtr(m_hwnd, GWL_STYLE,m_style|WS_VISIBLE);
+					
+					
+					if (!adjustWindowSize(width,height,m_style))
+						return false;
+					
+					// set notopmost
+					if (!SetWindowPos(m_hwnd, HWND_NOTOPMOST,0,0,width,height,SWP_NOMOVE))
+					{
+						fw::WapiPrintLastError(fw_log,SetWindowPos);
+						return false;
+					}
+				}
 
-				LONG m_lastExStyle = GetWindowLongPtr(m_hwnd, GWL_EXSTYLE);
-				SetWindowLongPtr(m_hwnd, GWL_EXSTYLE, m_lastExStyle&~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
-
-				SetWindowPos(m_hwnd, HWND_TOPMOST, 0,0,w,h,SWP_FRAMECHANGED | SWP_NOMOVE);
+				return true;				
 			}
-
-			return true;
+			return false;
 		}
 
-		bool openME(int x,int y,int w,int h,const void *title,Window *win,unsigned int style,bool wideTitle,HWND &m_hwnd,unsigned int &m_windowCount,bool &m_resizeable)
+		////////////////////////////////////////////////////////////
+		bool Window::open(int x,int y,int w,int h,const std::string &title,unsigned int style)
 		{
+			// clean our resources before (re)creating
+			cleanUp();
+			init();
+
 			DWORD createStyle = getDWORDfromStyle(style);
 
-			if (!wideTitle)
-			{
-				// initialize the window
-				m_hwnd = CreateWindowA(FRONTIER_WINDOWS_CLASS_NAME,
-									   ((std::string*)title)->c_str(),
-									   createStyle,
-									   x,y,10,10,
-									   NULL,NULL,NULL,
-									   win); // set createdata to 'this'
-			}
-			else
-			{
-				// initialize the window
-				m_hwnd = CreateWindowW(FRONTIER_WINDOWS_WCLASS_NAME,
-									   ((std::wstring*)title)->c_str(),
-									   createStyle,
-									   x,y,10,10,
-									   NULL,NULL,NULL,
-									   win); // set createdata to 'this'
-			}
+			// initialize the window
+			m_hwnd = CreateWindowA(FRONTIER_WINDOWS_CLASS_NAME,
+								   title.c_str(),
+								   createStyle,
+								   x,y,10,10,
+								   NULL,NULL,NULL,
+								   this); // set createdata to 'this'
 			
 			// windows wouldn't let us initially create a window bigger than the screen
-			win->setSize(w,h);
+			setSize(w,h);
 			
 			// If the window is intended to be resizeable we note it
 			m_resizeable = (style & fw::Window::Resize);
@@ -635,9 +668,13 @@ namespace fw
 				return false;
 			}
 			
+			// note the window's style
+			m_style   = GetWindowLongPtr(m_hwnd, GWL_STYLE);
+			m_exStyle = GetWindowLongPtr(m_hwnd, GWL_EXSTYLE);
+			
 			// go fullscreen if requested
 			if (style & fw::Window::Fullscreen)
-				win->setFullscreen(w,h);
+				setFullscreen(w,h);
 
 			// Tell windows to show our window
 			ShowWindow(m_hwnd, SW_SHOW);
@@ -645,26 +682,6 @@ namespace fw
 			m_windowCount++;
 
 			return true;
-		}
-
-		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,int w,int h,const std::string &title,unsigned int style)
-		{
-			// clean our resources before recreating
-			cleanUp();
-			init();
-
-			return openME(x,y,w,h,&title,this,style,false,m_hwnd,m_windowCount,m_resizeable);
-		}
-
-		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,int w,int h,const std::wstring &title,unsigned int style)
-		{
-			// clean our resources before recreating
-			cleanUp();
-			init();
-
-			return openME(x,y,w,h,&title,this,style,true,m_hwnd,m_windowCount,m_resizeable);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -1049,6 +1066,43 @@ namespace fw
 		bool Window::isResizeEnabled() const
 		{
 			return m_resizeable;
+		}
+
+		/////////////////////////////////////////////////////////////
+		void Window::setIcon(const fg::Image &icon)
+		{
+			if (m_hwnd)
+			{
+				// delete last icon
+				if (m_icon)
+					DestroyIcon(m_icon);
+				
+				const fm::vec2s &size = icon.getSize();
+				
+				unsigned char *iconBytes = NULL;
+				
+				if (size.w || size.h)
+				{
+					iconBytes = new unsigned char [size.w*size.h*4];
+					
+					// swap RGBA to BGRA
+					for (fm::Size x=0;x<size.w;x++)
+						for (fm::Size y=0;y<size.h;y++)
+							iconBytes[(x+y*size.w)*4+0] = icon.getPixel(x,y).b,
+							iconBytes[(x+y*size.w)*4+1] = icon.getPixel(x,y).g,
+							iconBytes[(x+y*size.w)*4+2] = icon.getPixel(x,y).r,
+							iconBytes[(x+y*size.w)*4+3] = icon.getPixel(x,y).a;				
+				}
+				
+				// convert to HICON
+				m_icon = CreateIcon(NULL, size.w, size.h, 1, sizeof(fg::Color)*FRONTIER_BITS_PER_BYTE, NULL, iconBytes);
+				
+				// delete allocated memory
+				delete[] iconBytes;
+				
+				SendMessage(m_hwnd,WM_SETICON,ICON_SMALL,(LPARAM)m_icon);			
+				SendMessage(m_hwnd,WM_SETICON,ICON_BIG,(LPARAM)m_icon);			
+			}
 		}
 
 		////////////////////////////////////////////////////////////
