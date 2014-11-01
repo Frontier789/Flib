@@ -18,6 +18,13 @@
 #define FRONTIER_DRAWABLE_HPP_INCLUDED
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
+
+#include <FRONTIER/System/macros/dont_include_inl_begin>
+
+#include <FRONTIER/System/Matrix.hpp>
+
+#include <FRONTIER/System/macros/dont_include_inl_end>
+
 #define FRONTIER_DRAWABLE
 namespace fm
 {
@@ -219,6 +226,7 @@ namespace fg
 									  fg::Primitive primitive,
 									  const Texture *texture,
 									  const Shader *shader,
+									  const fm::mat4 &transformation,
 									  const IndexPointer &indices);
 
 	}
@@ -231,6 +239,7 @@ namespace fg
 							  fg::Primitive,
 							  const Texture *,
 							  const Shader *,
+							  const fm::mat4 &,
 							  const IndexPointer &); ///< The type of the drawer function
 
 	/////////////////////////////////////////////////////////////
@@ -262,6 +271,7 @@ namespace fg
 						   fg::Primitive primitive,
 						   const Texture *texture = 0,
 						   const Shader *shader = 0,
+						   const fm::mat4 &transformation = fm::mat4::identity,
 						   const IndexPointer &indices = IndexPointer());
 
 
@@ -285,6 +295,7 @@ namespace fg
 						   fg::Primitive primitive,
 						   const Texture *texture = 0,
 						   const Shader *shader = 0,
+						   const fm::mat4 &transformation = fm::mat4::identity,
 						   const IndexPointer &indices = IndexPointer());
 
 
@@ -310,6 +321,7 @@ namespace fg
 						   fg::Primitive primitive,
 						   const Texture *texture = 0,
 						   const Shader *shader = 0,
+						   const fm::mat4 &transformation = fm::mat4::identity,
 						   const IndexPointer &indices = IndexPointer());
 
 	/////////////////////////////////////////////////////////////
@@ -329,6 +341,7 @@ namespace fg
 			  fg::Primitive primitive,
 			  const Texture *texture = 0,
 			  const Shader *shader = 0,
+			  const fm::mat4 &transformation = fm::mat4::identity,
 			  const IndexPointer &indices = IndexPointer());
 
 	/////////////////////////////////////////////////////////////
@@ -344,6 +357,7 @@ namespace fg
 	void draw(const fm::vertex<pt,ct,tpt,nt> *vertices,
 			  fm::Size vertexCount,
 			  fg::Primitive primitive,
+			  const fm::mat4 &transformation,
 			  const IndexPointer &indices);
 
 	/////////////////////////////////////////////////////////////
@@ -360,7 +374,8 @@ namespace fg
 	void draw(const fm::vertex<pt,ct,tpt,nt> (&vertices)[vertexCount],
 			  fg::Primitive primitive,
 			  const Texture *texture = 0,
-			  const Shader *shader = 0);
+			  const Shader *shader = 0,
+			  const fm::mat4 &transformation = fm::mat4::identity);
 
 
 	/////////////////////////////////////////////////////////////

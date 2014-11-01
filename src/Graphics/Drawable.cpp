@@ -18,6 +18,7 @@
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
+#include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/TlsPtr.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
@@ -124,6 +125,7 @@ namespace fg
 						   fg::Primitive primitive,
 						   const Texture *texture,
 						   const Shader *shader,
+						   const fm::mat4 &transformation,
 						   const IndexPointer &indices)
 	{
 		if (pos.isUsed())
@@ -150,7 +152,9 @@ namespace fg
 			glCheck(glNormalPointer(getSizeType(norm),norm.m_bytesPerVertex,norm.m_ptr));
 		}
 		
-		fg::Texture::bind(texture);
+		fg::Texture::bind(texture,fg::Texture::Pixels);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadMatrixf(&transformation.transpose()[0][0]);
 		
 		if (indices.m_bytesPerIndex && (indices.m_ptr || indices.m_buffer))
 		{
@@ -176,6 +180,7 @@ namespace fg
 			  fg::Primitive primitive,
 			  const Texture *texture,
 			  const Shader *shader,
+			  const fm::mat4 &transformation,
 			  const IndexPointer &indices)
 	{
 		draw(pos,
@@ -186,6 +191,7 @@ namespace fg
 			 primitive,
 			 texture,
 			 shader,
+			 transformation,
 			 indices);
 	}
 	
@@ -198,6 +204,7 @@ namespace fg
 			  fg::Primitive primitive,
 			  const Texture *texture,
 			  const Shader *shader,
+			  const fm::mat4 &transformation,
 			  const IndexPointer &indices)
 	{
 		draw(pos,
@@ -208,6 +215,7 @@ namespace fg
 			 primitive,
 			 texture,
 			 shader,
+			 transformation,
 			 indices);
 	}
 	
@@ -221,6 +229,7 @@ namespace fg
 			  fg::Primitive primitive,
 			  const Texture *texture,
 			  const Shader *shader,
+			  const fm::mat4 &transformation,
 			  const IndexPointer &indices)
 	{
 		if (drawerFuncPtr)
@@ -232,6 +241,7 @@ namespace fg
 							 primitive,
 							 texture,
 							 shader,
+							 transformation,
 							 indices);
 		else
 			priv::defaultDraw(pos,
@@ -242,6 +252,7 @@ namespace fg
 							  primitive,
 							  texture,
 							  shader,
+							  transformation,
 							  indices);
 	}
 }

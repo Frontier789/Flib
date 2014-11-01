@@ -37,6 +37,7 @@ namespace fg
 					 fg::Primitive primitive,
 					 const Texture *texture,
 					 const Shader *shader,
+					 const fm::mat4 &transformation,
 					 const IndexPointer &indices)
 	{
 		if (nt::components)
@@ -44,19 +45,19 @@ namespace fg
 				 Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 Attribute((tpt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 Attribute((nt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize+fm::vertex<pt,ct,tpt,nt>::texPosSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
-				 vertexCount,primitive,texture,shader,indices);
+				 vertexCount,primitive,texture,shader,transformation,indices);
 		else if (tpt::components)
 			draw(Attribute((pt*)((unsigned char*)vertices),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 Attribute((tpt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 Attribute::Unused,
-				 vertexCount,primitive,texture,shader,indices);
+				 vertexCount,primitive,texture,shader,transformation,indices);
 		else 
 			draw(Attribute((pt*)((unsigned char*)vertices),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 Attribute::Unused,
 				 Attribute::Unused,
-				 vertexCount,primitive,texture,shader,indices);
+				 vertexCount,primitive,texture,shader,transformation,indices);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -64,9 +65,10 @@ namespace fg
 	inline void draw(const fm::vertex<pt,ct,tpt,nt> *vertices,
 					 fm::Size vertexCount,
 					 fg::Primitive primitive,
+					 const fm::mat4 &transformation,
 					 const IndexPointer &indices)
 	{
-		draw(vertices,vertexCount,primitive,0,0,indices);
+		draw(vertices,vertexCount,primitive,0,0,transformation,indices);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -74,9 +76,10 @@ namespace fg
 	inline void draw(const fm::vertex<pt,ct,tpt,nt> (&vertices)[vertexCount],
 					 fg::Primitive primitive,
 					 const Texture *texture,
-					 const Shader *shader)
+					 const Shader *shader,
+					 const fm::mat4 &transformation)
 	{
-		draw(vertices,vertexCount,primitive,texture,shader,IndexPointer());
+		draw(vertices,vertexCount,primitive,texture,shader,transformation,IndexPointer());
 	}
 	
 	/////////////////////////////////////////////////////////////
