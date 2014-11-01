@@ -30,7 +30,7 @@ namespace fm
 		public:
 			typedef typename TypeSelectorAtLeast<Types,
 											   BitCount,
-											   sizeof(typename Types::First)*bits_in_byte::value >= BitCount>::type type;
+											   sizeof(typename Types::First)*bits_per_byte::value >= BitCount>::type type;
 		};
 
 		/// The first type didn't match so we continues the recursion with the shifted list
@@ -56,10 +56,10 @@ namespace fm
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
-	typedef priv::TypeSelectorAtLeast<priv::Intlist,sizeof((int*)(0)-(int*)(0))*fm::priv::bits_in_byte::value>::type Ptrdiff;
-	typedef priv::TypeSelectorAtLeast<priv::Uintlist,sizeof(sizeof(void*))*fm::priv::bits_in_byte::value>::type Size;
-	typedef priv::TypeSelectorAtLeast<priv::Uintlist,sizeof(void*)*fm::priv::bits_in_byte::value>::type UintPtr;
-	typedef priv::TypeSelectorAtLeast<priv::Intlist,sizeof(void*)*fm::priv::bits_in_byte::value>::type IntPtr;
+	typedef priv::TypeSelectorAtLeast<priv::Intlist,sizeof((int*)(0)-(int*)(0))*fm::priv::bits_per_byte::value>::type Ptrdiff;
+	typedef priv::TypeSelectorAtLeast<priv::Uintlist,sizeof(sizeof(void*))*fm::priv::bits_per_byte::value>::type Size;
+	typedef priv::TypeSelectorAtLeast<priv::Uintlist,sizeof(void*)*fm::priv::bits_per_byte::value>::type UintPtr;
+	typedef priv::TypeSelectorAtLeast<priv::Intlist,sizeof(void*)*fm::priv::bits_per_byte::value>::type IntPtr;
 	
 	template<class> class vector2;
 	template<class> class vector3;

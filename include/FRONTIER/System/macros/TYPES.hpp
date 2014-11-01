@@ -30,7 +30,7 @@ namespace fm
 		public:
 			typedef typename TypeSelectorEqual<Types,
 											   BitCount,
-											   sizeof(typename Types::First)*bits_in_byte::value == BitCount>::type type;
+											   sizeof(typename Types::First)*bits_per_byte::value == BitCount>::type type;
 		};
 
 		/// The first type didn't match so we continues the recursion with the shifted list

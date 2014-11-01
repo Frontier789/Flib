@@ -22,17 +22,17 @@ namespace fm
 	namespace priv
 	{
 		template <unsigned num> 
-		class bits_in_byte_helper 
+		class bits_per_byte_helper 
 		{
 		public:
 			/// shift the value to the right (divide by two and floor it) by one and recursively call itself
 			enum {     ///floor(num/2)
-				value = bits_in_byte_helper<(num >> 1)>::value + 1
+				value = bits_per_byte_helper<(num >> 1)>::value + 1
 			};
 		};
 
 		template <> 
-		class bits_in_byte_helper<0>
+		class bits_per_byte_helper<0>
 		{
 		public:
 			/// end recursion at 0
@@ -41,15 +41,15 @@ namespace fm
 			};
 		};
 
-		class bits_in_byte
+		class bits_per_byte
 		{
 		public:
 			enum {                    ///0x111...11 -> # of 1s == bits in a char (sizeof(char)==1 -> char==1byte)
-				value = bits_in_byte_helper<(unsigned char)(-1)>::value
+				value = bits_per_byte_helper<(unsigned char)(-1)>::value
 			};
 		};
 		
-		#define FRONTIER_BITS_PER_BYTE fm::priv::bits_in_byte::value
+		#define FRONTIER_BITS_PER_BYTE fm::priv::bits_per_byte::value
 
 
 		/// indicates that there are no more types in the list
