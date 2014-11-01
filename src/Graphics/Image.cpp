@@ -162,7 +162,7 @@ namespace fg
 		if (!sRect.area())
 		{
 			sRect.pos(0,0);
-			sRect.size(m_sizeW,m_sizeH);
+			sRect.size(source.m_sizeW,source.m_sizeH);
 		}
 		else
 		{
