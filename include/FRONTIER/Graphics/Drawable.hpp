@@ -94,6 +94,34 @@ namespace fg
 		TriangleFan   = 6u, ///< render (N-1) triangles (N>=3)
 		TriangleStrip = 5u  ///< render (N-1) triangles (N>=3)
 	};
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Classes derived from this class can be drawn if a OpenGL context is active
+	/// 
+	/// @ingroup Graphics
+	/// 
+	/////////////////////////////////////////////////////////////
+	class Drawable
+	{
+	public:
+		/////////////////////////////////////////////////////////////
+		/// @brief Virtual destructor
+		///
+		/////////////////////////////////////////////////////////////
+		virtual ~Drawable();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Draw the object 
+		/// 
+		/// This function shall resolve to call(s) to fg::draw
+		/// Which means only the set function (using setDrawFunc) will be used
+		/// 
+		/// @param texture The texture to be used
+		/// @param shader The shader to be used
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void draw(const fg::Texture *texture,const fg::Shader *shader) const = 0;
+	};
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Store data about a vertex attribute
