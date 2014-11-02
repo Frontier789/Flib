@@ -26,7 +26,7 @@
 	#include "Generic/GenericClock.cpp"
 #endif
 
-
+#include <iostream>
 	
 namespace fm
 {
@@ -99,6 +99,7 @@ namespace fm
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::setTime(const Time &elapsed)
     {
+		std::cout<<getCurrentTime().asMicroseconds()<<" - "<<elapsed.asMicroseconds()<<" = "<<(getCurrentTime()-elapsed).asMicroseconds()<<std::endl;
 		if (isPaused())
 			m_startTime = m_pauseTime-elapsed;
 		else

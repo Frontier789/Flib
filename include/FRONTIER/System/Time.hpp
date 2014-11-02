@@ -167,7 +167,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Time FRONTIER_API operator*(const Time &left,const float &right);
+	Time FRONTIER_API operator*(const Time &left,const double &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -179,7 +179,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Time FRONTIER_API operator*(const float &left,const Time &right);
+	Time FRONTIER_API operator*(const double &left,const Time &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -191,7 +191,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	Time FRONTIER_API operator/(const Time &left,const float &right);
+	Time FRONTIER_API operator/(const Time &left,const double &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -227,7 +227,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Time FRONTIER_API &operator*=(Time &left,const float &right);
+	Time FRONTIER_API &operator*=(Time &left,const double &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -239,7 +239,7 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Time FRONTIER_API &operator/=(Time &left,const float &right);
+	Time FRONTIER_API &operator/=(Time &left,const double &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
@@ -315,36 +315,36 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
-	/// @brief Create fm::Time from long value
+	/// @brief Create fm::Time from microseconds
 	///
-	/// @param Msecs The long value indicating time in microseconds
+	/// @param Msecs The value indicating time in microseconds
 	///
 	/// @return The create fm::Time object
 	///
 	/////////////////////////////////////////////////////////////
-	Time FRONTIER_API microseconds(long Msecs);
+	Time FRONTIER_API microseconds(double Msecs);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
-	/// @brief Create fm::Time from int value
+	/// @brief Create fm::Time from milliseconds
 	///
-	/// @param msecs The int value indicating time in milliseconds
+	/// @param msecs The value indicating time in milliseconds
 	///
 	/// @return The create fm::Time object
 	///
 	/////////////////////////////////////////////////////////////
-	Time FRONTIER_API milliseconds(int msecs);
+	Time FRONTIER_API milliseconds(double msecs);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Time
-	/// @brief Create fm::Time from float value
+	/// @brief Create fm::Time from seconds
 	///
-	/// @param secs The float value indicating time in seconds
+	/// @param secs The value indicating time in seconds
 	///
 	/// @return The create fm::Time object
 	///
 	/////////////////////////////////////////////////////////////
-	Time FRONTIER_API seconds(float secs);
+	Time FRONTIER_API seconds(double secs);
 }
 #endif //FRONTIER_TIME_HPP_INCLUDED
 

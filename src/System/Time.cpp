@@ -94,19 +94,19 @@ namespace fm
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Time operator*(const Time &left,const float &right)
+	Time operator*(const Time &left,const double &right)
 	{
 		return microseconds(left.asMicroseconds()*right);
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Time operator*(const float &left,const Time &right)
+	Time operator*(const double &left,const Time &right)
 	{
 		return microseconds(left*right.asMicroseconds());
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Time operator/(const Time &left,const float &right)
+	Time operator/(const Time &left,const double &right)
 	{
 		return microseconds(left.asMicroseconds()/right);
 	}
@@ -126,14 +126,14 @@ namespace fm
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Time &operator*=(Time &left,const float &right)
+	Time &operator*=(Time &left,const double &right)
 	{
 		*((long*)&left) *= right;
 		return left;
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Time &operator/=(Time &left,const float &right)
+	Time &operator/=(Time &left,const double &right)
 	{
 		*((long*)&left) /= right;
 		return left;
@@ -176,19 +176,19 @@ namespace fm
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Time microseconds(long Msecs)
+	Time microseconds(double Msecs)
 	{
 		return Time(Msecs,Time::Microseconds);
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Time milliseconds(int msecs)
+	Time milliseconds(double msecs)
 	{
 		return Time(msecs,Time::Milliseconds);
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Time seconds(float secs)
+	Time seconds(double secs)
 	{
 		return Time(secs,Time::Seconds);
 	}
