@@ -109,7 +109,7 @@ namespace fm
 		template<class T>
 		inline T abs(const T &val)
 		{
-			return val < T(0.0) ? val*T(-1.0) : val;
+			return val < 0.0 ? val*T(-1.0) : val;
 		}
 	}
 	template<class T>

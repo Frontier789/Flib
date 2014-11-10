@@ -17,6 +17,7 @@
 #ifndef FRONTIER_VECTOR2_HPP_INCLUDED
 #define FRONTIER_VECTOR2_HPP_INCLUDED
 #include <FRONTIER/System/type_traits/Will_result_in.hpp>
+#include <FRONTIER/System/macros/ONLYFORDOXY.hpp>
 #define FRONTIER_VECTOR2
 
 namespace fm
@@ -527,6 +528,8 @@ namespace fm
 		static vector2<T> loadwh(const T2 &other);
 	};
 
+#ifndef FRONTIER_ONLY_FOR_DOXYGEN
+
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector2
 	/// @brief Overload of binary operator +=
@@ -620,19 +623,6 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector2
-	/// @brief Overload of binary operator /
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return Memberwise division of @a left and @a right
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector2<T> &left,const vector2<T2> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector2
 	/// @brief Overload of binary operator *
 	///
 	/// @param left Left operand (vector)
@@ -646,12 +636,25 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector2
-	/// @brief Overload of binary operator /
+	/// @brief Overload of binary operator *
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise multiplication of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector2<T> &left,const vector2<T2> &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector2
+	/// @brief Overload of binary operator *
 	///
 	/// @param left Left operand (vector)
 	/// @param right Right operand (scalar)
 	///
-	/// @return Memberwise division of @a left and @a right
+	/// @return Memberwise multiplication of @a left and @a right
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
@@ -708,6 +711,7 @@ namespace fm
 	template<class T>
 	vector2<T> operator-(const vector2<T> &vec);
 
+#endif
 
 	typedef vector2<float> 		  vec2;
 	typedef vector2<float> 		  vec2f;

@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// <!--
 /// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
@@ -13,9 +13,38 @@
 ///                                                                    ///
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
-//////////////////////////////////////////////////////////////////////////
-#ifdef FRONTIER_DONT_INCLUDE_INL
-	#define FRONTIER_DONT_INCLUDE_INL_WAS_DEFINED
-#else
-	#define FRONTIER_DONT_INCLUDE_INL
-#endif
+////////////////////////////////////////////////////////////////////////// -->
+#ifndef FRONTIER_IS_SPEC_OF_HPP_INCLUDED
+#define FRONTIER_IS_SPEC_OF_HPP_INCLUDED
+#define FRONTIER_IS_SPEC_OF
+
+namespace fm
+{
+	/////////////////////////////////////////////////////////////
+	/// @brief Has a member enum 'value' that is true if the second template argument is the specialization of the first
+	/// 
+	/// @ingroup System
+	/// 
+	/////////////////////////////////////////////////////////////
+	template<template<class> class Wrap,class T>
+	class Is_specOf
+	{
+	public:
+		enum {
+			value /** @cond DOXYGEN_HIDE */ = false /** @endcond */ ///< True if T is a specialization of Wrap
+		};
+	};
+
+	/// @cond DOXYGEN_HIDE
+	template<template<class> class Wrap,class T>
+	class Is_specOf<Wrap,Wrap<T> >
+	{
+	public:
+		enum {
+			value = true
+		};
+	};
+	/// @endcond
+}
+
+#endif // FRONTIER_IS_SPEC_OF_HPP_INCLUDED

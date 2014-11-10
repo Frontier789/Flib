@@ -20,6 +20,14 @@
 #include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Window/Event.hpp>
 #define FRONTIER_WAPI_WINDOW
+
+#ifndef _WIN32_WINNT
+	#define _WIN32_WINNT 0x0500
+#elif _WIN32_WINNT < 0x0500
+	#undef _WIN32_WINNT
+	#define _WIN32_WINNT 0x0500
+#endif
+
 #include <windows.h>
 #include <string>
 #include <deque>

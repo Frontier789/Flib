@@ -18,6 +18,8 @@
 #define FRONTIER_MATRIX_INL_INCLUDED
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/C.hpp>
+#include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/Vector3.hpp>
 #include <cmath>
 namespace fm
 {
@@ -354,13 +356,6 @@ namespace fm
 		}
 
 		////////////////////////////////////////////////////////////
-		template<>
-		inline float det(const matrix<0,0,float> &mat)
-		{
-			return 1;
-		}
-
-		////////////////////////////////////////////////////////////
 		template<fm::Size N,class T>
 		inline matrix<N,N,T> minorMat(const matrix<N,N,T> &mat)
 		{
@@ -452,6 +447,9 @@ namespace fm
 		////////////////////////////////////////////////////////////
 		inline matrix<4,4,float> scaling(float x,float y,float z,StorageOrder storeOrder)
 		{
+			// unused
+			(void)storeOrder;
+			
 			float ret[]={x,0,0,0,
 						 0,y,0,0,
 						 0,0,z,0,
@@ -463,19 +461,19 @@ namespace fm
 		////////////////////////////////////////////////////////////
 		inline matrix<4,4,float> scaling(const vec2 &scale,StorageOrder storeOrder)
 		{
-			return scaling(scale.x,scale.y,1);
+			return scaling(scale.x,scale.y,1,storeOrder);
 		}
 
 		////////////////////////////////////////////////////////////
 		inline matrix<4,4,float> scaling(const vec3 &scale,StorageOrder storeOrder)
 		{
-			return scaling(scale.x,scale.y,scale.z);
+			return scaling(scale.x,scale.y,scale.z,storeOrder);
 		}
 
 		////////////////////////////////////////////////////////////
 		inline matrix<4,4,float> scaling(float x,float y,StorageOrder storeOrder)
 		{
-			return scaling(x,y,1);
+			return scaling(x,y,1,storeOrder);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -519,7 +517,7 @@ namespace fm
 			return matrix<4,4,float>(n);
 
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		inline matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal,float farVal,StorageOrder storeOrder)
 		{

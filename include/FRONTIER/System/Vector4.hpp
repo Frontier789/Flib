@@ -17,6 +17,7 @@
 #ifndef FRONTIER_VECTOR4_HPP_INCLUDED
 #define FRONTIER_VECTOR4_HPP_INCLUDED
 #include <FRONTIER/System/type_traits/Will_result_in.hpp>
+#include <FRONTIER/System/macros/ONLYFORDOXY.hpp>
 #define FRONTIER_VECTOR4
 namespace fm
 {
@@ -526,6 +527,8 @@ namespace fm
 		template<class T2>
 		static vector4<T> loadrgba(const T2 &vec);
 	};
+	
+#ifndef FRONTIER_ONLY_FOR_DOXYGEN
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -708,6 +711,7 @@ namespace fm
 	template<class T>
 	vector4<T> operator-(const vector4<T> &vec);
 
+#endif
 
 	typedef vector4<float> 		  vec4;
 	typedef vector4<float> 		  vec4f;

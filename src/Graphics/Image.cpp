@@ -16,14 +16,15 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
-#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Rect.hpp>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image/stb_image_write.h"
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image/stb_image.h"
 #include "jpge/jpge.cpp"
 #include <cstring>
@@ -68,7 +69,7 @@ namespace fg
 
 
 	/// functions /////////////////////////////////////////////////////////
-	typename Image::reference Image::create(fm::Size width,fm::Size height,const Color &color)
+	Image::reference Image::create(fm::Size width,fm::Size height,const Color &color)
 	{
 		if (width && height)
 		{
@@ -86,14 +87,14 @@ namespace fg
 
 
     ////////////////////////////////////////////////////////////
-	typename Image::reference Image::create(const fm::vec2s &size,const Color &color)
+	Image::reference Image::create(const fm::vec2s &size,const Color &color)
 	{
 		return create(size.w,size.h,color);
 	}
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::create(fm::Size width,fm::Size height,const Color *pixels)
+	Image::reference Image::create(fm::Size width,fm::Size height,const Color *pixels)
 	{
 		if (width && height)
 		{
@@ -110,14 +111,14 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::create(const fm::vec2s &size,const Color *pixels)
+	Image::reference Image::create(const fm::vec2s &size,const Color *pixels)
 	{
 		return create(size.w,size.h,pixels);
 	}
 
 
 	////////////////////////////////////////////////////////////
-    typename Image::reference Image::create(const Image &copy)
+    Image::reference Image::create(const Image &copy)
 	{
 		create(copy.getSize());
 		copyFrom(copy,0,0,fm::rect2s(0,0,0,0));
@@ -126,7 +127,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-    typename Image::reference Image::create(const Image &copy,const fm::rect2s &sourceRect)
+    Image::reference Image::create(const Image &copy,const fm::rect2s &sourceRect)
 	{
 		create(sourceRect.area() ? sourceRect.size : fm::vec2s(copy.getSize())-sourceRect.pos);
 		copyFrom(copy,0,0,sourceRect);
@@ -149,7 +150,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::copyFrom(const Image &source,fm::Size destX,fm::Size destY,const fm::rect2s &sourceRect,bool useAlpha)
+	Image::reference Image::copyFrom(const Image &source,fm::Size destX,fm::Size destY,const fm::rect2s &sourceRect,bool useAlpha)
 	{
 		// only copy if the source is valid
 		if (!source.m_sizeW || !source.m_sizeH/* || !m_sizeW || !m_sizeH*/)
@@ -214,7 +215,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::copyFrom(const Image &source,const fm::vec2s &destPos,const fm::rect2s &sourceRect,bool useAlpha)
+	Image::reference Image::copyFrom(const Image &source,const fm::vec2s &destPos,const fm::rect2s &sourceRect,bool useAlpha)
 	{
 		return copyFrom(source,destPos.x,destPos.y,sourceRect,useAlpha);
 	}
@@ -235,14 +236,14 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::copyFrom(const Image &source,fm::Size destX,fm::Size destY,bool useAlpha)
+	Image::reference Image::copyFrom(const Image &source,fm::Size destX,fm::Size destY,bool useAlpha)
 	{
 		return copyFrom(source,destX,destY,fm::rect2s(0,0,0,0),useAlpha);
 	}
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::copyFrom(const Image &source,const fm::vec2s &destPos,bool useAlpha)
+	Image::reference Image::copyFrom(const Image &source,const fm::vec2s &destPos,bool useAlpha)
 	{
 		return copyFrom(source,destPos.x,destPos.y,fm::rect2s(0,0,0,0),useAlpha);
 	}
@@ -288,7 +289,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::setPixel(fm::Size x,fm::Size y,const Color &color)
+	Image::reference Image::setPixel(fm::Size x,fm::Size y,const Color &color)
 	{
 		m_pixels[x+y*m_sizeW] = color;
 		return *this;
@@ -296,7 +297,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::setPixel(const fm::vec2s &pos,const Color &color)
+	Image::reference Image::setPixel(const fm::vec2s &pos,const Color &color)
 	{
 		return setPixel(pos.x,pos.y,color);
 	}
@@ -345,7 +346,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::flipHorizontally()
+	Image::reference Image::flipHorizontally()
 	{
 		Cx(m_sizeW/2.f)
 			Cy(m_sizeH)
@@ -355,7 +356,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	typename Image::reference Image::flipVertically()
+	Image::reference Image::flipVertically()
 	{
 		Cx(m_sizeW)
 			Cy(m_sizeH/2.f)

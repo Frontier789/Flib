@@ -17,6 +17,7 @@
 #ifndef FRONTIER_VECTOR3_HPP_INCLUDED
 #define FRONTIER_VECTOR3_HPP_INCLUDED
 #include <FRONTIER/System/type_traits/Will_result_in.hpp>
+#include <FRONTIER/System/macros/ONLYFORDOXY.hpp>
 #define FRONTIER_VECTOR3
 namespace fm
 {
@@ -489,6 +490,8 @@ namespace fm
 		static vector3<T> loadrgb(const T2 &other);
 	};
 
+#ifndef FRONTIER_ONLY_FOR_DOXYGEN
+
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector3
 	/// @brief Overload of binary operator +=
@@ -670,6 +673,7 @@ namespace fm
 	template<class T>
 	vector3<T> operator-(const vector3<T> &vec);
 
+#endif
 
 	typedef vector3<float> 		  vec3;
 	typedef vector3<float> 		  vec3f;

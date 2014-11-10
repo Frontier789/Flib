@@ -28,9 +28,9 @@
 #define FRONTIER_WILL_RESULT_IN(expr,type) (sizeof(fm::priv::will_result_in_helper<type>(expr))==sizeof(fm::priv::charX2))
 
 #ifndef FRONTIER_VECTOR_RETURN_TYPE_FIRST
-	#define FRONTIER_FIND_RETURN_TYPE(T1,T2,operand) typename fm::Type_if<FRONTIER_WILL_RESULT_IN((*(T1*)0) operand (*(T2*)0),T2),T2,T1>::type
+	#define FRONTIER_FIND_RETURN_TYPE(T1,T2,op) typename fm::Type_if<(sizeof(fm::priv::will_result_in_helper<T2>( *(T1*)0 op *(T2*)0 ))==sizeof(fm::priv::charX2)),T2,T1>::type
 #else
-	#define FRONTIER_FIND_RETURN_TYPE(T1,T2,operand) T1
+	#define FRONTIER_FIND_RETURN_TYPE(T1,T2,op) T1
 #endif
 
 namespace fm

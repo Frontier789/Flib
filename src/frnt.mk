@@ -4,9 +4,9 @@ AR=ar
 CD=cd
 RM=rm
 
-#CXXFLAGS+= -pg -g -fno-inline-functions
-
-CXXFLAGS+=-Wall -Os -Wfatal-errors -pedantic -DFRONTIER_LIBBUILD 
+CXXFLAGS=-Wno-long-long -Wfatal-errors -Wall -Wextra -Os -pedantic
+#CXXFLAGS+= -pg -g -fno-inline-functions -Werror
+CXXFLAGS+=-DFRONTIER_LIBBUILD 
 
 ifeq ($(LIBNAME),)
 LIBNAME=lib

@@ -189,7 +189,8 @@ namespace fw
 			
 			if (m_contextCount==0)
 			{
-				WNDCLASS winClass = {0};
+				WNDCLASS winClass;
+				ZeroMemory(&winClass,sizeof(winClass));
 		
 				// Fill in the fields of the WNDCLASS
 				winClass.lpfnWndProc   = (WNDPROC)DefWindowProc;
@@ -268,7 +269,10 @@ namespace fw
 		bool GlContext::setPixelFormat()
 		{
 			// fill out the pfd with our requirements
-			PIXELFORMATDESCRIPTOR descriptor = {0};
+			PIXELFORMATDESCRIPTOR descriptor;
+			
+			ZeroMemory(&descriptor,sizeof(descriptor));
+			
 			descriptor.nSize        = sizeof(PIXELFORMATDESCRIPTOR);
 			descriptor.nVersion     = 1;
 			descriptor.iLayerType   = PFD_MAIN_PLANE;

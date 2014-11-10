@@ -134,6 +134,9 @@ namespace fg
 						   const fm::mat4 &transformation,
 						   const IndexPointer &indices)
 	{
+		// unused
+		(void)shader;
+		
 		if (pos.isUsed())
 		{
 			fg::Buffer::bind(pos.m_buffer,fg::ArrayBuffer);

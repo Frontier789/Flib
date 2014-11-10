@@ -44,7 +44,7 @@ public:
 		return ret;
 	}
 };
-bool checkFramebufferStatus(fg::FrameBuffer *fbo)
+bool checkFramebufferStatus()
 {
 	unsigned int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
@@ -128,7 +128,7 @@ namespace fg
 		glCheck(glDrawBuffers(count, DrawBuffers));
 		delete[] DrawBuffers;
 		*/
-		return checkFramebufferStatus(this);
+		return checkFramebufferStatus();
 	}
 	
 	bool FrameBuffer::setDepthBuffer(const DepthBuffer &depthBuf)
@@ -142,7 +142,7 @@ namespace fg
 			glCheck(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, depthBuf.width, depthBuf.height));
 			glCheck(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBufID));			
 		}
-		return checkFramebufferStatus(this);
+		return checkFramebufferStatus();
 	}
 
 	////////////////////////////////////////////////////////////

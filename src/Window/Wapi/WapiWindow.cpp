@@ -537,7 +537,9 @@ namespace fw
 			// having no window means we must register a WNDCLASS
 			if (m_windowCount==0)
 			{
-				WNDCLASS winClass = {0};
+				WNDCLASS winClass;
+				
+				ZeroMemory(&winClass,sizeof(winClass));
 
 				// Fill in the fields of the WNDCLASS
 				winClass.style         = 0;

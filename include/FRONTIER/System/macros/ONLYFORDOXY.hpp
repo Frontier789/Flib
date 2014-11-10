@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// <!--
 /// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
@@ -13,9 +13,7 @@
 ///                                                                    ///
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
-//////////////////////////////////////////////////////////////////////////
-#ifdef FRONTIER_DONT_INCLUDE_INL
-	#define FRONTIER_DONT_INCLUDE_INL_WAS_DEFINED
-#else
-	#define FRONTIER_DONT_INCLUDE_INL
+////////////////////////////////////////////////////////////////////////// -->
+#ifndef FRONTIER_ONLY_FOR_DOXYGEN
+	#define FRONTIER_ONLY_FOR_DOXYGEN
 #endif

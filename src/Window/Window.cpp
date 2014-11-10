@@ -17,8 +17,8 @@
 #include <FRONTIER/System/macros/OS.h>
 
 #ifdef FRONTIER_OS_WINDOWS
-	#include "Wapi/fwWapiPrintLastError.cpp"
 	#include "Wapi/WapiWindow.cpp"
+	#include "Wapi/fwWapiPrintLastError.cpp"
 #else
 	#warning No WindowImpl!
 #endif

@@ -85,15 +85,6 @@ namespace fm
 	}
 }
 
-#ifdef __GNUC__
-	#include <inttypes.h>
-	#define FRONTIER_LONG_LONG   int64_t
-	#define FRONTIER_U_LONG_LONG uint64_t
-#else
-	#define FRONTIER_LONG_LONG   signed long long 
-	#define FRONTIER_U_LONG_LONG unsigned long long
-#endif
-
 namespace fm
 {
 	namespace priv
@@ -105,14 +96,14 @@ namespace fm
 						 signed short,
 						 signed int,
 						 signed long,
-						 FRONTIER_LONG_LONG> Intlist;
+						 signed long long> Intlist;
 						 
 		/// TypeList containing the fundamental unsigned integer types 
 		typedef TypeList<unsigned char,
 						 unsigned short,
 						 unsigned int,
 						 unsigned long,
-						 FRONTIER_U_LONG_LONG> Uintlist;
+						 unsigned long long> Uintlist;
 						 
 		/// TypeList containing the fundamental floating point types 
 		typedef TypeList<float,
@@ -120,8 +111,5 @@ namespace fm
 						 long double> Floatlist;
 	}
 }
-
-#undef FRONTIER_LONG_LONG
-#undef FRONTIER_U_LONG_LONG
 
 #endif // FRONTIER_TYPESHELPER_HPP_INCLUDED
