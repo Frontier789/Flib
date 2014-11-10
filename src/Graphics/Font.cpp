@@ -90,9 +90,9 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	priv::GlyphMap::Row::Row(unsigned int start,unsigned int height,unsigned int width) : start (start ),
-																						  height(height),
-																						  width (width )
+	priv::GlyphMap::Row::Row(fm::Size start,fm::Size height,fm::Size width) : start (start ),
+																			  height(height),
+																			  width (width )
 	{
 
 	}
