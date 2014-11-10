@@ -42,13 +42,13 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::Buffer(const void *data,unsigned int bytesToCopy,BufferType type,Buffer::Usage usage)
+	Buffer::Buffer(const void *data,fm::Size bytesToCopy,BufferType type,Buffer::Usage usage)
 	{
 		setData(data,bytesToCopy,type,usage);
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::Buffer(const void *data,unsigned int bytesToCopy,Buffer::Usage usage,BufferType type)
+	Buffer::Buffer(const void *data,fm::Size bytesToCopy,Buffer::Usage usage,BufferType type)
 	{
 		setData(data,bytesToCopy,type,usage);
 	}
@@ -69,19 +69,19 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::reference Buffer::setData(const void *data,unsigned int bytesToCopy)
+	Buffer::reference Buffer::setData(const void *data,fm::Size bytesToCopy)
 	{
 		return setData(data,bytesToCopy,m_type,m_usage);
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::reference Buffer::setData(const void *data,unsigned int bytesToCopy,Buffer::Usage usage)
+	Buffer::reference Buffer::setData(const void *data,fm::Size bytesToCopy,Buffer::Usage usage)
 	{
 		return setData(data,bytesToCopy,m_type,usage);
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::reference Buffer::setData(const void *data,unsigned int bytesToCopy,BufferType type)
+	Buffer::reference Buffer::setData(const void *data,fm::Size bytesToCopy,BufferType type)
 	{
 		return setData(data,bytesToCopy,type,m_usage);
 	}
@@ -111,7 +111,7 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::reference Buffer::setData(const void *data,unsigned int bytesToCopy,BufferType type,Buffer::Usage usage)
+	Buffer::reference Buffer::setData(const void *data,fm::Size bytesToCopy,BufferType type,Buffer::Usage usage)
 	{
 		m_type = type;
 		m_usage = usage;
@@ -141,7 +141,7 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::reference Buffer::updateData(const void *data,unsigned int bytesToCopy,unsigned int byteOffset)
+	Buffer::reference Buffer::updateData(const void *data,fm::Size bytesToCopy,fm::Size byteOffset)
 	{
 		init();
 		if (!getGlId())
