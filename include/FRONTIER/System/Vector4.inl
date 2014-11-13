@@ -87,8 +87,8 @@ namespace fm
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	template<class T2>
-	inline vector4<T>::vector4(const vector3<T2> &vec,const T2 &W) : x(T(vec.x)),
+	template<class T2,class T3>
+	inline vector4<T>::vector4(const vector3<T2> &vec,const T3 &W) : x(T(vec.x)),
 																	 y(T(vec.y)),
 																	 z(T(vec.z)),
 																	 w(T(W))

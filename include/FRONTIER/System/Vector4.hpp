@@ -221,8 +221,8 @@ namespace fm
 		/// @param W w's new value
 		///
 		/////////////////////////////////////////////////////////////
-		template<class T2>
-		vector4(const vector3<T2> &vec,const T2 &W=T2(1));
+		template<class T2,class T3>
+		vector4(const vector3<T2> &vec,const T3 &W=T2(1));
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Strips both coordinates from their signs
