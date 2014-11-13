@@ -14,18 +14,18 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_WAPITLSPTR_HPP_INCLUDED
-#define FRONTIER_WAPITLSPTR_HPP_INCLUDED
+#ifndef FRONTIER_POSIXTLSPTR_HPP_INCLUDED
+#define FRONTIER_POSIXTLSPTR_HPP_INCLUDED
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/API.h>
-#define FRONTIER_WAPITLSPTR
+#define FRONTIER_POSIXTLSPTR
 
 namespace fm
 {
-	namespace Wapi
+	namespace Posix
 	{
 		/////////////////////////////////////////////////////////////
-		/// @brief Windows specific implementation of thread-local-storage
+		/// @brief Posix (Linux) specific implementation of thread-local-storage
 		/// 
 		/////////////////////////////////////////////////////////////
 		class FRONTIER_API TlsPtr : public fm::NonCopyable
@@ -75,4 +75,4 @@ namespace fm
 }
 
 
-#endif // FRONTIER_WAPITLSPTR_HPP_INCLUDED
+#endif // FRONTIER_POSIXTLSPTR_HPP_INCLUDED

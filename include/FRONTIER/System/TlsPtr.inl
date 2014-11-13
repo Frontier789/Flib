@@ -28,6 +28,15 @@
 			typedef fm::Wapi::TlsPtr TlsPtr;
 		}
 	}
+#elif defined(FRONTIER_OS_LINUX)
+	#include "Posix/PosixTlsPtr.hpp"
+	namespace fm
+	{
+		namespace priv
+		{
+			typedef fm::Posix::TlsPtr TlsPtr;
+		}
+	}
 #else
 	#ifndef FRONTIER_NO_TLSPTR
 		#warning No TlsPtr!

@@ -18,4 +18,7 @@
  
 #ifdef FRONTIER_OS_WINDOWS
 	#include "Wapi/WapiTlsPtr.cpp"
+#elif defined(FRONTIER_OS_LINUX)
+	#include "Posix/PosixTlsPtr.cpp"
 #endif
+ 

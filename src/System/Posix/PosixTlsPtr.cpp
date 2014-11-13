@@ -14,34 +14,35 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/System/Wapi/WapiTlsPtr.hpp>
+#include <FRONTIER/System/Posix/PosixTlsPtr.hpp>
 #include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/System/FmLog.hpp>
-#include "fmWapiPrintLastError.hpp"
-#include <windows.h>
+#include <pthread.h>
+#include <string.h>
+#include <errno.h>
 
 namespace fm
 {
-	namespace Wapi
+	namespace Posix
 	{
-		DWORD &getID(void *data)
+		pthread_key_t &getID(void *data)
 		{
-			return *((DWORD*)data);
+			return *((pthread_key_t*)data);
 		}
 		
-		const DWORD &getID(const void *data)
+		const pthread_key_t &getID(const void *data)
 		{
-			return *((DWORD*)data);
+			return *((pthread_key_t*)data);
 		}
 		
 		/////////////////////////////////////////////////////////////
-		TlsPtr::TlsPtr() : m_id(new DWORD)
+		TlsPtr::TlsPtr() : m_id(new pthread_key_t)
 		{
-			getID(m_id) = TlsAlloc();
-			if (!isValid())
+			if (pthread_key_create((pthread_key_t*)m_id,NULL) != 0)
 			{
-				fm::WapiPrintLastError(fm::fm_log,TlsAlloc);
-				delete (DWORD*)m_id;
+				int errorNum = errno;
+				fm::fm_log << "pthread_key_create failed in " << __FILE__ << ":" << __LINE__ << " (errno=\"" << strerror(errorNum) << "\")=" << errorNum << std::endl;
+				delete (pthread_key_t*)m_id;
 				m_id = NULL;
 			}
 		}
@@ -50,10 +51,13 @@ namespace fm
 		TlsPtr::~TlsPtr()
 		{
 			if (m_id)
-				if (!TlsFree(getID(m_id)))
-					fm::WapiPrintLastError(fm::fm_log,TlsFree);
-			
-			delete (DWORD*)m_id;
+				if (pthread_key_delete(getID(m_id)) != 0)
+				{
+					int errorNum = errno;
+					fm::fm_log << "pthread_key_delete failed in " << __FILE__ << ":" << __LINE__ << " (errno=\"" << strerror(errorNum) << "\")=" << errorNum << std::endl;
+				}
+
+			delete (pthread_key_t*)m_id;
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -62,9 +66,10 @@ namespace fm
 			if (!isValid())
 				return false;
 			
-			if (!TlsSetValue(getID(m_id),ptr))
+			if (pthread_setspecific(getID(m_id),ptr) != 0)
 			{
-				fm::WapiPrintLastError(fm::fm_log,TlsSetValue);
+				int errorNum = errno;
+				fm::fm_log << "pthread_setspecific failed in " << __FILE__ << ":" << __LINE__ << " (errno=\"" << strerror(errorNum) << "\")=" << errorNum << std::endl;
 				return false;
 			}
 			
@@ -77,7 +82,7 @@ namespace fm
 			if (!isValid())
 				return NULL;
 			
-			return TlsGetValue(getID(m_id));
+			return pthread_getspecific(getID(m_id));
 		}
 
 		/////////////////////////////////////////////////////////////
