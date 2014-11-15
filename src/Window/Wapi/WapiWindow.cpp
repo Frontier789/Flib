@@ -442,13 +442,27 @@ namespace fw
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
 
-
+				// we do little change here so we can have bigger windows than the desktop
 				case WM_GETMINMAXINFO: 
 				{
 					DefWindowProc(hwnd, msg, wParam, lParam);
 					MINMAXINFO *pmmi = (MINMAXINFO*)lParam;
 					pmmi->ptMaxTrackSize.x = 420000;
 					pmmi->ptMaxTrackSize.y = 420000;
+					return 0;
+				}
+				
+				// mouse wheel moved
+				case WM_MOUSEWHEEL:
+				{
+					Event ev(Event::MouseWheelMoved);
+					ev.wheel.delta = GET_WHEEL_DELTA_WPARAM(wParam)/WHEEL_DELTA;
+					ev.wheel.ctrl  = GetKeyState(VK_CONTROL);
+					ev.wheel.alt   = GetKeyState(VK_MENU);
+					ev.wheel.shift = GetKeyState(VK_SHIFT);
+					ev.wheel.x     = ((int)(short)LOWORD(lParam));
+					ev.wheel.y     = ((int)(short)HIWORD(lParam));
+					postEvent(ev);
 					return 0;
 				}
 

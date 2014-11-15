@@ -47,7 +47,7 @@ namespace fg
 		fg::Color m_color;
 		fm::vec2 m_boundings;
 		unsigned int m_align;
-		unsigned int m_size;
+		unsigned int m_characterSize;
 		bool m_kerningEnabled;
 		void buildVertices();
 	public:

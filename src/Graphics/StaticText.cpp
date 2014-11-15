@@ -29,12 +29,16 @@ namespace fg
 	{
 		// simply handle empty string
 		if (!m_text.length())
-			m_vertices.resize(0);
+			m_boundings = fm::vec2(),
+			m_vertices.resize(0),
+			m_indices.resize(0);
 		else
 		{
 			// we need a font
 			if (!m_font)
 				return;
+			
+			m_font->setSize(m_characterSize);
 			
 			// reset some values
 			m_boundings = fm::vec2();
@@ -46,7 +50,7 @@ namespace fg
 			// get metrics
 			fg::Font::Metrics metrics = m_font->getMetrics();
 			int height = metrics.maxH-metrics.minH;
-			float width = m_font->getGlyph('a').size.w;
+			float width = m_font->getGlyph('w').size.w;
 			fm::vec2 curPos(0,height*-1);
 
 			std::vector<fm::Size> rowWidths;
@@ -56,7 +60,7 @@ namespace fg
 			for (fm::Size i=0;i<length;i++)
 			{
 				// register newline and reset the x position
-				if (m_text[i]=='\n')
+				if (m_text[i]=='\n' || (m_text[i]=='\r' && (i==length-1 || m_text[i+1]!='\n')))
 					rowWidths.push_back(curPos.x),
 					curPos = fm::vec2(0,curPos.y-=height);
 				// simply advance 
@@ -138,7 +142,7 @@ namespace fg
 	StaticText::StaticText() : m_font(NULL),
 							   m_texture(NULL),
 							   m_align(StaticText::Align::Left),
-							   m_size(64)
+							   m_characterSize(64)
 	{
 
 	}
@@ -149,7 +153,7 @@ namespace fg
 																																								   m_text(text),
 																																								   m_color(color),
 																																								   m_align(align),
-																																								   m_size(characterSize),
+																																								   m_characterSize(characterSize),
 																																								   m_kerningEnabled(enableKerning)
 
 	{
@@ -212,7 +216,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	void StaticText::setCharacterSize(unsigned int size)
 	{
-		m_size = size;
+		m_characterSize = size;
 		buildVertices();
 	}
 
@@ -243,7 +247,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	unsigned int StaticText::getCharacterSize() const
 	{
-		return m_size;
+		return m_characterSize;
 	}
 
 	/////////////////////////////////////////////////////////////

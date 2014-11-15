@@ -247,6 +247,24 @@ namespace fw
 	
 	/////////////////////////////////////////////////////////////
 	/// 
+	/// 	@brief Simple class used to store data about a MouseWheelMoved event
+	///
+	/// @ingroup Window
+	///
+	/////////////////////////////////////////////////////////////
+	class FRONTIER_API MouseWheelEvent
+	{
+	public:
+		int delta;  ///< The amount the wheel moved (+1 means it was rotated once, forward, away from the user)
+		bool shift; ///< Indicates that shift was held when the event occured
+		bool ctrl;  ///< Indicates that control was held when the event occured
+		bool alt;   ///< Indicates that alt was held when the event occured
+		int x; ///< X coordinate of the cursor
+		int y; ///< Y coordinate of the cursor
+	};
+	
+	/////////////////////////////////////////////////////////////
+	/// 
 	/// 	@brief Simple class used to store data about a Resized event
 	///
 	/// @ingroup Window
@@ -291,19 +309,20 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		enum EventType {
-			Empty,          ///< The event is not filled
-			Closed,         ///< The window is closed
-			Resized,        ///< The window's size is changed
-			Minimized,      ///< The window was asked to minimize
-			Maximized,      ///< The window was asked to maximize
-			FocusLost,      ///< The window lost focus
-			FocusGained,    ///< The window gained focus
-			KeyPressed,     ///< A key is pressed (The key field can be used to track further information)
-			KeyReleased,    ///< A key is released (The key field can be used to track further information)
-			ButtonPressed,  ///< A mouse button is pressed (The mouse field can be used to track further information)
-			ButtonReleased, ///< A mouse button is released (The mouse field can be used to track further information)
-			TextEntered,    ///< A character is entered (not to be confused with KeyPressed)
-			MouseMoved      ///< The cursor is moved inside the window is released (The pos field can be used to track further information)
+			Empty,           ///< The event is not filled
+			Closed,          ///< The window is closed
+			Resized,         ///< The window's size is changed
+			Minimized,       ///< The window was asked to minimize
+			Maximized,       ///< The window was asked to maximize
+			FocusLost,       ///< The window lost focus
+			FocusGained,     ///< The window gained focus
+			KeyPressed,      ///< A key is pressed (The key field can be used to track further information)
+			KeyReleased,     ///< A key is released (The key field can be used to track further information)
+			ButtonPressed,   ///< A mouse button is pressed (The mouse field can be used to track further information)
+			ButtonReleased,  ///< A mouse button is released (The mouse field can be used to track further information)
+			TextEntered,     ///< A character is entered (not the same as KeyPressed)
+			MouseWheelMoved, ///< The mouse wheel was moved (The wheel field can be used to track further information)
+			MouseMoved       ///< The cursor is moved inside the window is released (The pos field can be used to track further information)
 		};
 		
 		EventType type; ///< The type of the event
@@ -315,11 +334,12 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		union {
-			KeyboardEvent key;   ///< used with KeyPressed KeyReleased events
-			ButtonEvent   mouse; ///< used with ButtonPressed ButtonReleased events
-			MouseEvent    pos;   ///< used with MouseMoved event
-			ResizeEvent   size;  ///< used with Resize event
-			TextEvent     text;  ///< used with TextEntered
+			KeyboardEvent   key;   ///< used with KeyPressed KeyReleased events
+			ButtonEvent     mouse; ///< used with ButtonPressed ButtonReleased events
+			MouseEvent      pos;   ///< used with MouseMoved event
+			ResizeEvent     size;  ///< used with Resize event
+			TextEvent       text;  ///< used with TextEntered
+			MouseWheelEvent wheel; ///< used with MouseWheelMoved event
 		};
 		
 		/////////////////////////////////////////////////////////////
