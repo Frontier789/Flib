@@ -71,7 +71,18 @@ namespace fm
 	////////////////////////////////////////////////////////////
 	template<class T>
 	template<class T2>
-	inline vector3<T>::vector3(const vector2<T2> &other,const T2 &Z) : x(T(other.x)),
+	inline vector3<T>::vector3(const vector2<T2> &other) : x(T(other.x)),
+														   y(T(other.y)),
+														   z(T(0))
+	{
+
+	}
+
+
+	////////////////////////////////////////////////////////////
+	template<class T>
+	template<class T2,class T3>
+	inline vector3<T>::vector3(const vector2<T2> &other,const T3 &Z) : x(T(other.x)),
 																	   y(T(other.y)),
 																	   z(T(Z))
 	{

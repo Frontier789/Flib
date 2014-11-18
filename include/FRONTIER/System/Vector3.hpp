@@ -144,11 +144,23 @@ namespace fm
 		/// uses @a other to fill x and y
 		/// 
 		/// @param other 2D vector to construct from
-		/// @param Z The z coordinate
 		///
 		/////////////////////////////////////////////////////////////
 		template<class T2>
-		vector3(const vector2<T2> &other,const T2 &Z = T());
+		vector3(const vector2<T2> &other);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct 3D vector from 2D vector with different type
+		///
+		/// This constructor sets the z coordinate to Z and
+		/// uses @a other to fill x and y
+		/// 
+		/// @param other 2D vector to construct from
+		/// @param Z The z coordinate
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T2,class T3>
+		vector3(const vector2<T2> &other,const T3 &Z);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct 3D vector from 4D vector with different type

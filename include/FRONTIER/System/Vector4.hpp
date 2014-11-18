@@ -201,6 +201,31 @@ namespace fm
 		/// @brief Construct 4D vector from 2D vector with different type
 		///
 		/// This constructor sets the x,y coordinates to @a vec 's x and y
+		/// z to 0 and w to 1
+		///
+		/// @param vec 2D vector to construct from
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T2>
+		vector4(const vector2<T2> &vec);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct 4D vector from 2D vector with different type
+		///
+		/// This constructor sets the x,y coordinates to @a vec 's x and y
+		/// z to @a Z and w to 1
+		///
+		/// @param vec 2D vector to construct from
+		/// @param Z z's new value
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T2,class T3>
+		vector4(const vector2<T2> &vec,const T3 &Z);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct 4D vector from 2D vector with different type
+		///
+		/// This constructor sets the x,y coordinates to @a vec 's x and y
 		/// z to @a Z and w to @a W 
 		///
 		/// @param vec 2D vector to construct from
@@ -208,8 +233,8 @@ namespace fm
 		/// @param W w's new value
 		///
 		/////////////////////////////////////////////////////////////
-		template<class T2>
-		vector4(const vector2<T2> &vec,const T2 &Z=T2(0),const T2 &W=T2(1));
+		template<class T2,class T3,class T4>
+		vector4(const vector2<T2> &vec,const T3 &Z,const T4 &W);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct 4D vector from 3D vector with different type
@@ -218,11 +243,23 @@ namespace fm
 		/// and sets the w field to 1
 		///
 		/// @param vec 3D vector to construct from
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T2>
+		vector4(const vector3<T2> &vec);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct 4D vector from 3D vector with different type
+		///
+		/// This constructor uses @a vec to fill the x, y and z fileds 
+		/// and sets the w field to @a W
+		///
+		/// @param vec 3D vector to construct from
 		/// @param W w's new value
 		///
 		/////////////////////////////////////////////////////////////
 		template<class T2,class T3>
-		vector4(const vector3<T2> &vec,const T3 &W=T2(1));
+		vector4(const vector3<T2> &vec,const T3 &W);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Strips both coordinates from their signs
