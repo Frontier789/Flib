@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_COLOR_HPP_INCLUDED
 #define FRONTIER_COLOR_HPP_INCLUDED
+#include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
 #define FRONTIER_COLOR
 namespace fm
@@ -35,7 +36,7 @@ namespace fg
 	class FRONTIER_API Color
 	{
 	public:
-		typedef unsigned char component_type;
+		typedef fm::Uint8 component_type;
 		typedef Color &reference;
 		typedef const Color &const_reference;
 		enum {
@@ -73,10 +74,10 @@ namespace fg
 		static Color Lavender;  ///< 0xB57FDBFF
 		static Color Indigo;    ///< 0x490082FF
 
-		unsigned char r; ///< Red component
-		unsigned char g; ///< Green component
-		unsigned char b; ///< Blue component
-		unsigned char a; ///< Alpha (transparency) component
+		fm::Uint8 r; ///< Red component
+		fm::Uint8 g; ///< Green component
+		fm::Uint8 b; ///< Blue component
+		fm::Uint8 a; ///< Alpha (transparency) component
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
@@ -92,7 +93,7 @@ namespace fg
 		/// @param rgb The value of red, green and blue
 		///
 		/////////////////////////////////////////////////////////////
-		explicit Color(unsigned char rgb);
+		explicit Color(fm::Uint8 rgb);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct color with same Red, Green and Blue value
@@ -101,7 +102,7 @@ namespace fg
 		/// @param a Transparency
 		///
 		/////////////////////////////////////////////////////////////
-		Color(unsigned char rgb,unsigned char a);
+		Color(fm::Uint8 rgb,fm::Uint8 a);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct color from Red, Green and Blue values
@@ -111,7 +112,7 @@ namespace fg
 		/// @param b Blue component
 		///
 		/////////////////////////////////////////////////////////////
-		Color(unsigned char r,unsigned char g,unsigned char b);
+		Color(fm::Uint8 r,fm::Uint8 g,fm::Uint8 b);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct color from Red, Green, Blue and alpha values
@@ -122,7 +123,7 @@ namespace fg
 		/// @param a Transparency
 		///
 		/////////////////////////////////////////////////////////////
-		Color(unsigned char r,unsigned char g,unsigned char b,unsigned char a);
+		Color(fm::Uint8 r,fm::Uint8 g,fm::Uint8 b,fm::Uint8 a);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy constructor
@@ -176,7 +177,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference operator()(unsigned char r,unsigned char g,unsigned char b);
+		reference operator()(fm::Uint8 r,fm::Uint8 g,fm::Uint8 b);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the Red, Green, Blue and Alpha copmonents of the color
@@ -189,7 +190,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference operator()(unsigned char r,unsigned char g,unsigned char b,unsigned char a);
+		reference operator()(fm::Uint8 r,fm::Uint8 g,fm::Uint8 b,fm::Uint8 a);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create a color from a hex value
@@ -199,7 +200,7 @@ namespace fg
 		/// @return The constructed color
 		///
 		/////////////////////////////////////////////////////////////
-		static Color fromHex(unsigned int hex);
+		static Color fromHex(fm::Uint32 hex);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Convert Color to 4D vector
