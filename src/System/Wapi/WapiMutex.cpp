@@ -22,34 +22,34 @@ namespace fm
 	namespace Wapi
 	{
 		/////////////////////////////////////////////////////////////
-		Mutex::Mutex() : m_critSect(NULL)
+		Mutex::Mutex()
 		{
-			InitializeCriticalSection((CRITICAL_SECTION*)m_critSect);
+			InitializeCriticalSection(&m_critSect);
 		}
 		
 		/////////////////////////////////////////////////////////////
 		Mutex::~Mutex()
 		{
-			DeleteCriticalSection((CRITICAL_SECTION*)m_critSect);
+			DeleteCriticalSection(&m_critSect);
 		}
 		
 		/////////////////////////////////////////////////////////////
 		bool Mutex::lock()
 		{
-			EnterCriticalSection((CRITICAL_SECTION*)m_critSect);
+			EnterCriticalSection(&m_critSect);
 			return true;
 		}
 		
 		/////////////////////////////////////////////////////////////
 		bool Mutex::attemptLock()
 		{
-			return TryEnterCriticalSection((CRITICAL_SECTION*)m_critSect);
+			return TryEnterCriticalSection(&m_critSect);
 		}
 		
 		/////////////////////////////////////////////////////////////
 		bool Mutex::unLock()
 		{
-			LeaveCriticalSection((CRITICAL_SECTION*)m_critSect);
+			LeaveCriticalSection(&m_critSect);
 			return true;
 		}
 	}

@@ -18,6 +18,7 @@
 #define FRONTIER_WAPIMUTEX_HPP_INCLUDED
 #include <FRONTIER/System/macros/API.h>
 #define FRONTIER_WAPIMUTEX
+#include <windows.h>
 
 namespace fm
 {
@@ -25,7 +26,7 @@ namespace fm
 	{
 		class FRONTIER_API Mutex
 		{
-			void *m_critSect; ///< A pointer to the owned critical section
+			CRITICAL_SECTION m_critSect; ///< A pointer to the owned critical section
 		public:
 		
 			/////////////////////////////////////////////////////////////
