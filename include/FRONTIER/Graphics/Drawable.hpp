@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_DRAWABLE_HPP_INCLUDED
 #define FRONTIER_DRAWABLE_HPP_INCLUDED
+#include <FRONTIER/Graphics/RenderStates.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
 
@@ -120,7 +121,7 @@ namespace fg
 		/// @param shader The shader to be used
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void draw(const fg::Texture *texture,const fg::Shader *shader) const = 0;
+		virtual void draw(fg::RenderStates states) const = 0;
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -240,8 +241,7 @@ namespace fg
 		/// @param texPos The attributes of the texture position
 		/// @param norm The attributes of the normals
 		/// @param indices The properties of he indices
-		/// @param texture The texture to be used
-		/// @param shader The shader to be used
+		/// @param states The states used when drawing
 		/// @param vertexCount The number of vertices to be drawn
 		/// @param primitive The way vertices should be rasterized
 		///
@@ -252,9 +252,7 @@ namespace fg
 									  const Attribute &norm,
 									  fm::Size vertexCount,
 									  fg::Primitive primitive,
-									  const Texture *texture,
-									  const Shader *shader,
-									  const fm::mat4 &transformation,
+									  const fg::RenderStates &states,
 									  const IndexPointer &indices);
 
 	}
@@ -265,9 +263,7 @@ namespace fg
 							  const Attribute &,
 							  fm::Size,
 							  fg::Primitive,
-							  const Texture *,
-							  const Shader *,
-							  const fm::mat4 &,
+							  const fg::RenderStates &,
 							  const IndexPointer &); ///< The type of the drawer function
 
 	/////////////////////////////////////////////////////////////
@@ -288,8 +284,7 @@ namespace fg
 	/// @param clr The attributes of the color
 	/// @param vertexCount The number of vertices to be drawn
 	/// @param primitive The way vertices should be rasterized
-	/// @param texture The texture to be used
-	/// @param shader The shader to be used
+	/// @param states The states used when drawing
 	/// @param indices The properties of he indices
 	///
 	/////////////////////////////////////////////////////////////
@@ -297,9 +292,7 @@ namespace fg
 						   const Attribute &clr,
 						   fm::Size vertexCount,
 						   fg::Primitive primitive,
-						   const Texture *texture = 0,
-						   const Shader *shader = 0,
-						   const fm::mat4 &transformation = fm::mat4::identity,
+						   const fg::RenderStates &states = fg::RenderStates(),
 						   const IndexPointer &indices = IndexPointer());
 
 
@@ -311,8 +304,7 @@ namespace fg
 	/// @param texPos The attributes of the texture position
 	/// @param vertexCount The number of vertices to be drawn
 	/// @param primitive The way vertices should be rasterized
-	/// @param texture The texture to be used
-	/// @param shader The shader to be used
+	/// @param states The states used when drawing
 	/// @param indices The properties of he indices
 	///
 	/////////////////////////////////////////////////////////////
@@ -321,9 +313,7 @@ namespace fg
 						   const Attribute &texPos,
 						   fm::Size vertexCount,
 						   fg::Primitive primitive,
-						   const Texture *texture = 0,
-						   const Shader *shader = 0,
-						   const fm::mat4 &transformation = fm::mat4::identity,
+						   const fg::RenderStates &states = fg::RenderStates(),
 						   const IndexPointer &indices = IndexPointer());
 
 
@@ -336,8 +326,7 @@ namespace fg
 	/// @param norm The attributes of the normals
 	/// @param vertexCount The number of vertices to be drawn
 	/// @param primitive The way vertices should be rasterized
-	/// @param texture The texture to be used
-	/// @param shader The shader to be used
+	/// @param states The states used when drawing
 	/// @param indices The properties of he indices
 	///
 	/////////////////////////////////////////////////////////////
@@ -347,9 +336,7 @@ namespace fg
 						   const Attribute &norm,
 						   fm::Size vertexCount,
 						   fg::Primitive primitive,
-						   const Texture *texture = 0,
-						   const Shader *shader = 0,
-						   const fm::mat4 &transformation = fm::mat4::identity,
+						   const fg::RenderStates &states = fg::RenderStates(),
 						   const IndexPointer &indices = IndexPointer());
 
 	/////////////////////////////////////////////////////////////
@@ -358,8 +345,7 @@ namespace fg
 	/// @param vertices A pointer to the vertices
 	/// @param vertexCount The number of vertices to be drawn
 	/// @param primitive The way vertices should be rasterized
-	/// @param texture The texture to be used
-	/// @param shader The shader to be used
+	/// @param states The states used when drawing
 	/// @param indices The properties of he indices
 	///
 	/////////////////////////////////////////////////////////////
@@ -367,43 +353,22 @@ namespace fg
 	void draw(const fm::vertex<pt,ct,tpt,nt> *vertices,
 			  fm::Size vertexCount,
 			  fg::Primitive primitive,
-			  const Texture *texture = 0,
-			  const Shader *shader = 0,
-			  const fm::mat4 &transformation = fm::mat4::identity,
+			  const fg::RenderStates &states = fg::RenderStates(),
 			  const IndexPointer &indices = IndexPointer());
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Render vertices
 	///
 	/// @param vertices A pointer to the vertices
-	/// @param vertexCount The number of vertices to be drawn
 	/// @param primitive The way vertices should be rasterized
-	/// @param indices The properties of he indices
-	///
-	/////////////////////////////////////////////////////////////
-	template <class pt,class ct,class tpt,class nt>
-	void draw(const fm::vertex<pt,ct,tpt,nt> *vertices,
-			  fm::Size vertexCount,
-			  fg::Primitive primitive,
-			  const fm::mat4 &transformation,
-			  const IndexPointer &indices);
-
-	/////////////////////////////////////////////////////////////
-	/// @brief Render vertices
-	///
-	/// @param vertices A pointer to the vertices
-	/// @param primitive The way vertices should be rasterized
-	/// @param texture The texture to be used
-	/// @param shader The shader to be used
+	/// @param states The states used when drawing
 	/// @param indices The properties of he indices
 	///
 	/////////////////////////////////////////////////////////////
 	template <class pt,class ct,class tpt,class nt,fm::Size vertexCount>
 	void draw(const fm::vertex<pt,ct,tpt,nt> (&vertices)[vertexCount],
 			  fg::Primitive primitive,
-			  const Texture *texture = 0,
-			  const Shader *shader = 0,
-			  const fm::mat4 &transformation = fm::mat4::identity);
+			  const fg::RenderStates &states = fg::RenderStates());
 
 
 	/////////////////////////////////////////////////////////////

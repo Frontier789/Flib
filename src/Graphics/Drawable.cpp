@@ -129,14 +129,9 @@ namespace fg
 						   const Attribute &norm,
 						   fm::Size vertexCount,
 						   fg::Primitive primitive,
-						   const Texture *texture,
-						   const Shader *shader,
-						   const fm::mat4 &transformation,
+						   const fg::RenderStates &states,
 						   const IndexPointer &indices)
 	{
-		// unused
-		(void)shader;
-		
 		if (pos.isUsed())
 		{
 			fg::Buffer::bind(pos.m_buffer,fg::ArrayBuffer);
@@ -161,9 +156,9 @@ namespace fg
 			glCheck(glNormalPointer(getSizeType(norm),norm.m_bytesPerVertex,norm.m_ptr));
 		}
 		
-		fg::Texture::bind(texture,fg::Texture::Pixels);
+		fg::Texture::bind(states.texture,fg::Texture::Pixels);
 		glMatrixMode(GL_MODELVIEW);
-		glLoadMatrixf(&transformation.transpose()[0][0]);
+		glLoadMatrixf(&states.transform.transpose()[0][0]);
 		
 		if (indices.m_bytesPerIndex && (indices.m_ptr || indices.m_buffer))
 		{
@@ -187,9 +182,7 @@ namespace fg
 			  const Attribute &clr,
 			  fm::Size vertexCount,
 			  fg::Primitive primitive,
-			  const Texture *texture,
-			  const Shader *shader,
-			  const fm::mat4 &transformation,
+			  const fg::RenderStates &states,
 			  const IndexPointer &indices)
 	{
 		draw(pos,
@@ -198,9 +191,7 @@ namespace fg
 			 Attribute::Unused,
 			 vertexCount,
 			 primitive,
-			 texture,
-			 shader,
-			 transformation,
+			 states,
 			 indices);
 	}
 	
@@ -211,9 +202,7 @@ namespace fg
 			  const Attribute &texPos,
 			  fm::Size vertexCount,
 			  fg::Primitive primitive,
-			  const Texture *texture,
-			  const Shader *shader,
-			  const fm::mat4 &transformation,
+			  const fg::RenderStates &states,
 			  const IndexPointer &indices)
 	{
 		draw(pos,
@@ -222,9 +211,7 @@ namespace fg
 			 Attribute::Unused,
 			 vertexCount,
 			 primitive,
-			 texture,
-			 shader,
-			 transformation,
+			 states,
 			 indices);
 	}
 	
@@ -236,9 +223,7 @@ namespace fg
 			  const Attribute &norm,
 			  fm::Size vertexCount,
 			  fg::Primitive primitive,
-			  const Texture *texture,
-			  const Shader *shader,
-			  const fm::mat4 &transformation,
+			  const fg::RenderStates &states,
 			  const IndexPointer &indices)
 	{
 		if (drawerFuncPtr)
@@ -248,9 +233,7 @@ namespace fg
 							 norm,
 							 vertexCount,
 							 primitive,
-							 texture,
-							 shader,
-							 transformation,
+							 states,
 							 indices);
 		else
 			priv::defaultDraw(pos,
@@ -259,9 +242,7 @@ namespace fg
 							  norm,
 							  vertexCount,
 							  primitive,
-							  texture,
-							  shader,
-							  transformation,
+							  states,
 							  indices);
 	}
 }

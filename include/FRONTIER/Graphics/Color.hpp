@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_COLOR_HPP_INCLUDED
 #define FRONTIER_COLOR_HPP_INCLUDED
-#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/TYPES.hpp>
 #include <FRONTIER/System/macros/API.h>
 #define FRONTIER_COLOR
 namespace fm
@@ -29,8 +29,7 @@ namespace fm
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	///
-	/// 	@brief Class used to hold a color's value in <a href="http://en.wikipedia.org/wiki/RGBA_color_space">RGBA color space</a>
+	/// @brief Class used to hold a color's value in <a href="http://en.wikipedia.org/wiki/RGBA_color_space">RGBA color space</a>
 	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Color

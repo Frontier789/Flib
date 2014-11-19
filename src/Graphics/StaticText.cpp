@@ -19,8 +19,9 @@
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector4.hpp>
-#include <FRONTIER/Graphics/Font.hpp>
 #include <FRONTIER/System/Vertex.hpp>
+#include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/Graphics/Font.hpp>
 
 namespace fg
 {
@@ -82,10 +83,10 @@ namespace fg
 					m_indices[vertexCount/4*6+4] = vertexCount+2;
 					m_indices[vertexCount/4*6+5] = vertexCount+3;
 
-					m_vertices[vertexCount+0].clr = m_color;
-					m_vertices[vertexCount+1].clr = m_color;
-					m_vertices[vertexCount+2].clr = m_color;
-					m_vertices[vertexCount+3].clr = m_color;
+					m_vertices[vertexCount+0].clr = fm::vec4(m_color)/255.f;
+					m_vertices[vertexCount+1].clr = fm::vec4(m_color)/255.f;
+					m_vertices[vertexCount+2].clr = fm::vec4(m_color)/255.f;
+					m_vertices[vertexCount+3].clr = fm::vec4(m_color)/255.f;
 
 					m_vertices[vertexCount+0].pos = glyph.size*fm::vec2(0,1)+glyph.leftdown+curPos;
 					m_vertices[vertexCount+1].pos = glyph.size*fm::vec2(1,1)+glyph.leftdown+curPos;
@@ -180,7 +181,7 @@ namespace fg
 		m_color = color;
 		fm::Size count = m_vertices.size();
 		for (fm::Size i=0;i<count;i++)
-			m_vertices[i].clr = m_color;
+			m_vertices[i].clr = fm::vec4(m_color)/255.f;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -191,12 +192,12 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	void StaticText::draw(const fg::Texture *texture,const fg::Shader *shader) const
+	void StaticText::draw(fg::RenderStates states) const
 	{
-		// unused
-		(void)texture;
+		states.texture = m_texture;
+		states.transform *= getTransform();
 		
-		fg::draw(&m_vertices[0],m_indices.size(),fg::Triangles,m_texture,shader,getTransform(),&m_indices[0]);
+		fg::draw(&m_vertices[0],m_indices.size(),fg::Triangles,states,&m_indices[0]);
 	}
 
 	/////////////////////////////////////////////////////////////
