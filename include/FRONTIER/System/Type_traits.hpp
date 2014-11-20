@@ -21,6 +21,7 @@
 #include <FRONTIER/System/type_traits/Remove_volatile.hpp>
 #include <FRONTIER/System/type_traits/Remove_pointer.hpp>
 #include <FRONTIER/System/type_traits/Has_components.hpp>
+#include <FRONTIER/System/type_traits/Will_result_in.hpp>
 #include <FRONTIER/System/type_traits/Is_arithmetic.hpp>
 #include <FRONTIER/System/type_traits/Is_reference.hpp>
 #include <FRONTIER/System/type_traits/Remove_const.hpp>
@@ -29,8 +30,10 @@
 #include <FRONTIER/System/type_traits/Is_pointer.hpp>
 #include <FRONTIER/System/type_traits/Enable_if.hpp>
 #include <FRONTIER/System/type_traits/Remove_cv.hpp>
+#include <FRONTIER/System/type_traits/Is_specOf.hpp>
 #include <FRONTIER/System/type_traits/Is_array.hpp>
 #include <FRONTIER/System/type_traits/Is_const.hpp>
 #include <FRONTIER/System/type_traits/Is_void.hpp>
 #include <FRONTIER/System/type_traits/Is_same.hpp>
 #include <FRONTIER/System/type_traits/Is_enum.hpp>
+#include <FRONTIER/System/type_traits/Type_if.hpp>

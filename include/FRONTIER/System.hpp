@@ -23,13 +23,12 @@
 /// This module defines <a href="http://en.wikipedia.org/wiki/Euclidean_vector">euclidean vector</a>, 
 ///						<a href="http://en.wikipedia.org/wiki/Matrix_%28mathematics%29">matrix</a>, 
 ///						<a href="http://en.wikipedia.org/wiki/Quaternion">quaternion</a>, 
-///						 angle, time, clock, log, rectangle, vertex and nonCopyable classes
+///						 angle, time, clock, log, rectangle, vertex, nonCopyable and other classes
 /// 
 ////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////
-///
 /// @brief Namespace used to hold mathematical classes
 ///
 /////////////////////////////////////////////////////////////
@@ -43,6 +42,7 @@ namespace fm
 #include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/System/Time.hpp>
 #include <FRONTIER/System/Clock.hpp>
+#include <FRONTIER/System/FmLog.hpp>
 #include <FRONTIER/System/Angle.hpp>
 #include <FRONTIER/System/Sleep.hpp>
 #include <FRONTIER/System/Polar2.hpp>
@@ -53,5 +53,6 @@ namespace fm
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Quaternion.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
+#include <FRONTIER/System/Transformable.hpp>
 
 #endif // FRONTIER_SYSTEM_MODULE_HPP_INCLUDED

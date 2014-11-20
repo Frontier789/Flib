@@ -795,15 +795,21 @@ namespace fw
 		bool Window::setRect(int x,int y,int w,int h)
 		{
 			if (m_hwnd)
+			{
+				if (!adjustWindowSize(w,h,GetWindowLong(m_hwnd,GWL_STYLE)))
+					return false;
+				
 				if (!SetWindowPos(m_hwnd, // target HWND
 								  NULL,   // Z-order specifier
 								  x,y,    // new position
 								  w,h,    // new size
-								  SWP_NOREPOSITION|SWP_NOSIZE))
+								  SWP_NOREPOSITION))
 					{
 						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
 					}
+			}
+				
 			return true;
 		}
 

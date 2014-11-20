@@ -197,8 +197,8 @@ namespace fm
 		/// @param vert The vertex to initialize with
 		/// 
 		//////////////////////////////////
-		template<class posType2,class clrType2,class texPosType2>
-		vertex(const vertex<posType2,clrType2,texPosType2> &vert);
+		template<class posType2,class clrType2,class texPosType2,class normType2>
+		vertex(const vertex<posType2,clrType2,texPosType2,normType2> &vert);
 
 		//////////////////////////////////
 		/// @brief Change the value of the position and the color

@@ -26,7 +26,6 @@
 
 
 /////////////////////////////////////////////////////////////
-///
 /// @brief Namespace used to hold opengl and graphics related classes
 ///
 /////////////////////////////////////////////////////////////
@@ -39,11 +38,16 @@ namespace fg
 #include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
+#include <FRONTIER/Graphics/Glyph.hpp>
+#include <FRONTIER/Graphics/Sprite.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
+#include <FRONTIER/Graphics/GlCheck.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>
+#include <FRONTIER/Graphics/StaticText.hpp>
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
+#include <FRONTIER/Graphics/RenderStates.hpp>
 
 #endif // FRONTIER_GRAPICS_MODULE_HPP_INCLUDED

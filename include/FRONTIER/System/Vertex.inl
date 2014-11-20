@@ -23,7 +23,7 @@ namespace fm
 	{
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		nullClass::operator T() const
+		inline nullClass::operator T() const
 		{
 			return T();
 		}
@@ -31,17 +31,28 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class posType,class clrType,class texPosType,class normType>
-	vertex<posType,clrType,texPosType,normType>::vertex(const posType &pos,const clrType &clr,const texPosType &texPos,const normType &norm) : pos(pos),
-                                                                                                                                               clr(clr),
-                                                                                                                                               texPos(texPos),
-                                                                                                                                               norm(norm)
+	inline vertex<posType,clrType,texPosType,normType>::vertex(const posType &pos,const clrType &clr,const texPosType &texPos,const normType &norm) : pos(pos),
+																																					  clr(clr),
+																																					  texPos(texPos),
+																																					  norm(norm)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class posType,class clrType,class texPosType,class normType>
+	template<class posType2,class clrType2,class texPosType2,class normType2>
+	inline vertex<posType,clrType,texPosType,normType>::vertex(const vertex<posType2,clrType2,texPosType2,normType2> &vert) : pos(vert.pos),
+																															  clr(vert.clr),
+																															  texPos(vert.texPos),
+																															  norm(vert.norm)
 	{
 		
 	}
 	
 	//////////////////////////////////
 	template<class posType,class clrType,class texPosType,class normType>
-	vertex<posType,clrType,texPosType,normType> &vertex<posType,clrType,texPosType,normType>::operator()(const posType &pos,const clrType &clr)
+	inline vertex<posType,clrType,texPosType,normType> &vertex<posType,clrType,texPosType,normType>::operator()(const posType &pos,const clrType &clr)
 	{
 		this->pos = pos;
 		this->clr = clr;
@@ -50,7 +61,7 @@ namespace fm
 
 	//////////////////////////////////
 	template<class posType,class clrType,class texPosType,class normType>
-	vertex<posType,clrType,texPosType,normType> &vertex<posType,clrType,texPosType,normType>::operator()(const posType &pos,const clrType &clr,const texPosType &texPos)
+	inline vertex<posType,clrType,texPosType,normType> &vertex<posType,clrType,texPosType,normType>::operator()(const posType &pos,const clrType &clr,const texPosType &texPos)
 	{
 		this->pos = pos;
 		this->clr = clr;
@@ -60,7 +71,7 @@ namespace fm
 
 	//////////////////////////////////
 	template<class posType,class clrType,class texPosType,class normType>
-	vertex<posType,clrType,texPosType,normType> &vertex<posType,clrType,texPosType,normType>::operator()(const posType &pos,const clrType &clr,const texPosType &texPos,const normType &norm)
+	inline vertex<posType,clrType,texPosType,normType> &vertex<posType,clrType,texPosType,normType>::operator()(const posType &pos,const clrType &clr,const texPosType &texPos,const normType &norm)
 	{
 		this->pos = pos;
 		this->clr = clr;
@@ -71,16 +82,26 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class posType,class clrType,class texPosType>
-	vertex<posType,clrType,texPosType>::vertex(const posType &pos,const clrType &clr,const texPosType &texPos) : pos(pos),
+	inline vertex<posType,clrType,texPosType>::vertex(const posType &pos,const clrType &clr,const texPosType &texPos) : pos(pos),
                                                                                                                  clr(clr),
                                                                                                                  texPos(texPos)
 	{
 		
 	}
 	
+	/////////////////////////////////////////////////////////////
+	template<class posType,class clrType,class texPosType>
+	template<class posType2,class clrType2,class texPosType2,class normType2>
+	inline vertex<posType,clrType,texPosType>::vertex(const vertex<posType2,clrType2,texPosType2,normType2> &vert) : pos(vert.pos),
+																													 clr(vert.clr),
+																													 texPos(vert.texPos)
+	{
+		
+	}
+	
 	//////////////////////////////////
 	template<class posType,class clrType,class texPosType>
-	vertex<posType,clrType,texPosType> &vertex<posType,clrType,texPosType>::operator()(const posType &pos,const clrType &clr)
+	inline vertex<posType,clrType,texPosType> &vertex<posType,clrType,texPosType>::operator()(const posType &pos,const clrType &clr)
 	{
 		this->pos = pos;
 		this->clr = clr;
@@ -89,7 +110,7 @@ namespace fm
 
 	//////////////////////////////////
 	template<class posType,class clrType,class texPosType>
-	vertex<posType,clrType,texPosType> &vertex<posType,clrType,texPosType>::operator()(const posType &pos,const clrType &clr,const texPosType &texPos)
+	inline vertex<posType,clrType,texPosType> &vertex<posType,clrType,texPosType>::operator()(const posType &pos,const clrType &clr,const texPosType &texPos)
 	{
 		this->pos = pos;
 		this->clr = clr;
@@ -99,15 +120,24 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class posType,class clrType>
-	vertex<posType,clrType>::vertex(const posType &pos,const clrType &clr) : pos(pos),
+	inline vertex<posType,clrType>::vertex(const posType &pos,const clrType &clr) : pos(pos),
                                                                              clr(clr)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class posType,class clrType>
+	template<class posType2,class clrType2,class texPosType2,class normType2>
+	inline vertex<posType,clrType>::vertex(const vertex<posType2,clrType2,texPosType2,normType2> &vert) : pos(vert.pos),
+																										  clr(vert.clr)
 	{
 		
 	}
 	
 	//////////////////////////////////
 	template<class posType,class clrType>
-	vertex<posType,clrType> &vertex<posType,clrType>::operator()(const posType &pos,const clrType &clr)
+	inline vertex<posType,clrType> &vertex<posType,clrType>::operator()(const posType &pos,const clrType &clr)
 	{
 		this->pos = pos;
 		this->clr = clr;
