@@ -14,65 +14,58 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/System/macros/OS.h>
+#ifndef FRONTIER_POSIXTHREAD_HPP_INCLUDED
+#define FRONTIER_POSIXTHREAD_HPP_INCLUDED
+#include <FRONTIER/System/NonCopyable.hpp>
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/System/Mutex.hpp>
+#define FRONTIER_POSIXTHREAD
+#include <pthread.h>
 
-#ifdef FRONTIER_OS_WINDOWS
-	#include "Wapi/WapiMutex.cpp"
-	namespace fm
-	{
-		namespace priv
-		{
-			typedef fm::Wapi::Mutex Mutex;
-		}
-	}
-#elif defined(FRONTIER_OS_LINUX)
-	#include "Posix/PosixMutex.cpp"
-	namespace fm
-	{
-		namespace priv
-		{
-			typedef fm::Posix::Mutex Mutex;
-		}
-	}
-#else
-	#ifndef FRONTIER_NO_MUTEX
-		#warning No Mutex!
-		#define FRONTIER_NO_MUTEX
-	#endif
-#endif
-
-#ifndef FRONTIER_NO_MUTEX
 namespace fm
 {
-	/////////////////////////////////////////////////////////////
-	Mutex::Mutex() : m_impl(new priv::Mutex)
+	namespace priv
 	{
-		
+		class ThreadFuntionCaller;
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Mutex::~Mutex()
-	{
-		delete ((priv::Mutex*)m_impl);
-	}
-
+	/// @brief Implementation of fm::Thread for posix
+	/// 
 	/////////////////////////////////////////////////////////////
-	bool Mutex::lock()
+	namespace Posix
 	{
-		return ((priv::Mutex*)m_impl)->lock();
-	}
-
-	/////////////////////////////////////////////////////////////
-	bool Mutex::attemptLock()
-	{
-		return ((priv::Mutex*)m_impl)->attemptLock();
-	}
-
-	/////////////////////////////////////////////////////////////
-	bool Mutex::unLock()
-	{
-		return ((priv::Mutex*)m_impl)->unLock();
+		class FRONTIER_API Thread : public fm::NonCopyable
+		{
+			static void *startThread(void *param);              ///< The entry point of a new thread
+			pthread_t *m_id;                                    ///< The id of the thread
+			void cleanUp();                                     ///< Internal cleaning function
+			bool create(fm::priv::ThreadFuntionCaller *runner); ///< Internal runner function
+			ThreadFuntionCaller *m_caller;
+			bool m_running;
+			fm::Mutex m_exitMutex;
+			bool m_isExiting;
+		public:
+			typedef Thread &reference;
+			typedef const Thread &const_reference;
+			
+			Thread();
+			~Thread();
+			bool start();
+			
+			static Thread *getCurrentThread();
+			
+			bool join();
+			bool join(const fm::Time &timeOut);
+			
+			static bool isExiting(const Thread *thread);
+			void requestExit();
+			
+			bool forceExit();
+			
+			friend class fm::Thread;
+		};
 	}
 }
-#endif
+
+#endif // FRONTIER_POSIXTHREAD_HPP_INCLUDED

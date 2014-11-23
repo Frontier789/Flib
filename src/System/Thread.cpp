@@ -27,6 +27,16 @@
 			typedef fm::Wapi::Thread Thread;
 		}
 	}
+#elif defined(FRONTIER_OS_LINUX)
+	#include "Posix/fmPosixPrintErrno.cpp"
+	#include "Posix/PosixThread.cpp"
+	namespace fm
+	{
+		namespace priv
+		{
+			typedef fm::Posix::Thread Thread;
+		}
+	}
 #else
 	#ifndef FRONTIER_NO_THREAD
 		#warning No Thread!

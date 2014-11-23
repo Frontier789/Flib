@@ -14,78 +14,63 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/System/Posix/PosixTlsPtr.hpp>
-#include <FRONTIER/System/macros/API.h>
-#include <FRONTIER/System/FmLog.hpp>
+#include <FRONTIER/System/Posix/PosixMutex.hpp>
 #include "fmPosixPrintErrno.hpp"
 #include <pthread.h>
-#include <string.h>
-#include <errno.h>
 
 namespace fm
 {
 	namespace Posix
 	{
-		pthread_key_t &getID(void *data)
+		/////////////////////////////////////////////////////////////
+		Mutex::Mutex()
 		{
-			return *((pthread_key_t*)data);
-		}
-		
-		const pthread_key_t &getID(const void *data)
-		{
-			return *((pthread_key_t*)data);
+			if (pthread_mutex_init(&m_pmutex,NULL) != 0)
+				fm::PosixPrintErrno(fm::fm_log,pthread_mutex_init);
 		}
 		
 		/////////////////////////////////////////////////////////////
-		TlsPtr::TlsPtr() : m_id(new pthread_key_t)
+		Mutex::~Mutex()
 		{
-			if (pthread_key_create((pthread_key_t*)m_id,NULL) != 0)
+			if (pthread_mutex_destroy(&m_pmutex) != 0)
+				fm::PosixPrintErrno(fm::fm_log,pthread_mutex_destroy);
+		}
+		
+		/////////////////////////////////////////////////////////////
+		bool Mutex::lock()
+		{
+			if (pthread_mutex_lock(&m_pmutex) != 0)
 			{
-				fm::PosixPrintErrno(fm::fm_log,pthread_key_create);
-				delete (pthread_key_t*)m_id;
-				m_id = NULL;
-			}
-		}
-
-		/////////////////////////////////////////////////////////////
-		TlsPtr::~TlsPtr()
-		{
-			if (m_id)
-				if (pthread_key_delete(getID(m_id)) != 0)
-					fm::PosixPrintErrno(fm::fm_log,pthread_key_delete);
-
-			delete (pthread_key_t*)m_id;
-		}
-
-		/////////////////////////////////////////////////////////////
-		bool TlsPtr::setPtr(void *ptr)
-		{
-			if (!isValid())
+				fm::PosixPrintErrno(fm::fm_log,pthread_mutex_lock);
 				return false;
+			}
+			return true;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		bool Mutex::attemptLock()
+		{
+			int result = pthread_mutex_trylock(&m_pmutex);
 			
-			if (pthread_setspecific(getID(m_id),ptr) != 0)
+			if (result != 0)
 			{
-				fm::PosixPrintErrno(fm::fm_log,pthread_setspecific);
+				if (result != EBUSY)
+					fm::PosixPrintErrno(fm::fm_log,pthread_mutex_trylock);
 				return false;
 			}
 			
-			return true;	
+			return true;
 		}
-
+		
 		/////////////////////////////////////////////////////////////
-		void *TlsPtr::getPtr() const
+		bool Mutex::unLock()
 		{
-			if (!isValid())
-				return NULL;
-			
-			return pthread_getspecific(getID(m_id));
-		}
-
-		/////////////////////////////////////////////////////////////
-		bool TlsPtr::isValid() const
-		{
-			return m_id != NULL;
+			if (pthread_mutex_unlock(&m_pmutex) != 0)
+			{
+				fm::PosixPrintErrno(fm::fm_log,pthread_mutex_unlock);
+				return false;
+			}
+			return true;
 		}
 	}
 }
-
