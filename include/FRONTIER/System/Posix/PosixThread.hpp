@@ -41,9 +41,9 @@ namespace fm
 			pthread_t *m_id;                                    ///< The id of the thread
 			void cleanUp();                                     ///< Internal cleaning function
 			bool create(fm::priv::ThreadFuntionCaller *runner); ///< Internal runner function
-			ThreadFuntionCaller *m_caller;
+			fm::priv::ThreadFuntionCaller *m_caller;
 			bool m_running;
-			fm::Mutex m_exitMutex;
+			mutable fm::Mutex m_exitMutex;
 			bool m_isExiting;
 		public:
 			typedef Thread &reference;

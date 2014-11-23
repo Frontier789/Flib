@@ -14,11 +14,17 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/System/Psox/PosixThread.hpp>
+#include <FRONTIER/System/Posix/PosixThread.hpp>
 #include <FRONTIER/System/Clock.hpp>
 #include <FRONTIER/System/Sleep.hpp>
 #include <FRONTIER/System/FmLog.hpp>
 #include "fmPosixPrintErrno.hpp"
+#include <pthread.h>
+#include <errno.h>
+
+#ifdef PTHREAD_CANCEL_ASYNCHRONOUS
+	#define USE_PTHREAD_CANCEL
+#endif
 
 namespace fm
 {
@@ -29,6 +35,10 @@ namespace fm
 		void *Thread::startThread(void *param)
 		{
 			fm::priv::ThreadFuntionCaller *caller = (fm::priv::ThreadFuntionCaller*)param;
+			
+		#ifdef USE_PTHREAD_CANCEL
+			pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+		#endif
 			
 			if (caller)
 			{
@@ -137,11 +147,16 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		bool Thread::isExiting(const Thread *thread)
 		{
-			m_exitMutex.lock();
-			bool ret = m_isExiting;
-			m_exitMutex.unLock();
-			
-			return ret;
+			if (thread)
+			{
+				thread->m_exitMutex.lock();
+				bool ret = thread->m_isExiting;
+				thread->m_exitMutex.unLock();
+				
+				return ret;
+			}
+
+			return false;
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -157,11 +172,19 @@ namespace fm
 		{
 			if (m_running)
 			{
+			#ifdef USE_PTHREAD_CANCEL
 				if (pthread_cancel(*m_id) != 0)
 				{
 					fm::PosixPrintErrno(fm::fm_log,pthread_cancel);
 					return false;
 				}
+			#else
+				if (pthread_kill(*m_id,SIGUSR1) != 0)
+				{
+					fm::PosixPrintErrno(fm::fm_log,pthread_kill);
+					return false;
+				}
+			#endif
 			}
 			return true;
 		}

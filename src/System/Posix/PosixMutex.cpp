@@ -15,8 +15,10 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/Posix/PosixMutex.hpp>
+#include <FRONTIER/System/FmLog.hpp>
 #include "fmPosixPrintErrno.hpp"
 #include <pthread.h>
+#include <errno.h>
 
 namespace fm
 {

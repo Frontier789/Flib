@@ -22,7 +22,7 @@
 
 namespace fm
 {
-	namespace Wapi
+	namespace Posix
 	{
 		class FRONTIER_API Mutex
 		{

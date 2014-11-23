@@ -140,22 +140,22 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	StaticText::StaticText() : m_font(NULL),
+	StaticText::StaticText() : m_align(StaticText::Align::Left),
+							   m_font(NULL),
 							   m_texture(NULL),
-							   m_align(StaticText::Align::Left),
 							   m_characterSize(64)
 	{
 
 	}
 
 	/////////////////////////////////////////////////////////////
-	StaticText::StaticText(const fg::Font &font,const std::string &text,const fg::Color &color,unsigned int characterSize,unsigned int align,bool enableKerning) : m_font(&font),
-																																								   m_texture(NULL),
+	StaticText::StaticText(const fg::Font &font,const std::string &text,const fg::Color &color,unsigned int characterSize,unsigned int align,bool enableKerning) : m_color(color),
 																																								   m_text(text),
-																																								   m_color(color),
 																																								   m_align(align),
-																																								   m_characterSize(characterSize),
-																																								   m_kerningEnabled(enableKerning)
+																																								   m_kerningEnabled(enableKerning).
+																																								   m_font(&font),
+																																								   m_texture(NULL),
+																																								   m_characterSize(characterSize)
 
 	{
 		buildVertices();
