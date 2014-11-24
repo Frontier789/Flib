@@ -152,7 +152,7 @@ namespace fg
 	StaticText::StaticText(const fg::Font &font,const std::string &text,const fg::Color &color,unsigned int characterSize,unsigned int align,bool enableKerning) : m_color(color),
 																																								   m_text(text),
 																																								   m_align(align),
-																																								   m_kerningEnabled(enableKerning).
+																																								   m_kerningEnabled(enableKerning),
 																																								   m_font(&font),
 																																								   m_texture(NULL),
 																																								   m_characterSize(characterSize)
