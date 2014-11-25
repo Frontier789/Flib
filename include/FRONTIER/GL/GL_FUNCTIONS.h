@@ -17,7 +17,7 @@
 #ifndef FRONTIER_GL_FUNCTIONS_H_INCLUDED
 #define FRONTIER_GL_FUNCTIONS_H_INCLUDED
 #include <FRONTIER/System/macros/API.h>
-	
+
 	#ifndef APIENTRY
 		#if defined(__MINGW32__)
 			#ifndef WIN32_LEAN_AND_MEAN
@@ -27,7 +27,7 @@
 				#define NOMINMAX
 			#endif
 			#include <windows.h>
-		#elif (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__)
+		#elif (defined(_MSC_VER) && (_MSC_VER >= 800)) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__)
 			#ifndef WIN32_LEAN_AND_MEAN
 				#define WIN32_LEAN_AND_MEAN 1
 			#endif
@@ -39,7 +39,7 @@
 			#define APIENTRY
 		#endif
 	#endif //APIENTRY
-	
+
 	#ifndef API_ENTRY
 		#if defined(_WIN32)
 			#define API_ENTRY APIENTRY
@@ -47,13 +47,13 @@
 			#define API_ENTRY
 		#endif
 	#endif //API_ENTRY
-	
-	
+
+
 	#ifdef __cplusplus
 	extern "C"
 	{
 	#endif //__cplusplus
-	
+
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glAccum)(GLenum op,GLfloat value);
 	#define glAccum _ptr_to_glAccum
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glActiveShaderProgram)(GLuint pipeline,GLuint program);
@@ -2056,9 +2056,9 @@
 	#define glWindowPos3iv _ptr_to_glWindowPos3iv
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glWindowPos3s)(GLshort x,GLshort y,GLshort z);
 	#define glWindowPos3s _ptr_to_glWindowPos3s
-	
+
 	#ifdef __cplusplus
 	}
 	#endif //__cplusplus
-	
+
 #endif //FRONTIER_GL_FUNCTIONS_H_INCLUDED

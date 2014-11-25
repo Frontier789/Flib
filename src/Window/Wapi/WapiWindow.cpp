@@ -449,6 +449,36 @@ namespace fw
 					MINMAXINFO *pmmi = (MINMAXINFO*)lParam;
 					pmmi->ptMaxTrackSize.x = 420000;
 					pmmi->ptMaxTrackSize.y = 420000;
+					
+					if (!m_resizeable)
+					{
+						// get client size
+						int w,h;
+						getSize(w,h);
+						
+						RECT Rct;
+						Rct.top    = 100;
+						Rct.left   = 100;
+						Rct.right  = 150;
+						Rct.bottom = 150;
+
+						// get the decoration size
+						if (!AdjustWindowRect(&Rct,m_style,FALSE))
+						{
+							fw::WapiPrintLastError(fw_log,AdjustWindowRect);
+							return false;
+						}
+						
+						w += (Rct.right  - Rct.left)-50;
+						h += (Rct.bottom - Rct.top)-50;
+						
+						pmmi->ptMinTrackSize.x = w;
+						pmmi->ptMaxTrackSize.x = w;
+
+						pmmi->ptMinTrackSize.y = h;
+						pmmi->ptMaxTrackSize.y = h;
+					}
+					
 					return 0;
 				}
 				

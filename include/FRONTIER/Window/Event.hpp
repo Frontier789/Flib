@@ -343,6 +343,26 @@ namespace fw
 		};
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Capable of holding data related to a event
+		///
+		/////////////////////////////////////////////////////////////
+		union EventData {
+			KeyboardEvent   key;   ///< used with KeyPressed KeyReleased events
+			ButtonEvent     mouse; ///< used with ButtonPressed ButtonReleased events
+			MouseEvent      pos;   ///< used with MouseMoved event
+			ResizeEvent     size;  ///< used with Resize event
+			TextEvent       text;  ///< used with TextEntered
+			MouseWheelEvent wheel; ///< used with MouseWheelMoved event
+			
+			EventData(KeyboardEvent key);     ///< Set up the union to hold data for KeyPressed KeyReleased events
+			EventData(ButtonEvent mouse);     ///< Set up the union to hold data for ButtonPressed ButtonReleased events
+			EventData(MouseEvent pos);        ///< Set up the union to hold data for MouseMoved event
+			EventData(ResizeEvent size);      ///< Set up the union to hold data for Resize event
+			EventData(TextEvent text);        ///< Set up the union to hold data for TextEntered
+			EventData(MouseWheelEvent wheel); ///< Set up the union to hold data for MouseWheelMoved event
+		};
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		///
 		/////////////////////////////////////////////////////////////
@@ -355,6 +375,14 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		Event(EventType type);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Initialize event with a type
+		///
+		/// @param type The initial type
+		///
+		/////////////////////////////////////////////////////////////
+		Event(EventType type,EventData data);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Use the event as a bool

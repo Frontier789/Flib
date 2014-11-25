@@ -52,7 +52,7 @@ namespace fg
 			fg::Font::Metrics metrics = m_font->getMetrics();
 			int height = metrics.maxH-metrics.minH;
 			float width = m_font->getGlyph('w').size.w;
-			fm::vec2 curPos(0,height*-1);
+			fm::vec2 curPos(0,0);
 
 			std::vector<fm::Size> rowWidths;
 			
@@ -63,7 +63,7 @@ namespace fg
 				// register newline and reset the x position
 				if (m_text[i]=='\n' || (m_text[i]=='\r' && (i==length-1 || m_text[i+1]!='\n')))
 					rowWidths.push_back(curPos.x),
-					curPos = fm::vec2(0,curPos.y-=height);
+					curPos = fm::vec2(0,curPos.y+=height);
 				// simply advance 
 				else if (m_text[i]==' ')
 					curPos += fm::vec2(width,0);
@@ -93,10 +93,10 @@ namespace fg
 					m_vertices[vertexCount+2].pos = glyph.size*fm::vec2(0,0)+glyph.leftdown+curPos;
 					m_vertices[vertexCount+3].pos = glyph.size*fm::vec2(1,0)+glyph.leftdown+curPos;
 
-					m_vertices[vertexCount+0].texPos = (glyph.pos+glyph.size*fm::vec2(0,0));
-					m_vertices[vertexCount+1].texPos = (glyph.pos+glyph.size*fm::vec2(1,0));
-					m_vertices[vertexCount+2].texPos = (glyph.pos+glyph.size*fm::vec2(0,1));
-					m_vertices[vertexCount+3].texPos = (glyph.pos+glyph.size*fm::vec2(1,1));
+					m_vertices[vertexCount+0].texPos = (glyph.pos+glyph.size*fm::vec2(0,1));
+					m_vertices[vertexCount+1].texPos = (glyph.pos+glyph.size*fm::vec2(1,1));
+					m_vertices[vertexCount+2].texPos = (glyph.pos+glyph.size*fm::vec2(0,0));
+					m_vertices[vertexCount+3].texPos = (glyph.pos+glyph.size*fm::vec2(1,0));
 
 					vertexCount+=4;
 					if (m_kerningEnabled)
@@ -106,7 +106,7 @@ namespace fg
 				}
 				if (m_boundings.w < curPos.x)
 					m_boundings.w = curPos.x;
-				if (m_boundings.h > curPos.y)
+				if (m_boundings.h < curPos.y)
 					m_boundings.h = curPos.y;
 			}
 			rowWidths.push_back(curPos.x);
