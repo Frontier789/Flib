@@ -97,7 +97,19 @@ namespace fm
 			/// @return The address of the function (NULL iff the function couldn't be found or no dll is loaded)
 			/// 
 			/////////////////////////////////////////////////////////////
-			void (*getProcAddress(const char *funcName))() const;
+			void (*getProcAddress(const char *funcName) const)();
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Get a function's address from the loaded dll
+			/// 
+			/// One should supply the correct type of the function as
+			/// a template parameter
+			/// 
+			/// @return The address of the function (NULL iff the function couldn't be found or no dll is loaded)
+			/// 
+			/////////////////////////////////////////////////////////////
+			template<class F>
+			F getProcAddress(const char *funcName) const;
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Get the handle of the loaded dll
@@ -110,6 +122,8 @@ namespace fm
 	}
 }
 
-
-
 #endif // FRONTIER_WAPISHAREDOBJECT_HPP_INCLUDED
+
+#ifndef FRONTIER_DONT_INCLUDE_INL
+	#include <FRONTIER/System/Wapi/WapiSharedObject.inl>
+#endif

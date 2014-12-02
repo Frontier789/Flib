@@ -57,7 +57,7 @@ namespace fm
 		}
 
 		////////////////////////////////////////////////////////////
-		void (*SharedObject::getProcAddress(const char *funcName))() const
+		void (*SharedObject::getProcAddress(const char *funcName) const)()
 		{
 			if (m_handle)
 			{
