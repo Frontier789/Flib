@@ -50,7 +50,7 @@ namespace fg
 				 Attribute((tpt*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize+fm::vertex<pt,ct,tpt,nt>::clrSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 Attribute::Unused,
 				 vertexCount,primitive,states,indices);
-		else 
+		else
 			draw(Attribute((pt*)((unsigned char*)vertices),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 Attribute((ct*)((unsigned char*)vertices+fm::vertex<pt,ct,tpt,nt>::posSize),sizeof(fm::vertex<pt,ct,tpt,nt>)),
 				 Attribute::Unused,
@@ -66,25 +66,25 @@ namespace fg
 	{
 		draw(vertices,vertexCount,primitive,states);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	Attribute Attr(const T *ptr,unsigned short stride)
 	{
 		return Attribute(ptr,stride);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	Attribute Attr(fg::Buffer &buf,fm::Ptrdiff offset,unsigned char stride)
+	Attribute Attr(const fg::Buffer &buf,fm::Ptrdiff offset,unsigned char stride)
 	{
 		Attribute ret;
 		ret.m_ptr = (const void*)offset;
-		ret.m_buffer = buf;
+		ret.m_buffer = &buf;
 		ret.m_components = T::components;
 		ret.m_bytesPerComponent = sizeof(typename T::component_type);
-		ret.m_bytesPerVertex = sizeof(T);
-		
+		ret.m_bytesPerVertex = stride ? stride : sizeof(T);
+
 		return ret;
 	}
 }

@@ -184,7 +184,7 @@ namespace fg
 			  fg::Primitive primitive,
 			  const fg::RenderStates &states,
 			  const IndexPointer &indices)
-	{
+	{ 
 		draw(pos,
 			 clr,
 			 Attribute::Unused,

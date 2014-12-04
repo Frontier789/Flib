@@ -89,7 +89,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	unsigned int typeToGetBinding(BufferType type)
 	{
-		return type == IndexBuffer ? GL_ELEMENT_ARRAY_BUFFER_ARB : 
+		return type == IndexBuffer ? GL_ELEMENT_ARRAY_BUFFER_BINDING_ARB : 
 									 GL_ARRAY_BUFFER_BINDING_ARB;
 	}
 

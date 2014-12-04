@@ -138,8 +138,8 @@ namespace fg
 	class FRONTIER_API Attribute
 	{
 	public:
-		const void *m_ptr;    ///< pointer to data stored in ram
-		fg::Buffer *m_buffer; ///< pointer to GL buffer (data on gpu)
+		const void *m_ptr; ///< pointer to data stored in ram
+		const fg::Buffer *m_buffer;  ///< pointer to GL buffer (data on gpu)
 		unsigned char  m_components;        ///< number of components in a vertex
 		unsigned char  m_bytesPerComponent; ///< number of bytes in a component
 		unsigned short m_bytesPerVertex;    ///< number of bytes in a vertex (also called stride)
@@ -400,7 +400,7 @@ namespace fg
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	Attribute Attr(fg::Buffer &buf,fm::Ptrdiff offset=0,unsigned char stride=0);
+	Attribute Attr(const fg::Buffer &buf,fm::Ptrdiff offset=0,unsigned char stride=0);
 
 }
 #endif //FRONTIER_DRAWABLE_HPP_INCLUDED
