@@ -32,6 +32,7 @@ namespace fw
 	Event::EventData::EventData(ResizeEvent size)      : size(size)   {}
 	Event::EventData::EventData(TextEvent text)        : text(text)   {}
 	Event::EventData::EventData(MouseWheelEvent wheel) : wheel(wheel) {}
+	Event::EventData::EventData(DropEvent drop)        : drop(drop)   {}
 	
 	////////////////////////////////////////////////////////////
 	Event::Event() : type(Empty)
@@ -54,6 +55,7 @@ namespace fw
 		size  = data.size;
 		text  = data.text;
 		wheel = data.wheel;
+		drop  = data.drop;
 	}
 	
 	////////////////////////////////////////////////////////////

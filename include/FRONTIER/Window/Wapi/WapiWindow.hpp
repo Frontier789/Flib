@@ -113,7 +113,7 @@ namespace fw
 			/// @param style Style of the window (see fw::WindowStyle)
 			///
 			/////////////////////////////////////////////////////////////
-			Window(int x,int y,int w,int h,const std::string &title,unsigned int style);
+			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief (Re)Open the window
@@ -130,7 +130,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool open(int x,int y,int w,int h,const std::string &title,unsigned int style);
+			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Default destructor
@@ -206,7 +206,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool setRect(int x,int y,int w,int h);
+			bool setRect(int x,int y,unsigned int w,unsigned int h);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Retrieve the position and the size of the window
@@ -221,7 +221,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool getRect(int &x,int &y,int &w,int &h);
+			bool getRect(int &x,int &y,unsigned int &w,unsigned int &h);
 
 
 			/////////////////////////////////////////////////////////////
@@ -264,7 +264,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool setSize(int w,int h);
+			bool setSize(unsigned int w,unsigned int h);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Retrieve the size of the window
@@ -277,7 +277,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool getSize(int &w,int &h) const;
+			bool getSize(unsigned int &w,unsigned int &h) const;
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Set the title of the window
@@ -432,7 +432,7 @@ namespace fw
 			/// @return True iff the operation was successful
 			///
 			/////////////////////////////////////////////////////////////
-			bool setFullscreen(int width,int height,bool fullscreen = true);
+			bool setFullscreen(unsigned int width,unsigned int height,bool fullscreen = true);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Set the small and the big icon of the window

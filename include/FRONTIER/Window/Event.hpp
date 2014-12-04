@@ -27,6 +27,8 @@
 #include <FRONTIER/Window/Window.hpp>
 
 #define FRONTIER_EVENT
+#include <string>
+#include <vector>
 
 namespace fw
 {
@@ -293,6 +295,21 @@ namespace fw
 	
 	/////////////////////////////////////////////////////////////
 	/// 
+	/// 	@brief Simple class used to store data about a FileDrop event
+	///
+	/// @ingroup Window
+	///
+	/////////////////////////////////////////////////////////////
+	class FRONTIER_API DropEvent
+	{
+	public:
+		int x; ///< X coordinate of the cursor
+		int y; ///< Y coordinate of the cursor
+		std::vector<std::string> files; ///< The name(s) of file(s)
+	};
+	
+	/////////////////////////////////////////////////////////////
+	/// 
 	/// 	@brief Class used to store properties of a window event
 	///
 	/// @ingroup Window
@@ -322,7 +339,8 @@ namespace fw
 			ButtonReleased,  ///< A mouse button is released (The mouse field can be used to track further information)
 			TextEntered,     ///< A character is entered (not the same as KeyPressed)
 			MouseWheelMoved, ///< The mouse wheel was moved (The wheel field can be used to track further information)
-			MouseMoved       ///< The cursor is moved inside the window is released (The pos field can be used to track further information)
+			MouseMoved,      ///< The cursor is moved inside the window is released (The pos field can be used to track further information)
+			FileDrop         ///< The user dropped file(s) into the window
 		};
 		
 		EventType type; ///< The type of the event
@@ -338,21 +356,30 @@ namespace fw
 			ButtonEvent     mouse; ///< used with ButtonPressed ButtonReleased events
 			MouseEvent      pos;   ///< used with MouseMoved event
 			ResizeEvent     size;  ///< used with Resize event
-			TextEvent       text;  ///< used with TextEntered
+			TextEvent       text;  ///< used with TextEntered event
 			MouseWheelEvent wheel; ///< used with MouseWheelMoved event
 		};
+		
+		DropEvent drop;  ///< used with FileDrop event
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Capable of holding data related to a event
 		///
 		/////////////////////////////////////////////////////////////
-		union EventData {
-			KeyboardEvent   key;   ///< used with KeyPressed KeyReleased events
-			ButtonEvent     mouse; ///< used with ButtonPressed ButtonReleased events
-			MouseEvent      pos;   ///< used with MouseMoved event
-			ResizeEvent     size;  ///< used with Resize event
-			TextEvent       text;  ///< used with TextEntered
-			MouseWheelEvent wheel; ///< used with MouseWheelMoved event
+		class EventData 
+		{
+		public:
+			union {
+				KeyboardEvent   key;   ///< used with KeyPressed KeyReleased events
+				ButtonEvent     mouse; ///< used with ButtonPressed ButtonReleased events
+				MouseEvent      pos;   ///< used with MouseMoved event
+				ResizeEvent     size;  ///< used with Resize event
+				TextEvent       text;  ///< used with TextEntered
+				MouseWheelEvent wheel; ///< used with MouseWheelMoved event
+			};
+			
+			DropEvent drop;  ///< used with FileDrop event
+
 			
 			EventData(KeyboardEvent key);     ///< Set up the union to hold data for KeyPressed KeyReleased events
 			EventData(ButtonEvent mouse);     ///< Set up the union to hold data for ButtonPressed ButtonReleased events
@@ -360,6 +387,7 @@ namespace fw
 			EventData(ResizeEvent size);      ///< Set up the union to hold data for Resize event
 			EventData(TextEvent text);        ///< Set up the union to hold data for TextEntered
 			EventData(MouseWheelEvent wheel); ///< Set up the union to hold data for MouseWheelMoved event
+			EventData(DropEvent drop); ///< Set up the union to hold data for FileDrop event
 		};
 		
 		/////////////////////////////////////////////////////////////

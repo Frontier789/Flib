@@ -16,18 +16,47 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_WINDOW_HPP_INCLUDED
 #define FRONTIER_WINDOW_HPP_INCLUDED
+#include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/API.h>
+
+#ifdef FRONTIER_OS_WINDOWS
+	namespace fw
+	{
+		namespace Wapi
+		{
+			class Window;
+			class GlContext;
+		}
+		namespace priv
+		{
+			typedef fw::Wapi::Window Window;
+			typedef fw::Wapi::GlContext GlContext;
+		}
+	}
+#else
+	#warning No window
+	namespace fw
+	{
+		namespace priv
+		{
+			typedef int Window;
+			typedef int GlContext;
+		}
+	}
+#endif
 
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
-	/// @brief Wrapper class used to manage windows os independently
+	/// @brief Wrapper class used to manage windows and OpenGL contexts together, os independently
 	/// 
 	/// @ingroup Window
 	/// 
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API Window
+	class FRONTIER_API Window : public fm::NonCopyable
 	{
+		priv::Window *m_window;
+		priv::GlContext *m_context;
 	public:
 		/////////////////////////////////////////////////////////////
 		/// @brief Enumeration used to indicate window style
@@ -46,30 +75,10 @@ namespace fw
 			Fullscreen = 0x1000000,
 			Default    = 0x0111111
 		};
+		
+		
+		
 	};
 }
-
-#ifdef FRONTIER_OS_WINDOWS
-	namespace fw
-	{
-		namespace Wapi
-		{
-			class Window;
-		}
-		namespace priv
-		{
-			typedef fw::Wapi::Window Window;
-		}
-	}
-#else
-	#warning No window
-	namespace fw
-	{
-		namespace priv
-		{
-			typedef int Window;
-		}
-	}
-#endif
 
 #endif // FRONTIER_WINDOW_HPP_INCLUDED

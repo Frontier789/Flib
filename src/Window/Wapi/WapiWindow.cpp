@@ -88,7 +88,7 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool adjustWindowSize(int &w,int &h,DWORD style)
+	bool adjustWindowSize(unsigned int &w,unsigned int &h,DWORD style)
 	{
 		RECT Rct;
 		Rct.top    = 100;
@@ -453,7 +453,7 @@ namespace fw
 					if (!m_resizeable)
 					{
 						// get client size
-						int w,h;
+						unsigned int w,h;
 						getSize(w,h);
 						
 						RECT Rct;
@@ -495,6 +495,37 @@ namespace fw
 					postEvent(ev);
 					return 0;
 				}
+				
+				// file drop
+				case WM_DROPFILES:
+				{
+					HDROP hDrop = (HDROP)wParam;
+					
+					// query the number of files
+					unsigned int fileCount = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+					
+					Event ev(Event::FileDrop);
+					fm::vec2i pos = Mouse::getPosition(*this);
+					ev.drop.x = pos.x;
+					ev.drop.y = pos.y;
+					
+					for (unsigned int i=0;i<fileCount;i++)
+					{
+						unsigned int bufSize = DragQueryFile(hDrop,i,NULL,0);
+						
+						char *buf = new char[bufSize+1];
+						
+						DragQueryFile(hDrop,i,buf,bufSize+1);
+						
+						buf[bufSize] = '\0';
+						
+						ev.drop.files.push_back(std::string(buf));
+						
+						delete[] buf;
+					}
+					postEvent(ev);
+					return 0;
+				}
 
 				// by default let windows handle it
 				default:
@@ -521,13 +552,13 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		Window::Window(int x,int y,int w,int h,const std::string &title,unsigned int style) : m_hwnd(NULL),
-																							  m_showCursor(true),
-																							  m_resizeable(true),
-																							  m_enableRepeat(false),
-																							  m_lastDown(0),
-																							  m_icon(NULL),
-																							  m_cursorHitTest(NULL)
+		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style) : m_hwnd(NULL),
+																												m_showCursor(true),
+																												m_resizeable(true),
+																												m_enableRepeat(false),
+																												m_lastDown(0),
+																												m_icon(NULL),
+																												m_cursorHitTest(NULL)
 		{
 			open(x,y,w,h,title,style);
 		}
@@ -621,7 +652,7 @@ namespace fw
 
 		
 		////////////////////////////////////////////////////////////
-		bool Window::setFullscreen(int width,int height,bool fullscreen)
+		bool Window::setFullscreen(unsigned int width,unsigned int height,bool fullscreen)
 		{
 			if (m_hwnd)
 			{
@@ -685,7 +716,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,int w,int h,const std::string &title,unsigned int style)
+		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style)
 		{
 			// clean our resources before (re)creating
 			cleanUp();
@@ -721,6 +752,9 @@ namespace fw
 			// go fullscreen if requested
 			if (style & fw::Window::Fullscreen)
 				setFullscreen(w,h);
+			
+			// enable drag 'n' drop
+			DragAcceptFiles(m_hwnd,1);
 
 			// Tell windows to show our window
 			ShowWindow(m_hwnd, SW_SHOW);
@@ -822,7 +856,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::setRect(int x,int y,int w,int h)
+		bool Window::setRect(int x,int y,unsigned int w,unsigned int h)
 		{
 			if (m_hwnd)
 			{
@@ -844,7 +878,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::getRect(int &x,int &y,int &w,int &h)
+		bool Window::getRect(int &x,int &y,unsigned int &w,unsigned int &h)
 		{
 			if (m_hwnd)
 			{
@@ -912,7 +946,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::setSize(int w,int h)
+		bool Window::setSize(unsigned int w,unsigned int h)
 		{
 			if (m_hwnd)
 			{
@@ -934,7 +968,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::getSize(int &w,int &h) const
+		bool Window::getSize(unsigned int &w,unsigned int &h) const
 		{
 			if (m_hwnd)
 			{
