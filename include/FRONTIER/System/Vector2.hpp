@@ -526,6 +526,14 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		template<class T2>
 		static vector2<T> loadwh(const T2 &other);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Convert the vector to bool
+		///
+		/// @return True iff the vector's length is not 0 (at least one of x,y is not 0)
+		///
+		/////////////////////////////////////////////////////////////
+		operator bool() const;
 	};
 
 #ifndef FRONTIER_ONLY_FOR_DOXYGEN

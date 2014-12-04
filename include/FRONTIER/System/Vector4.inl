@@ -408,6 +408,13 @@ namespace fm
 		w/=scalar;
 		return *this;
 	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	vector4<T>::operator bool() const
+	{
+		return (x!=T() || y!=T() || z!=T() || w!=T());
+	}
 	
 	template<class T> vector4<T> vector4<T>::White     = vector4<T>::fromHex(0xFFFFFFFF);
 	template<class T> vector4<T> vector4<T>::Silver    = vector4<T>::fromHex(0xBFBFBFFF);

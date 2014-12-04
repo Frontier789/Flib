@@ -393,6 +393,13 @@ namespace fm
 		y/=scalar;
 		return *this;
 	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	vector2<T>::operator bool() const
+	{
+		return (x!=T() || y!=T());
+	}
 }
 
 namespace std
@@ -426,7 +433,7 @@ namespace fm
 		left.y+=right.y;
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector2<T> &operator-=(vector2<T> &left,const vector2<T2> &right)
@@ -443,7 +450,7 @@ namespace fm
 		left.y*=right.y;
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector2<T> &operator/=(vector2<T> &left,const vector2<T2> &right)
@@ -452,7 +459,7 @@ namespace fm
 		left.y/=right.y;
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,+)> operator+(const vector2<T> &left,const vector2<T2> &right)
@@ -460,7 +467,7 @@ namespace fm
 		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,+)>(left.x+right.x,
 															left.y+right.y);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,-)> operator-(const vector2<T> &left,const vector2<T2> &right)
@@ -468,7 +475,7 @@ namespace fm
 		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,-)>(left.x-right.x,
 															left.y-right.y);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector2<T> &left,const vector2<T2> &right)
@@ -476,7 +483,7 @@ namespace fm
 		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)>(left.x*right.x,
 															left.y*right.y);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector2<T> &left,const vector2<T2> &right)
@@ -484,7 +491,7 @@ namespace fm
 		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,/)>(left.x/right.x,
 															left.y/right.y);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector2<T> &left,const T2 &right)
@@ -492,7 +499,7 @@ namespace fm
 		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)>(left.x*right,
 															left.y*right);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector2<T> &left,const T2 &right)
@@ -508,21 +515,21 @@ namespace fm
 		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)>(left*right.x,
 															left*right.y);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline bool operator==(const vector2<T> &left,const vector2<T2> &right)
 	{
 		return left.x==right.x && left.y==right.y;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline bool operator!=(const vector2<T> &left,const vector2<T2> &right)
 	{
 		return left.x!=right.x || left.y!=right.y;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector2<T> operator-(const vector2<T> &vec)
