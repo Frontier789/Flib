@@ -41,21 +41,21 @@ namespace fm
 		///		   or in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
 		///
 		/////////////////////////////////////////////////////////////
-		enum MeasureType{Deg=0,     ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 DEG=0,     ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 degs=0,    ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 Degs=0,    ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 DEGS=0,    ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 Degrees=0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 DEGREES=0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
+		enum MeasureType{Deg     = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
+						 DEG     = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
+						 degs    = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
+						 Degs    = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
+						 DEGS    = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
+						 Degrees = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
+						 DEGREES = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
 
-						 Rad=1,     ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 RAD=1,     ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 rads=1,    ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 Rads=1,    ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 RADS=1,    ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 Radians=1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 RADIANS=1  ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
+						 Rad     = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
+						 RAD     = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
+						 rads    = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
+						 Rads    = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
+						 RADS    = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
+						 Radians = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
+						 RADIANS = 1  ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
 						};
 
 		/////////////////////////////////////////////////////////////

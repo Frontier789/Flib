@@ -179,6 +179,11 @@ namespace fw
 					wglMakeCurrent(m_hdc,NULL);	
 				}
 			}
+			
+			// share resources
+			if (sharedContext)
+				wglShareLists(m_hglrc,sharedContext);
+			
 			return true;
 		}
 		

@@ -15,7 +15,6 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/Transformable.hpp>
-#include <FRONTIER/System/Quaternion.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Matrix.hpp>
@@ -222,10 +221,44 @@ namespace fm
 	const mat4 &Transformable::getTransform() const
 	{
 		if (!m_calculated)
+		{/*
 			m_matrix = fm::MATRIX::translation(m_position+m_origin)*
 					   fm::Quat(m_axis,m_angle).getMatrix()*
-					   fm::MATRIX::scaling(m_scaling)*fm::MATRIX::translation(-m_origin),
+					   fm::MATRIX::scaling(m_scaling)*fm::MATRIX::translation();*/
+			const vec3 &s = m_scaling;
+			vec3 p = m_position+m_origin;
+			
+			if (m_angle != fm::rad(0))
+			{
+				float halfAngle = m_angle.asRad()/2.f;
+				float sinA = std::sin(halfAngle);
+				float x = sinA*m_axis.x;
+				float y = sinA*m_axis.y;
+				float z = sinA*m_axis.z;
+				float w = std::cos(halfAngle);
+				
+				m_matrix = mat4((float [4*4]){(1-2*y*y-2*z*z)*s.x, (  2*x*y+2*w*z)*s.y, (  2*x*z-2*w*y)*s.z, p.x,
+											  (  2*x*y-2*w*z)*s.x, (1-2*x*x-2*z*z)*s.y, (  2*y*z+2*w*x)*s.z, p.y,
+											  (  2*x*z+2*w*y)*s.x, (  2*y*z-2*w*x)*s.y, (1-2*x*x-2*y*y)*s.z, p.z,
+																0,                   0,                   0,   1});
+			}
+			else
+			{
+				m_matrix = mat4((float [4*4]){s.x,  0,  0, p.x,
+												0,s.y,  0, p.y,
+												0,  0,s.z, p.z,
+												0,  0,  0,   1});
+			}
+			
+			if (m_origin.x || m_origin.y || m_origin.z)
+			{
+				m_matrix[0][3] -= m_matrix[0][0]*m_origin.x+m_matrix[0][1]*m_origin.y+m_matrix[0][2]*m_origin.z;
+				m_matrix[1][3] -= m_matrix[1][0]*m_origin.x+m_matrix[1][1]*m_origin.y+m_matrix[1][2]*m_origin.z;
+				m_matrix[2][3] -= m_matrix[2][0]*m_origin.x+m_matrix[2][1]*m_origin.y+m_matrix[2][2]*m_origin.z;
+			}
+
 			m_calculated = true;
+		}
 		return m_matrix;
 	}
 
