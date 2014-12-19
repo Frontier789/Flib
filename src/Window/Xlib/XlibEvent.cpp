@@ -115,8 +115,8 @@ namespace fw
 		if (key >= Keyboard::Numpad0 && key <= Keyboard::Numpad9)
 			return XKeysymToKeycode(priv::xCon.disp,XK_KP_0+key-Keyboard::Numpad0);
 
-		if (key >= Keyboard::F1 && key <= Keyboard::F9)
-			return XKeysymToKeycode(priv::xCon.disp,XK_F1+key-Keyboard::F9);
+		if (key >= Keyboard::F1 && key <= Keyboard::F12)
+			return XKeysymToKeycode(priv::xCon.disp,XK_F1+key-Keyboard::F1);
 
 		if (key >= Keyboard::A && key <= Keyboard::Z)
 			return XKeysymToKeycode(priv::xCon.disp,XK_A+key-Keyboard::A);

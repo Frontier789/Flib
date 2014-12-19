@@ -50,8 +50,10 @@ namespace fw
 			bool checkDisplay(); ///< Internal function
 			std::deque<Event> m_eventQueue; ///< A queue holding the unhandled events
 			void processEvent(XEvent &xev); ///< Internal function used to convert xevents
-			bool m_opened;   ///< Indicates whether the window is open
-			Display *m_disp; ///< The connection to the x server
+			bool m_opened;       ///< Indicates whether the window is open
+			bool m_enableRepeat; ///< Indicates whether key repeat is enabled
+			KeySym m_lastDown;   ///< Holds the last pressed key
+			Display *m_disp;     ///< The connection to the x server
 			mutable ::Window m_win;     ///< The handle of the xwindow
 			mutable ::Window m_rootWin; ///< A handle to the root window
 		public:
@@ -259,6 +261,25 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			void postEvent(const Event &ev);
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Enables or disables keyrepeat
+			///
+			/// If enabled, when a key is held down
+			/// multiple press events will be sent
+			///
+			/// @param enable True to enable false to disable
+			///
+			/////////////////////////////////////////////////////////////
+			void enableKeyRepeat(bool enable=true);
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Returns whether keyrepeat is enabled
+			///
+			/// @return True iff enabled
+			///
+			/////////////////////////////////////////////////////////////
+			bool isKeyRepeatEnabled() const;
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Get the window's handle
