@@ -1,6 +1,7 @@
 #include "fmPosixPrintErrno.hpp"
 #include <errno.h>
 #include <string>
+#include <cstring>
 
 namespace fm
 {

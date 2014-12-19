@@ -20,6 +20,7 @@
 #include <FRONTIER/System/FmLog.hpp>
 #include "fmPosixPrintErrno.hpp"
 #include <pthread.h>
+#include <signal.h>
 #include <errno.h>
 
 #ifdef PTHREAD_CANCEL_ASYNCHRONOUS

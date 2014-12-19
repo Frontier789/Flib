@@ -237,17 +237,21 @@ namespace fm
 				float z = sinA*m_axis.z;
 				float w = std::cos(halfAngle);
 				
-				m_matrix = mat4((float [4*4]){(1-2*y*y-2*z*z)*s.x, (  2*x*y+2*w*z)*s.y, (  2*x*z-2*w*y)*s.z, p.x,
-											  (  2*x*y-2*w*z)*s.x, (1-2*x*x-2*z*z)*s.y, (  2*y*z+2*w*x)*s.z, p.y,
-											  (  2*x*z+2*w*y)*s.x, (  2*y*z-2*w*x)*s.y, (1-2*x*x-2*y*y)*s.z, p.z,
-																0,                   0,                   0,   1});
+				float mat[4*4] = {(1-2*y*y-2*z*z)*s.x, (  2*x*y+2*w*z)*s.y, (  2*x*z-2*w*y)*s.z, p.x,
+								  (  2*x*y-2*w*z)*s.x, (1-2*x*x-2*z*z)*s.y, (  2*y*z+2*w*x)*s.z, p.y,
+								  (  2*x*z+2*w*y)*s.x, (  2*y*z-2*w*x)*s.y, (1-2*x*x-2*y*y)*s.z, p.z,
+													0,                   0,                   0,   1};
+				
+				m_matrix = mat4(mat);
 			}
 			else
 			{
-				m_matrix = mat4((float [4*4]){s.x,  0,  0, p.x,
-												0,s.y,  0, p.y,
-												0,  0,s.z, p.z,
-												0,  0,  0,   1});
+				float mat[4*4] = {s.x,  0,  0, p.x,
+				                 	0,s.y,  0, p.y,
+				                 	0,  0,s.z, p.z,
+				                 	0,  0,  0,   1};
+				
+				m_matrix = mat4(mat);
 			}
 			
 			if (m_origin.x || m_origin.y || m_origin.z)

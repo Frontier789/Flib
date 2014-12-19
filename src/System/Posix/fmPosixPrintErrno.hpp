@@ -1,4 +1,4 @@
-#include <FRONTIER/System/log.hpp>
+#include <FRONTIER/System/Log.hpp>
 
 /////////////////////////////////////////////////////////////
 namespace fm
