@@ -19,7 +19,8 @@
 #ifdef FRONTIER_OS_WINDOWS
 	#include "Wapi/WapiWindow.cpp"
 	#include "Wapi/fwWapiPrintLastError.cpp"
+#elif defined(FRONTIER_OS_LINUX)
+	#include "Xlib/XlibWindow.cpp"
 #else
 	#warning No WindowImpl!
 #endif
-												   

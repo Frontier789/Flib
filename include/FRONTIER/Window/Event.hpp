@@ -100,8 +100,8 @@ namespace fw
 			RShift,      ///< The right shift key
 			LCtrl,       ///< The left control key
 			RCtrl,       ///< The right control key
-			LWindows,    ///< The left windows key
-			RWindows,    ///< The right windows key
+			LSuper,      ///< The left super (usually a logo like windows') key
+			RSuper,      ///< The right super (usually a logo like windows') key
 			Print,       ///< The print key
 			LAlt,        ///< The left alt key
 			RAlt,        ///< The right alt key
@@ -186,20 +186,43 @@ namespace fw
 		static bool isButtonHeld(Button button);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the mouse distance from the upper left corner
+		/// @brief Get the cursor's distance from the upper left corner
 		///
-		/// @return Position of the mouse
+		/// @return Position of the cursor
 		///
 		/////////////////////////////////////////////////////////////
 		static fm::vec2i getPosition();
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the mouse distance from the upper left corner
-		///
-		/// @return Position of the mouse
+		/// @brief Get the cursor's distance from the upper left corner of a specific window
+		/// 
+		/// @param window The target window
+		/// 
+		/// @return Position of the cursor
 		///
 		/////////////////////////////////////////////////////////////
 		static fm::vec2i getPosition(const fw::priv::Window &window);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the cursor's position
+		/// 
+		/// The position is relative to the upper left corner
+		/// 
+		/// @param pos The new position of the cursor
+		///
+		/////////////////////////////////////////////////////////////
+		static void setPosition(const fm::vec2i &pos);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the cursor's position relative to a specific window
+		/// 
+		/// The position is relative to the upper left corner
+		/// 
+		/// @param pos The new position of the cursor
+		/// @param window The target window
+		///
+		/////////////////////////////////////////////////////////////
+		static void setPosition(const fm::vec2i &pos,const fw::priv::Window &window);
 	};
 
 	/////////////////////////////////////////////////////////////

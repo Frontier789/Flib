@@ -20,6 +20,8 @@
 
 #ifdef FRONTIER_OS_WINDOWS
 	#include "Wapi/WapiEvent.cpp"
+#elif defined(FRONTIER_OS_LINUX)
+	#include "Xlib/XlibEvent.cpp"
 #else
 	#warning No EventImpl!
 #endif

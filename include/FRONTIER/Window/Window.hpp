@@ -33,6 +33,19 @@
 			typedef fw::Wapi::GlContext GlContext;
 		}
 	}
+#elif defined(FRONTIER_OS_LINUX)
+	namespace fw
+	{
+		namespace Xlib
+		{
+			class Window;
+		}
+		namespace priv
+		{
+			typedef fw::Xlib::Window Window;
+			typedef int GlContext;
+		}
+	}
 #else
 	#warning No window
 	namespace fw
@@ -75,9 +88,6 @@ namespace fw
 			Fullscreen = 0x1000000,
 			Default    = 0x0111111
 		};
-		
-		
-		
 	};
 }
 

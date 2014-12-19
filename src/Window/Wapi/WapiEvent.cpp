@@ -62,8 +62,8 @@ namespace fw
 		if (key == Keyboard::RShift)       return VK_RSHIFT;
 		if (key == Keyboard::LCtrl)        return VK_LCONTROL;
 		if (key == Keyboard::RCtrl)        return VK_RCONTROL;
-		if (key == Keyboard::LWindows)     return VK_LWIN;
-		if (key == Keyboard::RWindows)     return VK_RWIN;
+		if (key == Keyboard::LSuper)       return VK_LWIN;
+		if (key == Keyboard::RSuper)       return VK_RWIN;
 		if (key == Keyboard::Print)        return VK_PRINT;
 		if (key == Keyboard::LAlt)         return VK_LMENU;
 		if (key == Keyboard::RAlt)         return VK_RMENU;
@@ -130,5 +130,20 @@ namespace fw
 			return fm::vec2i();
 		}
 		return fm::vec2i::loadxy(p);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void Mouse::setPosition(const fm::vec2i &pos)
+	{
+		if (!SetCursorPos(pos.x,pos.y))
+			fw::WapiPrintLastError(fw_log,SetCursorPos);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void Mouse::setPosition(const fm::vec2i &pos,const fw::priv::Window &window)
+	{
+		fm::vec2i winPos;
+		window.getPosition(winPos.w,winPos.h);
+		Mouse::setPosition(pos+winPos);
 	}
 }

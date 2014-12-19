@@ -20,7 +20,6 @@
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
 #include <string>
-#include <iostream>
 
 namespace fw
 {
@@ -54,8 +53,8 @@ namespace fw
 		if (param == VK_RSHIFT)    return Keyboard::RShift;
 		if (param == VK_LCONTROL)  return Keyboard::LCtrl;
 		if (param == VK_RCONTROL)  return Keyboard::RCtrl;
-		if (param == VK_LWIN)      return Keyboard::LWindows;
-		if (param == VK_RWIN)      return Keyboard::RWindows;
+		if (param == VK_LWIN)      return Keyboard::LSuper;
+		if (param == VK_RWIN)      return Keyboard::RSuper;
 		if (param == VK_PRINT)     return Keyboard::Print;
 		if (param == VK_LMENU)     return Keyboard::LAlt;
 		if (param == VK_RMENU)     return Keyboard::RAlt;
@@ -650,71 +649,6 @@ namespace fw
 			return true;
 		}
 
-		
-		////////////////////////////////////////////////////////////
-		bool Window::setFullscreen(unsigned int width,unsigned int height,bool fullscreen)
-		{
-			if (m_hwnd)
-			{
-				if (fullscreen)
-				{
-					// assume we want the screen resolution
-					if (!width || !height)
-					{
-						// find the monitor of the window
-						HMONITOR hMonitor = MonitorFromWindow(m_hwnd,MONITOR_DEFAULTTONULL);
-						MONITORINFO monInfo;
-						monInfo.cbSize = sizeof(monInfo);
-						
-						if (!hMonitor)
-						{
-							fw_log << "Couldn't find the corresponding monitor (Wapi,fullscreen)" << std::endl;
-							return false;
-						}
-						
-						if (!GetMonitorInfo(hMonitor,&monInfo))
-						{
-							fw::WapiPrintLastError(fw_log,GetWindowPlacement);
-							return false;
-						}
-						
-						// set width and height to match the monitor's
-						width  = monInfo.rcMonitor.right  - monInfo.rcMonitor.left;
-						height = monInfo.rcMonitor.bottom - monInfo.rcMonitor.top;
-					}
-					
-					// take off the decor
-					SetWindowLongPtr(m_hwnd, GWL_STYLE,(m_style | WS_VISIBLE) &~ (WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU));
-					
-					// set topmost
-					if (!SetWindowPos(m_hwnd, HWND_TOPMOST, 0,0,width,height,SWP_FRAMECHANGED | SWP_NOMOVE))
-					{
-						fw::WapiPrintLastError(fw_log,SetWindowPos);
-						return false;
-					}
-				}
-				else
-				{
-					// put decor back
-					SetWindowLongPtr(m_hwnd, GWL_STYLE,m_style|WS_VISIBLE);
-					
-					
-					if (!adjustWindowSize(width,height,m_style))
-						return false;
-					
-					// set notopmost
-					if (!SetWindowPos(m_hwnd, HWND_NOTOPMOST,0,0,width,height,SWP_NOMOVE))
-					{
-						fw::WapiPrintLastError(fw_log,SetWindowPos);
-						return false;
-					}
-				}
-
-				return true;				
-			}
-			return false;
-		}
-
 		////////////////////////////////////////////////////////////
 		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style)
 		{
@@ -762,6 +696,12 @@ namespace fw
 			m_windowCount++;
 
 			return true;
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::isOpen() const
+		{
+			return m_hwnd!=NULL;
 		}
 
 		////////////////////////////////////////////////////////////
@@ -1063,12 +1003,6 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::isOpen() const
-		{
-			return m_hwnd!=NULL;
-		}
-
-		////////////////////////////////////////////////////////////
 		bool Window::popEvent(Event &ev)
 		{
 			if (!m_hwnd)
@@ -1152,6 +1086,71 @@ namespace fw
 		bool Window::isResizeEnabled() const
 		{
 			return m_resizeable;
+		}
+
+		
+		////////////////////////////////////////////////////////////
+		bool Window::setFullscreen(unsigned int width,unsigned int height,bool fullscreen)
+		{
+			if (m_hwnd)
+			{
+				if (fullscreen)
+				{
+					// assume we want the screen resolution
+					if (!width || !height)
+					{
+						// find the monitor of the window
+						HMONITOR hMonitor = MonitorFromWindow(m_hwnd,MONITOR_DEFAULTTONULL);
+						MONITORINFO monInfo;
+						monInfo.cbSize = sizeof(monInfo);
+						
+						if (!hMonitor)
+						{
+							fw_log << "Couldn't find the corresponding monitor (Wapi,fullscreen)" << std::endl;
+							return false;
+						}
+						
+						if (!GetMonitorInfo(hMonitor,&monInfo))
+						{
+							fw::WapiPrintLastError(fw_log,GetWindowPlacement);
+							return false;
+						}
+						
+						// set width and height to match the monitor's
+						width  = monInfo.rcMonitor.right  - monInfo.rcMonitor.left;
+						height = monInfo.rcMonitor.bottom - monInfo.rcMonitor.top;
+					}
+					
+					// take off the decor
+					SetWindowLongPtr(m_hwnd, GWL_STYLE,(m_style | WS_VISIBLE) &~ (WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU));
+					
+					// set topmost
+					if (!SetWindowPos(m_hwnd, HWND_TOPMOST, 0,0,width,height,SWP_FRAMECHANGED | SWP_NOMOVE))
+					{
+						fw::WapiPrintLastError(fw_log,SetWindowPos);
+						return false;
+					}
+				}
+				else
+				{
+					// put decor back
+					SetWindowLongPtr(m_hwnd, GWL_STYLE,m_style|WS_VISIBLE);
+					
+					
+					if (!adjustWindowSize(width,height,m_style))
+						return false;
+					
+					// set notopmost
+					if (!SetWindowPos(m_hwnd, HWND_NOTOPMOST,0,0,width,height,SWP_NOMOVE))
+					{
+						fw::WapiPrintLastError(fw_log,SetWindowPos);
+						return false;
+					}
+				}
+
+				return true;				
+			}
+			return false;
 		}
 
 		/////////////////////////////////////////////////////////////
