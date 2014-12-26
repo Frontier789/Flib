@@ -19,7 +19,7 @@
 #include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 namespace fg
-{
+{ 
 	/// constructors /////////////////////////////////////////////////////////
 	RenderStates::RenderStates(const Texture *texture,Shader *shader, const fm::mat4 &transform) : texture(texture),
 																								   shader(shader),

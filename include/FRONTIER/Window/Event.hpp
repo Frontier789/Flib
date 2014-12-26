@@ -235,10 +235,10 @@ namespace fw
 	class FRONTIER_API KeyboardEvent
 	{
 	public:
-		Keyboard::Key code; ///< Identifies the key
 		bool shift; ///< Indicates that shift was held when the event occured
 		bool ctrl;  ///< Indicates that control was held when the event occured
 		bool alt;   ///< Indicates that alt was held when the event occured
+		Keyboard::Key code; ///< Identifies the key
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -251,9 +251,9 @@ namespace fw
 	class FRONTIER_API ButtonEvent
 	{
 	public:
-		Mouse::Button button; ///< Identifies the mouse button
 		int x; ///< X coordinate of the cursor
 		int y; ///< Y coordinate of the cursor
+		Mouse::Button button; ///< Identifies the mouse button
 	};
 	
 	/////////////////////////////////////////////////////////////
@@ -280,12 +280,12 @@ namespace fw
 	class FRONTIER_API MouseWheelEvent
 	{
 	public:
-		int delta;  ///< The amount the wheel moved (+1 means it was rotated once, forward, away from the user)
+		int x; ///< X coordinate of the cursor
+		int y; ///< Y coordinate of the cursor
 		bool shift; ///< Indicates that shift was held when the event occured
 		bool ctrl;  ///< Indicates that control was held when the event occured
 		bool alt;   ///< Indicates that alt was held when the event occured
-		int x; ///< X coordinate of the cursor
-		int y; ///< Y coordinate of the cursor
+		int delta;  ///< The amount the wheel moved (+1 means it was rotated once, forward, away from the user)
 	};
 	
 	/////////////////////////////////////////////////////////////
@@ -363,7 +363,9 @@ namespace fw
 			TextEntered,     ///< A character is entered (not the same as KeyPressed)
 			MouseWheelMoved, ///< The mouse wheel was moved (The wheel field can be used to track further information)
 			MouseMoved,      ///< The cursor is moved inside the window is released (The pos field can be used to track further information)
-			FileDrop         ///< The user dropped file(s) into the window
+			FileDrop,        ///< The user dropped file(s) into the window
+			MouseLeft,       ///< The mouse left the window
+			MouseEntered     ///< The mouse entered the window
 		};
 		
 		EventType type; ///< The type of the event
@@ -375,8 +377,8 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		union {
-			KeyboardEvent   key;   ///< used with KeyPressed KeyReleased events
-			ButtonEvent     mouse; ///< used with ButtonPressed ButtonReleased events
+			KeyboardEvent   key;   ///< used with KeyPressed, KeyReleased events
+			ButtonEvent     mouse; ///< used with ButtonPressed, ButtonReleased events
 			MouseEvent      pos;   ///< used with MouseMoved event
 			ResizeEvent     size;  ///< used with Resize event
 			TextEvent       text;  ///< used with TextEntered event

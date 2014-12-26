@@ -78,7 +78,7 @@ namespace fg
 
 		return 0;
 	}
-		
+		 
 	/////////////////////////////////////////////////////////////
 	Attribute Attribute::Unused = Attribute();
 
@@ -156,7 +156,12 @@ namespace fg
 			glCheck(glNormalPointer(getSizeType(norm),norm.m_bytesPerVertex,norm.m_ptr));
 		}
 		
-		fg::Texture::bind(states.texture,fg::Texture::Pixels);
+		if (states.texture)
+			glEnable(GL_TEXTURE_2D),
+			fg::Texture::bind(states.texture,fg::Texture::Pixels);
+		else
+			glDisable(GL_TEXTURE_2D);
+		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf(&states.transform.transpose()[0][0]);
 		

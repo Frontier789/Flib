@@ -43,7 +43,7 @@ namespace fg
 #include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
-#include <FRONTIER/Graphics/GlCheck.hpp>
+#include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Graphics/StaticText.hpp>

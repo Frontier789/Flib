@@ -23,6 +23,8 @@
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
 
+#include <vector>
+
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
@@ -31,31 +33,33 @@ namespace fg
 		// simply handle empty string
 		if (!m_text.length())
 			m_boundings = fm::vec2(),
-			m_vertices.resize(0),
-			m_indices.resize(0);
+			m_indexCount = 0;
 		else
 		{
 			// we need a font
 			if (!m_font)
 				return;
-			
+
+			std::vector<fm::vec2> poses;
+			std::vector<fm::vec4> clrs;
+			std::vector<fm::vec2> texPoses;
+			std::vector<unsigned int> indices;
+
 			m_font->setSize(m_characterSize);
-			
+
 			// reset some values
 			m_boundings = fm::vec2();
 
-			m_vertices.resize(0);
-			m_indices.resize(0);
 			fm::Size vertexCount=0;
-			
+
 			// get metrics
 			fg::Font::Metrics metrics = m_font->getMetrics();
 			int height = metrics.maxH-metrics.minH;
 			float width = m_font->getGlyph('w').size.w;
-			fm::vec2 curPos(0,0);
+			fm::vec2 curPos(0,metrics.maxH);
 
 			std::vector<fm::Size> rowWidths;
-			
+
 			// iterate through the text
 			fm::Size length = m_text.length();
 			for (fm::Size i=0;i<length;i++)
@@ -63,40 +67,42 @@ namespace fg
 				// register newline and reset the x position
 				if (m_text[i]=='\n' || (m_text[i]=='\r' && (i==length-1 || m_text[i+1]!='\n')))
 					rowWidths.push_back(curPos.x),
-					curPos = fm::vec2(0,curPos.y+=height);
-				// simply advance 
-				else if (m_text[i]==' ')
-					curPos += fm::vec2(width,0);
+					curPos = fm::vec2(0,curPos.y+height);
+				// simply advance
+				else if (m_text[i]==' ' || m_text[i]=='\t')
+					curPos += fm::vec2(m_text[i]==' ' ? width : width*4,0);
 				else
 				{
 					fg::Glyph glyph = m_font->getGlyph(m_text[i]);
 					if (!m_kerningEnabled)
 						curPos.x+=(width-glyph.size.w)/2.f;
-					
-					m_vertices.resize(vertexCount+4);
-					m_indices.resize(vertexCount/4*6+6);
 
-					m_indices[vertexCount/4*6+0] = vertexCount+0;
-					m_indices[vertexCount/4*6+1] = vertexCount+1;
-					m_indices[vertexCount/4*6+2] = vertexCount+2;
-					m_indices[vertexCount/4*6+3] = vertexCount+1;
-					m_indices[vertexCount/4*6+4] = vertexCount+2;
-					m_indices[vertexCount/4*6+5] = vertexCount+3;
+					poses.resize(vertexCount+4);
+					clrs.resize(vertexCount+4);
+					texPoses.resize(vertexCount+4);
+					indices.resize(vertexCount/4*6+6);
 
-					m_vertices[vertexCount+0].clr = fm::vec4(m_color)/255.f;
-					m_vertices[vertexCount+1].clr = fm::vec4(m_color)/255.f;
-					m_vertices[vertexCount+2].clr = fm::vec4(m_color)/255.f;
-					m_vertices[vertexCount+3].clr = fm::vec4(m_color)/255.f;
+					indices[vertexCount/4*6+0] = vertexCount+0;
+					indices[vertexCount/4*6+1] = vertexCount+1;
+					indices[vertexCount/4*6+2] = vertexCount+2;
+					indices[vertexCount/4*6+3] = vertexCount+1;
+					indices[vertexCount/4*6+4] = vertexCount+2;
+					indices[vertexCount/4*6+5] = vertexCount+3;
 
-					m_vertices[vertexCount+0].pos = glyph.size*fm::vec2(0,1)+glyph.leftdown+curPos;
-					m_vertices[vertexCount+1].pos = glyph.size*fm::vec2(1,1)+glyph.leftdown+curPos;
-					m_vertices[vertexCount+2].pos = glyph.size*fm::vec2(0,0)+glyph.leftdown+curPos;
-					m_vertices[vertexCount+3].pos = glyph.size*fm::vec2(1,0)+glyph.leftdown+curPos;
+					clrs[vertexCount+0] = fm::vec4(m_color)/255.f;
+					clrs[vertexCount+1] = fm::vec4(m_color)/255.f;
+					clrs[vertexCount+2] = fm::vec4(m_color)/255.f;
+					clrs[vertexCount+3] = fm::vec4(m_color)/255.f;
 
-					m_vertices[vertexCount+0].texPos = (glyph.pos+glyph.size*fm::vec2(0,1));
-					m_vertices[vertexCount+1].texPos = (glyph.pos+glyph.size*fm::vec2(1,1));
-					m_vertices[vertexCount+2].texPos = (glyph.pos+glyph.size*fm::vec2(0,0));
-					m_vertices[vertexCount+3].texPos = (glyph.pos+glyph.size*fm::vec2(1,0));
+					poses[vertexCount+0] = glyph.size*fm::vec2(0, 0)-glyph.leftdown+curPos;
+					poses[vertexCount+1] = glyph.size*fm::vec2(1, 0)-glyph.leftdown+curPos;
+					poses[vertexCount+2] = glyph.size*fm::vec2(0,-1)-glyph.leftdown+curPos;
+					poses[vertexCount+3] = glyph.size*fm::vec2(1,-1)-glyph.leftdown+curPos;
+
+					texPoses[vertexCount+0] = (glyph.pos+glyph.size*fm::vec2(0,1));
+					texPoses[vertexCount+1] = (glyph.pos+glyph.size*fm::vec2(1,1));
+					texPoses[vertexCount+2] = (glyph.pos+glyph.size*fm::vec2(0,0));
+					texPoses[vertexCount+3] = (glyph.pos+glyph.size*fm::vec2(1,0));
 
 					vertexCount+=4;
 					if (m_kerningEnabled)
@@ -106,8 +112,8 @@ namespace fg
 				}
 				if (m_boundings.w < curPos.x)
 					m_boundings.w = curPos.x;
-				if (m_boundings.h < curPos.y)
-					m_boundings.h = curPos.y;
+				if (m_boundings.h < curPos.y-metrics.minH)
+					m_boundings.h = curPos.y-metrics.minH;
 			}
 			rowWidths.push_back(curPos.x);
 			m_texture = &m_font->getTexture();
@@ -127,23 +133,34 @@ namespace fg
 					else
 					{
 						float increase = (m_boundings.w-rowWidth)*delta;
-						m_vertices[vertexCount+0].pos.x += increase;
-						m_vertices[vertexCount+1].pos.x += increase;
-						m_vertices[vertexCount+2].pos.x += increase;
-						m_vertices[vertexCount+3].pos.x += increase;
+						poses[vertexCount+0].x += increase;
+						poses[vertexCount+1].x += increase;
+						poses[vertexCount+2].x += increase;
+						poses[vertexCount+3].x += increase;
 						vertexCount+=4;
 					}
 				}
 			}
 
+			m_indexCount = indices.size();
+			m_vertexCount = poses.size();
+
+			m_posBuf.setData(&poses[0],poses.size()*sizeof(fm::vec2));
+			m_clrBuf.setData(&clrs[0],clrs.size()*sizeof(fm::vec4));
+			m_texPosBuf.setData(&texPoses[0],texPoses.size()*sizeof(fm::vec2));
+			m_indBuf.setData(&indices[0],indices.size()*sizeof(unsigned int));
 		}
 	}
 
 	/////////////////////////////////////////////////////////////
-	StaticText::StaticText() : m_align(StaticText::Align::Left),
+	StaticText::StaticText() : m_color(Color::White),
+							   m_align(StaticText::Align::Left),
 							   m_font(NULL),
 							   m_texture(NULL),
-							   m_characterSize(64)
+							   m_characterSize(64),
+							   m_vertexCount(0),
+							   m_indexCount(0),
+							   m_indBuf(fg::IndexBuffer)
 	{
 
 	}
@@ -155,12 +172,14 @@ namespace fg
 																																								   m_kerningEnabled(enableKerning),
 																																								   m_font(&font),
 																																								   m_texture(NULL),
-																																								   m_characterSize(characterSize)
-
+																																								   m_characterSize(characterSize),
+																																								   m_vertexCount(0),
+																																								   m_indexCount(0),
+                                                                                                                                                                   m_indBuf(fg::IndexBuffer)
 	{
 		buildVertices();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void StaticText::setText(const std::string &text)
 	{
@@ -179,9 +198,10 @@ namespace fg
 	void StaticText::setColor(const fg::Color &color)
 	{
 		m_color = color;
-		fm::Size count = m_vertices.size();
-		for (fm::Size i=0;i<count;i++)
-			m_vertices[i].clr = fm::vec4(m_color)/255.f;
+		std::vector<fm::vec4> clrs;
+		clrs.resize(m_vertexCount,m_color);
+
+		m_clrBuf.setData(&clrs[0],clrs.size()*sizeof(fm::vec4));
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -196,8 +216,11 @@ namespace fg
 	{
 		states.texture = m_texture;
 		states.transform *= getTransform();
-		
-		fg::draw(&m_vertices[0],m_indices.size(),fg::Triangles,states,&m_indices[0]);
+
+		fg::draw(fg::Attr<fm::vec2>(m_posBuf),
+				 fg::Attr<fm::vec4>(m_clrBuf),
+				 fg::Attr<fm::vec2>(m_texPosBuf),
+				 m_indexCount,fg::Triangles,states,fg::IndexPointer(0,sizeof(unsigned int),&m_indBuf));
 	}
 
 	/////////////////////////////////////////////////////////////

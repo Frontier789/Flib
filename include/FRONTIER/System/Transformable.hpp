@@ -27,6 +27,7 @@
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
 #include <FRONTIER/System/StorageOrder.hpp>
+#include <FRONTIER/System/macros/API.h>
 
 #define FRONTIER_TRANSFORMABLE
 
@@ -38,7 +39,7 @@ namespace fm
 	/// @ingroup System
 	///
 	////////////////////////////////////////////////////////////
-	class Transformable
+	class FRONTIER_API Transformable
 	{
 		vec3 m_position; ///< The translation
 		vec3 m_scaling;  ///< The scaling

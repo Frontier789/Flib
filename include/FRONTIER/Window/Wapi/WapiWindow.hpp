@@ -65,6 +65,7 @@ namespace fw
 			bool m_showCursor;   ///< Indicates whether the cursor is shown in the window
 			bool m_resizeable;   ///< Indicates whether the window can be resized on the borders
 			bool m_enableRepeat; ///< Indicates whether key repeat is enabled
+			bool m_cursorInside; ///< True iff the mouse is inside the window
 			WPARAM m_lastDown;   ///< Contains the last pressed key
 			LONG m_style;        ///< Internal variable used when going to fullscreen
 			LONG m_exStyle;      ///< Internal variable used when going to fullscreen

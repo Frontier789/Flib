@@ -134,6 +134,19 @@ namespace fw
 				ev.mouse.y = xev.xbutton.y;
 				postEvent(ev);
 			}
+			
+			https://motif.ics.com/forum/minimizerestore
+			http://tronche.com/gui/x/xlib/ICC/client-to-window-manager/XIconifyWindow.html
+			http://stackoverflow.com/questions/7365256/xlib-how-to-check-if-a-window-is-minimized-or-not
+			
+			// the mouse was moved
+			if (xev.type == MotionNotify)
+			{
+				Event ev(Event::MouseMoved);
+				ev.pos.x = xev.xmotion.x;
+				ev.pos.y = xev.xmotion.y;
+				postEvent(ev);
+			}
 
 			// key press or release
 			if (xev.type == KeyPress || xev.type == KeyRelease)
@@ -242,7 +255,7 @@ namespace fw
 			
 			if (m_win != (::Window)NULL)
 			{
-				XSelectInput(m_disp,m_win,ButtonPressMask|ButtonReleaseMask|KeyPressMask|KeyReleaseMask);
+				XSelectInput(m_disp,m_win,PointerMotionMask|ButtonPressMask|ButtonReleaseMask|KeyPressMask|KeyReleaseMask);
 				
 				// tell him to show it
 				XMapWindow(m_disp,m_win);

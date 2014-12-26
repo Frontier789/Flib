@@ -20,6 +20,7 @@
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vertex.hpp>
+#include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/Config.hpp>
 namespace fg

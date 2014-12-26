@@ -231,13 +231,98 @@ namespace fw
 
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
+				
+				// the mouse left the window
+				case WM_MOUSELEAVE:
+				{
+					m_cursorInside = false;
+					Event ev(Event::MouseLeft);
+					postEvent(ev);
+					return 0;
+				}
 
 				// mouse moved
 				case WM_MOUSEMOVE:
 				{
+					// if no button is down
+					if (!(wParam & MK_LBUTTON || 
+						  wParam & MK_MBUTTON ||
+						  wParam & MK_RBUTTON))
+					{
+						// release the capture
+						if (GetCapture() == m_hwnd)
+							ReleaseCapture();
+					}
+					else if (GetCapture() != m_hwnd)
+					{
+						// else set capture to receive move event outside the window
+						SetCapture(m_hwnd);
+					}
+					
+					if (!m_cursorInside)
+					{
+						TRACKMOUSEEVENT tme;
+						tme.cbSize = sizeof(TRACKMOUSEEVENT);
+						tme.dwFlags = TME_LEAVE;
+						tme.dwHoverTime = HOVER_DEFAULT;
+						tme.hwndTrack = m_hwnd;
+						TrackMouseEvent(&tme);
+						
+						m_cursorInside = true;
+						
+						Event event(Event::MouseEntered);
+						postEvent(event);
+					}
+					
+					/*
+					{
+						RECT area;
+						GetClientRect(m_hwnd, &area);
+						// If the cursor is outside the client area...
+						if ((((int)(short)LOWORD(lParam)) < area.left) || 
+							(((int)(short)LOWORD(lParam)) > area.right) || 
+							(((int)(short)HIWORD(lParam)) < area.top) || 
+							(((int)(short)HIWORD(lParam)) > area.bottom))
+						{
+							// and it used to be inside, the mouse left it.
+							if (m_cursorInside)
+							{
+								m_cursorInside = false;
+								// No longer care for the mouse leaving the window
+								TRACKMOUSEEVENT tme;
+								tme.cbSize = sizeof(TRACKMOUSEEVENT);
+								tme.dwFlags = TME_CANCEL|TME_LEAVE;
+								tme.dwHoverTime = HOVER_DEFAULT;
+								tme.hwndTrack = m_hwnd;
+								TrackMouseEvent(&tme);
+								// Generate a MouseLeft event
+								Event event(Event::MouseLeft);
+								postEvent(event);
+							}
+						}
+						else
+						{
+							// and vice-versa
+							if (!m_cursorInside)
+							{
+								m_cursorInside = true;
+								// Look for the mouse leaving the window
+								TRACKMOUSEEVENT tme;
+								tme.cbSize = sizeof(TRACKMOUSEEVENT);
+								tme.dwFlags = TME_LEAVE;
+								tme.dwHoverTime = HOVER_DEFAULT;
+								tme.hwndTrack = m_hwnd;
+								TrackMouseEvent(&tme);
+								// Generate a MouseEntered event
+								Event event(Event::MouseEntered);
+								postEvent(event);
+							}
+						}
+					}*/
+					
 					Event ev(Event::MouseMoved);
-					ev.pos.x =  ((int)(short)LOWORD(lParam));
-					ev.pos.y =  ((int)(short)HIWORD(lParam));
+					ev.pos.x = ((int)(short)LOWORD(lParam));
+					ev.pos.y = ((int)(short)HIWORD(lParam));
 					postEvent(ev);
 					return 0;
 				}
@@ -292,8 +377,8 @@ namespace fw
 					if (msg==WM_MBUTTONDOWN)
 						ev.mouse.button = Mouse::Middle;
 
-					ev.mouse.x =  ((int)(short)LOWORD(lParam));
-					ev.mouse.y =  ((int)(short)HIWORD(lParam));
+					ev.mouse.x = ((int)(short)LOWORD(lParam));
+					ev.mouse.y = ((int)(short)HIWORD(lParam));
 					postEvent(ev);
 					return 0;
 				}
@@ -303,6 +388,15 @@ namespace fw
 				case WM_RBUTTONUP:
 				case WM_MBUTTONUP:
 				{
+					// if we captured the mouse then we must post a move event in order to
+					// signal the item under the cursor
+					if (GetCapture() == m_hwnd)
+					{
+						ReleaseCapture();
+						DefWindowProc(m_hwnd,WM_MOUSEMOVE,0,lParam);
+					}
+						
+					
 					Event ev(Event::ButtonReleased);
 
 					if (msg==WM_LBUTTONUP)
@@ -484,13 +578,14 @@ namespace fw
 				// mouse wheel moved
 				case WM_MOUSEWHEEL:
 				{
+					fm::vec2i pos = Mouse::getPosition(*this);
 					Event ev(Event::MouseWheelMoved);
 					ev.wheel.delta = GET_WHEEL_DELTA_WPARAM(wParam)/WHEEL_DELTA;
 					ev.wheel.ctrl  = GetKeyState(VK_CONTROL);
 					ev.wheel.alt   = GetKeyState(VK_MENU);
 					ev.wheel.shift = GetKeyState(VK_SHIFT);
-					ev.wheel.x     = ((int)(short)LOWORD(lParam));
-					ev.wheel.y     = ((int)(short)HIWORD(lParam));
+					ev.wheel.x     = pos.x;
+					ev.wheel.y     = pos.y;
 					postEvent(ev);
 					return 0;
 				}
@@ -543,6 +638,7 @@ namespace fw
 						   m_showCursor(true),
 						   m_resizeable(true),
 						   m_enableRepeat(false),
+						   m_cursorInside(false),
 						   m_lastDown(0),
 						   m_icon(NULL),
 						   m_cursorHitTest(NULL)
@@ -555,6 +651,7 @@ namespace fw
 																												m_showCursor(true),
 																												m_resizeable(true),
 																												m_enableRepeat(false),
+																												m_cursorInside(false),
 																												m_lastDown(0),
 																												m_icon(NULL),
 																												m_cursorHitTest(NULL)
@@ -1162,25 +1259,28 @@ namespace fw
 				if (m_icon)
 					DestroyIcon(m_icon);
 				
-				const fm::vec2s &size = icon.getSize();
+				std::vector<fg::Color> *iconPixels = (std::vector<fg::Color> *)&icon;
+				
+				fm::Size width  =  *((fm::Size *)(iconPixels+1));
+				fm::Size height = *(((fm::Size *)(iconPixels+1))+1);
+				fm::Size size   = iconPixels->size();
 				
 				unsigned char *iconBytes = NULL;
 				
-				if (size.w || size.h)
+				if (size)
 				{
-					iconBytes = new unsigned char [size.w*size.h*4];
+					iconBytes = new unsigned char [width*height*4];
 					
 					// swap RGBA to BGRA
-					for (fm::Size x=0;x<size.w;x++)
-						for (fm::Size y=0;y<size.h;y++)
-							iconBytes[(x+y*size.w)*4+0] = icon.getPixel(x,y).b,
-							iconBytes[(x+y*size.w)*4+1] = icon.getPixel(x,y).g,
-							iconBytes[(x+y*size.w)*4+2] = icon.getPixel(x,y).r,
-							iconBytes[(x+y*size.w)*4+3] = icon.getPixel(x,y).a;				
+					for (fm::Size i=0;i<size;i++)
+						iconBytes[i*4+0] = (*iconPixels)[i].b,
+						iconBytes[i*4+1] = (*iconPixels)[i].g,
+						iconBytes[i*4+2] = (*iconPixels)[i].r,
+						iconBytes[i*4+3] = (*iconPixels)[i].a;				
 				}
 				
 				// convert to HICON
-				m_icon = CreateIcon(NULL, size.w, size.h, 1, sizeof(fg::Color)*FRONTIER_BITS_PER_BYTE, NULL, iconBytes);
+				m_icon = CreateIcon(NULL, width, height, 1, sizeof(fg::Color)*FRONTIER_BITS_PER_BYTE, NULL, iconBytes);
 				
 				// delete allocated memory
 				delete[] iconBytes;

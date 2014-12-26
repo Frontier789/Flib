@@ -632,6 +632,18 @@ namespace fg
 					std::swap(bitmap[x+int(h*1.5f-y-1)*w],bitmap[x+int(h-y-1)*w]);
 			h+=h/2.f;
 		}
+		
+		// sharpen the created image
+		if (w*h < 200)
+			Cx(w)
+				Cy(h)
+				{
+					float X = bitmap[x+y*w]/255.0;
+					if (X<.5) X=X*X*2;
+					else X=-0.8 + 3.4*X + -1.6*X*X;
+					bitmap[x+y*w] = X*255;
+				}
+				
 
 		// set the size back if we rendered index
 		if ((style & Font::Subscript) xor (style & Font::Superscript))

@@ -461,4 +461,10 @@ namespace fg
 	{
 		m_setTexMat = newFunc ? newFunc : priv::defaultSetTextureMatrixFunc;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	Texture::operator bool() const
+	{
+		return getGlId();
+	}
 }

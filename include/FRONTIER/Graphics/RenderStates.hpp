@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_RENDERSTATES_HPP_INCLUDED
 #define FRONTIER_RENDERSTATES_HPP_INCLUDED
+#include <FRONTIER/System/macros/API.h>
 
 #include <FRONTIER/System/macros/dont_include_inl_begin>
 
@@ -33,7 +34,7 @@ namespace fg
 	/// @brief Class used to hold the texture, the shader and the transformation matrix used when drawing
 	///
 	/////////////////////////////////////////////////////////////
-	class RenderStates
+	class FRONTIER_API RenderStates
 	{
 	public:
 		const Texture *texture; ///< The texture
