@@ -54,8 +54,12 @@ namespace fw
 			bool m_enableRepeat; ///< Indicates whether key repeat is enabled
 			KeySym m_lastDown;   ///< Holds the last pressed key
 			Display *m_disp;     ///< The connection to the x server
+			Atom m_delAtom;      ///< The id of the window deletion message
+			Atom m_stateAtom;    ///< The id of the window state
+			Atom m_stateHiddenAtom;     ///< The id of the hidden state
 			mutable ::Window m_win;     ///< The handle of the xwindow
 			mutable ::Window m_rootWin; ///< A handle to the root window
+			void getProperty(Atom *&atoms,unsigned long *count) const;  ///< Internal function used to get properties of the window
 		public:
 
 			typedef ::Window Handle; ///< The window handle type
@@ -121,6 +125,20 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			bool isOpen() const;
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Minimizes the window
+			///
+			/////////////////////////////////////////////////////////////
+			void minimize();
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Discover whether the window is minimized
+			///
+			/// @return True iff the window is minimized
+			///
+			/////////////////////////////////////////////////////////////
+			bool isMinimized() const;
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Changes the position and the size of the window

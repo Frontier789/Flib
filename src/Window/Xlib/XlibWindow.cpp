@@ -89,12 +89,33 @@ namespace fw
 			return Mouse::Unknown;
 		}
 
+		/////////////////////////////////////////////////////////////
+		void Window::getProperty(Atom *&atoms,unsigned long *count) const
+		{
+			Atom actual_type;
+			int actual_format;
+			unsigned long bytes_after;
+
+			XGetWindowProperty(m_disp,m_win,
+							   m_stateAtom,
+							   0,1024,False,XA_ATOM, 
+							   &actual_type,&actual_format,count,&bytes_after,
+							   (unsigned char**)&atoms);
+		}
+
 		////////////////////////////////////////////////////////////
 		void Window::processEvent(XEvent &xev)
 		{
-			// we can be sure that we only process the current window's events
-			// because this function is only called internally on events 
-			// retieved by XWindowEvent and XCheckWindowEvent
+			// Display is unique for every window therefore 
+			// we dont have to bother about events that dont belong
+			// to this window
+
+			// the window was asked to close
+			if (xev.type == ClientMessage && (Atom)xev.xclient.data.l[0] == m_delAtom)
+			{
+				Event ev(Event::Closed);
+				postEvent(ev);
+			}
 
 			// A mouse button was pressed or released or mouse wheel was rolled
 			if (xev.type == ButtonPress || xev.type == ButtonRelease)
@@ -134,11 +155,7 @@ namespace fw
 				ev.mouse.y = xev.xbutton.y;
 				postEvent(ev);
 			}
-			
-			https://motif.ics.com/forum/minimizerestore
-			http://tronche.com/gui/x/xlib/ICC/client-to-window-manager/XIconifyWindow.html
-			http://stackoverflow.com/questions/7365256/xlib-how-to-check-if-a-window-is-minimized-or-not
-			
+
 			// the mouse was moved
 			if (xev.type == MotionNotify)
 			{
@@ -218,7 +235,10 @@ namespace fw
 		Window::Window() : m_opened(false),
 						   m_enableRepeat(true),
 						   m_lastDown(XK_VoidSymbol),
-						   m_disp(NULL)
+						   m_disp(NULL),
+						   m_delAtom(0),
+						   m_stateAtom(0),
+						   m_stateHiddenAtom(0)
 		{
 
 		}
@@ -227,7 +247,10 @@ namespace fw
 		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style) : m_opened(false),
 																												m_enableRepeat(true),
 																												m_lastDown(XK_VoidSymbol),
-																												m_disp(NULL)
+																												m_disp(NULL),
+																												m_delAtom(0),
+																												m_stateAtom(0),
+																												m_stateHiddenAtom(0)
 		{
 			open(x,y,w,h,title,style);
 		}
@@ -255,9 +278,19 @@ namespace fw
 			
 			if (m_win != (::Window)NULL)
 			{
+				m_opened = true;
+
 				XSelectInput(m_disp,m_win,PointerMotionMask|ButtonPressMask|ButtonReleaseMask|KeyPressMask|KeyReleaseMask);
+
+				// get atoms
+				m_stateAtom       = XInternAtom(m_disp,"_NET_WM_STATE",False);
+				m_stateHiddenAtom = XInternAtom(m_disp,"_NET_WM_STATE_HIDDEN",False);
+				m_delAtom         = XInternAtom(m_disp,"WM_DELETE_WINDOW",False);
+
+				// register deletion event
+				XSetWMProtocols(m_disp,m_win,&m_delAtom,1);
 				
-				// tell him to show it
+				// tell X to show it
 				XMapWindow(m_disp,m_win);
 
 				// manually set title and position
@@ -268,10 +301,8 @@ namespace fw
 				enableKeyRepeat(false);
 				m_lastDown = XK_VoidSymbol;
 
-				// tell X to do what we asked now
+				// tell X to do what we asked, now
 				XFlush(m_disp);
-
-				m_opened = true;
 				
 				return true;
 			}
@@ -283,6 +314,39 @@ namespace fw
 		bool Window::isOpen() const
 		{
 			return m_opened;
+		}
+
+		/////////////////////////////////////////////////////////////
+		void Window::minimize()
+		{
+			if (isOpen())
+			{
+				if (isMinimized())
+					XMapWindow(m_disp,m_win);
+				else
+					XIconifyWindow(m_disp,m_win,XDefaultScreen(m_disp));
+			}
+		}
+
+		/////////////////////////////////////////////////////////////
+		bool Window::isMinimized() const
+		{
+			if (!isOpen())
+				return false;
+
+			unsigned long count;
+			Atom *atoms = NULL;
+
+			getProperty(atoms,&count);
+
+			for(unsigned long i=0;i<count; i++) 
+				if(atoms[i] == m_stateHiddenAtom) 
+				{
+					XFree(atoms);
+					return true;
+				}
+			XFree(atoms);
+			return false;
 		}
 
 		////////////////////////////////////////////////////////////
@@ -422,9 +486,19 @@ namespace fw
 			if (!isOpen())
 				return false;
 
+			// Display is unique for every window therefore 
+			// we dont have to bother about events that dont belong
+			// to this window
+
 			XEvent xev;
-			while(XCheckWindowEvent(m_disp,m_win,-1,&xev))
-				processEvent(xev);
+			while (XPending(m_disp))
+			{
+				XNextEvent(m_disp,&xev);
+
+				// process only the current window's events
+				if (xev.xany.window == m_win)
+					processEvent(xev);
+			}
 
 			if (!m_eventQueue.empty())
 			{
@@ -441,17 +515,32 @@ namespace fw
 			if (!isOpen())
 				return false;
 
-			XEvent xev;
-			XWindowEvent(m_disp,m_win,-1,&xev);
-			processEvent(xev);
+			// Display is unique for every window therefore 
+			// we dont have to bother about events that dont belong
+			// to this window
 
+			// if we have event in stock we return it
 			if (!m_eventQueue.empty())
 			{
 				ev = m_eventQueue[0];
 				m_eventQueue.pop_front();
 				return true;
 			}
-			return false;
+
+			// otherwise wait for one
+			XEvent xev;
+			while (m_eventQueue.empty())
+			{
+				XNextEvent(m_disp,&xev);
+
+				// process only the current window's events
+				if (xev.xany.window == m_win)
+					processEvent(xev);
+			}
+
+			ev = m_eventQueue[0];
+			m_eventQueue.pop_front();
+			return true;
 		}
 
 		////////////////////////////////////////////////////////////
