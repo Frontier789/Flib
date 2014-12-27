@@ -56,6 +56,8 @@ namespace fw
 			Display *m_disp;     ///< The connection to the x server
 			Atom m_delAtom;      ///< The id of the window deletion message
 			Atom m_stateAtom;    ///< The id of the window state
+			unsigned int m_prevW;       ///< The width after the last resize
+			unsigned int m_prevH;       ///< The height after the last resize
 			Atom m_stateHiddenAtom;     ///< The id of the hidden state
 			mutable ::Window m_win;     ///< The handle of the xwindow
 			mutable ::Window m_rootWin; ///< A handle to the root window

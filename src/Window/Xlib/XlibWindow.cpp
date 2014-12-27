@@ -106,9 +106,50 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		void Window::processEvent(XEvent &xev)
 		{
-			// Display is unique for every window therefore 
-			// we dont have to bother about events that dont belong
-			// to this window
+			// mouse got outside our window
+			if (xev.type == LeaveNotify)
+			{
+				Event ev(Event::MouseLeft);
+				postEvent(ev);
+			}
+			
+			// mouse got inside our window
+			if (xev.type == EnterNotify)
+			{
+				Event ev(Event::MouseEntered);
+				postEvent(ev);
+			}
+			
+			// gained focus
+			if (xev.type == FocusIn)
+			{
+				Event ev(Event::FocusGained);
+				postEvent(ev);
+			}
+			
+			// lost focus
+			if (xev.type == FocusOut)
+			{
+				Event ev(Event::FocusLost);
+				postEvent(ev);
+			}
+			
+			// the windows position/size/Z-order changed
+			if (xev.type == ConfigureNotify)
+			{
+				// process only resize
+				if (xev.xconfigure.width  != m_prevW || 
+					xev.xconfigure.height != m_prevH)
+				{
+					m_prevW = xev.xconfigure.width;
+					m_prevH = xev.xconfigure.height;
+					
+					Event ev(Event::Resized);
+					ev.size.w = xev.xconfigure.width;
+					ev.size.h = xev.xconfigure.height;
+					postEvent(ev);
+				}
+			}
 
 			// the window was asked to close
 			if (xev.type == ClientMessage && (Atom)xev.xclient.data.l[0] == m_delAtom)
@@ -238,6 +279,8 @@ namespace fw
 						   m_disp(NULL),
 						   m_delAtom(0),
 						   m_stateAtom(0),
+						   m_prevW(0),
+						   m_prevH(0),
 						   m_stateHiddenAtom(0)
 		{
 
@@ -250,6 +293,8 @@ namespace fw
 																												m_disp(NULL),
 																												m_delAtom(0),
 																												m_stateAtom(0),
+																												m_prevW(0),
+																												m_prevH(0),
 																												m_stateHiddenAtom(0)
 		{
 			open(x,y,w,h,title,style);
@@ -280,7 +325,7 @@ namespace fw
 			{
 				m_opened = true;
 
-				XSelectInput(m_disp,m_win,PointerMotionMask|ButtonPressMask|ButtonReleaseMask|KeyPressMask|KeyReleaseMask);
+				XSelectInput(m_disp,m_win,LeaveWindowMask|EnterWindowMask|FocusChangeMask|StructureNotifyMask|PointerMotionMask|ButtonPressMask|ButtonReleaseMask|KeyPressMask|KeyReleaseMask);
 
 				// get atoms
 				m_stateAtom       = XInternAtom(m_disp,"_NET_WM_STATE",False);
@@ -297,9 +342,11 @@ namespace fw
 				setTitle(title);
 				setPosition(x,y);
 				
-				// reset keyrepeat
+				// reset storages
 				enableKeyRepeat(false);
 				m_lastDown = XK_VoidSymbol;
+				m_prevW = 0;
+				m_prevH = 0;
 
 				// tell X to do what we asked, now
 				XFlush(m_disp);
