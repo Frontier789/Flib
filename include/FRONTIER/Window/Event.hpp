@@ -298,8 +298,8 @@ namespace fw
 	class FRONTIER_API ResizeEvent
 	{
 	public:
-		int w; ///< new width
-		int h; ///< new height
+		unsigned int w; ///< new width
+		unsigned int h; ///< new height
 	};
 	
 	/////////////////////////////////////////////////////////////
@@ -352,8 +352,6 @@ namespace fw
 			Empty,           ///< The event is not filled
 			Closed,          ///< The window is closed
 			Resized,         ///< The window's size is changed
-			Minimized,       ///< The window was asked to minimize
-			Maximized,       ///< The window was asked to maximize
 			FocusLost,       ///< The window lost focus
 			FocusGained,     ///< The window gained focus
 			KeyPressed,      ///< A key is pressed (The key field can be used to track further information)

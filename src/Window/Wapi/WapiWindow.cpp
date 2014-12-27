@@ -114,8 +114,10 @@ namespace fw
 		// A resizeable window needs border
 		if (style & Window::Resize)
 			style |= Window::Border;
+		else
+			style &= ~(Window::Minimize|Window::Maximize);
 
-		// A f button can only be located in the titlebar
+		// A x button needs titlebar
 		if (style & Window::Close)
 			style |= Window::Titlebar;
 
@@ -471,14 +473,15 @@ namespace fw
 					// prevent opening the window menu by clicking on the icon
 					if (wParam==HTSYSMENU)
 						wParam = HTCAPTION;
-
+					
 					// forward maximazition to user
-					if (wParam==HTCAPTION && msg==WM_NCLBUTTONDBLCLK)
+					if (m_resizeable && wParam==HTCAPTION && msg==WM_NCLBUTTONDBLCLK)
 					{
 						if (!isMaximized())
-							postEvent(Event::Maximized);
+							maximize();
 						else
 							ShowWindow(hwnd,SW_RESTORE);
+						
 						return 0;
 					}
 
@@ -521,17 +524,17 @@ namespace fw
 					// minimization request
 					if (wParam == SC_MINIMIZE)
 					{
-						postEvent(Event::Minimized);
+						minimize();
 						return 0;
 					}
-
+					
 					// maximization request
 					if (wParam == SC_MAXIMIZE)
 					{
-						postEvent(Event::Maximized);
+						maximize();
 						return 0;
 					}
-
+					
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
 
@@ -839,7 +842,14 @@ namespace fw
 		void Window::maximize()
 		{
 			if (m_hwnd)
+			{
 				ShowWindow(m_hwnd,SW_SHOWMAXIMIZED);
+				
+				Event ev(Event::Resized);
+				getSize(ev.size.w,ev.size.h);
+				postEvent(ev);
+			}
+				
 		}
 
 		/////////////////////////////////////////////////////////////
