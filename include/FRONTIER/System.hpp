@@ -51,6 +51,7 @@ namespace fm
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
+#include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/System/Quaternion.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/Transformable.hpp>

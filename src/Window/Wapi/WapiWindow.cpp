@@ -138,7 +138,7 @@ namespace fw
 		// so windows understands it too
 
 		DWORD ret = WS_OVERLAPPED;
-		if (style & Window::None)
+		if (style == Window::None)
 			ret |= WS_POPUP;
 
 		if (style & Window::Close)
@@ -157,7 +157,7 @@ namespace fw
 			ret |= WS_MAXIMIZEBOX;
 
 
-		if (style == Window::Border &&
+		if (style == Window::Border ||
 			style == Window::None)
 				ret &= ~WS_OVERLAPPED;
 
@@ -642,6 +642,7 @@ namespace fw
 						   m_resizeable(true),
 						   m_enableRepeat(false),
 						   m_cursorInside(false),
+						   m_acceptDrop(false),
 						   m_lastDown(0),
 						   m_icon(NULL),
 						   m_cursorHitTest(NULL)
@@ -650,16 +651,17 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style) : m_hwnd(NULL),
-																												m_showCursor(true),
-																												m_resizeable(true),
-																												m_enableRepeat(false),
-																												m_cursorInside(false),
-																												m_lastDown(0),
-																												m_icon(NULL),
-																												m_cursorHitTest(NULL)
+		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,bool toolkit,HWND parent) : m_hwnd(NULL),
+																																		 m_showCursor(true),
+																																		 m_resizeable(true),
+																																		 m_enableRepeat(false),
+																																		 m_cursorInside(false),
+																																		 m_acceptDrop(false),
+																																		 m_lastDown(0),
+																																		 m_icon(NULL),
+																																		 m_cursorHitTest(NULL)
 		{
-			open(x,y,w,h,title,style);
+			open(x,y,w,h,title,style,toolkit,parent);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -743,6 +745,9 @@ namespace fw
 			// disable keyrepeat
 			m_enableRepeat = false;
 
+			// reset resize
+			m_resizeable = true;
+
 			// set last pressed key to unknown
 			m_lastDown = 0;
 
@@ -750,7 +755,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style)
+		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,bool toolkit,HWND parent)
 		{
 			// clean our resources before (re)creating
 			cleanUp();
@@ -759,12 +764,14 @@ namespace fw
 			DWORD createStyle = getDWORDfromStyle(style);
 
 			// initialize the window
-			m_hwnd = CreateWindowA(FRONTIER_WINDOWS_CLASS_NAME,
-								   title.c_str(),
-								   createStyle,
-								   x,y,10,10,
-								   NULL,NULL,NULL,
-								   this); // set createdata to 'this'
+			m_hwnd = CreateWindowEx(toolkit ? WS_EX_TOPMOST|WS_EX_TOOLWINDOW : 0,
+									FRONTIER_WINDOWS_CLASS_NAME,
+									title.c_str(),
+									createStyle,
+									x,y,10,10,
+									parent,
+									NULL,NULL,
+									this); // set createdata to 'this'
 			
 			// windows wouldn't let us initially create a window bigger than the screen
 			setSize(w,h);
@@ -788,14 +795,21 @@ namespace fw
 				setFullscreen(w,h);
 			
 			// enable drag 'n' drop
-			DragAcceptFiles(m_hwnd,1);
+			DragAcceptFiles(m_hwnd,m_acceptDrop);
 
 			// Tell windows to show our window
-			ShowWindow(m_hwnd, SW_SHOW);
+			ShowWindow(m_hwnd, toolkit ? SW_SHOWNOACTIVATE : SW_SHOW);
 
 			m_windowCount++;
 
 			return true;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		void Window::setParent(HWND parent)
+		{
+			if (m_hwnd)
+				SetParent(m_hwnd,parent);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -914,7 +928,7 @@ namespace fw
 								  NULL,   // Z-order specifier
 								  x,y,    // new position
 								  w,h,    // new size
-								  SWP_NOREPOSITION))
+								  SWP_NOREPOSITION|SWP_NOACTIVATE))
 					{
 						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
@@ -959,7 +973,7 @@ namespace fw
 								  NULL,   // Z-order specifier
 								  x,y,    // new position
 								  0,0,    // new size                  (ignored because of SWP_NOSIZE)
-								  SWP_NOREPOSITION|SWP_NOSIZE))
+								  SWP_NOREPOSITION|SWP_NOSIZE|SWP_NOACTIVATE))
 					{
 						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
@@ -1004,7 +1018,7 @@ namespace fw
 								  NULL,   // Z-order specifier
 								  0,0,    // new position (ignored because of SWP_NOMOVE)
 								  w,h,    // new size
-								  SWP_NOREPOSITION|SWP_NOMOVE))
+								  SWP_NOREPOSITION|SWP_NOMOVE|SWP_NOACTIVATE))
 					{
 						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
@@ -1169,6 +1183,20 @@ namespace fw
 		{
 			m_eventQueue.resize(m_eventQueue.size()+1,ev);
 			//m_eventQueue.push_back(ev);
+		}
+		
+		/////////////////////////////////////////////////////////////
+		void Window::enableDrop(bool enable)
+		{
+			m_acceptDrop = enable;
+			if (m_hwnd)
+				DragAcceptFiles(m_hwnd,m_acceptDrop);
+		}
+			
+		/////////////////////////////////////////////////////////////
+		bool Window::isDropEnabled() const
+		{
+			return m_acceptDrop;
 		}
 
 		////////////////////////////////////////////////////////////

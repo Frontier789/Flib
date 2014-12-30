@@ -57,7 +57,7 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		class FRONTIER_API Window : public fm::NonCopyable
 		{
-		private:
+		public:
 			static unsigned int m_windowCount; ///< The number of windows open
 			bool cleanUp();      ///< Internal function used to free resources
 			bool init();         ///< Internal function used at initialization
@@ -66,6 +66,7 @@ namespace fw
 			bool m_resizeable;   ///< Indicates whether the window can be resized on the borders
 			bool m_enableRepeat; ///< Indicates whether key repeat is enabled
 			bool m_cursorInside; ///< True iff the mouse is inside the window
+			bool m_acceptDrop;   ///< True iff files can be dropped into the window
 			WPARAM m_lastDown;   ///< Contains the last pressed key
 			LONG m_style;        ///< Internal variable used when going to fullscreen
 			LONG m_exStyle;      ///< Internal variable used when going to fullscreen
@@ -112,9 +113,10 @@ namespace fw
 			/// @param h Height of the window
 			/// @param title Title of the window
 			/// @param style Style of the window (see fw::WindowStyle)
+			/// @param toolkit True indicates that the window needs no indication in the taskbar
 			///
 			/////////////////////////////////////////////////////////////
-			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style);
+			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,bool toolbar = false,HWND parent = 0);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Default destructor
@@ -141,11 +143,20 @@ namespace fw
 			/// @param h Height of the window
 			/// @param title Title of the window
 			/// @param style Style of the window (see fw::WindowStyle)
+			/// @param toolkit True indicates that the window needs no indication in the taskbar
 			///
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style);
+			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,bool toolbar = false,HWND parent = 0);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Change the parent of the window
+			/// 
+			/// @param parent The new parent (0 for no parent)
+			/// 
+			/////////////////////////////////////////////////////////////
+			void setParent(HWND parent);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Check if the window is opened
@@ -384,6 +395,20 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			void postEvent(const Event &ev);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Enables/disables files to be dropped in the window
+			///
+			/////////////////////////////////////////////////////////////
+			void enableDrop(bool enable = true);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Find out if dropping files into the window is enabled
+			/// 
+			/// @return True iff dropping is enabled
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool isDropEnabled() const;
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Enables or disables keyrepeat
@@ -427,9 +452,9 @@ namespace fw
 			/// one nonfullscreen have no effect
 			///
 			/// Having more than one fullscreen window may cause platform-specific problems
-			/// 
-			/// If @a width x @a height should be a valid monitor resolution 
-			/// 
+			///
+			/// If @a width x @a height should be a valid monitor resolution
+			///
 			/// @return True iff the operation was successful
 			///
 			/////////////////////////////////////////////////////////////
@@ -437,9 +462,9 @@ namespace fw
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Set the small and the big icon of the window
-			/// 
+			///
 			/// @param icon The new icon
-			/// 
+			///
 			/// @return True iff the operation was successful
 			///
 			/////////////////////////////////////////////////////////////

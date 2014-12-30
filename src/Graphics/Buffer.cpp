@@ -56,7 +56,7 @@ namespace fg
 	/// destructors /////////////////////////////////////////////////////////
 	Buffer::~Buffer()
 	{
-		if (glIsBufferARB(getGlId()))
+		if (getGlId() && glIsBufferARB(getGlId()))
 			glCheck(glDeleteBuffersARB(1,&getGlId()));
 		
 	}
