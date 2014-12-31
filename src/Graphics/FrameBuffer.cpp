@@ -93,9 +93,9 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	FrameBuffer::~FrameBuffer()
 	{
-		if (glIsRenderbuffer(m_depthBufID)==GL_TRUE)
+		if (m_depthBufID && glIsRenderbuffer(m_depthBufID) == GL_TRUE)
 			glCheck(glDeleteRenderbuffers(1,&m_depthBufID));
-		if (glIsFramebuffer(getGlId())==GL_TRUE)
+		if (getGlId() && glIsFramebuffer(getGlId()) == GL_TRUE)
 			glCheck(glDeleteFramebuffers(1,&getGlId()));
 	}
 

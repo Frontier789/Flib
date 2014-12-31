@@ -36,7 +36,7 @@ namespace fw
 {
 	namespace Wapi
 	{
-		unsigned int GlContext::m_contextCount = 0;
+		unsigned int GlContext::m_contextWindowCount = 0;
 		
 		/////////////////////////////////////////////////////////////
 		GlContext::GlContext() : m_hdc(NULL),
@@ -63,10 +63,10 @@ namespace fw
 					if (DestroyWindow(m_hwnd))
 					{
 						m_hwnd = NULL;
-						m_contextCount--;
+						m_contextWindowCount--;
 				
 						// If we dont have any dummy windows left we unregister our dummy window class
-						if (!m_contextCount)
+						if (!m_contextWindowCount)
 							if (!UnregisterClassA(FRONTIER_DUMMY_WINDOW_CLASS, GetModuleHandle(NULL)))
 							{
 								fw::WapiPrintLastError(fw_log,UnregisterClassA);
@@ -98,34 +98,24 @@ namespace fw
 				ReleaseDC(m_hwnd,m_hdc),
 				m_hdc = NULL;
 			
-			// since we dont own this window we dont do anything with it
+			// reset window handle
 			m_hwnd = NULL;
 			
 			return true;
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::create(HWND windowHandle,HGLRC sharedContext,fw::GlContext::Settings settings)
+		bool GlContext::init(HGLRC sharedContext)
 		{
-			// Start by cleaning
-			cleanUp();
-			
-			// Copy the window handle and the settings
-			m_hwnd = windowHandle;
-			m_settings = settings;
-			
-			// we didn't create the window here
-			m_ownWindow = false;
-			
 			// Get DeviceContext of the window
-			m_hdc = GetDC(windowHandle);
+			m_hdc = GetDC(m_hwnd);
 			if (!m_hdc) // Check for errors
 			{
 				fw::WapiPrintLastError(fw_log,GetDC);
 				return false;
 			}
 			
-			// TODO: make setPixelFormat better :| 
+			// set up pixelformet
 			if (!setPixelFormat())
 				return false;
 			
@@ -158,7 +148,7 @@ namespace fw
 				else break;
 			}
 
-			// If  we still do not have a context
+			// If we still do not have a context
 			if (!m_hglrc)
 			{
 				// use the good old wglCreateContext
@@ -204,11 +194,29 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::create(HGLRC sharedContext,fw::GlContext::Settings settings)
+		bool GlContext::create(HWND windowHandle,HGLRC sharedContext,fw::GlContext::Settings settings)
 		{
+			// Start by cleaning
 			cleanUp();
 			
-			if (m_contextCount==0)
+			// Copy the window handle and the settings
+			m_hwnd = windowHandle;
+			m_settings = settings;
+			
+			// we didn't create the window here
+			m_ownWindow = false;
+			
+			return init(sharedContext);
+		}
+		
+		/////////////////////////////////////////////////////////////
+		bool GlContext::create(HGLRC sharedContext,fw::GlContext::Settings settings)
+		{
+			// Start by cleaning
+			cleanUp();
+			
+			// if we don't have a dummy class, create it
+			if (m_contextWindowCount == 0)
 			{
 				WNDCLASS winClass;
 				ZeroMemory(&winClass,sizeof(winClass));
@@ -225,22 +233,34 @@ namespace fw
 				}
 			}
 			
-			m_contextCount++;
+			// note that we create a new window
+			m_contextWindowCount++;
 			
-			HWND hwnd = CreateWindowA(FRONTIER_DUMMY_WINDOW_CLASS,
-									  "dummy_window",0,
-									  CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,
-									  NULL,NULL,NULL,NULL);
+			// create the new (hidden) window
+			m_hwnd = CreateWindowA(FRONTIER_DUMMY_WINDOW_CLASS,
+								   "dummy_window",0,
+								   CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,
+								   NULL,NULL,NULL,NULL);
 			
-			if (!hwnd)
+			if (!m_hwnd)
 			{
 				fw::WapiPrintLastError(fw_log,CreateWindowA);
 				return false;
 			}
 			
+			// we own this window
 			m_ownWindow = true;
 			
-			return create(hwnd,sharedContext,settings);
+			// copy the settings
+			m_settings = settings;
+			
+			return init(sharedContext);
+		}
+		
+		/////////////////////////////////////////////////////////////
+		bool GlContext::destroy()
+		{
+			return cleanUp();
 		}
 		
 		/////////////////////////////////////////////////////////////

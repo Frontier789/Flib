@@ -57,7 +57,6 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		class FRONTIER_API Window : public fm::NonCopyable
 		{
-		public:
 			static unsigned int m_windowCount; ///< The number of windows open
 			bool cleanUp();      ///< Internal function used to free resources
 			bool init();         ///< Internal function used at initialization
@@ -149,14 +148,6 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,bool toolbar = false,HWND parent = 0);
-			
-			/////////////////////////////////////////////////////////////
-			/// @brief Change the parent of the window
-			/// 
-			/// @param parent The new parent (0 for no parent)
-			/// 
-			/////////////////////////////////////////////////////////////
-			void setParent(HWND parent);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Check if the window is opened

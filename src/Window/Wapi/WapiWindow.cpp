@@ -804,13 +804,6 @@ namespace fw
 
 			return true;
 		}
-		
-		/////////////////////////////////////////////////////////////
-		void Window::setParent(HWND parent)
-		{
-			if (m_hwnd)
-				SetParent(m_hwnd,parent);
-		}
 
 		////////////////////////////////////////////////////////////
 		bool Window::isOpen() const
