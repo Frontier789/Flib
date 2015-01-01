@@ -22,7 +22,6 @@ namespace fw
 			HDC   m_hdc;    ///< The handle of the device context
 			HWND  m_hwnd;   ///< The handle of the window
 			HGLRC m_hglrc;  ///< The handle of the OpenGL rednering context
-			bool cleanUp(); ///< Internal function that cleans up resources
 			bool init(HGLRC sharedContext);     ///< Internal function used to initialize the context
 			fw::GlContext::Settings m_settings; ///< The attributes of the context
 			bool setPixelFormat(); ///< Internal function
@@ -89,7 +88,7 @@ namespace fw
 			/// @return True if everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool create(HGLRC sharedContext=NULL,fw::GlContext::Settings settings = fw::GlContext::Settings());
+			bool create(fm::Size width=1,fm::Size height=1,HGLRC sharedContext=NULL,fw::GlContext::Settings settings = fw::GlContext::Settings());
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Destroys the GL context

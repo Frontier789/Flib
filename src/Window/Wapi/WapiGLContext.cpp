@@ -50,11 +50,11 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		GlContext::~GlContext()
 		{
-			cleanUp();
+			destroy();
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::cleanUp()
+		bool GlContext::destroy()
 		{
 			if (m_ownWindow) // if we created that window
 			{
@@ -197,7 +197,7 @@ namespace fw
 		bool GlContext::create(HWND windowHandle,HGLRC sharedContext,fw::GlContext::Settings settings)
 		{
 			// Start by cleaning
-			cleanUp();
+			destroy();
 			
 			// Copy the window handle and the settings
 			m_hwnd = windowHandle;
@@ -210,10 +210,10 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::create(HGLRC sharedContext,fw::GlContext::Settings settings)
+		bool GlContext::create(fm::Size width,fm::Size height,HGLRC sharedContext,fw::GlContext::Settings settings)
 		{
 			// Start by cleaning
-			cleanUp();
+			destroy();
 			
 			// if we don't have a dummy class, create it
 			if (m_contextWindowCount == 0)
@@ -239,7 +239,7 @@ namespace fw
 			// create the new (hidden) window
 			m_hwnd = CreateWindowA(FRONTIER_DUMMY_WINDOW_CLASS,
 								   "dummy_window",0,
-								   CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,
+								   CW_USEDEFAULT,CW_USEDEFAULT,width,height,
 								   NULL,NULL,NULL,NULL);
 			
 			if (!m_hwnd)
@@ -255,12 +255,6 @@ namespace fw
 			m_settings = settings;
 			
 			return init(sharedContext);
-		}
-		
-		/////////////////////////////////////////////////////////////
-		bool GlContext::destroy()
-		{
-			return cleanUp();
 		}
 		
 		/////////////////////////////////////////////////////////////
