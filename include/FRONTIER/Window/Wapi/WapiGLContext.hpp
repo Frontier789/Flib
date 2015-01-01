@@ -3,7 +3,6 @@
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Window/GLContext.hpp>
 #include <FRONTIER/System/macros/API.h>
-#include <FRONTIER/System/TlsPtr.hpp>
 #define FRONTIER_WAPI_GLCONTEXT
 #include <windows.h>
 
@@ -97,6 +96,14 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			bool destroy();
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Check if there is a OpenGL context active in the thread
+			///
+			/// @return True if a GL context is active in the thread
+			///
+			/////////////////////////////////////////////////////////////
+			static bool hasThreadGL();
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Get the handle of the context

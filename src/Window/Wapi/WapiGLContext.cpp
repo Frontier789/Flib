@@ -258,6 +258,12 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
+		bool GlContext::hasThreadGL()
+		{
+			return wglGetCurrentContext();
+		}
+		
+		/////////////////////////////////////////////////////////////
 		bool GlContext::setActive(bool active)
 		{
 			BOOL result = 0;
