@@ -276,52 +276,6 @@ namespace fw
 						postEvent(event);
 					}
 					
-					/*
-					{
-						RECT area;
-						GetClientRect(m_hwnd, &area);
-						// If the cursor is outside the client area...
-						if ((((int)(short)LOWORD(lParam)) < area.left) || 
-							(((int)(short)LOWORD(lParam)) > area.right) || 
-							(((int)(short)HIWORD(lParam)) < area.top) || 
-							(((int)(short)HIWORD(lParam)) > area.bottom))
-						{
-							// and it used to be inside, the mouse left it.
-							if (m_cursorInside)
-							{
-								m_cursorInside = false;
-								// No longer care for the mouse leaving the window
-								TRACKMOUSEEVENT tme;
-								tme.cbSize = sizeof(TRACKMOUSEEVENT);
-								tme.dwFlags = TME_CANCEL|TME_LEAVE;
-								tme.dwHoverTime = HOVER_DEFAULT;
-								tme.hwndTrack = m_hwnd;
-								TrackMouseEvent(&tme);
-								// Generate a MouseLeft event
-								Event event(Event::MouseLeft);
-								postEvent(event);
-							}
-						}
-						else
-						{
-							// and vice-versa
-							if (!m_cursorInside)
-							{
-								m_cursorInside = true;
-								// Look for the mouse leaving the window
-								TRACKMOUSEEVENT tme;
-								tme.cbSize = sizeof(TRACKMOUSEEVENT);
-								tme.dwFlags = TME_LEAVE;
-								tme.dwHoverTime = HOVER_DEFAULT;
-								tme.hwndTrack = m_hwnd;
-								TrackMouseEvent(&tme);
-								// Generate a MouseEntered event
-								Event event(Event::MouseEntered);
-								postEvent(event);
-							}
-						}
-					}*/
-					
 					Event ev(Event::MouseMoved);
 					ev.pos.x = ((int)(short)LOWORD(lParam));
 					ev.pos.y = ((int)(short)HIWORD(lParam));
