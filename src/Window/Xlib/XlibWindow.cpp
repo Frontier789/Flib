@@ -18,11 +18,92 @@
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
 #include <string>
+#include <vector>
+
+#define MOTIF_HINTS_FUNCTIONS   1
+#define MOTIF_HINTS_DECORATIONS 2
+#define MOTIF_DECOR_BORDER      2
+#define MOTIF_DECOR_RESIZEH     4
+#define MOTIF_DECOR_TITLE       8
+#define MOTIF_DECOR_MENU        16
+#define MOTIF_DECOR_MINIMIZE    32
+#define MOTIF_DECOR_MAXIMIZE    32
+#define MOTIF_FUNC_RESIZE       2
+#define MOTIF_FUNC_MOVE         4
+#define MOTIF_FUNC_MINIMIZE     8
+#define MOTIF_FUNC_MAXIMIZE     16
+#define MOTIF_FUNC_CLOSE        32
+
+class MotifHints
+{
+public:
+	unsigned long flags;
+	unsigned long functions;
+	unsigned long decorations;
+	long          inputMode;
+	unsigned long state;
+};
+
+std::string getProperty(Display *disp,Window win,Atom property,Atom rtype,bool del=false)
+{
+	std::string ret;
+	int format;
+	unsigned long nitems, after = 1;
+	long offset = 0;
+	Atom type = None;
+	char *data;
+	long rsize = XMaxRequestSize(disp)-10;
+	while(after > 0) 
+	{
+		if(XGetWindowProperty(disp,win,property,offset,rsize,del ? True : False,
+	                          rtype,&type,&format,&nitems,&after,(unsigned char **)&data) != Success)
+	    	break;
+	    if(type == None)
+	        break;
+		if(data) 
+		{
+			char *ptr = data;
+			for (unsigned int i=0;i<nitems * format / 8;i++,ptr++)
+				ret+=*ptr;
+			XFree(data);
+			offset += nitems / (32 / format);
+		}
+		else
+			break;
+	}
+	return ret;
+}
+std::vector<int> getPropertyInts(Display *disp,Window win,Atom property,Atom rtype,bool del=false)
+{
+	std::vector<int> ret;
+	std::string str = getProperty(disp,win,property,rtype,del);
+	const long int *ptr = (const long int *)(&str[0]);
+	const long int *lim = ptr + str.length()/sizeof(long int);
+	ret.reserve(str.length()/sizeof(long int));
+	while(ptr != lim)
+		ret.push_back(*ptr++);
+	return ret;
+}
 
 namespace fw
 {
 	namespace Xlib 
 	{
+		/////////////////////////////////////////////////////////////		
+		void XdndAtoms::init(Display *disp)
+		{
+			XdndAware      = XInternAtom(disp,"XdndAware",False);
+			XdndPosition   = XInternAtom(disp,"XdndPosition",False);
+			XdndEnter      = XInternAtom(disp,"XdndEnter",False);
+			XdndStatus     = XInternAtom(disp,"XdndStatus",False);
+			XdndDrop       = XInternAtom(disp,"XdndDrop",False);
+			XdndSelection  = XInternAtom(disp,"XdndSelection",False);
+			XdndFinished   = XInternAtom(disp,"XdndFinished",False);
+			XdndActionCopy = XInternAtom(disp,"XdndActionCopy",False);
+			XdndTypeList   = XInternAtom(disp,"XdndTypeList",False);
+			exchangeAtom   = XInternAtom(disp,"FRONTIER_EXCHANGE_ATOM",False);
+		}
+				
 		/////////////////////////////////////////////////////////////
 		Keyboard::Key keyFromKS(unsigned int param)
 		{
@@ -89,8 +170,65 @@ namespace fw
 			return Mouse::Unknown;
 		}
 
+		MotifHints motifHintsFromStyle(unsigned int &style)
+		{
+			// A resizeable window needs border
+			if (style & fw::Window::Resize)
+				style |= fw::Window::Border;
+			else
+				style &= ~(fw::Window::Minimize|fw::Window::Maximize);
+
+			// A x button needs titlebar
+			if (style & fw::Window::Close)
+				style |= fw::Window::Titlebar;
+
+			// So does a minimize button
+			if (style & fw::Window::Minimize)
+				style |= fw::Window::Titlebar|fw::Window::Close;
+
+			// And a maximize button
+			if (style & fw::Window::Maximize)
+				style |= fw::Window::Titlebar|fw::Window::Close;
+
+			// A titlebar means border
+			if (style & fw::Window::Titlebar)
+				style |= fw::Window::Border;
+
+			MotifHints ret;
+			ret.flags = MOTIF_HINTS_FUNCTIONS|MOTIF_HINTS_DECORATIONS;
+			ret.decorations = 0;
+			ret.functions = 0;
+
+			if (style & fw::Window::Border)
+				ret.decorations |= MOTIF_DECOR_BORDER;
+			
+			if (style & fw::Window::Titlebar)
+				ret.decorations |= MOTIF_DECOR_TITLE | MOTIF_DECOR_MENU,
+				ret.functions   |= MOTIF_FUNC_MOVE;
+			
+			if (style & fw::Window::Minimize)
+				 ret.decorations |= MOTIF_DECOR_MINIMIZE,
+				 ret.functions   |= MOTIF_FUNC_MINIMIZE;
+			
+			if (style & fw::Window::Maximize)
+				 ret.decorations |= MOTIF_DECOR_MAXIMIZE,
+				 ret.functions   |= MOTIF_FUNC_MAXIMIZE;
+			
+			if (style & fw::Window::Resize)
+				ret.decorations |= MOTIF_DECOR_RESIZEH,
+				ret.functions   |= MOTIF_FUNC_RESIZE;
+			
+			if (style & fw::Window::Close)
+				ret.functions |= MOTIF_FUNC_CLOSE;
+			
+
+			return ret;
+		}
+
+
+
 		/////////////////////////////////////////////////////////////
-		void Window::getProperty(Atom *&atoms,unsigned long *count) const
+		void Window::getStateProperties(Atom *&atoms,unsigned long *count) const
 		{
 			Atom actual_type;
 			int actual_format;
@@ -138,8 +276,8 @@ namespace fw
 			if (xev.type == ConfigureNotify)
 			{
 				// process only resize
-				if (xev.xconfigure.width  != m_prevW || 
-					xev.xconfigure.height != m_prevH)
+				if ((unsigned int)xev.xconfigure.width  != m_prevW || 
+					(unsigned int)xev.xconfigure.height != m_prevH)
 				{
 					m_prevW = xev.xconfigure.width;
 					m_prevH = xev.xconfigure.height;
@@ -149,13 +287,6 @@ namespace fw
 					ev.size.h = xev.xconfigure.height;
 					postEvent(ev);
 				}
-			}
-
-			// the window was asked to close
-			if (xev.type == ClientMessage && (Atom)xev.xclient.data.l[0] == m_delAtom)
-			{
-				Event ev(Event::Closed);
-				postEvent(ev);
 			}
 
 			// A mouse button was pressed or released or mouse wheel was rolled
@@ -241,16 +372,139 @@ namespace fw
 						m_lastDown = xkeysym; // else note the pressed key
 					
 					Event ev(xev.type == KeyPress ? Event::KeyPressed : Event::KeyReleased);
-
 					ev.key.code = keyFromKS(xkeysym);
-
 					ev.key.shift = fw::Keyboard::isKeyHeld(fw::Keyboard::LShift) || fw::Keyboard::isKeyHeld(fw::Keyboard::RShift);
 					ev.key.ctrl  = fw::Keyboard::isKeyHeld(fw::Keyboard::LCtrl)  || fw::Keyboard::isKeyHeld(fw::Keyboard::RCtrl);
 					ev.key.alt   = fw::Keyboard::isKeyHeld(fw::Keyboard::LAlt)   || fw::Keyboard::isKeyHeld(fw::Keyboard::RAlt);
-					
 					postEvent(ev);
+
+					// post a keyrepeat event
+					if (xev.type == KeyPress && !XFilterEvent(&xev, None))
+					{
+						char buf[16];
+						if (XLookupString(&xev.xkey,buf,sizeof(buf),NULL,NULL))
+						{
+							fw::Event ev(fw::Event::TextEntered);
+							ev.text.character  = (char)buf[0];
+							ev.text.wcharacter = (wchar_t)buf[0];
+							postEvent(ev);
+						}
+					}
 				}
 			}
+
+
+			if (xev.type == ClientMessage)
+			{
+				// the window was asked to close
+				if ((Atom)xev.xclient.data.l[0] == m_delAtom)
+				{
+					Event ev(Event::Closed);
+					postEvent(ev);					
+				}
+
+				if (xev.xclient.message_type == m_xdndAtoms.XdndEnter)
+				{
+					m_supportUriList = false;
+
+					if(xev.xclient.data.l[1] & 1) 
+					{
+						std::vector<int> v = getPropertyInts(m_disp,xev.xclient.data.l[0],m_xdndAtoms.XdndTypeList,XA_ATOM);
+						for(unsigned int i = 0; i < v.size(); i++)
+							if ((Atom)v[i] == m_uri_listAtom)
+								m_supportUriList = true;
+					}
+					else
+						for(int i = 2; i <= 4; i++)
+							if ((Atom)xev.xclient.data.l[i] == m_uri_listAtom)
+								m_supportUriList = true;
+				}
+
+
+				// the user is dragging something in the window
+				if (xev.xclient.message_type == m_xdndAtoms.XdndPosition) 
+				{
+					XEvent reply;
+					::Window srcWin = xev.xclient.data.l[0];
+
+					reply.xclient.type    = ClientMessage;
+					reply.xclient.display = m_disp;
+					reply.xclient.window  = srcWin;
+					reply.xclient.message_type = m_xdndAtoms.XdndStatus;
+					reply.xclient.format = 32;
+					reply.xclient.data.l[0] = m_win;
+					reply.xclient.data.l[1] = (true ? 0x1UL : 0); // false to decline
+					reply.xclient.data.l[2] = 0;
+					reply.xclient.data.l[3] = 0;
+        			reply.xclient.data.l[4] = m_xdndAtoms.XdndActionCopy;
+					XSendEvent(m_disp,srcWin,0,0,&reply);
+				}
+
+				// the user dropped something into our window
+				if (xev.xclient.message_type == m_xdndAtoms.XdndDrop) 
+				{
+					XConvertSelection(m_disp,m_xdndAtoms.XdndSelection,m_supportUriList ? m_uri_listAtom : XA_STRING,
+									  m_xdndAtoms.exchangeAtom,m_win,CurrentTime);
+				}
+/*
+				char *name = XGetAtomName(m_disp, xev.xclient.message_type);
+
+				fw_log << name << " happened" << std::endl;
+				XFree(name);*/
+			}
+
+			// our window is getting a selection
+			if (xev.type ==  SelectionNotify)
+			{
+			    std::string msg = getProperty(m_disp,m_win,m_xdndAtoms.exchangeAtom,m_supportUriList ? m_uri_listAtom : XA_STRING,true);
+
+			    if (m_supportUriList)
+			    {
+			    	fm::vec2i p = fw::Mouse::getPosition(*this);
+			    	std::string file;
+
+			    	fw::Event ev(fw::Event::FileDrop);
+			    	ev.drop.x = p.x;
+			    	ev.drop.y = p.y;
+
+			    	std::size_t length = msg.length();
+			    	for (std::size_t i=0;i<length;i++)
+			    	{
+			    		if (msg[i] == '\r') continue;
+			    		if (msg[i] == '\n')
+			    		{
+			    			ev.drop.files.push_back(file);
+			    			file = std::string();
+			    			continue;
+			    		}
+			    		if (i<length-2 && msg[i]=='%')
+			    		{
+			    			file += (char)(msg[i+1]-'0')*16+(msg[i+2]-'0');
+			    			i+=2;
+			    			continue;
+			    		}
+			    		file += msg[i];
+			    	}
+			    	if (file.length())
+			    		ev.drop.files.push_back(file);
+
+			    	postEvent(ev);
+			    }
+
+			    // fw_log << "msg = " << msg << std::endl;
+			    
+			    // reply with finish
+			    XEvent reply;
+			    reply.xclient.type         = ClientMessage;
+			    reply.xclient.display      = m_disp;
+			    reply.xclient.window       = m_win;
+			    reply.xclient.message_type = m_xdndAtoms.XdndFinished;
+			    reply.xclient.format       = 32;
+			    reply.xclient.data.l[0]    = m_win;
+
+			    XSendEvent(m_disp,XGetSelectionOwner(m_disp,m_xdndAtoms.XdndSelection),0,0,&reply);
+
+    		}
 		}
 		
 		////////////////////////////////////////////////////////////
@@ -281,7 +535,12 @@ namespace fw
 						   m_stateAtom(0),
 						   m_prevW(0),
 						   m_prevH(0),
-						   m_stateHiddenAtom(0)
+						   m_stateHiddenAtom(0),
+						   m_maxHorAtom(0),
+						   m_maxVertAtom(0),
+						   m_uri_listAtom(0),
+						   m_supportUriList(false),
+						   m_emptyCursor(None)
 		{
 
 		}
@@ -295,7 +554,12 @@ namespace fw
 																												m_stateAtom(0),
 																												m_prevW(0),
 																												m_prevH(0),
-																												m_stateHiddenAtom(0)
+																												m_stateHiddenAtom(0),
+																												m_maxHorAtom(0),
+																												m_maxVertAtom(0),
+																												m_uri_listAtom(0),
+																												m_supportUriList(false),
+																												m_emptyCursor(None)
 		{
 			open(x,y,w,h,title,style);
 		}
@@ -331,22 +595,61 @@ namespace fw
 				m_stateAtom       = XInternAtom(m_disp,"_NET_WM_STATE",False);
 				m_stateHiddenAtom = XInternAtom(m_disp,"_NET_WM_STATE_HIDDEN",False);
 				m_delAtom         = XInternAtom(m_disp,"WM_DELETE_WINDOW",False);
+				m_maxHorAtom      = XInternAtom(m_disp,"_NET_WM_STATE_MAXIMIZED_HORZ",False);
+				m_maxVertAtom     = XInternAtom(m_disp,"_NET_WM_STATE_MAXIMIZED_VERT",False);
+				m_uri_listAtom    = XInternAtom(m_disp,"text/uri-list",False);
+
+				m_xdndAtoms.init(m_disp);
+
+				// mark our window as drop target
+				int xdnd_version = 3;
+				XChangeProperty(m_disp,m_win,m_xdndAtoms.XdndAware,XA_ATOM,32,PropModeAppend,(unsigned char*)&xdnd_version,1);
 
 				// register deletion event
 				XSetWMProtocols(m_disp,m_win,&m_delAtom,1);
-				
-				// tell X to show it
-				XMapWindow(m_disp,m_win);
 
 				// manually set title and position
 				setTitle(title);
 				setPosition(x,y);
+				
+
+				// setup window decoration hints
+				MotifHints hints = motifHintsFromStyle(style);
+
+				Atom _MOTIF_WM_HINTS = XInternAtom(m_disp,"_MOTIF_WM_HINTS",False);
+
+				XChangeProperty(m_disp,m_win,
+								_MOTIF_WM_HINTS,
+								_MOTIF_WM_HINTS,
+								32,PropModeReplace,
+								(unsigned char*)&hints,5);
+
+
+
+
+
+
+				// tell X to show it
+				XMapWindow(m_disp,m_win);
 				
 				// reset storages
 				enableKeyRepeat(false);
 				m_lastDown = XK_VoidSymbol;
 				m_prevW = 0;
 				m_prevH = 0;
+
+				// build the empty cursor
+				char empty[] = {0, 0, 0, 0, 0, 0, 0, 0};
+				Pixmap pmap   = XCreateBitmapFromData(m_disp,m_win,empty, 8, 8);
+				Colormap cmap = DefaultColormap(m_disp,DefaultScreen(m_disp));
+				XColor cblack,cdummy;
+				XAllocNamedColor(m_disp,cmap,"black",&cblack,&cdummy);
+				m_emptyCursor = XCreatePixmapCursor(m_disp,pmap,pmap,&cblack,&cblack,0,0);
+
+				if (pmap != None)
+					XFreePixmap(m_disp,pmap);
+				XFreeColors(m_disp,cmap,&cblack.pixel,1,0);
+
 
 				// tell X to do what we asked, now
 				XFlush(m_disp);
@@ -384,7 +687,7 @@ namespace fw
 			unsigned long count;
 			Atom *atoms = NULL;
 
-			getProperty(atoms,&count);
+			getStateProperties(atoms,&count);
 
 			for(unsigned long i=0;i<count; i++) 
 				if(atoms[i] == m_stateHiddenAtom) 
@@ -396,11 +699,90 @@ namespace fw
 			return false;
 		}
 
+		/////////////////////////////////////////////////////////////
+		void Window::maximize()
+		{
+			if (m_opened)
+			{
+				XEvent xev;
+
+				xev.type = ClientMessage;
+				xev.xclient.window = m_win;
+				xev.xclient.message_type = m_stateAtom;
+				xev.xclient.format = 32;
+
+				if (isMaximized())
+					xev.xclient.data.l[0] = 0;// _NET_WM_STATE_REMOVE
+				else
+					xev.xclient.data.l[0] = 1;// _NET_WM_STATE_ADD
+
+				xev.xclient.data.l[1] = m_maxHorAtom;
+				xev.xclient.data.l[2] = m_maxVertAtom;
+
+				XSendEvent(m_disp,DefaultRootWindow(m_disp),False,SubstructureNotifyMask,&xev);
+			}
+		}
+
+		/////////////////////////////////////////////////////////////
+		bool Window::isMaximized() const
+		{
+			if (m_opened)
+			{
+				bool maxVert = false;
+				bool maxHor  = false;
+
+				unsigned long count;
+				Atom *atoms = NULL;
+
+				getStateProperties(atoms,&count);
+
+				for(unsigned long i=0;i<count; i++)
+				{
+					if(atoms[i] == m_maxVertAtom) 
+						maxVert = true;
+					if(atoms[i] == m_maxHorAtom) 
+						maxHor  = true;
+
+					if (maxVert && maxHor)
+						return true;
+				}
+				XFree(atoms);
+			}
+			return false;
+		}
+
+		/////////////////////////////////////////////////////////////
+		bool Window::setActive()
+		{
+			if (m_opened)
+			{
+				XRaiseWindow(m_disp,m_win);
+				XSetInputFocus(m_disp,m_win,RevertToNone,CurrentTime);
+				return true;
+			}
+			return false;
+		}
+
+		/////////////////////////////////////////////////////////////
+		void Window::showCursor(bool show)
+		{
+			if (m_opened)
+			{
+				if (show)
+					XUndefineCursor(m_disp,m_win);
+				else
+					XDefineCursor(m_disp,m_win,m_emptyCursor);
+			}
+		}
+
 		////////////////////////////////////////////////////////////
 		void Window::close()
 		{
 			if (m_opened)
 			{
+				if (m_emptyCursor != None)
+					XFreeCursor(m_disp,m_emptyCursor);
+
 				XDestroyWindow(m_disp,m_win);
 				XFlush(m_disp);
 				m_opened = false;

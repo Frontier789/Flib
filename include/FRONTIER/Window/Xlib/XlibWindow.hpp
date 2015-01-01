@@ -41,15 +41,42 @@ namespace fw
 	namespace Xlib
 	{
 		/////////////////////////////////////////////////////////////
+		/// @brief Used by fw::Xlib::Window for storing DragNDrop related atoms
+		///
+		/////////////////////////////////////////////////////////////
+		class XdndAtoms
+		{
+		public:
+			Atom XdndAware;      ///< Holds the atom named "XdndAware"
+			Atom XdndPosition;   ///< Holds the atom named "XdndPosition"
+			Atom XdndEnter;      ///< Holds the atom named "XdndEnter"
+			Atom XdndStatus;     ///< Holds the atom named "XdndStatus"
+			Atom XdndDrop;       ///< Holds the atom named "XdndDrop"
+			Atom XdndSelection;  ///< Holds the atom named "XdndSelection"
+			Atom XdndFinished;   ///< Holds the atom named "XdndFinished"
+			Atom XdndActionCopy; ///< Holds the atom named "XdndActionCopy"
+			Atom XdndTypeList;   ///< Holds the atom named "XdndTypeList"
+			Atom exchangeAtom;   ///< Holds the atom named "exchangeAtom"
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Fills in the atoms' values
+			/// 
+			/// @param disp The connection to the X server
+			/// 
+			/////////////////////////////////////////////////////////////
+			void init(Display *disp);
+		};
+
+		/////////////////////////////////////////////////////////////
 		///
 		/// 	@brief Class used to open, resize and process events of a window in X
 		///
 		/////////////////////////////////////////////////////////////
 		class Window
 		{
-			bool checkDisplay(); ///< Internal function
 			std::deque<Event> m_eventQueue; ///< A queue holding the unhandled events
 			void processEvent(XEvent &xev); ///< Internal function used to convert xevents
+			bool checkDisplay(); ///< Internal function
 			bool m_opened;       ///< Indicates whether the window is open
 			bool m_enableRepeat; ///< Indicates whether key repeat is enabled
 			KeySym m_lastDown;   ///< Holds the last pressed key
@@ -59,9 +86,15 @@ namespace fw
 			unsigned int m_prevW;       ///< The width after the last resize
 			unsigned int m_prevH;       ///< The height after the last resize
 			Atom m_stateHiddenAtom;     ///< The id of the hidden state
+			Atom m_maxHorAtom;          ///< The id of the horizontally maximization state
+			Atom m_maxVertAtom;         ///< The id of the vertical maximization state
+			Atom m_uri_listAtom;        ///< The id of the uri list storing
+			bool m_supportUriList;      ///< Indicates whether the dropped data is uri list
+			Cursor m_emptyCursor;       ///< Cannot "hide" the cursor so display this empty one instead
+			XdndAtoms m_xdndAtoms;      ///< Holds the dragNdrop related atoms
 			mutable ::Window m_win;     ///< The handle of the xwindow
 			mutable ::Window m_rootWin; ///< A handle to the root window
-			void getProperty(Atom *&atoms,unsigned long *count) const;  ///< Internal function used to get properties of the window
+			void getStateProperties(Atom *&atoms,unsigned long *count) const;  ///< Internal function used to get properties of the window
 		public:
 
 			typedef ::Window Handle; ///< The window handle type
@@ -141,6 +174,38 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			bool isMinimized() const;
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Maximazes the window
+			///
+			/////////////////////////////////////////////////////////////
+			void maximize();
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Discover whether the window is maximized
+			///
+			/// @return True iff the window is maximized
+			///
+			/////////////////////////////////////////////////////////////
+			bool isMaximized() const;
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Brings window in front
+			///
+			/// @return True iff everything went right
+			///
+			/////////////////////////////////////////////////////////////
+			bool setActive();
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Shows or hides the cursor in the window
+			///
+			/// By default it is shown
+			///
+			/// @param show The cursor is shown iff true
+			///
+			/////////////////////////////////////////////////////////////
+			void showCursor(bool show = true);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Changes the position and the size of the window
@@ -291,7 +356,7 @@ namespace fw
 			/// @param enable True to enable false to disable
 			///
 			/////////////////////////////////////////////////////////////
-			void enableKeyRepeat(bool enable=true);
+			void enableKeyRepeat(bool enable = true);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Returns whether keyrepeat is enabled
