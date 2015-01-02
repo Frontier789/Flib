@@ -23,6 +23,7 @@
 
 #ifdef STRICT
 	struct HWND__;
+	struct HGLRC__;
 #endif
 
 	namespace fw
@@ -38,14 +39,19 @@
 			typedef fw::Wapi::GLContext GLContext;
 			
 			#ifdef STRICT
-				typedef HWND__ *WindowHandle;
+				typedef HWND__  *WindowHandle;
+				typedef HGLRC__ *ContextHandle;
 			#else
 				typedef void *WindowHandle;
+				typedef void *ContextHandle;
 			#endif
 			
 		}
 	}
 #elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
+
+struct __GLXcontextRec;
+
 	namespace fw
 	{
 		namespace Xlib
@@ -58,11 +64,13 @@
 			typedef fw::Xlib::Window Window;
 			typedef fw::Xlib::GLContext GLContext;
 			typedef fm::Uint32 WindowHandle;
+			typedef __GLXcontextRec *ContextHandle;
 		}
 	}
 #else
-	#warning No window
+	#warning No window nor glcontext!
 	#define FRONTIER_NO_WINDOW
+	#define FRONTIER_NO_CONTEXT
 #endif
 
 #endif // FRONTIER_WINDOWPREDEF_HPP_INCLUDED

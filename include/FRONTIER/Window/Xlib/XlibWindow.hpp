@@ -72,7 +72,7 @@ namespace fw
 		/// 	@brief Class used to open, resize and process events of a window in X
 		///
 		/////////////////////////////////////////////////////////////
-		class Window
+		class FRONTIER_API Window : public fm::NonCopyable
 		{
 			std::deque<Event> m_eventQueue; ///< A queue holding the unhandled events
 			void processEvent(XEvent &xev); ///< Internal function used to convert xevents
@@ -96,6 +96,8 @@ namespace fw
 			mutable ::Window m_rootWin; ///< A handle to the root window
 			void getStateProperties(Atom *&atoms,unsigned long *count) const;  ///< Internal function used to get properties of the window
 		public:
+			typedef Window &reference;
+			typedef const Window &const_reference;
 
 			typedef ::Window Handle; ///< The window handle type
 

@@ -28,6 +28,8 @@ namespace fm
 		{
 			pthread_mutex_t m_pmutex; ///< A pointer to the owned posix mutex
 		public:
+			typedef Mutex &reference;
+			typedef const Mutex &const_reference;
 		
 			/////////////////////////////////////////////////////////////
 			/// @brief Default constructor

@@ -17,20 +17,38 @@
 #ifndef FRONTIER_GLCONTEXT_INCLUDED
 #define FRONTIER_GLCONTEXT_INCLUDED
 #include <FRONTIER/Window/WindowPredef.hpp>
+#include <FRONTIER/System/NonCopyable.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
 #define FRONTIER_GLCONTEXT
 
+#ifndef FRONTIER_NO_CONTEXT
+
 namespace fw
 {
+	class GLContext;
+	namespace priv
+	{
+		extern fw::GLContext theSharedContext;
+		class theSharedContextInitializer;
+	}
+	
 	/////////////////////////////////////////////////////////////
 	/// @brief GLContext
 	/// 
 	/// @ingroup Window
 	/// 
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API GLContext 
+	class FRONTIER_API GLContext : public fm::NonCopyable
 	{
+		priv::GLContext *m_context;
 	public:
+		
+		typedef GLContext &reference;
+		typedef const GLContext &const_reference;
+		
+		typedef priv::ContextHandle Handle; ///< The undelying handle type
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Holds the attributes of a OpenGL context
 		/// 
@@ -67,7 +85,7 @@ namespace fw
 					 unsigned char depthBits    = 24,
 					 unsigned char stencilBits  = 8,
 					 unsigned char majorVersion = 4,
-					 unsigned char minorVersion = 4,
+					 unsigned char minorVersion = 5,
 					 bool compatiblityProfile   = true);
 
 			/////////////////////////////////////////////////////////////
@@ -97,7 +115,154 @@ namespace fw
 			/////////////////////////////////////////////////////////////
 			void decreaseVersion();
 		};
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Default constructor
+		///
+		/////////////////////////////////////////////////////////////
+		GLContext();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Initializes the context
+		///
+		/// @param windowHandle The handle of the associated window (shouldn't be NULL)
+		/// @param settings The attributes of the context (only a hint!)
+		///
+		/////////////////////////////////////////////////////////////
+		GLContext(priv::WindowHandle windowHandle,fw::GLContext::Settings settings = fw::GLContext::Settings());
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Initializes the context without a visible window
+		///
+		/// @param size The size of the offscreen buffer
+		/// @param settings The attributes of the context (only a hint!)
+		///
+		/////////////////////////////////////////////////////////////
+		GLContext(const fm::vec2s &size,fw::GLContext::Settings settings = fw::GLContext::Settings());
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Default destructor
+		///
+		/////////////////////////////////////////////////////////////
+		~GLContext();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Makes the context active in the current thread
+		///
+		/// If the context wasn't successfully initialized
+		/// then this function deactivates the current context
+		///
+		/// @param active True to make the context active False to deactive the currently active one
+		///
+		/// @return True if everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool setActive(bool active = true);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Swap the back and front buffer
+		///
+		/// @return True if everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool swapBuffers();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Initializes the context
+		///
+		/// @param windowHandle The handle of the associated window (shouldn't be NULL)
+		/// @param settings The attributes of the context (only a hint!)
+		///
+		/// @return True if everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool create(priv::WindowHandle windowHandle,fw::GLContext::Settings settings = fw::GLContext::Settings());
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Initializes the context without a visible window
+		///
+		/// @param size The size of the offscreen buffer
+		/// @param settings The attributes of the context (only a hint!)
+		///
+		/// @return True if everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool create(const fm::vec2s &size,fw::GLContext::Settings settings = fw::GLContext::Settings());
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Initializes the context without a visible window
+		///
+		/// @param settings The attributes of the context (only a hint!)
+		///
+		/// @return True if everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool create(fw::GLContext::Settings settings = fw::GLContext::Settings());
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Destroys the GL context
+		///
+		/// @return True if everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool destroy();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Check if there is a OpenGL context active in the thread
+		///
+		/// @return True if a GL context is active in the thread
+		///
+		/////////////////////////////////////////////////////////////
+		static bool hasThreadGL();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the OS specific implementation of the context
+		///
+		/// @return The context
+		///
+		/////////////////////////////////////////////////////////////
+		priv::GLContext &getOSContext();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the OS specific implementation of the context
+		///
+		/// @return The context
+		///
+		/////////////////////////////////////////////////////////////
+		const priv::GLContext &getOSContext() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the handle of the context
+		///
+		/// Returns NULL if not initialized
+		///
+		/// @return The handle
+		///
+		/////////////////////////////////////////////////////////////
+		Handle getHandle() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Implicitly convert to handle
+		///
+		/// Returns NULL if not initialized
+		///
+		/// @return The handle
+		///
+		/////////////////////////////////////////////////////////////
+		operator Handle() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Read the attributes of the context
+		///
+		/// @return The settings
+		///
+		/////////////////////////////////////////////////////////////
+		const fw::GLContext::Settings &getSettings() const;
+		
+		friend class priv::theSharedContextInitializer;
 	};
 }
+
+#endif // FRONTIER_NO_CONTEXT
 
 #endif // FRONTIER_GLCONTEXT_INCLUDED

@@ -37,6 +37,9 @@ namespace fg
 	class FRONTIER_API RenderStates
 	{
 	public:
+		typedef RenderStates &reference;
+		typedef const RenderStates &const_reference;
+		
 		const Texture *texture; ///< The texture
 		Shader *shader;         ///< The shader
 		fm::mat4 transform;     ///< The transformation matrix

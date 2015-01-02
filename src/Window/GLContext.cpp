@@ -16,9 +16,36 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/GLContext.hpp>
 #include <FRONTIER/System/macros/OS.h>
+#include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/Window/Window.hpp>
+
+#ifndef FRONTIER_NO_CONTEXT
+
+#ifdef FRONTIER_OS_WINDOWS
+	#include <FRONTIER/Window/Wapi/WapiGLContext.hpp>
+	#include <FRONTIER/Window/Wapi/WapiWindow.hpp>
+	#include "Wapi/WapiGLContext.cpp"
+#elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
+	#include <FRONTIER/Window/Xlib/XlibGLContext.hpp>
+	#include <FRONTIER/Window/Xlib/XlibWindow.hpp>
+	#include "Xlib/XlibGLContext.cpp"
+#endif
 
 namespace fw
 {
+	namespace priv
+	{
+		fw::GLContext theSharedContext;
+		class theSharedContextInitializer
+		{
+		public:
+			theSharedContextInitializer(fw::GLContext *ptr)
+			{
+				ptr->m_context->create(NULL,100,100,fw::GLContext::Settings());
+			}
+		};
+		theSharedContextInitializer initit(&theSharedContext);
+	}
 	/////////////////////////////////////////////////////////////
 	GLContext::Settings::Settings(unsigned char bitsPerPixel,
 								  unsigned char depthBits,
@@ -59,12 +86,108 @@ namespace fw
 		if (majorVersion == 3 && minorVersion > 3) minorVersion = 3;
 		if (majorVersion == 4 && minorVersion > 5) minorVersion = 5;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	GLContext::GLContext() : m_context(new priv::GLContext)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	GLContext::GLContext(priv::WindowHandle windowHandle,fw::GLContext::Settings settings) : m_context(new priv::GLContext)
+	{
+		create(windowHandle,settings);
+	}
+
+	/////////////////////////////////////////////////////////////
+	GLContext::GLContext(const fm::vec2s &size,fw::GLContext::Settings settings) : m_context(new priv::GLContext)
+	{
+		create(size,settings);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	GLContext::~GLContext()
+	{
+		delete m_context;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool GLContext::setActive(bool active)
+	{
+		return m_context->setActive(active);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool GLContext::swapBuffers()
+	{
+		return m_context->swapBuffers();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool GLContext::create(priv::WindowHandle windowHandle,fw::GLContext::Settings settings)
+	{
+		return m_context->create((priv::Window::Handle)windowHandle,
+								 (priv::GLContext::Handle)priv::theSharedContext.getHandle(),
+								  settings);
+	}
+
+	/////////////////////////////////////////////////////////////
+	bool GLContext::create(const fm::vec2s &size,fw::GLContext::Settings settings)
+	{
+		return m_context->create((priv::GLContext::Handle)priv::theSharedContext.getHandle(),
+								  size.w,size.h,
+								  settings);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool GLContext::create(fw::GLContext::Settings settings)
+	{
+		return m_context->create((priv::GLContext::Handle)priv::theSharedContext.getHandle(),
+								  1,1,
+								  settings);
+	}
+
+	/////////////////////////////////////////////////////////////
+	bool GLContext::destroy()
+	{
+		return m_context->destroy();
+	}
+
+	/////////////////////////////////////////////////////////////
+	bool GLContext::hasThreadGL()
+	{
+		return priv::GLContext::hasThreadGL();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	priv::GLContext &GLContext::getOSContext()
+	{
+		return *m_context;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	const priv::GLContext &GLContext::getOSContext() const
+	{
+		return *m_context;
+	}
+
+	/////////////////////////////////////////////////////////////
+	GLContext::Handle GLContext::getHandle() const
+	{
+		return m_context->getHandle();
+	}
+
+	/////////////////////////////////////////////////////////////
+	GLContext::operator GLContext::Handle() const
+	{
+		return m_context->getHandle();
+	}
+
+	/////////////////////////////////////////////////////////////
+	const fw::GLContext::Settings &GLContext::getSettings() const
+	{
+		return m_context->getSettings();
+	}
 }
 
-#ifdef FRONTIER_OS_WINDOWS
-	#include "Wapi/WapiGLContext.cpp"
-#elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
-	#include "Xlib/XlibGLContext.cpp"
-#else
-	#warning No GLContext!
-#endif
+#endif // FRONTIER_NO_CONTEXT

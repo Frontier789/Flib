@@ -32,6 +32,8 @@ namespace fm
 		{
 			void *m_id; ///< The id of the container
 		public:
+			typedef TlsPtr &reference;
+			typedef const TlsPtr &const_reference;
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Default constructor

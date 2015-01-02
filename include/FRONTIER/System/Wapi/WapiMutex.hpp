@@ -28,6 +28,8 @@ namespace fm
 		{
 			CRITICAL_SECTION m_critSect; ///< A pointer to the owned critical section
 		public:
+			typedef Mutex &reference;
+			typedef const Mutex &const_reference;
 		
 			/////////////////////////////////////////////////////////////
 			/// @brief Default constructor

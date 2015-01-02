@@ -45,6 +45,9 @@ namespace fw
 			bool createContext(GLXFBConfig config,::GLXContext sharedContext); ///< Function used to set up the context
 
 		public:
+			typedef GLContext &reference;
+			typedef const GLContext &const_reference;
+			
 			typedef GLXContext Handle; ///< The handle type is defined for all GLContext implementations
 			
 			/////////////////////////////////////////////////////////////

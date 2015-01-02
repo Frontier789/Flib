@@ -347,5 +347,11 @@ namespace fw
 
 			return true;
 		}
+		
+		/////////////////////////////////////////////////////////////
+		const fw::GLContext::Settings &GLContext::getSettings() const
+		{
+			return m_settings;
+		}
 	}
 }
