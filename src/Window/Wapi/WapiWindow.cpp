@@ -605,7 +605,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,bool toolkit,HWND parent) : m_hwnd(NULL),
+		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,HWND parent) : m_hwnd(NULL),
 																																		 m_showCursor(true),
 																																		 m_resizeable(true),
 																																		 m_enableRepeat(false),
@@ -615,7 +615,7 @@ namespace fw
 																																		 m_icon(NULL),
 																																		 m_cursorHitTest(NULL)
 		{
-			open(x,y,w,h,title,style,toolkit,parent);
+			open(x,y,w,h,title,style,parent);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -709,7 +709,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,bool toolkit,HWND parent)
+		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,HWND parent)
 		{
 			// clean our resources before (re)creating
 			cleanUp();
@@ -718,14 +718,13 @@ namespace fw
 			DWORD createStyle = getDWORDfromStyle(style);
 
 			// initialize the window
-			m_hwnd = CreateWindowEx(toolkit ? WS_EX_TOPMOST|WS_EX_TOOLWINDOW : 0,
-									FRONTIER_WINDOWS_CLASS_NAME,
-									title.c_str(),
-									createStyle,
-									x,y,10,10,
-									parent,
-									NULL,NULL,
-									this); // set createdata to 'this'
+			m_hwnd = CreateWindowA(FRONTIER_WINDOWS_CLASS_NAME,
+								   title.c_str(),
+								   createStyle,
+								   x,y,10,10,
+								   parent,
+								   NULL,NULL,
+								   this); // set createdata to 'this'
 			
 			// windows wouldn't let us initially create a window bigger than the screen
 			setSize(w,h);
@@ -752,7 +751,7 @@ namespace fw
 			DragAcceptFiles(m_hwnd,m_acceptDrop);
 
 			// Tell windows to show our window
-			ShowWindow(m_hwnd, toolkit ? SW_SHOWNOACTIVATE : SW_SHOW);
+			ShowWindow(m_hwnd, SW_SHOW);
 
 			m_windowCount++;
 

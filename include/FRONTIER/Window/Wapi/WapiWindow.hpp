@@ -115,7 +115,7 @@ namespace fw
 			/// @param toolkit True indicates that the window needs no indication in the taskbar
 			///
 			/////////////////////////////////////////////////////////////
-			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,bool toolbar = false,HWND parent = 0);
+			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,HWND parent = 0);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Default destructor
@@ -147,7 +147,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,bool toolbar = false,HWND parent = 0);
+			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,HWND parent = 0);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Check if the window is opened

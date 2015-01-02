@@ -18,6 +18,7 @@
 #include <FRONTIER/System/macros/OS.h>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/Window/Window.hpp>
+#include <FRONTIER/System/Mutex.hpp>
 
 #ifndef FRONTIER_NO_CONTEXT
 
@@ -36,6 +37,7 @@ namespace fw
 	namespace priv
 	{
 		fw::GLContext theSharedContext;
+		fm::Mutex sharedContextMutex;
 		class theSharedContextInitializer
 		{
 		public:
@@ -126,25 +128,55 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	bool GLContext::create(priv::WindowHandle windowHandle,fw::GLContext::Settings settings)
 	{
-		return m_context->create((priv::Window::Handle)windowHandle,
-								 (priv::GLContext::Handle)priv::theSharedContext.getHandle(),
-								  settings);
+		bool useShared = false;
+		if (!hasThreadGL())
+		{
+			useShared = true;
+			priv::sharedContextMutex.lock();
+			priv::theSharedContext.setActive();
+		}
+		
+		bool success = m_context->create((priv::Window::Handle)windowHandle,
+										 (priv::GLContext::Handle)priv::theSharedContext.getHandle(),
+										  settings);
+		
+		if (useShared)
+		{
+			priv::theSharedContext.setActive(false);
+			priv::sharedContextMutex.unLock();
+		}
+		
+		return success;
 	}
 
 	/////////////////////////////////////////////////////////////
 	bool GLContext::create(const fm::vec2s &size,fw::GLContext::Settings settings)
 	{
-		return m_context->create((priv::GLContext::Handle)priv::theSharedContext.getHandle(),
-								  size.w,size.h,
-								  settings);
+		bool useShared = false;
+		if (!hasThreadGL())
+		{
+			useShared = true;
+			priv::sharedContextMutex.lock();
+			priv::theSharedContext.setActive();
+		}
+		
+		bool success = m_context->create((priv::GLContext::Handle)priv::theSharedContext.getHandle(),
+										  size.w,size.h,
+										  settings);
+		
+		if (useShared)
+		{
+			priv::theSharedContext.setActive(false);
+			priv::sharedContextMutex.unLock();
+		}
+		
+		return success;
 	}
 	
 	/////////////////////////////////////////////////////////////
 	bool GLContext::create(fw::GLContext::Settings settings)
 	{
-		return m_context->create((priv::GLContext::Handle)priv::theSharedContext.getHandle(),
-								  1,1,
-								  settings);
+		return create(fm::vec2s(1,1),settings);
 	}
 
 	/////////////////////////////////////////////////////////////

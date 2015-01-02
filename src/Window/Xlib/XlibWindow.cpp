@@ -546,22 +546,22 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style) : m_opened(false),
-																												m_enableRepeat(true),
-																												m_lastDown(XK_VoidSymbol),
-																												m_disp(NULL),
-																												m_delAtom(0),
-																												m_stateAtom(0),
-																												m_prevW(0),
-																												m_prevH(0),
-																												m_stateHiddenAtom(0),
-																												m_maxHorAtom(0),
-																												m_maxVertAtom(0),
-																												m_uri_listAtom(0),
-																												m_supportUriList(false),
-																												m_emptyCursor(None)
+		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent) : m_opened(false),
+																																m_enableRepeat(true),
+																																m_lastDown(XK_VoidSymbol),
+																																m_disp(NULL),
+																																m_delAtom(0),
+																																m_stateAtom(0),
+																																m_prevW(0),
+																																m_prevH(0),
+																																m_stateHiddenAtom(0),
+																																m_maxHorAtom(0),
+																																m_maxVertAtom(0),
+																																m_uri_listAtom(0),
+																																m_supportUriList(false),
+																																m_emptyCursor(None)
 		{
-			open(x,y,w,h,title,style);
+			open(x,y,w,h,title,style,parent);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -574,7 +574,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style)
+		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent)
 		{
 			if (!checkDisplay())
 				return false;
@@ -583,7 +583,7 @@ namespace fw
 			close();
 
 			// ask X to create a window
-			m_win = XCreateSimpleWindow(m_disp,m_rootWin,x,y,w,h,0,BlackPixel(m_disp,0),BlackPixel(m_disp,0));
+			m_win = XCreateSimpleWindow(m_disp,parent ? parent : m_rootWin,x,y,w,h,0,BlackPixel(m_disp,0),BlackPixel(m_disp,0));
 			
 			if (m_win != (::Window)NULL)
 			{

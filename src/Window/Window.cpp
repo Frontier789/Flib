@@ -22,6 +22,6 @@
 #elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
 	#include "Xlib/XlibWindow.cpp"
 #else
-	#warning No Window implementation!
+	#warning No Window implementation !
 #endif
 												   

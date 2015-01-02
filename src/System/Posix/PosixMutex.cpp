@@ -58,6 +58,10 @@ namespace fm
 			{
 				if (result != EBUSY)
 					fm::PosixPrintErrno(fm::fm_log,pthread_mutex_trylock);
+					
+				if (result == EDEADLK)
+					return true;
+					
 				return false;
 			}
 			

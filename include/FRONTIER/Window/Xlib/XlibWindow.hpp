@@ -120,9 +120,10 @@ namespace fw
 			/// @param h Height of the window
 			/// @param title Title of the window
 			/// @param style Style of the window (see fw::WindowStyle)
+			/// @param parent The parent of the window
 			///
 			/////////////////////////////////////////////////////////////
-			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style);
+			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent = None);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Default destructor
@@ -153,7 +154,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style);
+			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent = None);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Check if the window is opened
