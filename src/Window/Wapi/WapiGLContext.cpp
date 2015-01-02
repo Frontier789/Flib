@@ -132,19 +132,15 @@ namespace fw
 					                   	 WGL_CONTEXT_MINOR_VERSION_ARB, m_settings.minorVersion,
 										 WGL_CONTEXT_PROFILE_MASK_ARB, m_settings.compatiblityProfile ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : 
 																										WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-										 0, 0 };
+										 0, 0};
 					
 					m_hglrc = wglCreateContextAttribsARB(m_hdc, sharedContext, attributes);
 				}
 				
-				// we dont mind checking nonexisting versions 
+				// decrease the version
 				if (!m_hglrc)
-				{
-					if (m_settings.minorVersion) m_settings.minorVersion--;
-					else
-						m_settings.majorVersion--,
-						m_settings.minorVersion = 9;
-				}
+					m_settings.decreaseVersion();
+				
 				else break;
 			}
 
@@ -174,13 +170,13 @@ namespace fw
 					
 					// extract major version (loop until the '.')
 					for (;*(version+i) >= '0' && *(version+i) <= '9';i++)
-						m_settings.majorVersion=m_settings.majorVersion*10+*(version+i)-'0';
+						m_settings.majorVersion = m_settings.majorVersion*10+*(version+i)-'0';
 					
-					i++; // jump the .
+					i++; // jump the '.'
 					
 					// extract minor version
 					for (;*(version+i) >= '0' && *(version+i) <= '9';i++)
-						m_settings.minorVersion=m_settings.minorVersion*10+*(version+i)-'0';
+						m_settings.minorVersion = m_settings.minorVersion*10+*(version+i)-'0';
 					
 					wglMakeCurrent(m_hdc,NULL);	
 				}
@@ -210,7 +206,7 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::create(fm::Size width,fm::Size height,HGLRC sharedContext,fw::GlContext::Settings settings)
+		bool GlContext::create(HGLRC sharedContext,fm::Size width,fm::Size height,fw::GlContext::Settings settings)
 		{
 			// Start by cleaning
 			destroy();

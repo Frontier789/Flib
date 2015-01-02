@@ -47,11 +47,38 @@ namespace fw
 			/// 
 			/////////////////////////////////////////////////////////////
 			Settings(unsigned char bitsPerPixel = 32,
-					 unsigned char depthBits    = 0,
-					 unsigned char stencilBits  = 0,
+					 unsigned char depthBits    = 24,
+					 unsigned char stencilBits  = 8,
 					 unsigned char majorVersion = 4,
 					 unsigned char minorVersion = 4,
 					 bool compatiblityProfile   = true);
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Decreases the OpenGL version AND keeps it valid (max knwown is 4.5)
+			/// 
+			/// Known versions are:
+			/// 	4.5 (2014)
+			/// 	4.4 (2013)
+			/// 	4.3 (2012)
+			/// 	4.2 (2011)
+			/// 	4.1 (2010)
+			/// 	4.0 (2010)
+			/// 	3.3 (2010)
+			/// 	3.2 (2009)
+			/// 	3.1 (2009)
+			/// 	3.0 (2008)
+			/// 	2.1 (2006)
+			/// 	2.0 (2004)
+			/// 	1.5 (2003)
+			/// 	1.4 (2002)
+			/// 	1.3 (2001)
+			/// 	1.2 (1998)
+			/// 	1.1 (1997)
+			/// 	1.0 (1992)
+			/// Above 4.5 every version is considered valid
+			/// 
+			/////////////////////////////////////////////////////////////
+			void decreaseVersion();
 		};
 	};
 }

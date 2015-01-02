@@ -34,6 +34,31 @@ namespace fw
 	{
 		
 	}
+	
+	/////////////////////////////////////////////////////////////
+	void GlContext::Settings::decreaseVersion()
+	{
+		// set to the highest known if 1.0
+		if (majorVersion == 1 && minorVersion == 0)
+		{
+			majorVersion = 4,
+			minorVersion = 5;
+			return;
+		}
+
+		// decrease as usual
+		if (minorVersion == 0)
+			majorVersion--,
+			minorVersion = 9;
+		else
+			minorVersion--;
+
+		// round down the minor part
+		if (majorVersion == 1 && minorVersion > 5) minorVersion = 5;
+		if (majorVersion == 2 && minorVersion > 1) minorVersion = 1;
+		if (majorVersion == 3 && minorVersion > 3) minorVersion = 3;
+		if (majorVersion == 4 && minorVersion > 5) minorVersion = 5;
+	}
 }
 
 #ifdef FRONTIER_OS_WINDOWS

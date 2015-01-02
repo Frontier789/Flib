@@ -87,7 +87,7 @@ namespace fw
 			/// @return True if everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool create(fm::Size width=1,fm::Size height=1,HGLRC sharedContext=NULL,fw::GlContext::Settings settings = fw::GlContext::Settings());
+			bool create(HGLRC sharedContext=NULL,fm::Size width=1,fm::Size height=1,fw::GlContext::Settings settings = fw::GlContext::Settings());
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Destroys the GL context
