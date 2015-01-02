@@ -14,48 +14,55 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_WINDOW_HPP_INCLUDED
-#define FRONTIER_WINDOW_HPP_INCLUDED
-#include <FRONTIER/Window/WindowPredef.hpp>
+#ifndef FRONTIER_WINDOWPREDEF_HPP_INCLUDED
+#define FRONTIER_WINDOWPREDEF_HPP_INCLUDED
 #include <FRONTIER/System/macros/TYPES.hpp>
-#include <FRONTIER/System/NonCopyable.hpp>
-#include <FRONTIER/System/macros/API.h>
-#define FRONTIER_WINDOW
+#include <FRONTIER/System/macros/OS.h>
 
-#ifndef FRONTIER_NO_WINDOW
-namespace fw
-{
-	/////////////////////////////////////////////////////////////
-	/// @brief Wrapper class used to manage windows and OpenGL contexts together, os independently
-	/// 
-	/// @ingroup Window
-	/// 
-	/////////////////////////////////////////////////////////////
-	class FRONTIER_API Window : public fm::NonCopyable
+#ifdef FRONTIER_OS_WINDOWS
+
+#ifdef STRICT
+	struct HWND__;
+#endif
+
+	namespace fw
 	{
-		priv::Window *m_window;
-		priv::GLContext *m_context;
-	public:
-		/////////////////////////////////////////////////////////////
-		/// @brief Enumeration used to indicate window style
-		/// 
-		/// @ingroup Window
-		/// 
-		/////////////////////////////////////////////////////////////
-		enum WindowStyle {
-			None       = 0x0000000,
-			Close      = 0x0000001,
-			Border     = 0x0000010,
-			Resize     = 0x0000100,
-			Minimize   = 0x0001000,
-			Maximize   = 0x0010000,
-			Titlebar   = 0x0100000,
-			Fullscreen = 0x1000000,
-			Default    = 0x0111111
-		};
-	};
-}
+		namespace Wapi
+		{
+			class Window;
+			class GLContext;
+		}
+		namespace priv
+		{
+			typedef fw::Wapi::Window Window;
+			typedef fw::Wapi::GLContext GLContext;
+			
+			#ifdef STRICT
+				typedef HWND__ *WindowHandle;
+			#else
+				typedef void *WindowHandle;
+			#endif
+			
+		}
+	}
+#elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
+	namespace fw
+	{
+		namespace Xlib
+		{
+			class Window;
+			class GLContext;
+		}
+		namespace priv
+		{
+			typedef fw::Xlib::Window Window;
+			typedef fw::Xlib::GLContext GLContext;
+			typedef fm::Uint32 WindowHandle;
+		}
+	}
+#else
+	#warning No window
+	#define FRONTIER_NO_WINDOW
+#endif
 
-#endif // FRONTIER_NO_WINDOW
-
-#endif // FRONTIER_WINDOW_HPP_INCLUDED
+#endif // FRONTIER_WINDOWPREDEF_HPP_INCLUDED

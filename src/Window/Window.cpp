@@ -19,9 +19,9 @@
 #ifdef FRONTIER_OS_WINDOWS
 	#include "Wapi/WapiWindow.cpp"
 	#include "Wapi/fwWapiPrintLastError.cpp"
-#elif defined(FRONTIER_OS_LINUX)
+#elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
 	#include "Xlib/XlibWindow.cpp"
 #else
-	#warning No WindowImpl!
+	#warning No Window implementation!
 #endif
 												   

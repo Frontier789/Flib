@@ -15,7 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Wapi/fwWapiPrintLastError.hpp>
-#include <FRONTIER/Window/Wapi/WapiGlContext.hpp>
+#include <FRONTIER/Window/Wapi/WapiGLContext.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
 
 #define WGL_CONTEXT_MAJOR_VERSION_ARB             0x2091
@@ -36,10 +36,10 @@ namespace fw
 {
 	namespace Wapi
 	{
-		unsigned int GlContext::m_contextWindowCount = 0;
+		unsigned int GLContext::m_contextWindowCount = 0;
 		
 		/////////////////////////////////////////////////////////////
-		GlContext::GlContext() : m_hdc(NULL),
+		GLContext::GLContext() : m_hdc(NULL),
 								 m_hwnd(NULL),
 								 m_hglrc(NULL),
 								 m_ownWindow(NULL)
@@ -48,13 +48,13 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
-		GlContext::~GlContext()
+		GLContext::~GLContext()
 		{
 			destroy();
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::destroy()
+		bool GLContext::destroy()
 		{
 			if (m_ownWindow) // if we created that window
 			{
@@ -105,7 +105,7 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::init(HGLRC sharedContext)
+		bool GLContext::init(HGLRC sharedContext)
 		{
 			// Get DeviceContext of the window
 			m_hdc = GetDC(m_hwnd);
@@ -190,7 +190,7 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::create(HWND windowHandle,HGLRC sharedContext,fw::GlContext::Settings settings)
+		bool GLContext::create(HWND windowHandle,HGLRC sharedContext,fw::GLContext::Settings settings)
 		{
 			// Start by cleaning
 			destroy();
@@ -206,7 +206,7 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::create(HGLRC sharedContext,fm::Size width,fm::Size height,fw::GlContext::Settings settings)
+		bool GLContext::create(HGLRC sharedContext,unsigned int width,unsigned int height,fw::GLContext::Settings settings)
 		{
 			// Start by cleaning
 			destroy();
@@ -254,13 +254,13 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::hasThreadGL()
+		bool GLContext::hasThreadGL()
 		{
 			return wglGetCurrentContext();
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::setActive(bool active)
+		bool GLContext::setActive(bool active)
 		{
 			BOOL result = 0;
 			// If this class owns a valid context and we want to activate it
@@ -279,7 +279,7 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::swapBuffers()
+		bool GLContext::swapBuffers()
 		{
 			if (m_hdc && m_hglrc)
 				if (!SwapBuffers(m_hdc))
@@ -291,19 +291,19 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
-		GlContext::Handle GlContext::getHandle() const
+		GLContext::Handle GLContext::getHandle() const
 		{
 			return m_hglrc;
 		}
 		
 		/////////////////////////////////////////////////////////////
-		GlContext::operator GlContext::Handle() const
+		GLContext::operator GLContext::Handle() const
 		{
 			return m_hglrc;
 		}
 		
 		/////////////////////////////////////////////////////////////
-		bool GlContext::setPixelFormat()
+		bool GLContext::setPixelFormat()
 		{
 			// fill out the pfd with our requirements
 			PIXELFORMATDESCRIPTOR descriptor;

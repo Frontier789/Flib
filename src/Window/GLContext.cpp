@@ -20,7 +20,7 @@
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
-	GlContext::Settings::Settings(unsigned char bitsPerPixel,
+	GLContext::Settings::Settings(unsigned char bitsPerPixel,
 								  unsigned char depthBits,
 								  unsigned char stencilBits,
 								  unsigned char majorVersion,
@@ -36,7 +36,7 @@ namespace fw
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void GlContext::Settings::decreaseVersion()
+	void GLContext::Settings::decreaseVersion()
 	{
 		// set to the highest known if 1.0
 		if (majorVersion == 1 && minorVersion == 0)
@@ -63,6 +63,8 @@ namespace fw
 
 #ifdef FRONTIER_OS_WINDOWS
 	#include "Wapi/WapiGLContext.cpp"
+#elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
+	#include "Xlib/XlibGLContext.cpp"
 #else
 	#warning No GLContext!
 #endif
