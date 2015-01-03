@@ -909,6 +909,18 @@ namespace fw
 			return true;
 		}
 		
+		/////////////////////////////////////////////////////////////
+		void Window::setVisible(bool visible)
+		{
+			if (!isOpen())
+				return;
+			
+			if (visible)
+				XMapWindow(m_disp,m_win);
+			else
+				XUnmapWindow(m_disp,m_win);
+		}
+		
 		////////////////////////////////////////////////////////////
 		bool Window::popEvent(Event &ev)
 		{

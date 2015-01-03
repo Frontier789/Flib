@@ -318,6 +318,16 @@ namespace fw
 			bool getTitle(std::string &title) const;
 
 			/////////////////////////////////////////////////////////////
+			/// @brief Show or hide the window
+			///
+			/// @param visible If true the window is shown
+			///
+			/// @return True iff everything went right
+			///
+			/////////////////////////////////////////////////////////////
+			void setVisible(bool visible=true);
+
+			/////////////////////////////////////////////////////////////
 			/// @brief Retrive the last event
 			///
 			/// If the event queue is empty false is returned and
