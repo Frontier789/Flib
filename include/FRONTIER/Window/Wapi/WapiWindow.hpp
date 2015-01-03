@@ -57,6 +57,10 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		class FRONTIER_API Window : public fm::NonCopyable
 		{
+		public:
+			typedef bool (*EventCallback)(Window *,UINT,WPARAM,LPARAM,LRESULT*);
+			
+		private:
 			static unsigned int m_windowCount; ///< The number of windows open
 			bool cleanUp();      ///< Internal function used to free resources
 			bool init();         ///< Internal function used at initialization
@@ -70,6 +74,7 @@ namespace fw
 			LONG m_style;        ///< Internal variable used when going to fullscreen
 			LONG m_exStyle;      ///< Internal variable used when going to fullscreen
 			HICON m_icon;        ///< The last set icon
+			EventCallback m_eventCallback;
 
 			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that deduces the object and calls handleEvent
 			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that handles events of the window
@@ -480,6 +485,12 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			HWND getHandle() const;
+
+			/////////////////////////////////////////////////////////////
+			/// @brief set The callback
+			///
+			/////////////////////////////////////////////////////////////
+			void setEventCallback(EventCallback callback);
 		};
 		////////////////////////////////////////////////////////////
 		/// @class fw::Wapi::Window

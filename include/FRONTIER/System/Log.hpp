@@ -133,7 +133,7 @@ namespace fm
 		
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator for c string
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
@@ -147,7 +147,7 @@ namespace fm
 		
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator for std::string
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
@@ -160,7 +160,7 @@ namespace fm
 		reference operator<<(const std::string &text);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator for long
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
@@ -173,7 +173,7 @@ namespace fm
 		reference operator<<(const long &number);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator for unsigned long
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
@@ -186,7 +186,33 @@ namespace fm
 		reference operator<<(const unsigned long &number);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator for long long
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param number The output number
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const long long &number);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Overload of the << binary operator for unsigned long long
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param number The output number
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(const unsigned long long &number);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Overload of the << binary operator for int
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
@@ -199,7 +225,7 @@ namespace fm
 		reference operator<<(const int &number);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator for unsigned int
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
@@ -212,7 +238,7 @@ namespace fm
 		reference operator<<(const unsigned int &number);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator for char
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
@@ -225,7 +251,7 @@ namespace fm
 		reference operator<<(const char &character);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator for unsigned char
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
@@ -238,7 +264,7 @@ namespace fm
 		reference operator<<(const unsigned char &number);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator for float
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
@@ -251,7 +277,7 @@ namespace fm
 		reference operator<<(const float &number);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator for double
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
@@ -264,7 +290,7 @@ namespace fm
 		reference operator<<(const double &number);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator for address type
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
 		/// valid when calling the this operator
@@ -280,7 +306,7 @@ namespace fm
 		
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator
 		/// 
 		/// Please note that it is the caller's response to keep the passed stream 
 		/// valid when calling the this operator<br\>
@@ -294,7 +320,7 @@ namespace fm
 		reference operator<<(std::ostream &(*func)(std::ostream &));
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator
 		/// 
 		/// Please note that it is the caller's response to keep the passed stream 
 		/// valid when calling the this operator<br\>
@@ -308,7 +334,7 @@ namespace fm
 		reference operator<<(std::basic_ios<char, std::char_traits<char> > &(*func)(std::basic_ios<char, std::char_traits<char> > &));
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Templated overload of the << binary operator
+		/// @brief Overload of the << binary operator
 		/// 
 		/// Please note that it is the caller's response to keep the passed stream 
 		/// valid when calling the this operator<br\>

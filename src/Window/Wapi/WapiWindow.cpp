@@ -198,6 +198,10 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		LRESULT Window::handleEvent(HWND hwnd,UINT msg, WPARAM wParam, LPARAM lParam)
 		{
+			LRESULT userResult;
+			if (m_eventCallback && m_eventCallback(this,msg,wParam,lParam,&userResult))
+				return userResult;
+			
 			switch(msg)
 			{
 				// our window got focus
@@ -599,6 +603,7 @@ namespace fw
 						   m_acceptDrop(false),
 						   m_lastDown(0),
 						   m_icon(NULL),
+						   m_eventCallback(NULL),
 						   m_cursorHitTest(NULL)
 		{
 
@@ -606,14 +611,15 @@ namespace fw
 
 		////////////////////////////////////////////////////////////
 		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,HWND parent) : m_hwnd(NULL),
-																																		 m_showCursor(true),
-																																		 m_resizeable(true),
-																																		 m_enableRepeat(false),
-																																		 m_cursorInside(false),
-																																		 m_acceptDrop(false),
-																																		 m_lastDown(0),
-																																		 m_icon(NULL),
-																																		 m_cursorHitTest(NULL)
+																															m_showCursor(true),
+																															m_resizeable(true),
+																															m_enableRepeat(false),
+																															m_cursorInside(false),
+																															m_acceptDrop(false),
+																															m_lastDown(0),
+																															m_icon(NULL),
+																															m_eventCallback(NULL),
+																															m_cursorHitTest(NULL)
 		{
 			open(x,y,w,h,title,style,parent);
 		}
@@ -1284,6 +1290,12 @@ namespace fw
 		HWND Window::getHandle() const
 		{
 			return m_hwnd;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		void Window::setEventCallback(EventCallback callback)
+		{
+			m_eventCallback = callback;
 		}
 	}
 }
