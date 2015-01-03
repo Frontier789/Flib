@@ -74,6 +74,10 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		class FRONTIER_API Window : public fm::NonCopyable
 		{
+		public:
+			typedef bool (*EventCallback)(Window *,XEvent &);
+			
+		private:
 			std::deque<Event> m_eventQueue; ///< A queue holding the unhandled events
 			void processEvent(XEvent &xev); ///< Internal function used to convert xevents
 			bool checkDisplay(); ///< Internal function
@@ -83,6 +87,7 @@ namespace fw
 			Display *m_disp;     ///< The connection to the x server
 			Atom m_delAtom;      ///< The id of the window deletion message
 			Atom m_stateAtom;    ///< The id of the window state
+			bool m_resizeable;   ///< Indicates whether the window can be resized on the borders
 			unsigned int m_prevW;       ///< The width after the last resize
 			unsigned int m_prevH;       ///< The height after the last resize
 			Atom m_stateHiddenAtom;     ///< The id of the hidden state
@@ -94,6 +99,7 @@ namespace fw
 			XdndAtoms m_xdndAtoms;      ///< Holds the dragNdrop related atoms
 			mutable ::Window m_win;     ///< The handle of the xwindow
 			mutable ::Window m_rootWin; ///< A handle to the root window
+			EventCallback m_eventCallback; ///< Holds the handle of the event callback
 			void getStateProperties(Atom *&atoms,unsigned long *count) const;  ///< Internal function used to get properties of the window
 		public:
 			typedef Window &reference;
@@ -378,6 +384,22 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			bool isKeyRepeatEnabled() const;
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Enables or disables resize of the window
+			///
+			/// @param enable True to enable false to disable
+			///
+			/////////////////////////////////////////////////////////////
+			void enableResize(bool enable = true);
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Returns whether resize is enabled
+			///
+			/// @return True iff enabled
+			///
+			/////////////////////////////////////////////////////////////
+			bool isResizeEnabled() const;
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Get the window's handle
@@ -398,6 +420,17 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			operator ::Window() const;
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Set the event callback
+			/// 
+			/// This function is called before a event is being handled
+			/// The functions should return true iff no further processing is required
+			/// 
+			/// @param callback The new callback
+			/// 
+			/////////////////////////////////////////////////////////////
+			void setEventCallback(EventCallback callback);
 		};
 	}
 }

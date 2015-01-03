@@ -58,7 +58,7 @@ namespace fw
 		class FRONTIER_API Window : public fm::NonCopyable
 		{
 		public:
-			typedef bool (*EventCallback)(Window *,UINT,WPARAM,LPARAM,LRESULT*);
+			typedef bool (*EventCallback)(Window *,unsigned int,fm::UintPtr,fm::IntPtr,fm::IntPtr*);
 			
 		private:
 			static unsigned int m_windowCount; ///< The number of windows open
@@ -74,7 +74,7 @@ namespace fw
 			LONG m_style;        ///< Internal variable used when going to fullscreen
 			LONG m_exStyle;      ///< Internal variable used when going to fullscreen
 			HICON m_icon;        ///< The last set icon
-			EventCallback m_eventCallback;
+			EventCallback m_eventCallback; ///< Holds the handle of the event callback
 
 			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that deduces the object and calls handleEvent
 			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that handles events of the window
@@ -431,7 +431,7 @@ namespace fw
 			/// @param enable True to enable false to disable
 			///
 			/////////////////////////////////////////////////////////////
-			void enableResize(bool enable=true);
+			void enableResize(bool enable = true);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Returns whether resize is enabled
@@ -487,8 +487,13 @@ namespace fw
 			HWND getHandle() const;
 
 			/////////////////////////////////////////////////////////////
-			/// @brief set The callback
-			///
+			/// @brief Set the event callback
+			/// 
+			/// This function is called before a event is being handled
+			/// The functions should return true iff no further processing is required
+			/// 
+			/// @param callback The new callback
+			/// 
 			/////////////////////////////////////////////////////////////
 			void setEventCallback(EventCallback callback);
 		};

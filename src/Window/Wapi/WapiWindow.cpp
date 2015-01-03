@@ -198,9 +198,12 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		LRESULT Window::handleEvent(HWND hwnd,UINT msg, WPARAM wParam, LPARAM lParam)
 		{
-			LRESULT userResult;
-			if (m_eventCallback && m_eventCallback(this,msg,wParam,lParam,&userResult))
-				return userResult;
+			fm::IntPtr userResult;
+			if (m_eventCallback && m_eventCallback(this,(unsigned int)msg,
+														(fm::UintPtr)wParam,
+														(fm::IntPtr)lParam,
+														&userResult))
+				return (LRESULT)userResult;
 			
 			switch(msg)
 			{

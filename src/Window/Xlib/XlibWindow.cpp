@@ -244,6 +244,9 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		void Window::processEvent(XEvent &xev)
 		{
+			if (m_eventCallback && m_eventCallback(this,xev))
+				return;
+			
 			// mouse got outside our window
 			if (xev.type == LeaveNotify)
 			{
@@ -533,6 +536,7 @@ namespace fw
 						   m_disp(NULL),
 						   m_delAtom(0),
 						   m_stateAtom(0),
+						   m_resizeable(true),
 						   m_prevW(0),
 						   m_prevH(0),
 						   m_stateHiddenAtom(0),
@@ -540,7 +544,8 @@ namespace fw
 						   m_maxVertAtom(0),
 						   m_uri_listAtom(0),
 						   m_supportUriList(false),
-						   m_emptyCursor(None)
+						   m_emptyCursor(None),
+						   m_eventCallback(NULL)
 		{
 
 		}
@@ -552,6 +557,7 @@ namespace fw
 																																m_disp(NULL),
 																																m_delAtom(0),
 																																m_stateAtom(0),
+																																m_resizeable(true),
 																																m_prevW(0),
 																																m_prevH(0),
 																																m_stateHiddenAtom(0),
@@ -559,7 +565,8 @@ namespace fw
 																																m_maxVertAtom(0),
 																																m_uri_listAtom(0),
 																																m_supportUriList(false),
-																																m_emptyCursor(None)
+																																m_emptyCursor(None),
+																																m_eventCallback(NULL)
 		{
 			open(x,y,w,h,title,style,parent);
 		}
@@ -625,9 +632,8 @@ namespace fw
 								(unsigned char*)&hints,5);
 
 
-
-
-
+				// enable resize
+				enableResize(style & fw::Window::Resize);
 
 				// tell X to show it
 				XMapWindow(m_disp,m_win);
@@ -1001,6 +1007,31 @@ namespace fw
 		{
 			return m_enableRepeat;
 		}
+		
+		/////////////////////////////////////////////////////////////
+		void Window::enableResize(bool enable)
+		{
+			if (!isOpen())
+				return;
+			
+			unsigned int w,h;
+			getSize(w,h);
+			
+			m_resizeable = enable;
+			XSizeHints sizeHints;
+			sizeHints.flags = PMinSize | PMaxSize;
+			sizeHints.min_width  = w;
+			sizeHints.max_width  = w;
+			sizeHints.min_height = h;
+			sizeHints.max_height = h;
+			XSetWMNormalHints(m_disp,m_win,&sizeHints);
+		}
+
+		/////////////////////////////////////////////////////////////
+		bool Window::isResizeEnabled() const
+		{
+			return m_enableRepeat;
+		}
 
 		////////////////////////////////////////////////////////////
 		::Window Window::getHandle() const
@@ -1012,6 +1043,12 @@ namespace fw
 		Window::operator ::Window() const
 		{
 			return m_win;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		void Window::setEventCallback(EventCallback callback)
+		{
+			m_eventCallback = callback;
 		}
 	}
 }

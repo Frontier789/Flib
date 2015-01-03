@@ -17,14 +17,13 @@
 #ifndef FRONTIER_WINDOWPREDEF_HPP_INCLUDED
 #define FRONTIER_WINDOWPREDEF_HPP_INCLUDED
 #include <FRONTIER/System/macros/TYPES.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/OS.h>
 
 #ifdef FRONTIER_OS_WINDOWS
 
-#ifdef STRICT
-	struct HWND__;
-	struct HGLRC__;
-#endif
+struct HWND__;
+struct HGLRC__;
 
 	namespace fw
 	{
@@ -37,20 +36,17 @@
 		{
 			typedef fw::Wapi::Window Window;
 			typedef fw::Wapi::GLContext GLContext;
+			typedef HWND__  *WindowHandle;
+			typedef HGLRC__ *ContextHandle;
 			
-			#ifdef STRICT
-				typedef HWND__  *WindowHandle;
-				typedef HGLRC__ *ContextHandle;
-			#else
-				typedef void *WindowHandle;
-				typedef void *ContextHandle;
-			#endif
+			typedef bool (*WindowEventCallback)(Window*,unsigned int,fm::UintPtr,fm::IntPtr,fm::IntPtr*);
 			
 		}
 	}
 #elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
 
 struct __GLXcontextRec;
+union _XEvent;
 
 	namespace fw
 	{
@@ -65,6 +61,8 @@ struct __GLXcontextRec;
 			typedef fw::Xlib::GLContext GLContext;
 			typedef fm::Uint32 WindowHandle;
 			typedef __GLXcontextRec *ContextHandle;
+			
+			typedef bool (*WindowEventCallback)(Window*,_XEvent&);
 		}
 	}
 #else
