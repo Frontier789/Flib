@@ -14,6 +14,7 @@
 /// You should have recieved a copy of GNU GPL with this software	  ///
 ///																	///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Graphics/RenderStates.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/Sprite.hpp>
@@ -123,11 +124,12 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	void Sprite::draw(RenderStates states) const
+	void Sprite::draw(const fg::RenderStates &states) const
 	{
-		states.transform = states.transform * getTransform();
-		states.texture = m_texture;
-		fg::draw(m_vertices,fg::TriangleStrip,states);
+		fg::RenderStates states2 = states;
+		states2.transform = states.transform * getTransform();
+		states2.texture = m_texture;
+		fg::draw(m_vertices,fg::TriangleStrip,states2);
 	}
 
 

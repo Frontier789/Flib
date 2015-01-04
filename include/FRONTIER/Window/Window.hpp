@@ -422,6 +422,40 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		priv::Window &getOSWindow();
 	};
+	
+
+	/////////////////////////////////////////////////////////////
+	/// @brief Overload of binary operator |
+	/// 
+	/// @param left Left operand
+	/// @param right Right operand
+	/// 
+	/// @return left|right casted to fw::Window::WindowStyle
+	///
+	/////////////////////////////////////////////////////////////
+	Window::WindowStyle operator|(const Window::WindowStyle &left,const Window::WindowStyle &right);
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Overload of binary operator &
+	/// 
+	/// @param left Left operand
+	/// @param right Right operand
+	/// 
+	/// @return left|right casted to fw::Window::WindowStyle
+	///
+	/////////////////////////////////////////////////////////////
+	Window::WindowStyle operator&(const Window::WindowStyle &left,const Window::WindowStyle &right);
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Overload of unary operator ~
+	/// 
+	/// @param left Left operand
+	/// @param right Right operand
+	/// 
+	/// @return ~style casted to fw::Window::WindowStyle
+	///
+	/////////////////////////////////////////////////////////////
+	Window::WindowStyle operator~(const Window::WindowStyle &style);
 }
 
 #endif // FRONTIER_NO_WINDOW

@@ -262,6 +262,25 @@ namespace fw
 	{
 		return *m_window;
 	}
+	
+	
+	/////////////////////////////////////////////////////////////
+	Window::WindowStyle operator|(const Window::WindowStyle &left,const Window::WindowStyle &right)
+	{
+		return (Window::WindowStyle)((int)left|(int)right);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Window::WindowStyle operator&(const Window::WindowStyle &left,const Window::WindowStyle &right)
+	{
+		return (Window::WindowStyle)((int)left&(int)right);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Window::WindowStyle operator~(const Window::WindowStyle &style)
+	{
+		return (Window::WindowStyle)(~(int)style);
+	}
 }
 
 #endif // FRONTIER_NO_WINDOW

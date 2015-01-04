@@ -29,7 +29,7 @@ namespace fg
 {
 	class Texture;
 	class Shader;
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to hold the texture, the shader and the transformation matrix used when drawing
 	///
@@ -39,83 +39,83 @@ namespace fg
 	public:
 		typedef RenderStates &reference;
 		typedef const RenderStates &const_reference;
-		
+
 		const Texture *texture; ///< The texture
 		Shader *shader;         ///< The shader
 		fm::mat4 transform;     ///< The transformation matrix
 
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the states
-		/// 
+		///
 		/// @param texture A pointer to the texture
 		/// @param shader A pointer to the shader
 		/// @param transform The transformation matrix
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		RenderStates(const Texture *texture = 0,Shader *shader = 0,const fm::mat4 &transform = fm::mat4());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the states
-		/// 
+		///
 		/// @param texture The texture
 		/// @param shader A pointer to the shader
 		/// @param transform The transformation matrix
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		RenderStates(const Texture &texture,Shader *shader,const fm::mat4 &transform = fm::mat4());
 
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the states
-		/// 
+		///
 		/// @param texture A pointer to the texture
 		/// @param shader The shader
 		/// @param transform The transformation matrix
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		RenderStates(const Texture *texture,Shader &shader,const fm::mat4 &transform = fm::mat4());
 
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the states
-		/// 
+		///
 		/// @param texture The texture
 		/// @param shader The shader
 		/// @param transform The transformation matrix
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		RenderStates(const Texture &texture,Shader &shader,const fm::mat4 &transform = fm::mat4());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the states
-		/// 
+		///
 		/// Sets the shader to NULL and
 		/// the transformation to identity
-		/// 
+		///
 		/// @param texture The texture
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		RenderStates(const Texture &texture);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the states
-		/// 
+		///
 		/// Sets the texture to NULL and
 		/// the transformation to identity
-		/// 
+		///
 		/// @param shader The shader
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		RenderStates(Shader &shader);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the states
-		/// 
+		///
 		/// Sets the texture and the shader to NULL
-		/// 
+		///
 		/// @param transform The transformation matrix
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		RenderStates(const fm::mat4 &transform);
 	};

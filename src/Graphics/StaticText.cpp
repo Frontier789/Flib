@@ -14,6 +14,7 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Graphics/RenderStates.hpp>
 #include <FRONTIER/Graphics/StaticText.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
@@ -212,15 +213,16 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	void StaticText::draw(fg::RenderStates states) const
+	void StaticText::draw(const fg::RenderStates &states) const
 	{
-		states.texture = m_texture;
-		states.transform *= getTransform();
+		fg::RenderStates states2 = states;
+		states2.texture = m_texture;
+		states2.transform *= getTransform();
 
 		fg::draw(fg::Attr<fm::vec2>(m_posBuf),
 				 fg::Attr<fm::vec4>(m_clrBuf),
 				 fg::Attr<fm::vec2>(m_texPosBuf),
-				 m_indexCount,fg::Triangles,states,fg::IndexPointer(0,sizeof(unsigned int),&m_indBuf));
+				 m_indexCount,fg::Triangles,states2,fg::IndexPointer(0,sizeof(unsigned int),&m_indBuf));
 	}
 
 	/////////////////////////////////////////////////////////////

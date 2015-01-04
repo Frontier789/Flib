@@ -14,6 +14,7 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Graphics/RenderStates.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
@@ -25,11 +26,11 @@
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	Drawable::~Drawable() 
+	Drawable::~Drawable()
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Attribute::Attribute() : m_ptr(NULL),
 							 m_buffer(NULL),
@@ -39,46 +40,46 @@ namespace fg
 	{
 
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool Attribute::isUsed() const
 	{
 		return (m_components && m_bytesPerComponent && (m_buffer || m_ptr));
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	GLenum getSizeType(const Attribute &attr)
 	{
 		if (attr.m_bytesPerComponent == sizeof(GLfloat))
 			return GL_FLOAT;
-		
+
 		if (attr.m_bytesPerComponent == sizeof(GLshort))
 			return GL_SHORT;
-		
+
 		if (attr.m_bytesPerComponent == sizeof(GLint))
 			return GL_INT;
-		
+
 		if (attr.m_bytesPerComponent == sizeof(GLdouble))
 			return GL_DOUBLE;
 
 		return 0;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	GLenum getSizeType(const IndexPointer &indexptr)
 	{
 		if (indexptr.m_bytesPerIndex == sizeof(GLbyte))
 			return GL_UNSIGNED_BYTE;
-		
+
 		if (indexptr.m_bytesPerIndex == sizeof(GLshort))
 			return GL_UNSIGNED_SHORT;
-		
+
 		if (indexptr.m_bytesPerIndex == sizeof(GLuint))
 			return GL_UNSIGNED_INT;
 
 		return 0;
 	}
-		 
+
 	/////////////////////////////////////////////////////////////
 	Attribute Attribute::Unused = Attribute();
 
@@ -87,41 +88,41 @@ namespace fg
 								   m_buffer(NULL),
 								   m_ptr(NULL)
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	IndexPointer::IndexPointer(const unsigned char *ptr) : m_bytesPerIndex(sizeof(unsigned char)),
 														   m_buffer(NULL),
 														   m_ptr(ptr)
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	IndexPointer::IndexPointer(const unsigned short *ptr) : m_bytesPerIndex(sizeof(unsigned short)),
 															m_buffer(NULL),
 															m_ptr(ptr)
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	IndexPointer::IndexPointer(const unsigned int *ptr) : m_bytesPerIndex(sizeof(unsigned int)),
 														  m_buffer(NULL),
 														  m_ptr(ptr)
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	IndexPointer::IndexPointer(const void *ptr,unsigned char bytesPerIndex,const fg::Buffer *buffer) : m_bytesPerIndex(bytesPerIndex),
 																									   m_buffer(buffer),
 																									   m_ptr(ptr)
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void priv::defaultDraw(const Attribute &pos,
 						   const Attribute &clr,
@@ -137,34 +138,34 @@ namespace fg
 			fg::Buffer::bind(pos.m_buffer,fg::ArrayBuffer);
 			glCheck(glVertexPointer(pos.m_components,getSizeType(pos),pos.m_bytesPerVertex,pos.m_ptr));
 		}
-	
+
 		if (clr.isUsed())
 		{
 			fg::Buffer::bind(clr.m_buffer,fg::ArrayBuffer);
 			glCheck(glColorPointer(clr.m_components,getSizeType(clr),clr.m_bytesPerVertex,clr.m_ptr));
 		}
-	
+
 		if (texPos.isUsed())
 		{
 			fg::Buffer::bind(texPos.m_buffer,fg::ArrayBuffer);
 			glCheck(glTexCoordPointer(texPos.m_components,getSizeType(texPos),texPos.m_bytesPerVertex,texPos.m_ptr));
 		}
-	
+
 		if (norm.isUsed())
 		{
 			fg::Buffer::bind(norm.m_buffer,fg::ArrayBuffer);
 			glCheck(glNormalPointer(getSizeType(norm),norm.m_bytesPerVertex,norm.m_ptr));
 		}
-		
+
 		if (states.texture)
 			glEnable(GL_TEXTURE_2D),
 			fg::Texture::bind(states.texture,fg::Texture::Pixels);
 		else
 			glDisable(GL_TEXTURE_2D);
-		
+
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf(&states.transform.transpose()[0][0]);
-		
+
 		if (indices.m_bytesPerIndex && (indices.m_ptr || indices.m_buffer))
 		{
 			fg::Buffer::bind(indices.m_buffer,fg::IndexBuffer);
@@ -173,15 +174,15 @@ namespace fg
 		else
 			glCheck(glDrawArrays(primitive,0,vertexCount));
 	}
-	
+
 	fm::TlsPtr<drawFuncType> drawerFuncPtr;
-	
+
 	/////////////////////////////////////////////////////////////
 	void setDrawFunc(drawFuncType *func)
 	{
 		drawerFuncPtr = func;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void draw(const Attribute &pos,
 			  const Attribute &clr,
@@ -189,7 +190,7 @@ namespace fg
 			  fg::Primitive primitive,
 			  const fg::RenderStates &states,
 			  const IndexPointer &indices)
-	{ 
+	{
 		draw(pos,
 			 clr,
 			 Attribute::Unused,
@@ -199,8 +200,8 @@ namespace fg
 			 states,
 			 indices);
 	}
-	
-	
+
+
 	/////////////////////////////////////////////////////////////
 	void draw(const Attribute &pos,
 			  const Attribute &clr,
@@ -219,8 +220,8 @@ namespace fg
 			 states,
 			 indices);
 	}
-	
-	
+
+
 	/////////////////////////////////////////////////////////////
 	void draw(const Attribute &pos,
 			  const Attribute &clr,
@@ -249,5 +250,58 @@ namespace fg
 							  primitive,
 							  states,
 							  indices);
+	}
+
+	/////////////////////////////////////////////////////////////
+	void draw(const Attribute &pos,
+			  const Attribute &clr,
+			  fm::Size vertexCount,
+			  fg::Primitive primitive)
+	{
+		draw(pos,
+			 clr,
+			 Attribute::Unused,
+			 Attribute::Unused,
+			 vertexCount,
+			 primitive,
+			 RenderStates(),
+			 IndexPointer());
+	}
+
+
+	/////////////////////////////////////////////////////////////
+	void draw(const Attribute &pos,
+			  const Attribute &clr,
+			  const Attribute &texPos,
+			  fm::Size vertexCount,
+			  fg::Primitive primitive)
+	{
+		draw(pos,
+			 clr,
+			 texPos,
+			 Attribute::Unused,
+			 vertexCount,
+			 primitive,
+			 RenderStates(),
+			 IndexPointer());
+	}
+
+
+	/////////////////////////////////////////////////////////////
+	void draw(const Attribute &pos,
+			  const Attribute &clr,
+			  const Attribute &texPos,
+			  const Attribute &norm,
+			  fm::Size vertexCount,
+			  fg::Primitive primitive)
+	{
+		draw(pos,
+			 clr,
+			 texPos,
+			 norm,
+			 vertexCount,
+			 primitive,
+			 RenderStates(),
+			 IndexPointer());
 	}
 }

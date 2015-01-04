@@ -16,15 +16,8 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_DRAWABLE_HPP_INCLUDED
 #define FRONTIER_DRAWABLE_HPP_INCLUDED
-#include <FRONTIER/Graphics/RenderStates.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
-
-#include <FRONTIER/System/macros/dont_include_inl_begin>
-
-#include <FRONTIER/System/Matrix.hpp>
-
-#include <FRONTIER/System/macros/dont_include_inl_end>
 
 #define FRONTIER_DRAWABLE
 namespace fm
@@ -37,6 +30,7 @@ namespace fg
 	class Shader;
 	class Buffer;
 	class Texture;
+	class RenderStates;
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Identicetes how vertices will be rasterized
@@ -95,12 +89,12 @@ namespace fg
 		TriangleFan   = 6u, ///< render (N-1) triangles (N>=3)
 		TriangleStrip = 5u  ///< render (N-1) triangles (N>=3)
 	};
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Classes derived from this class can be drawn if a OpenGL context is active
-	/// 
+	///
 	/// @ingroup Graphics
-	/// 
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Drawable
 	{
@@ -110,18 +104,18 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		virtual ~Drawable();
-		
+
 		/////////////////////////////////////////////////////////////
-		/// @brief Draw the object 
-		/// 
+		/// @brief Draw the object
+		///
 		/// This function shall resolve to call(s) to fg::draw
 		/// Which means only the set function (using setDrawFunc) will be used
-		/// 
+		///
 		/// @param texture The texture to be used
 		/// @param shader The shader to be used
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
-		virtual void draw(fg::RenderStates states) const = 0;
+		virtual void draw(const fg::RenderStates &states) const = 0;
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -292,7 +286,7 @@ namespace fg
 						   const Attribute &clr,
 						   fm::Size vertexCount,
 						   fg::Primitive primitive,
-						   const fg::RenderStates &states = fg::RenderStates(),
+						   const fg::RenderStates &states,
 						   const IndexPointer &indices = IndexPointer());
 
 
@@ -313,7 +307,7 @@ namespace fg
 						   const Attribute &texPos,
 						   fm::Size vertexCount,
 						   fg::Primitive primitive,
-						   const fg::RenderStates &states = fg::RenderStates(),
+						   const fg::RenderStates &states,
 						   const IndexPointer &indices = IndexPointer());
 
 
@@ -336,7 +330,7 @@ namespace fg
 						   const Attribute &norm,
 						   fm::Size vertexCount,
 						   fg::Primitive primitive,
-						   const fg::RenderStates &states = fg::RenderStates(),
+						   const fg::RenderStates &states,
 						   const IndexPointer &indices = IndexPointer());
 
 	/////////////////////////////////////////////////////////////
@@ -353,7 +347,7 @@ namespace fg
 	void draw(const fm::vertex<pt,ct,tpt,nt> *vertices,
 			  fm::Size vertexCount,
 			  fg::Primitive primitive,
-			  const fg::RenderStates &states = fg::RenderStates(),
+			  const fg::RenderStates &states,
 			  const IndexPointer &indices = IndexPointer());
 
 	/////////////////////////////////////////////////////////////
@@ -368,7 +362,7 @@ namespace fg
 	template <class pt,class ct,class tpt,class nt,fm::Size vertexCount>
 	void draw(const fm::vertex<pt,ct,tpt,nt> (&vertices)[vertexCount],
 			  fg::Primitive primitive,
-			  const fg::RenderStates &states = fg::RenderStates());
+			  const fg::RenderStates &states);
 
 
 	/////////////////////////////////////////////////////////////

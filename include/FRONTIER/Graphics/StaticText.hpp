@@ -26,7 +26,6 @@
 
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
-#include <FRONTIER/System/Vertex.hpp>
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
@@ -216,7 +215,7 @@ namespace fg
 		/// @param states The states to be used (texture is ignored)
 		///
 		/////////////////////////////////////////////////////////////
-		virtual void draw(fg::RenderStates states = fg::RenderStates()) const;
+		virtual void draw(const fg::RenderStates &states) const;
 	};
 }
 
