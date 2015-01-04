@@ -418,7 +418,7 @@ namespace fm
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference promptName(bool prompt=true);
+		reference promptName(bool prompt = true);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Change logging behavior
@@ -432,7 +432,7 @@ namespace fm
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference enableLogRecall(bool enable=true);
+		reference enableLogRecall(bool enable = true);
 	};
 }
 

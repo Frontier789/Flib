@@ -72,7 +72,7 @@ namespace fw
 			/// @return True if everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool setActive(bool active=true);
+			bool setActive(bool active = true);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Swap the back and front buffer

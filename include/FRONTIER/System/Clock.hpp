@@ -75,7 +75,7 @@ namespace fm
 		/// @param paused If true then the Clock is paused by default
 		/// 
 		/////////////////////////////////////////////////////////////
-		Clock(const Time &startTime,bool paused=false);
+		Clock(const Time &startTime,bool paused = false);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get time since started

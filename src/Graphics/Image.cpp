@@ -22,15 +22,38 @@
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Rect.hpp>
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#define FRONTIER_STBI_WRITE_MEM
+#define STBI_NO_SIMD
 #include "stb_image/stb_image_write.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image/stb_image.h"
+
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include "stb_image/stb_image_resize.h"
+
+#include "ico/ico.hpp"
+ 
 #include "jpge/jpge.cpp"
+#include <fstream>
 #include <cstring>
 #include <string>
 namespace fg
 {
+	std::string getExtension(const std::string &text)
+	{
+		int dotPos = text.find_last_of(".");
+		std::string ret = text.substr(dotPos+1,text.size()-dotPos);
+		
+		// lowercase
+		C(ret.length())
+			ret[i] = (ret[i]>='A' && ret[i]<='Z') ? (ret[i]-'A'+'a') : ret[i];
+		
+		return ret;
+	}
+	
 	/// constructors /////////////////////////////////////////////////////////
 	Image::Image() : m_sizeW(0),
 					 m_sizeH(0)
@@ -279,6 +302,37 @@ namespace fg
 			return false;
 		}
 	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Image::loadFromMemory(const void *buffer,fm::Size byteCount)
+	{
+		// empty current pixels
+		m_pixels.clear();
+
+		// ask stbi to load the file
+		int width, height, channels;
+		unsigned char *ptr = stbi_load_from_memory((const unsigned char*)buffer, byteCount, &width, &height, &channels, STBI_rgb_alpha);
+		
+		// if he succeeded
+		if (ptr && width && height)
+		{
+			// copy the data
+			m_sizeW = width;
+			m_sizeH = height;
+			m_pixels.resize(width * height * 4);
+			memcpy(&m_pixels[0], ptr, m_pixels.size());
+			
+			// let stbi free its used memory
+			stbi_image_free(ptr);
+			
+			return true;
+		}
+		else
+		{
+			fg_log << "Failed to load image from memory Reason : " << stbi_failure_reason() << std::endl;
+			return false;
+		}
+	}
 
 
 	////////////////////////////////////////////////////////////
@@ -366,19 +420,14 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	bool Image::saveToFile(const std::string &filename)
+	bool Image::saveToFile(const std::string &filename) const
 	{
 		// if the image is valid
 		if (!m_pixels.empty() && (m_sizeW > 0) && (m_sizeH > 0))
 		{
-			// find the extension
-			int dotPos = filename.find_last_of(".");
-			std::string extension = filename.substr(dotPos+1,filename.size()-dotPos);
+			// get extension
+			std::string extension = getExtension(filename);
 			
-			// lowercase
-			C(extension.length())
-				extension[i] = (extension[i]>='A' && extension[i]<='Z') ? (extension[i]-'A'+'a') : extension[i];
-
 			if (extension == "bmp")
 			{
 				// BMP format
@@ -399,45 +448,17 @@ namespace fg
 			}
 			else if(extension == "jpg" || extension == "jpeg") // its a bit more messy
 			{
-				bool success = true;
-				jpge::cfile_stream dst_stream;
-				if (!dst_stream.open(filename.c_str()))
-					fg_log << "Couldn't write " << filename << "." << std::endl,
-					success = false;
-				else
+				bool success = jpge::compress_image_to_jpeg_file(filename.c_str(), m_sizeW, m_sizeH, 4, (unsigned char *)&m_pixels[0]);
+				if (!success)
 				{
-					jpge::jpeg_encoder dst_image;
-					if (!dst_image.init(&dst_stream,m_sizeW,m_sizeH,4,jpge::params()))
-						success = false;
-					else
-					{
-						for (fm::Size pass_index = 0; pass_index < dst_image.get_total_passes(); pass_index++)
-						{
-							C(m_sizeH)
-							{
-								const unsigned char *pBuf = (unsigned char *)(&m_pixels[0]) + (fm::Size)(i*m_sizeW*4);
-								if (!dst_image.process_scanline(pBuf))
-									success = false,
-									i = m_sizeH+1,
-									pass_index = dst_image.get_total_passes() + 1;
-							}
-							if (!dst_image.process_scanline(NULL))
-									success = false,
-									pass_index = dst_image.get_total_passes() + 1;
-						}
-						if (success)
-						{
-							dst_image.deinit();
-							success = dst_stream.close();
-						}
-					}
+					fg_log << "jpge failed to save " << filename << std::endl;
+					return false;
 				}
-				if (success)
-					return true;
+				return true;
 			}
 			else
 			{
-				std::string pngfilename=filename+".png";
+				std::string pngfilename = filename+".png";
 				
 				// Unknown extension so we output it as png
 				fg_log << "Unknown extension \"" << extension <<"\" changed output name to "<<pngfilename<<std::endl;
@@ -446,13 +467,168 @@ namespace fg
 					return true;
 			}
 		}
-		else
+		
+		fg_log << filename << " couldn't be saved because it's empty." << std::endl;
+		return false;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	unsigned char *Image::saveToMemory(fm::Size &byteCount,const std::string &ext) const
+	{
+		// if the image is valid
+		if (!m_pixels.empty() && (m_sizeW > 0) && (m_sizeH > 0))
 		{
-			fg_log << filename << " couldn't be saved because it's empty." << std::endl;
+			// get extension
+			std::string extension = getExtension(ext);
+			
+			if (extension == "bmp" || extension == "tga")
+			{
+				std::stringstream ss;
+				int result;
+				if (extension == "bmp")
+					result = stbi_write_bmpMEM(ss,m_sizeW,m_sizeH,4,&m_pixels[0]);
+				else
+					result = stbi_write_tgaMEM(ss,m_sizeW,m_sizeH,4,&m_pixels[0]);
+				
+				if (result)
+				{
+					byteCount = ss.tellp();
+					unsigned char *ret = new unsigned char[byteCount];
+					std::string data = ss.str();
+					for (fm::Size i=0;i<data.length();i++)
+						ret[i] = data[i];
+					return ret;
+				}
+				byteCount = 0;
+				return NULL;
+			}
+			else if(extension == "png")
+			{
+			    int len;
+				unsigned char *png = stbi_write_png_to_memMEM((unsigned char *)&m_pixels[0],0, m_sizeW, m_sizeH, 4, &len);
+				if (len)
+				{
+					byteCount = len;
+					return png;
+				}
+				byteCount = 0;
+				if (png)
+					delete[] png;
+				return NULL;
+			}
+			else if(extension == "jpg" || extension == "jpeg") // its a bit more messy
+			{
+				unsigned char *buffer = NULL;
+				fm::Size allBytes = m_sizeW*m_sizeH*sizeof(fg::Color);
+				byteCount = allBytes/16;
+				bool success = false;
+				while (byteCount < allBytes*1.5 && !success)
+				{
+					buffer = new unsigned char[byteCount];
+					int bufSize = byteCount;
+					success = jpge::compress_image_to_jpeg_file_in_memory(buffer,bufSize,m_sizeW,m_sizeH,4,(unsigned char *)&m_pixels[0]);
+					if (!success)
+					{
+						delete[] buffer;
+						byteCount*=2;
+					}
+				}
+				if (!success)
+				{
+					fg_log << "jpge failed to save to memory" << std::endl;
+					byteCount = 0;
+					return NULL;
+				}
+				unsigned char *ret = new unsigned char[byteCount];
+				memcpy(ret,buffer,byteCount);
+				delete[] buffer;
+				return ret;
+			}
+			
+			// Unknown extension
+			fg_log << "Unknown extension \"" << ext <<"\""<<std::endl;
+		}
+		
+		byteCount = 0;
+		return NULL;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Image Image::scale(fm::Size w,fm::Size h)
+	{
+		Image ret;
+		ret.create(w,h);
+		if (!stbir_resize_uint8((unsigned char*)&m_pixels[0],m_sizeW,m_sizeH,0,
+								(unsigned char*)&ret.m_pixels[0],w,h,0,
+								4))
+			return Image();
+        
+		return ret;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	std::vector<Image> Image::loadMultipleImagesFromFile(const std::string &file)
+	{
+		std::ifstream in(file.c_str(),std::ios_base::binary);
+		
+		if (!in)
+		{
+			fg_log << "Error reading file " << file << std::endl;
+			return std::vector<Image>();
+		}
+		
+		std::string str;
+
+		in.seekg(0, std::ios::end);   
+		str.reserve(in.tellg());
+		in.seekg(0, std::ios::beg);
+ 
+		str.assign((std::istreambuf_iterator<char>(in)),
+					std::istreambuf_iterator<char>());
+		
+		std::string error;
+		
+		std::vector<Image> ret = Ico::getImages((const fm::Uint8*)(fm::UintPtr)&str[0],str.length()*sizeof(str[0]),error);
+		if (error != std::string())
+			fg_log << "Error loading " << file << " : " << error << std::endl;
+		
+		return ret;
+	}
+		
+		
+	/////////////////////////////////////////////////////////////
+	std::vector<Image> Image::loadMultipleImagesFromMemory(const fm::Uint8 *data,fm::Size byteCount,const std::string &ext)
+	{
+		(void)ext;
+		
+		std::string error;
+		
+		std::vector<Image> ret = Ico::getImages(data,byteCount,error);
+		if (error != std::string())
+			fg_log << "Error loading icon : " << error << std::endl;
+		
+		return ret;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Image::saveMultipleImagesToFile(const std::vector<Image> &images,const std::string &file)
+	{
+		std::ofstream ki(file.c_str(),std::ios_base::binary);
+		
+		if (!ki)
+		{
+			fg_log << "Error reading file " << file << std::endl;
 			return false;
 		}
-
-		fg_log << "Failed to save image \"" << filename << "\"" << std::endl;
-		return false;
+		
+		Ico::writeImages(ki,images);
+		
+		return true;
+	}
+		
+	/////////////////////////////////////////////////////////////
+	const fm::Uint8 *saveMultipleImagesToMemory(const std::vector<Image> &images,fm::Size &byteCount,const std::string &ext)
+	{
+		return NULL;
 	}
 }

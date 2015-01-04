@@ -25,7 +25,7 @@ class Is_integral<TYPE>        			    \
 {                              				\
 public:                        				\
 	enum{                      				\
-		value=true             				\
+		value = true             				\
 	};                         				\
 }
 /// @endcond

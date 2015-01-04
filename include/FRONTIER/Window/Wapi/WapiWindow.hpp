@@ -206,7 +206,7 @@ namespace fw
 			/// @param show The cursor is shown iff true
 			///
 			/////////////////////////////////////////////////////////////
-			void showCursor(bool show=true);
+			void showCursor(bool show = true);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Changes the position and the size of the window
@@ -343,7 +343,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			void setVisible(bool visible=true);
+			void setVisible(bool visible = true);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Set the cursor hittest function
@@ -415,7 +415,7 @@ namespace fw
 			/// @param enable True to enable false to disable
 			///
 			/////////////////////////////////////////////////////////////
-			void enableKeyRepeat(bool enable=true);
+			void enableKeyRepeat(bool enable = true);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Returns whether keyrepeat is enabled

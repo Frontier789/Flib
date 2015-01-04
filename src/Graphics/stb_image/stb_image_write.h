@@ -519,3 +519,198 @@ int stbi_write_png(char const *filename, int x, int y, int comp, const void *dat
              first public release
       0.90   first internal release
 */
+
+
+#ifdef FRONTIER_STBI_WRITE_MEM
+
+#include <sstream>
+
+static void writefvMEM(std::stringstream &ss, const char *fmt, va_list v)
+{
+   while (*fmt) {
+      switch (*fmt++) {
+         case ' ': break;
+         case '1': { unsigned char x = (unsigned char) va_arg(v, int); ss.put(x); break; }
+         case '2': { int x = va_arg(v,int); unsigned char b[2];
+                     b[0] = (unsigned char) x; b[1] = (unsigned char) (x>>8);
+                     ss.write((char*)b,sizeof(b)); break; }
+         case '4': { stbiw_uint32 x = va_arg(v,int); unsigned char b[4];
+                     b[0]=(unsigned char)x; b[1]=(unsigned char)(x>>8);
+                     b[2]=(unsigned char)(x>>16); b[3]=(unsigned char)(x>>24);
+                     ss.write((char*)b,sizeof(b)); break; }
+         default:
+            assert(0);
+            return;
+      }
+   }
+}
+
+static void write3MEM(std::stringstream &ss, unsigned char a, unsigned char b, unsigned char c)
+{
+   unsigned char arr[3];
+   arr[0] = a, arr[1] = b, arr[2] = c;
+   ss.write((char*)arr,3);
+}
+
+static void write_pixelsMEM(std::stringstream &ss, int rgb_dir, int vdir, int x, int y, int comp, void *data, int write_alpha, int scanline_pad)
+{
+   unsigned char bg[3] = { 255, 0, 255}, px[3];
+   stbiw_uint32 zero = 0;
+   int i,j,k, j_end;
+
+   if (y <= 0)
+      return;
+
+   if (vdir < 0) 
+      j_end = -1, j = y-1;
+   else
+      j_end =  y, j = 0;
+
+   for (; j != j_end; j += vdir) {
+      for (i=0; i < x; ++i) {
+         unsigned char *d = (unsigned char *) data + (j*x+i)*comp;
+         if (write_alpha < 0)
+			ss.write((char*)&d[comp-1],1);
+         switch (comp) {
+            case 1: 
+            case 2: ss.write((char*)d,1);
+                    break;
+            case 4:
+               if (!write_alpha) {
+                  // composite against pink background
+                  for (k=0; k < 3; ++k)
+                     px[k] = bg[k] + ((d[k] - bg[k]) * d[3])/255;
+                  write3MEM(ss, px[1-rgb_dir],px[1],px[1+rgb_dir]);
+                  break;
+               }
+               /* FALLTHROUGH */
+            case 3:
+               write3MEM(ss, d[1-rgb_dir],d[1],d[1+rgb_dir]);
+               break;
+         }
+         if (write_alpha > 0)
+			ss.write((char*)&d[comp-1], 1);
+      }
+      ss.write((char*)&zero,scanline_pad);
+   }
+}
+
+static int outfileMEM(std::stringstream &ss, int rgb_dir, int vdir, int x, int y, int comp, void *data, int alpha, int pad, const char *fmt, ...)
+{
+	if (y < 0 || x < 0) return 0;
+	va_list v;
+	va_start(v, fmt);
+	writefvMEM(ss, fmt, v);
+	va_end(v);
+	write_pixelsMEM(ss,rgb_dir,vdir,x,y,comp,data,alpha,pad);
+	return true;
+}
+
+int stbi_write_bmpMEM(std::stringstream &ss, int x, int y, int comp, const void *data)
+{
+   int pad = (-x*3) & 3;
+   return outfileMEM(ss,-1,-1,x,y,comp,(void *) data,0,pad,
+           "11 4 22 4" "4 44 22 444444",
+           'B', 'M', 14+40+(x*3+pad)*y, 0,0, 14+40,  // file header
+            40, x,y, 1,24, 0,0,0,0,0,0);             // bitmap header
+}
+
+int stbi_write_tgaMEM(std::stringstream &ss, int x, int y, int comp, const void *data)
+{
+   int has_alpha = (comp == 2 || comp == 4);
+   int colorbytes = has_alpha ? comp-1 : comp;
+   int format = colorbytes < 2 ? 3 : 2; // 3 color channels (RGB/RGBA) = 2, 1 color channel (Y/YA) = 3
+   return outfileMEM(ss, -1,-1, x, y, comp, (void *) data, has_alpha, 0,
+                  "111 221 2222 11", 0,0,format, 0,0,0, 0,0,x,y, (colorbytes+has_alpha)*8, has_alpha*8);
+}
+
+unsigned char *stbi_write_png_to_memMEM(unsigned char *pixels, int stride_bytes, int x, int y, int n, int *out_len)
+{
+   int ctype[5] = { -1, 0, 4, 2, 6 };
+   unsigned char sig[8] = { 137,80,78,71,13,10,26,10 };
+   unsigned char *out,*o, *filt, *zlib;
+   signed char *line_buffer;
+   int i,j,k,p,zlen;
+
+   if (stride_bytes == 0)
+      stride_bytes = x * n;
+
+   filt = (unsigned char *) malloc((x*n+1) * y); if (!filt) return 0;
+   line_buffer = (signed char *) malloc(x * n); if (!line_buffer) { free(filt); return 0; }
+   for (j=0; j < y; ++j) {
+      static int mapping[] = { 0,1,2,3,4 };
+      static int firstmap[] = { 0,1,0,5,6 };
+      int *mymap = j ? mapping : firstmap;
+      int best = 0, bestval = 0x7fffffff;
+      for (p=0; p < 2; ++p) {
+         for (k= p?best:0; k < 5; ++k) {
+            int type = mymap[k],est=0;
+            unsigned char *z = pixels + stride_bytes*j;
+            for (i=0; i < n; ++i)
+               switch (type) {
+                  case 0: line_buffer[i] = z[i]; break;
+                  case 1: line_buffer[i] = z[i]; break;
+                  case 2: line_buffer[i] = z[i] - z[i-stride_bytes]; break;
+                  case 3: line_buffer[i] = z[i] - (z[i-stride_bytes]>>1); break;
+                  case 4: line_buffer[i] = (signed char) (z[i] - stbiw__paeth(0,z[i-stride_bytes],0)); break;
+                  case 5: line_buffer[i] = z[i]; break;
+                  case 6: line_buffer[i] = z[i]; break;
+               }
+            for (i=n; i < x*n; ++i) {
+               switch (type) {
+                  case 0: line_buffer[i] = z[i]; break;
+                  case 1: line_buffer[i] = z[i] - z[i-n]; break;
+                  case 2: line_buffer[i] = z[i] - z[i-stride_bytes]; break;
+                  case 3: line_buffer[i] = z[i] - ((z[i-n] + z[i-stride_bytes])>>1); break;
+                  case 4: line_buffer[i] = z[i] - stbiw__paeth(z[i-n], z[i-stride_bytes], z[i-stride_bytes-n]); break;
+                  case 5: line_buffer[i] = z[i] - (z[i-n]>>1); break;
+                  case 6: line_buffer[i] = z[i] - stbiw__paeth(z[i-n], 0,0); break;
+               }
+            }
+            if (p) break;
+            for (i=0; i < x*n; ++i)
+               est += abs((signed char) line_buffer[i]);
+            if (est < bestval) { bestval = est; best = k; }
+         }
+      }
+      // when we get here, best contains the filter type, and line_buffer contains the data
+      filt[j*(x*n+1)] = (unsigned char) best;
+      memcpy(filt+j*(x*n+1)+1, line_buffer, x*n);
+   }
+   free(line_buffer);
+   zlib = stbi_zlib_compress(filt, y*( x*n+1), &zlen, 8); // increase 8 to get smaller but use more memory
+   free(filt);
+   if (!zlib) return 0;
+
+   // each tag requires 12 bytes of overhead
+   out = new unsigned char [8 + 12+13 + 12+zlen + 12];
+   *out_len = 8 + 12+13 + 12+zlen + 12;
+
+   o=out;
+   memcpy(o,sig,8); o+= 8;
+   stbiw__wp32(o, 13); // header length
+   stbiw__wptag(o, "IHDR");
+   stbiw__wp32(o, x);
+   stbiw__wp32(o, y);
+   *o++ = 8;
+   *o++ = (unsigned char) ctype[n];
+   *o++ = 0;
+   *o++ = 0;
+   *o++ = 0;
+   stbiw__wpcrc(&o,13);
+
+   stbiw__wp32(o, zlen);
+   stbiw__wptag(o, "IDAT");
+   memcpy(o, zlib, zlen); o += zlen; free(zlib);
+   stbiw__wpcrc(&o, zlen);
+
+   stbiw__wp32(o,0);
+   stbiw__wptag(o, "IEND");
+   stbiw__wpcrc(&o,0);
+
+   assert(o == out + *out_len);
+
+   return out;
+}
+
+#endif // FRONTIER_STBI_WRITE_MEM

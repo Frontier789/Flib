@@ -331,7 +331,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			void setVisible(bool visible=true);
+			void setVisible(bool visible = true);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Retrive the last event
