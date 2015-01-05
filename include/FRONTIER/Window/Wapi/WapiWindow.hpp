@@ -109,7 +109,7 @@ namespace fw
 			/////////////////////////////////////////////////////////////
 			/// @brief Construct the window from its attributes
 			///
-			/// Upon internal error a message is prompted to fw::Wapi::log
+			/// Upon internal error a message is prompted to fw::fw_log 
 			///
 			/// @param x X position of the window
 			/// @param y Y position of the window
@@ -139,7 +139,7 @@ namespace fw
 			/////////////////////////////////////////////////////////////
 			/// @brief (Re)Open the window
 			///
-			/// Upon internal error a message is prompted to fw::Wapi::log
+			/// Upon internal error a message is prompted to fw::fw_log 
 			///
 			/// @param x X position of the window
 			/// @param y Y position of the window

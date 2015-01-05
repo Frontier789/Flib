@@ -77,13 +77,12 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the window from its attributes
 		///
-		/// Upon internal error a message is prompted to fw::Wapi::log
-		///
 		/// @param pos The position of the window
 		/// @param size The size of the window
 		/// @param title Title of the window
 		/// @param style Style of the window (see fw::WindowStyle)
 		/// @param parent The parent of the window
+		/// @param settings The settings (hints) for the OpenGL context
 		///
 		/////////////////////////////////////////////////////////////
 		Window(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Handle parent = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
@@ -105,18 +104,35 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		/// @brief (Re)Open the window
 		///
-		/// Upon internal error a message is prompted to fw::Wapi::log
-		///
 		/// @param pos The position of the window
 		/// @param size The size of the window
 		/// @param title Title of the window
 		/// @param style Style of the window (see fw::WindowStyle)
 		/// @param parent The parent of the window
+		/// @param settings The settings (hints) for the OpenGL context
 		///
 		/// @return True iff everything went right
 		///
 		/////////////////////////////////////////////////////////////
 		bool open(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Handle parent = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Destroy the GL context
+		///
+		/// @return True iff everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool destroyContext();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief (Re)create the GL context
+		///
+		/// @param settings The settings (hints) for the OpenGL context
+		///
+		/// @return True iff everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool createContext(fw::GLContext::Settings settings = fw::GLContext::Settings());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Check if the window is opened

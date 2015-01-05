@@ -61,6 +61,18 @@ namespace fw
 		
 		return ok1 && ok2 && ok3;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Window::destroyContext()
+	{
+		return m_context.destroy();
+	}
+
+	/////////////////////////////////////////////////////////////
+	bool Window::createContext(fw::GLContext::Settings settings)
+	{
+		return m_context.create(settings);
+	}
 
 	/////////////////////////////////////////////////////////////
 	bool Window::isOpen() const
