@@ -24,8 +24,18 @@
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
-	Keyboard::Key keyFromVK(unsigned int param)
+	Keyboard::Key keyFromVK(LPARAM param,WPARAM lParam)
 	{
+		UINT scancode = (lParam & 0x00ff0000) >> 16;
+		int  extended = (lParam & 0x01000000) != 0;
+		
+		if (param == VK_SHIFT)
+			param = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
+		if (param == VK_CONTROL)
+			param = extended ? VK_RCONTROL : VK_LCONTROL;
+		if (param == VK_MENU)
+			param = extended ? VK_RMENU : VK_LMENU;
+    
 		if (param == VK_LEFT)      return Keyboard::Left;
 		if (param == VK_RIGHT)     return Keyboard::Right;
 		if (param == VK_DOWN)      return Keyboard::Down;
@@ -303,7 +313,7 @@ namespace fw
 							m_lastDown = wParam;
 					}
 					Event ev(Event::KeyPressed);
-					ev.key.code = keyFromVK(wParam);
+					ev.key.code = keyFromVK(wParam,lParam);
 					ev.key.ctrl  = GetKeyState(VK_CONTROL);
 					ev.key.alt   = GetKeyState(VK_MENU);
 					ev.key.shift = GetKeyState(VK_SHIFT);
@@ -318,7 +328,7 @@ namespace fw
 					// remember to reset the last pressed key when released
 					m_lastDown = 0;
 					Event ev(Event::KeyReleased);
-					ev.key.code  = keyFromVK(wParam);
+					ev.key.code  = keyFromVK(wParam,lParam);
 					ev.key.ctrl  = GetKeyState(VK_CONTROL);
 					ev.key.alt   = GetKeyState(VK_MENU);
 					ev.key.shift = GetKeyState(VK_SHIFT);
