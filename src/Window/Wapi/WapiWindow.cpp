@@ -768,10 +768,11 @@ namespace fw
 			
 			// enable drag 'n' drop
 			DragAcceptFiles(m_hwnd,m_acceptDrop);
-
-			// Tell windows to show our window
-			ShowWindow(m_hwnd, SW_SHOW);
-
+			
+				// Tell windows to show our window if its not hidden
+			if (!(style & fw::Window::Hidden))
+				ShowWindow(m_hwnd, SW_SHOW);
+			
 			m_windowCount++;
 
 			return true;

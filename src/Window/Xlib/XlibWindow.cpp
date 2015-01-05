@@ -634,9 +634,6 @@ namespace fw
 
 				// enable resize
 				enableResize(style & fw::Window::Resize);
-
-				// tell X to show it
-				XMapWindow(m_disp,m_win);
 				
 				// reset storages
 				enableKeyRepeat(false);
@@ -656,6 +653,9 @@ namespace fw
 					XFreePixmap(m_disp,pmap);
 				XFreeColors(m_disp,cmap,&cblack.pixel,1,0);
 
+				// tell X to show our window if its not hidden
+				if (!(style & fw::Window::Hidden))
+					XMapWindow(m_disp,m_win);
 
 				// tell X to do what we asked, now
 				XFlush(m_disp);

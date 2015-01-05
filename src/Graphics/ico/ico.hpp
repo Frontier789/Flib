@@ -1,3 +1,19 @@
+////////////////////////////////////////////////////////////////////////// <!--
+/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+///                                                                    ///
+/// Flib is licensed under the terms of GNU GPL.                       ///
+/// Therefore you may freely use it in your project,                   ///
+/// modify it, redistribute it without any warranty on the             ///
+/// condition that this disclaimer is not modified/removed.            ///
+/// You may not misclaim the origin of this software.                  ///
+///                                                                    ///
+/// If you use this software in your program/project a                 ///
+/// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
+/// is not required but highly appreciated.                            ///
+///                                                                    ///
+/// You should have recieved a copy of GNU GPL with this software      ///
+///                                                                    ///
+////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_ICO_HPP_INCLUDED
 #define FRONTIER_ICO_HPP_INCLUDED
 
@@ -54,58 +70,78 @@ namespace Ico
 	
 	void writeImages(std::ostream &out,const std::vector<fg::Image> &imgs)
 	{
+		// write the icon header
 		IconHeader iconHead;
 		iconHead.reserved = 0;
 		iconHead.type     = 1;
 		iconHead.count    = imgs.size();
 		out.write((char*)&iconHead,sizeof(iconHead));
 		
+		// calculate the used storage by the header and the entries
 		fm::Size offsetInFile = sizeof(iconHead)+sizeof(Entry)*iconHead.count;
 		
+		// store the png files in memory until writing them
 		std::vector<unsigned char*> pngSourcesP;
 		std::vector<fm::Size> pngSourcesS;
 		fm::Size pngCounter=0;
 		
 		for (fm::Size i=0;i<iconHead.count;i++)
 		{
+			// write as png if its too big for bmp
 			bool png = false;
 			if (imgs[i].getSize().w>=256 || imgs[i].getSize().h>=256)
 			{
 				png = true;
+				
+				// create space for the data
 				pngSourcesP.push_back(NULL);
 				pngSourcesS.push_back(0);
+				
+				// write png source
 				pngSourcesP[pngCounter] = imgs[i].saveToMemory(pngSourcesS[pngCounter],"png");
 				pngCounter++;
 			}
 			
+			// fill out entry
 			Entry currentEntry;
-			currentEntry.width = imgs[i].getSize().w;
+			currentEntry.width  = imgs[i].getSize().w;
 			currentEntry.height = imgs[i].getSize().h;
 			currentEntry.colorCount = 0;
 			currentEntry.reserved = 0;
 			currentEntry.planes = 1;
 			currentEntry.bpp = 32;
+			
+			// if png then the size of the png otherwise (bmp) 32bpp for w*h +40 (header)
 			currentEntry.byteCount = png ? pngSourcesS[pngCounter-1] : sizeof(fg::Color)*imgs[i].getSize().w*imgs[i].getSize().h+40;
 			currentEntry.offsetInFile = offsetInFile;
 			
+			// write the entry
 			out.write((char*)&currentEntry,sizeof(currentEntry));
 			
+			// increment offset
 			offsetInFile += currentEntry.byteCount;
 		}
 		
+		// write bmps and pngs
 		pngCounter = 0;
 		for (fm::Size i=0;i<iconHead.count;i++)
 		{
+			// write as png if its too big for bmp
 			if (imgs[i].getSize().w>=256 || imgs[i].getSize().h>=256)
 			{
+				// write what we allocated
 				out.write((char*)pngSourcesP[pngCounter],pngSourcesS[pngCounter]);
+				
+				// and deallocate it
 				delete[] pngSourcesP[pngCounter];
 				pngCounter++;
 				continue;
 			}
 			
+			// otherwise write as bmp
 			BitmapHeader bmpH;
 			
+			// fill bmp header
 			bmpH.size = 40;
 			bmpH.width = imgs[i].getSize().w;
 			bmpH.height = imgs[i].getSize().h*2;
@@ -118,8 +154,10 @@ namespace Ico
 			bmpH.clrUsed = 0;
 			bmpH.clrImportant = 0;
 			
+			// write bmp header
 			out.write((char*)&bmpH,sizeof(bmpH));
-		
+			
+			// write raw color data
 			for (fm::Size y=0;y<imgs[i].getSize().h;y++)
 				for (fm::Size x=0;x<imgs[i].getSize().w;x++)
 				{
