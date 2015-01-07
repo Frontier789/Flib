@@ -37,22 +37,22 @@ namespace fw
 	namespace Wapi
 	{
 		unsigned int GLContext::m_contextWindowCount = 0;
-		
+
 		/////////////////////////////////////////////////////////////
 		GLContext::GLContext() : m_hdc(NULL),
 								 m_hwnd(NULL),
 								 m_hglrc(NULL),
 								 m_ownWindow(NULL)
 		{
-			
+
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		GLContext::~GLContext()
 		{
 			destroy();
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		bool GLContext::destroy()
 		{
@@ -64,7 +64,7 @@ namespace fw
 					{
 						m_hwnd = NULL;
 						m_contextWindowCount--;
-				
+
 						// If we dont have any dummy windows left we unregister our dummy window class
 						if (!m_contextWindowCount)
 							if (!UnregisterClassA(FRONTIER_DUMMY_WINDOW_CLASS, GetModuleHandle(NULL)))
@@ -81,7 +81,7 @@ namespace fw
 				}
 				m_ownWindow = false;
 			}
-			
+
 			// If we have a context then discard it
 			if (m_hglrc)
 			{
@@ -92,18 +92,18 @@ namespace fw
 				}
 				m_hglrc = NULL;
 			}
-			
+
 			// Release the DC if we have one
 			if (m_hdc)
 				ReleaseDC(m_hwnd,m_hdc),
 				m_hdc = NULL;
-			
+
 			// reset window handle
 			m_hwnd = NULL;
-			
+
 			return true;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		bool GLContext::init(HGLRC sharedContext)
 		{
@@ -114,33 +114,33 @@ namespace fw
 				fw::WapiPrintLastError(fw_log,GetDC);
 				return false;
 			}
-			
+
 			// set up pixelformet
 			if (!setPixelFormat())
 				return false;
-			
-			// wglCreateContextAttribsARB is suitable for creating GL context 3.x and above 
+
+			// wglCreateContextAttribsARB is suitable for creating GL context 3.x and above
 			while (m_settings.majorVersion >= 3)
 			{
 				// we must retrieve the function pointer ourshelves
 				HGLRC (*wglCreateContextAttribsARB)(HDC,HGLRC,const int*)  = (HGLRC (*)(HDC,HGLRC,const int*))wglGetProcAddress("wglCreateContextAttribsARB");
-				
+
 				// the function may not be available
 				if (wglCreateContextAttribsARB)
 				{
 					int attributes[] = { WGL_CONTEXT_MAJOR_VERSION_ARB, m_settings.majorVersion,
 					                   	 WGL_CONTEXT_MINOR_VERSION_ARB, m_settings.minorVersion,
-										 WGL_CONTEXT_PROFILE_MASK_ARB, m_settings.compatiblityProfile ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : 
+										 WGL_CONTEXT_PROFILE_MASK_ARB, m_settings.compatiblityProfile ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB :
 																										WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 										 0, 0};
-					
+
 					m_hglrc = wglCreateContextAttribsARB(m_hdc, sharedContext, attributes);
 				}
-				
+
 				// decrease the version
 				if (!m_hglrc)
 					m_settings.decreaseVersion();
-				
+
 				else break;
 			}
 
@@ -154,73 +154,77 @@ namespace fw
 					fw::WapiPrintLastError(fw_log,wglCreateContext);
 					return false;
 				}
-				
+
 				const unsigned char *(*glGetString)(unsigned int) = (const unsigned char *(*)(unsigned int))wglGetProcAddress("glGetString");
-				
+
 				if (glGetString)
 				{
 					unsigned int i=0;
-					
+
 					// find out what version we got
 					wglMakeCurrent(m_hdc,m_hglrc);
-					
+
 					m_settings.majorVersion = 0;
 					m_settings.minorVersion = 0;
-					const unsigned char *version = glGetString(0x1F02 /*GL_VERSION*/); // MAJOR.MINOR....(extra) 
-					
+					const unsigned char *version = glGetString(0x1F02 /*GL_VERSION*/); // MAJOR.MINOR....(extra)
+
 					// extract major version (loop until the '.')
 					for (;*(version+i) >= '0' && *(version+i) <= '9';i++)
 						m_settings.majorVersion = m_settings.majorVersion*10+*(version+i)-'0';
-					
+
 					i++; // jump the '.'
-					
+
 					// extract minor version
 					for (;*(version+i) >= '0' && *(version+i) <= '9';i++)
 						m_settings.minorVersion = m_settings.minorVersion*10+*(version+i)-'0';
-					
-					wglMakeCurrent(m_hdc,NULL);	
+
+					wglMakeCurrent(m_hdc,NULL);
 				}
 			}
-			
+
 			// share resources
 			if (sharedContext)
 				wglShareLists(m_hglrc,sharedContext);
-			
+
+            (void)sharedContext;
+
 			return true;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		bool GLContext::create(HWND windowHandle,HGLRC sharedContext,fw::GLContext::Settings settings)
 		{
 			// Start by cleaning
 			destroy();
-			
+
 			// Copy the window handle and the settings
 			m_hwnd = windowHandle;
 			m_settings = settings;
-			
+
 			// we didn't create the window here
 			m_ownWindow = false;
-			
-			return init(sharedContext);
+
+			bool ret = init(sharedContext);
+
+			return ret;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		bool GLContext::create(HGLRC sharedContext,unsigned int width,unsigned int height,fw::GLContext::Settings settings)
 		{
 			// Start by cleaning
 			destroy();
-			
+
 			// if we don't have a dummy class, create it
 			if (m_contextWindowCount == 0)
 			{
 				WNDCLASS winClass;
 				ZeroMemory(&winClass,sizeof(winClass));
-		
+
 				// Fill in the fields of the WNDCLASS
 				winClass.lpfnWndProc   = (WNDPROC)DefWindowProc;
 				winClass.lpszClassName = FRONTIER_DUMMY_WINDOW_CLASS; // The name of the dummy class
-				
+
 				// Tell windows we have a class
 				if (!RegisterClassA(&winClass))
 				{
@@ -228,37 +232,37 @@ namespace fw
 					return false;
 				}
 			}
-			
+
 			// note that we create a new window
 			m_contextWindowCount++;
-			
+
 			// create the new (hidden) window
 			m_hwnd = CreateWindowA(FRONTIER_DUMMY_WINDOW_CLASS,
 								   "dummy_window",0,
 								   CW_USEDEFAULT,CW_USEDEFAULT,width,height,
 								   NULL,NULL,NULL,NULL);
-			
+
 			if (!m_hwnd)
 			{
 				fw::WapiPrintLastError(fw_log,CreateWindowA);
 				return false;
 			}
-			
+
 			// we own this window
 			m_ownWindow = true;
-			
+
 			// copy the settings
 			m_settings = settings;
-			
+
 			return init(sharedContext);
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		bool GLContext::hasThreadGL()
 		{
 			return wglGetCurrentContext();
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		bool GLContext::setActive(bool active)
 		{
@@ -268,16 +272,16 @@ namespace fw
 				result = wglMakeCurrent(m_hdc,m_hglrc); // Then activate it
 			else
 				result = wglMakeCurrent(m_hdc,NULL);     // Otherwise deactivate the current
-			
+
 			if (!result) // Check for errors
 			{
 				fw::WapiPrintLastError(fw_log,wglMakeCurrent);
 				return false;
 			}
-			
+
 			return true;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		bool GLContext::swapBuffers()
 		{
@@ -289,31 +293,31 @@ namespace fw
 				}
 			return true;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		GLContext::Handle GLContext::getHandle() const
 		{
 			return m_hglrc;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		GLContext::operator GLContext::Handle() const
 		{
 			return m_hglrc;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		bool GLContext::setPixelFormat()
 		{
 			// fill out the pfd with our requirements
 			PIXELFORMATDESCRIPTOR descriptor;
-			
+
 			ZeroMemory(&descriptor,sizeof(descriptor));
-			
+
 			descriptor.nSize        = sizeof(PIXELFORMATDESCRIPTOR);
 			descriptor.nVersion     = 1;
 			descriptor.iLayerType   = PFD_MAIN_PLANE;
-			descriptor.dwLayerMask  = PFD_MAIN_PLANE;  
+			descriptor.dwLayerMask  = PFD_MAIN_PLANE;
 			descriptor.dwFlags      = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 			descriptor.iPixelType   = PFD_TYPE_RGBA;
 			descriptor.cColorBits   = m_settings.bitsPerPixel;
@@ -347,7 +351,7 @@ namespace fw
 
 			return true;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		const fw::GLContext::Settings &GLContext::getSettings() const
 		{

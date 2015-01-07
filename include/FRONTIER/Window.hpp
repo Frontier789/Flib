@@ -36,7 +36,7 @@ namespace fw
 
 }
 
-#include <FRONTIER/Window/GLCOntext.hpp>
+#include <FRONTIER/Window/GLContext.hpp>
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/Event.hpp>
 #include <FRONTIER/Window/FwLog.hpp>

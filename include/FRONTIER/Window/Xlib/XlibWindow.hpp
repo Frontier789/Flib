@@ -31,6 +31,11 @@
 #include <string>
 #include <deque>
 
+namespace fg
+{
+	class Image;
+}
+
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
@@ -160,7 +165,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent = None);
+			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent = None,bool toolwindow=false);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Check if the window is opened
@@ -402,14 +407,14 @@ namespace fw
 			bool isResizeEnabled() const;
 
 			/////////////////////////////////////////////////////////////
-			/// @brief Get the window's handle
+			/// @brief Set the small and the big icon of the window
 			///
-			/// If the window is closed (not opened) NULL is returned
+			/// @param icon The new icon
 			///
-			/// @return The HandleWiNDow
+			/// @return True iff the operation was successful
 			///
 			/////////////////////////////////////////////////////////////
-			::Window getHandle() const;
+			void setIcon(const fg::Image &icon);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Implicitly convert to HWND
@@ -420,6 +425,16 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			operator ::Window() const;
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Get the window's handle
+			///
+			/// If the window is closed (not opened) NULL is returned
+			///
+			/// @return The HandleWiNDow
+			///
+			/////////////////////////////////////////////////////////////
+			::Window getHandle() const;
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Set the event callback

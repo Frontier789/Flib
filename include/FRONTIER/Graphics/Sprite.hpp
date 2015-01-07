@@ -155,7 +155,7 @@ namespace fg
 		/// @param states The options used when rendering
 		///
 		/////////////////////////////////////////////////////////////
-		void draw(fg::RenderStates states) const;
+		void draw(const fg::RenderStates &states) const;
 
         /////////////////////////////////////////////////////////////
 		/// @brief Access the vertices of the sprite

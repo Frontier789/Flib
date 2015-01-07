@@ -15,6 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Xlib/XlibWindow.hpp>
+#include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
 #include <string>
@@ -581,7 +582,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent)
+		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent,bool toolwindow)
 		{
 			if (!checkDisplay())
 				return false;
@@ -590,7 +591,9 @@ namespace fw
 			close();
 
 			// ask X to create a window
-			m_win = XCreateSimpleWindow(m_disp,parent ? parent : m_rootWin,x,y,w,h,0,BlackPixel(m_disp,0),BlackPixel(m_disp,0));
+			XSetWindowAttributes wa;                                                     
+			wa.override_redirect = toolwindow ? True : False;  
+			m_win = XCreateWindow(m_disp,parent ? parent : m_rootWin,x,y,w,h,5,CopyFromParent,InputOutput,CopyFromParent,CWOverrideRedirect,&wa);
 			
 			if (m_win != (::Window)NULL)
 			{
@@ -631,9 +634,24 @@ namespace fw
 								32,PropModeReplace,
 								(unsigned char*)&hints,5);
 
+				if (toolwindow && false)
+				{
+					Atom _NET_WM_STATE_SKIP_TASKBAR = XInternAtom(m_disp,"_NET_WM_STATE_SKIP_TASKBAR",False);
+
+					XChangeProperty(m_disp,m_win,
+									m_stateAtom,XA_ATOM,
+									32,PropModeReplace,
+									(unsigned char*)&_NET_WM_STATE_SKIP_TASKBAR,1);					
+				}
+
+
+
 
 				// enable resize
 				enableResize(style & fw::Window::Resize);
+
+				// tell X to show it
+				XMapWindow(m_disp,m_win);
 				
 				// reset storages
 				enableKeyRepeat(false);
@@ -653,9 +671,6 @@ namespace fw
 					XFreePixmap(m_disp,pmap);
 				XFreeColors(m_disp,cmap,&cblack.pixel,1,0);
 
-				// tell X to show our window if its not hidden
-				if (!(style & fw::Window::Hidden))
-					XMapWindow(m_disp,m_win);
 
 				// tell X to do what we asked, now
 				XFlush(m_disp);
@@ -1031,6 +1046,69 @@ namespace fw
 		bool Window::isResizeEnabled() const
 		{
 			return m_enableRepeat;
+		}
+
+		/////////////////////////////////////////////////////////////
+		void Window::setIcon(const fg::Image &icon)
+		{
+			std::vector<fg::Color> *iconPixels = (std::vector<fg::Color> *)&icon;
+				
+			fm::Size width  =  *((fm::Size *)(iconPixels+1));
+			fm::Size height = *(((fm::Size *)(iconPixels+1))+1);
+			fm::vec2s size(width,height);
+			
+			// convert RGBA to BGRA
+			fg::Color *BGRApixels = new fg::Color[size.w*size.h];
+			for (fm::Size i=0;i<size.w*size.h;i++)
+				BGRApixels[i] = iconPixels->at(i),
+				std::swap(BGRApixels[i].r,BGRApixels[i].b);
+
+			// obtain information about X setup
+			int screen         = DefaultScreen(m_disp); 
+			Visual *visual     = DefaultVisual(m_disp,screen);
+			unsigned int depth = DefaultDepth(m_disp,screen);
+			
+			// create an image
+			XImage *xIcon      = XCreateImage(m_disp,visual,depth,ZPixmap,0,(char*)BGRApixels,size.w,size.h,32,0);
+			if (!xIcon)
+			{
+				fw_log << "XCreateImage failed" << std::endl;
+				return;
+			}
+
+			// convert image to pixmap
+			Pixmap xpixmap = XCreatePixmap(m_disp,RootWindow(m_disp,screen),size.w,size.h,depth);
+			XGCValues xgcVals;
+			GC xIconGC = XCreateGC(m_disp,xpixmap,0,&xgcVals);
+			XPutImage(m_disp,xpixmap,xIconGC,xIcon,0,0,0,0,size.w,size.h);
+			XDestroyImage(xIcon);
+			XFreeGC(m_disp,xIconGC);
+
+			// create bitmask
+			fm::Size pitch = (size.w + 7) / 8;
+			fm::Uint8 *pixelMask = new fm::Uint8[pitch * size.h];
+			fm::Uint8 *pixels = (fm::Uint8*)BGRApixels;
+			for (fm::Size x=0;x<size.h;x++)
+				for (fm::Size y=0;y<pitch;y++)
+					for (fm::Size k = 0; k < 8; k++)
+						if (y * 8 + k < size.w)
+						{
+							fm::Uint8 opacity = pixels[(y * 8 + k + x * size.w) * 4 + 3] ? 1 : 0;
+							pixelMask[y + x * pitch] |= (opacity << k);                    
+						}
+
+			// upload bitmask
+			Pixmap maskPixmap = XCreatePixmapFromBitmapData(m_disp,m_win,(char*)&pixelMask[0],size.w,size.h, 1, 0, 1);
+
+			// finally set the icon
+			XWMHints* hints = XAllocWMHints();
+			hints->flags       = IconPixmapHint | IconMaskHint;
+			hints->icon_pixmap = xpixmap;
+			hints->icon_mask   = maskPixmap;
+			XSetWMHints(m_disp, m_win, hints);
+			XFree(hints);
+			
+			XFlush(m_disp);
 		}
 
 		////////////////////////////////////////////////////////////
