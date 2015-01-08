@@ -61,9 +61,9 @@ namespace fw
 															  minorVersion(minorVersion),
 															  compatiblityProfile(compatiblityProfile)
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void GLContext::Settings::decreaseVersion()
 	{
@@ -88,13 +88,13 @@ namespace fw
 		if (majorVersion == 3 && minorVersion > 3) minorVersion = 3;
 		if (majorVersion == 4 && minorVersion > 5) minorVersion = 5;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	GLContext::GLContext() : m_context(new priv::GLContext)
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	GLContext::GLContext(priv::WindowHandle windowHandle,fw::GLContext::Settings settings) : m_context(new priv::GLContext)
 	{
@@ -106,47 +106,46 @@ namespace fw
 	{
 		create(size,settings);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	GLContext::~GLContext()
 	{
 		delete m_context;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool GLContext::setActive(bool active)
 	{
 		return m_context->setActive(active);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool GLContext::swapBuffers()
 	{
 		return m_context->swapBuffers();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool GLContext::create(priv::WindowHandle windowHandle,fw::GLContext::Settings settings)
 	{
-		bool useShared = false;
 		if (!hasThreadGL())
 		{
-			useShared = true;
-			priv::sharedContextMutex.lock();
-			priv::theSharedContext.setActive();
+			// for some strange reason an OpenGL context 
+			// is needed to be active for sharing to work properly
+			fw::priv::GLContext tmpContext;
+			tmpContext.create();
+			tmpContext.setActive();
+			bool success = m_context->create((priv::Window::Handle)windowHandle,
+											 (priv::GLContext::Handle)priv::theSharedContext.getHandle(),
+											  settings);
+			tmpContext.setActive(false);
+			return success;
 		}
 		
-		bool success = m_context->create((priv::Window::Handle)windowHandle,
-										 (priv::GLContext::Handle)priv::theSharedContext.getHandle(),
-										  settings);
-		
-		if (useShared)
-		{
-			priv::theSharedContext.setActive(false);
-			priv::sharedContextMutex.unLock();
-		}
-		
-		return success;
+		// forward the call to the implementation
+		return m_context->create((priv::Window::Handle)windowHandle,
+								 (priv::GLContext::Handle)priv::theSharedContext.getHandle(),
+								  settings);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -159,20 +158,20 @@ namespace fw
 			priv::sharedContextMutex.lock();
 			priv::theSharedContext.setActive();
 		}
-		
+
 		bool success = m_context->create((priv::GLContext::Handle)priv::theSharedContext.getHandle(),
 										  size.w,size.h,
 										  settings);
-		
+
 		if (useShared)
 		{
 			priv::theSharedContext.setActive(false);
 			priv::sharedContextMutex.unLock();
 		}
-		
+
 		return success;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool GLContext::create(fw::GLContext::Settings settings)
 	{
@@ -190,13 +189,13 @@ namespace fw
 	{
 		return priv::GLContext::hasThreadGL();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	priv::GLContext &GLContext::getOSContext()
 	{
 		return *m_context;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	const priv::GLContext &GLContext::getOSContext() const
 	{
