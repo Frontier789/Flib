@@ -204,6 +204,16 @@ namespace fw
 		static fm::vec2i getPosition(const fw::priv::Window &window);
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the cursor's distance from the upper left corner of a specific window
+		/// 
+		/// @param window The target window
+		/// 
+		/// @return Position of the cursor
+		///
+		/////////////////////////////////////////////////////////////
+		static fm::vec2i getPosition(const fw::Window &window);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Set the cursor's position
 		/// 
 		/// The position is relative to the upper left corner

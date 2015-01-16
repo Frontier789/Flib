@@ -19,6 +19,7 @@
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Window/Event.hpp>
+#include <FRONTIER/System/Mutex.hpp>
 #define FRONTIER_WAPI_WINDOW
 
 #ifndef _WIN32_WINNT
@@ -61,9 +62,10 @@ namespace fw
 			typedef bool (*EventCallback)(Window *,unsigned int,fm::UintPtr,fm::IntPtr,fm::IntPtr*);
 			
 		private:
-			static unsigned int m_windowCount; ///< The number of windows open
+			static fm::Mutex m_windowCountMutex;      ///< Protects the m_windowCount to be accessed at the same time
+			static unsigned int m_windowCount;        ///< The number of windows open
 			bool cleanUp();      ///< Internal function used to free resources
-			bool init();         ///< Internal function used at initialization
+			bool createClass();  ///< Internal function used at initialization
 			HWND m_hwnd;         ///< The id (handle) of the window
 			bool m_showCursor;   ///< Indicates whether the cursor is shown in the window
 			bool m_resizeable;   ///< Indicates whether the window can be resized on the borders
@@ -74,12 +76,19 @@ namespace fw
 			LONG m_style;        ///< Internal variable used when going to fullscreen
 			LONG m_exStyle;      ///< Internal variable used when going to fullscreen
 			HICON m_icon;        ///< The last set icon
-			EventCallback m_eventCallback; ///< Holds the handle of the event callback
+			bool m_isOpened;     ///< True iff the window opened successfully
+			EventCallback m_eventCallback;   ///< Holds the handle of the event callback
+			HWND m_ownedParent;     ///< Hidden parent (used when no taskbar indication is needed)
+			Wapi::Window *m_parent; ///< The parent of the window
+			bool m_decorActive;     ///< Indicates whether the window decoration is active
+			std::deque<Wapi::Window *> m_children; ///< The handles of the windows whose parent is this window
 
 			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that deduces the object and calls handleEvent
 			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that handles events of the window
 			std::deque<Event> m_eventQueue; ///< A queue holding the unhandled events
-
+			
+			bool recFind(Wapi::Window *ancestor,HWND hwnd); ///< Internal function used to determine if @a ancestor is the ancestor of @a hwnd
+			
 			/////////////////////////////////////////////////////////////
 			/// @brief User defined hittest
 			///
@@ -117,10 +126,11 @@ namespace fw
 			/// @param h Height of the window
 			/// @param title Title of the window
 			/// @param style Style of the window (see fw::WindowStyle)
-			/// @param toolkit True indicates that the window needs no indication in the taskbar
+			/// @param parent The parent of the window (when the parent is deactivated so is the child)
+			/// @param container The window that contains this (0 for nobody)
 			///
 			/////////////////////////////////////////////////////////////
-			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,HWND parent = 0);
+			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Wapi::Window *parent = NULL,HWND container = 0);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Default destructor
@@ -147,12 +157,24 @@ namespace fw
 			/// @param h Height of the window
 			/// @param title Title of the window
 			/// @param style Style of the window (see fw::WindowStyle)
-			/// @param toolkit True indicates that the window needs no indication in the taskbar
+			/// @param parent The parent of the window (when the parent is deactivated so is the child)
+			/// @param container The window that contains this (0 for nobody)
 			///
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,HWND parent = 0);
+			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Wapi::Window *parent = NULL,HWND container = 0);
+			
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Change the window that contains this window
+			///
+			/// @param container The window that contains this (0 for nobody)
+			///
+			/// @return True iff everything went right
+			///
+			/////////////////////////////////////////////////////////////
+			bool setContainer(HWND container);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Check if the window is opened

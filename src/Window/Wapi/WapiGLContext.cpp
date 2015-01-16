@@ -107,6 +107,13 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		bool GLContext::init(HGLRC sharedContext)
 		{
+			// deactivate context
+			HGLRC oldContext = wglGetCurrentContext();
+			HDC   oldHDC = wglGetCurrentDC();
+			
+			if (oldContext)
+				wglMakeCurrent(NULL,NULL);
+			
 			// Get DeviceContext of the window
 			m_hdc = GetDC(m_hwnd);
 			if (!m_hdc) // Check for errors
@@ -134,7 +141,7 @@ namespace fw
 																										WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 										 0, 0};
 
-					m_hglrc = wglCreateContextAttribsARB(m_hdc, sharedContext, attributes);
+					m_hglrc = wglCreateContextAttribsARB(m_hdc, NULL, attributes);
 				}
 
 				// decrease the version
@@ -184,9 +191,15 @@ namespace fw
 
 			// share resources
 			if (sharedContext)
-				wglShareLists(m_hglrc,sharedContext);
-
-            (void)sharedContext;
+				if (!wglShareLists(sharedContext,m_hglrc))
+				{
+					fw::WapiPrintLastError(fw_log,wglShareLists);
+					return false;
+				}
+			
+			// restore last context
+			if (oldContext)
+				wglMakeCurrent(oldHDC,oldContext);
 
 			return true;
 		}

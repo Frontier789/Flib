@@ -28,6 +28,13 @@
 
 namespace fw
 {
+	////////////////////////////////////////////////////////////
+	fm::vec2i Mouse::getPosition(const fw::Window &window)
+	{
+		return getPosition(window.getOSWindow());
+	}
+	
+	////////////////////////////////////////////////////////////
 	Event::EventData::EventData(KeyboardEvent key)     : key(key)     {}
 	Event::EventData::EventData(ButtonEvent mouse)     : mouse(mouse) {}
 	Event::EventData::EventData(MouseEvent pos)        : pos(pos)     {}

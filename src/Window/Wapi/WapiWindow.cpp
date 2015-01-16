@@ -19,7 +19,29 @@
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
+#include <algorithm>
 #include <string>
+/*
+BOOL destroyAndPromptW(HWND h)
+{
+	fw::fw_log << "destroying " << h << std::endl;
+	return DestroyWindow(h);
+}
+
+HWND WINAPI createAndPrimptWex(DWORD exStyles,LPCTSTR lpClassName,LPCTSTR lpWindowName,DWORD dwStyle,int x,int y,int nWidth,int nHeight,HWND hWndParent,HMENU hMenu,HINSTANCE hInstance,LPVOID lpParam)
+{
+	fw::fw_log << "excreating " << lpWindowName << std::endl;
+	HWND ret = CreateWindowEx(exStyles,lpClassName,lpWindowName,dwStyle,x,y,nWidth,nHeight,hWndParent,hMenu,hInstance,lpParam);
+	fw::fw_log << "created with id " << ret << std::endl;
+	return ret;
+}
+
+
+#define DestroyWindow destroyAndPromptW
+#define CreateWindowExA createAndPrimptWex
+*/
+
+#define WM_FACTIVATE_TREE (WM_USER + 0x0001)
 
 namespace fw
 {
@@ -97,7 +119,7 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool adjustWindowSize(unsigned int &w,unsigned int &h,DWORD style)
+	bool adjustWindowSize(unsigned int &w,unsigned int &h,DWORD style,DWORD exStyle)
 	{
 		RECT Rct;
 		Rct.top    = 100;
@@ -106,7 +128,7 @@ namespace fw
 		Rct.bottom = 150;
 
 		// we want to specify the client rect not the whole window rect
-		if (!AdjustWindowRect(&Rct,style,FALSE))
+		if (!AdjustWindowRectEx(&Rct,style,FALSE,exStyle))
 		{
 			fw::WapiPrintLastError(fw_log,AdjustWindowRect);
 			return false;
@@ -121,16 +143,18 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	DWORD getDWORDfromStyle(unsigned int &style)
 	{
+		// menus have nothing 
+		if (style & Window::Menu)
+			style = Window::Menu|Window::SkipTaskbar;
+		
 		// A resizeable window needs border
 		if (style & Window::Resize)
 			style |= Window::Border;
-		else
-			style &= ~(Window::Minimize|Window::Maximize);
 
 		// A x button needs titlebar
 		if (style & Window::Close)
 			style |= Window::Titlebar;
-
+		
 		// So does a minimize button
 		if (style & Window::Minimize)
 			style |= Window::Titlebar|Window::Close;
@@ -143,12 +167,11 @@ namespace fw
 		if (style & Window::Titlebar)
 			style |= Window::Border;
 
-
 		// convert the style to DWORD
 		// so windows understands it too
 
 		DWORD ret = WS_OVERLAPPED;
-		if (style == Window::None)
+		if (style == Window::None || style & Window::Menu)
 			ret |= WS_POPUP;
 
 		if (style & Window::Close)
@@ -168,7 +191,8 @@ namespace fw
 
 
 		if (style == Window::Border ||
-			style == Window::None)
+			style == Window::None || 
+			style & Window::Menu)
 				ret &= ~WS_OVERLAPPED;
 
 		return ret;
@@ -176,6 +200,21 @@ namespace fw
 
 	namespace Wapi
 	{
+		////////////////////////////////////////////////////////////
+		bool Window::recFind(Wapi::Window *ancestor,HWND hwnd)
+		{
+			// check if it is the one
+			if (ancestor->getHandle() == hwnd)
+				return true;
+			
+			// recursive call on every children
+			for (fm::Size i=0;i<ancestor->m_children.size();i++)
+				if (recFind(ancestor->m_children[i],hwnd))
+					return true;
+			
+			return false;
+		}
+			
 		////////////////////////////////////////////////////////////
 		LRESULT CALLBACK Window::forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
@@ -516,7 +555,7 @@ namespace fw
 					MINMAXINFO *pmmi = (MINMAXINFO*)lParam;
 					pmmi->ptMaxTrackSize.x = 420000;
 					pmmi->ptMaxTrackSize.y = 420000;
-					
+					/*
 					if (!m_resizeable)
 					{
 						// get client size
@@ -544,7 +583,7 @@ namespace fw
 
 						pmmi->ptMinTrackSize.y = h;
 						pmmi->ptMaxTrackSize.y = h;
-					}
+					}*/
 					
 					return 0;
 				}
@@ -594,6 +633,43 @@ namespace fw
 					postEvent(ev);
 					return 0;
 				}
+				
+				// decoration switched to "active" state
+				case WM_NCACTIVATE:
+				{
+					Wapi::Window *parent = this;
+					while (parent->m_parent)
+						parent = parent->m_parent;
+					
+					bool inTree = recFind(parent,(HWND)lParam);
+					
+					std::string s1,s2;
+					getTitle(s1);
+					parent->getTitle(s2);
+					
+					//fw_log << "WM_NCACTIVATE wParam="<<wParam<<" lParam="<<lParam<<" name="<<s1<<" parent="<<s2<<" inTree="<<inTree<<std::endl; 
+					
+					if (inTree)
+						wParam = 1;
+					else
+						SendMessage(parent->getHandle(),WM_FACTIVATE_TREE,wParam,lParam);
+					
+					m_decorActive = wParam;
+				}
+				
+				// custom message (WM_USER+1)
+				case WM_FACTIVATE_TREE:
+				{
+					// forward to children
+					for (fm::Size i=0;i<m_children.size();i++)
+						SendMessage(m_children[i]->getHandle(),WM_FACTIVATE_TREE,wParam,lParam);
+					
+					
+					// save decor state
+					m_decorActive = wParam;
+					
+					return DefWindowProc(hwnd, WM_NCACTIVATE, wParam, lParam);
+				}
 
 				// by default let windows handle it
 				default:
@@ -606,6 +682,9 @@ namespace fw
 
 		////////////////////////////////////////////////////////////
 		unsigned int Window::m_windowCount = 0;
+		
+		////////////////////////////////////////////////////////////
+		fm::Mutex Window::m_windowCountMutex;
 
 		////////////////////////////////////////////////////////////
 		Window::Window() : m_hwnd(NULL),
@@ -616,25 +695,33 @@ namespace fw
 						   m_acceptDrop(false),
 						   m_lastDown(0),
 						   m_icon(NULL),
+						   m_isOpened(false),
 						   m_eventCallback(NULL),
+						   m_ownedParent(NULL),
+						   m_parent(NULL),
+						   m_decorActive(false),
 						   m_cursorHitTest(NULL)
 		{
 
 		}
 
 		////////////////////////////////////////////////////////////
-		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,HWND parent) : m_hwnd(NULL),
-																															m_showCursor(true),
-																															m_resizeable(true),
-																															m_enableRepeat(false),
-																															m_cursorInside(false),
-																															m_acceptDrop(false),
-																															m_lastDown(0),
-																															m_icon(NULL),
-																															m_eventCallback(NULL),
-																															m_cursorHitTest(NULL)
+		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Wapi::Window *parent,HWND container) : m_hwnd(NULL),
+																																					m_showCursor(true),
+																																					m_resizeable(true),
+																																					m_enableRepeat(false),
+																																					m_cursorInside(false),
+																																					m_acceptDrop(false),
+																																					m_lastDown(0),
+																																					m_icon(NULL),
+																																					m_isOpened(false),
+																																					m_eventCallback(NULL),
+																																					m_ownedParent(NULL),
+																																					m_parent(NULL),
+																																					m_decorActive(false),
+																																					m_cursorHitTest(NULL)
 		{
-			open(x,y,w,h,title,style,parent);
+			open(x,y,w,h,title,style,parent,container);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -646,31 +733,57 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		bool Window::cleanUp()
 		{
-			if (m_hwnd) // if the window was valid we destroy it
+			// destrox children properly
+			std::deque<Wapi::Window *> children = m_children;
+			fm::Size count = children.size();
+			for (fm::Size i = 0;i<count;i++)
+				children[i]->close();
+			
+			m_children.clear();
+			
+			// delete window
+			if (m_hwnd)
 			{
-				if (DestroyWindow(m_hwnd))
-				{
-					m_hwnd = NULL;
-					m_windowCount--;
-
-					// If we dont have any windows left we unregister our window class
-					if (!m_windowCount)
-					{
-						if (UnregisterClassA(FRONTIER_WINDOWS_CLASS_NAME, GetModuleHandle(NULL)))
-							return true;
-						else
-						{
-							fw::WapiPrintLastError(fw_log,UnregisterClassA);
-							return false;
-						}
-					}
-				}
-				else
-				{
+				if (!DestroyWindow(m_hwnd))
 					fw::WapiPrintLastError(fw_log,DestroyWindow);
-					return false;
-				}
+				
+				m_hwnd = NULL;
 			}
+			
+			
+			// decrease window count
+			if (m_isOpened)
+			{
+				m_windowCountMutex.lock();
+				m_windowCount--;
+				if (!m_windowCount) // unregister class if no more windows
+					if (!UnregisterClassA(FRONTIER_WINDOWS_CLASS_NAME, GetModuleHandle(NULL)))
+						fw::WapiPrintLastError(fw_log,UnregisterClassA);
+				m_windowCountMutex.unLock();
+				
+				m_isOpened = false;
+			}
+			
+			// delete owned parent
+			if (m_ownedParent)
+			{
+				if (!DestroyWindow(m_ownedParent))
+					fw::WapiPrintLastError(fw_log,DestroyWindow);
+				
+				m_ownedParent = NULL;
+			}
+			
+			
+			// unregister this from parent's children
+			if (m_parent)
+			{
+				std::deque<Wapi::Window *>::iterator it = std::find(m_parent->m_children.begin(),m_parent->m_children.end(),this);
+				if (it != m_parent->m_children.end())
+					m_parent->m_children.erase(it);
+				
+				m_parent = NULL;
+			}
+			
 			
 			// destroy icon
 			if (m_icon)
@@ -681,69 +794,78 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::init()
+		bool Window::createClass()
 		{
-			// having no window means we must register a WNDCLASS
-			if (m_windowCount==0)
-			{
-				WNDCLASS winClass;
-				
-				ZeroMemory(&winClass,sizeof(winClass));
+			WNDCLASS winClass;
+			
+			ZeroMemory(&winClass,sizeof(winClass));
 
-				// Fill in the fields of the WNDCLASS
-				winClass.style         = 0;
-				winClass.lpfnWndProc   = Window::forwardEvent; // When a event occures this function is called
-				winClass.cbClsExtra    = 0;
-				winClass.cbWndExtra    = 0;
-				winClass.hInstance     = GetModuleHandle(NULL);
-				winClass.hIcon         = NULL;
-				winClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-				winClass.hbrBackground = NULL;
-				winClass.lpszMenuName  = NULL;
-				winClass.lpszClassName = FRONTIER_WINDOWS_CLASS_NAME; // The name of the class
+			// Fill in the fields of the WNDCLASS
+			winClass.style         = 0;
+			winClass.lpfnWndProc   = Window::forwardEvent; // When a event occures this function is called
+			winClass.cbClsExtra    = 0;
+			winClass.cbWndExtra    = 0;
+			winClass.hInstance     = GetModuleHandle(NULL);
+			winClass.hIcon         = NULL;
+			winClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+			winClass.hbrBackground = NULL;
+			winClass.lpszMenuName  = NULL;
+			winClass.lpszClassName = FRONTIER_WINDOWS_CLASS_NAME; // The name of the class
 
-				// Tell windows we have a class
-				if (RegisterClassA(&winClass))
-					return true;
-				else
-				{
-					fw::WapiPrintLastError(fw_log,RegisterClassA);
-					return false;
-				}
-			}
-
-			// set default cursor
-			m_showCursor = true;
-
-			// disable keyrepeat
-			m_enableRepeat = false;
-
-			// reset resize
-			m_resizeable = true;
-
-			// set last pressed key to unknown
-			m_lastDown = 0;
-
-			return true;
+			// Tell windows we have a class
+			if (RegisterClassA(&winClass))
+				return true;
+			
+			fw::WapiPrintLastError(fw_log,RegisterClassA);
+			return false;
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,HWND parent)
+		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Wapi::Window *parent,HWND container)
 		{
 			// clean our resources before (re)creating
 			cleanUp();
-			init();
 
+			// reset values
+			m_showCursor = true;
+			m_enableRepeat = false;
+			m_resizeable = true;
+			m_lastDown = 0;
+
+			// convert style to dword
 			DWORD createStyle = getDWORDfromStyle(style);
-
+			
+			m_parent = parent;
+			
+			if (m_parent)
+				m_parent->m_children.push_back(this);
+			
+			// if the window shouldn't appear on the taskbar (automatic for WS_EX_TOOLWINDOW)
+			// create a hidden parent
+			if ((style & fw::Window::SkipTaskbar) && !m_parent)
+				m_ownedParent = CreateWindowExA(0,FRONTIER_WINDOWS_CLASS_NAME,"invisible window",0,0,0,1,1,NULL,NULL,NULL,NULL);
+			
+			// update windowCount
+			m_windowCountMutex.lock();
+			if (m_windowCount==0)
+				createClass();
+			m_windowCount++;
+			m_windowCountMutex.unLock();
+			
+			
 			// initialize the window
-			m_hwnd = CreateWindowA(FRONTIER_WINDOWS_CLASS_NAME,
-								   title.c_str(),
-								   createStyle,
-								   x,y,10,10,
-								   parent,
-								   NULL,NULL,
-								   this); // set createdata to 'this'
+			m_hwnd = CreateWindowExA(((style & fw::Window::Toolbar) ? WS_EX_TOOLWINDOW : 0),
+									 FRONTIER_WINDOWS_CLASS_NAME,
+									 title.c_str(),
+									 createStyle,
+									 x,y,10,10,
+									 m_parent ? m_parent->getHandle() : m_ownedParent,
+									 NULL,NULL,
+									 this); // set createdata to 'this'
+			
+			// SetParent raises the window even if container is NULL
+			if (container)
+				SetParent(m_hwnd,container);
 			
 			// windows wouldn't let us initially create a window bigger than the screen
 			setSize(w,h);
@@ -753,10 +875,15 @@ namespace fw
 
 			if(!m_hwnd)
 			{
-				// yet again if we fail...
+				// if we fail...
 				fw::WapiPrintLastError(fw_log,CreateWindow);
+				
+				m_isOpened = false;
+				
 				return false;
 			}
+			else 
+				m_isOpened = true;
 			
 			// note the window's style
 			m_style   = GetWindowLongPtr(m_hwnd, GWL_STYLE);
@@ -769,12 +896,12 @@ namespace fw
 			// enable drag 'n' drop
 			DragAcceptFiles(m_hwnd,m_acceptDrop);
 			
-				// Tell windows to show our window if its not hidden
-			if (!(style & fw::Window::Hidden))
-				ShowWindow(m_hwnd, SW_SHOW);
 			
-			m_windowCount++;
-
+			// Tell windows to show our window if its not hidden
+			if (!(style & fw::Window::Hidden))
+				ShowWindow(m_hwnd,(style & (fw::Window::Menu|fw::Window::Toolbar)) ? SW_SHOWNOACTIVATE : SW_SHOW);
+			
+			
 			return true;
 		}
 
@@ -887,14 +1014,14 @@ namespace fw
 		{
 			if (m_hwnd)
 			{
-				if (!adjustWindowSize(w,h,GetWindowLong(m_hwnd,GWL_STYLE)))
+				if (!adjustWindowSize(w,h,GetWindowLong(m_hwnd,GWL_STYLE),GetWindowLong(m_hwnd,GWL_EXSTYLE)))
 					return false;
 				
 				if (!SetWindowPos(m_hwnd, // target HWND
 								  NULL,   // Z-order specifier
 								  x,y,    // new position
 								  w,h,    // new size
-								  SWP_NOREPOSITION|SWP_NOACTIVATE))
+								  SWP_NOREPOSITION|SWP_NOZORDER|SWP_NOACTIVATE))
 					{
 						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
@@ -939,7 +1066,7 @@ namespace fw
 								  NULL,   // Z-order specifier
 								  x,y,    // new position
 								  0,0,    // new size                  (ignored because of SWP_NOSIZE)
-								  SWP_NOREPOSITION|SWP_NOSIZE|SWP_NOACTIVATE))
+								  SWP_NOREPOSITION|SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE))
 					{
 						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
@@ -977,14 +1104,14 @@ namespace fw
 		{
 			if (m_hwnd)
 			{
-				if (!adjustWindowSize(w,h,GetWindowLong(m_hwnd,GWL_STYLE)))
+				if (!adjustWindowSize(w,h,GetWindowLong(m_hwnd,GWL_STYLE),GetWindowLong(m_hwnd,GWL_EXSTYLE)))
 					return false;
 
 				if (!SetWindowPos(m_hwnd, // target HWND
 								  NULL,   // Z-order specifier
 								  0,0,    // new position (ignored because of SWP_NOMOVE)
 								  w,h,    // new size
-								  SWP_NOREPOSITION|SWP_NOMOVE|SWP_NOACTIVATE))
+								  SWP_NOREPOSITION|SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE))
 					{
 						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
@@ -1238,7 +1365,7 @@ namespace fw
 					SetWindowLongPtr(m_hwnd, GWL_STYLE,m_style|WS_VISIBLE);
 					
 					
-					if (!adjustWindowSize(width,height,m_style))
+					if (!adjustWindowSize(width,height,m_style,m_exStyle))
 						return false;
 					
 					// set notopmost

@@ -38,9 +38,9 @@ struct HGLRC__;
 			typedef fw::Wapi::GLContext GLContext;
 			typedef HWND__  *WindowHandle;
 			typedef HGLRC__ *ContextHandle;
-			
+
 			typedef bool (*WindowEventCallback)(Window*,unsigned int,fm::UintPtr,fm::IntPtr,fm::IntPtr*);
-			
+
 		}
 	}
 #elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
@@ -61,11 +61,23 @@ union _XEvent;
 			typedef fw::Xlib::GLContext GLContext;
 			typedef fm::Uint32 WindowHandle;
 			typedef __GLXcontextRec *ContextHandle;
-			
+
 			typedef bool (*WindowEventCallback)(Window*,_XEvent&);
 		}
 	}
 #else
+	namespace fw
+	{
+		namespace priv
+		{
+			typedef void *Window;
+			typedef void *GLContext;
+			typedef void *WindowHandle;
+			typedef void *ContextHandle;
+
+			typedef bool (*WindowEventCallback)(Window*);
+		}
+	}
 	#warning No window nor glcontext!
 	#define FRONTIER_NO_WINDOW
 	#define FRONTIER_NO_CONTEXT

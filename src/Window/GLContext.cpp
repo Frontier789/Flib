@@ -127,7 +127,7 @@ namespace fw
 
 	/////////////////////////////////////////////////////////////
 	bool GLContext::create(priv::WindowHandle windowHandle,fw::GLContext::Settings settings)
-	{
+	{/*
 		if (!hasThreadGL())
 		{
 			// for some strange reason an OpenGL context 
@@ -140,7 +140,7 @@ namespace fw
 											  settings);
 			tmpContext.setActive(false);
 			return success;
-		}
+		}*/
 		
 		// forward the call to the implementation
 		return m_context->create((priv::Window::Handle)windowHandle,
@@ -150,7 +150,7 @@ namespace fw
 
 	/////////////////////////////////////////////////////////////
 	bool GLContext::create(const fm::vec2s &size,fw::GLContext::Settings settings)
-	{
+	{/*
 		bool useShared = false;
 		if (!hasThreadGL())
 		{
@@ -158,16 +158,16 @@ namespace fw
 			priv::sharedContextMutex.lock();
 			priv::theSharedContext.setActive();
 		}
-
+*/
 		bool success = m_context->create((priv::GLContext::Handle)priv::theSharedContext.getHandle(),
 										  size.w,size.h,
 										  settings);
 
-		if (useShared)
+	/*	if (useShared)
 		{
 			priv::theSharedContext.setActive(false);
 			priv::sharedContextMutex.unLock();
-		}
+		}*/
 
 		return success;
 	}

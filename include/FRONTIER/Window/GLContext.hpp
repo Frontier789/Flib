@@ -22,8 +22,6 @@
 #include <FRONTIER/System/macros/API.h>
 #define FRONTIER_GLCONTEXT
 
-#ifndef FRONTIER_NO_CONTEXT
-
 namespace fw
 {
 	class GLContext;
@@ -32,54 +30,54 @@ namespace fw
 		extern fw::GLContext theSharedContext;
 		class theSharedContextInitializer;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief GLContext
-	/// 
+	///
 	/// @ingroup Window
-	/// 
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API GLContext : public fm::NonCopyable
 	{
 		priv::GLContext *m_context;
 	public:
-		
+
 		typedef GLContext &reference;
 		typedef const GLContext &const_reference;
-		
+
 		typedef priv::ContextHandle Handle; ///< The undelying handle type
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Holds the attributes of a OpenGL context
-		/// 
+		///
 		/// @ingroup Window
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		class FRONTIER_API Settings
 		{
 		public:
 			typedef Settings &reference;
 			typedef const Settings &const_reference;
-			
+
 			unsigned char bitsPerPixel; ///< The number of bits describing a pixel (usually 32)
 			unsigned char depthBits;    ///< The number of bits holding the depth value
 			unsigned char stencilBits;  ///< The number of stencil bits
-			unsigned char majorVersion; ///< The major OpenGL version 
-			unsigned char minorVersion; ///< The minor OpenGL version 
+			unsigned char majorVersion; ///< The major OpenGL version
+			unsigned char minorVersion; ///< The minor OpenGL version
 			bool compatiblityProfile;   ///< Indicates that the context is backward compatible
-			
+
 			/////////////////////////////////////////////////////////////
 			/// @brief Default constructor
-			/// 
+			///
 			/// If an attribute is 0 it means default value
-			/// 
+			///
 			/// @param bitsPerPixel The number of bits describing a pixel (usually 32)
 			/// @param depthBits    The number of bits holding the depth value
 			/// @param stencilBits  The number of stencil bits
-			/// @param majorVersion The major OpenGL version 
-			/// @param minorVersion The minor OpenGL version 
+			/// @param majorVersion The major OpenGL version
+			/// @param minorVersion The minor OpenGL version
 			/// @param compatiblityProfile Indicates that the context is backward compatible
-			/// 
+			///
 			/////////////////////////////////////////////////////////////
 			Settings(unsigned char bitsPerPixel = 32,
 					 unsigned char depthBits    = 24,
@@ -90,7 +88,7 @@ namespace fw
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Decreases the OpenGL version AND keeps it valid (max knwown is 4.5)
-			/// 
+			///
 			/// Known versions are:
 			/// 	4.5 (2014)
 			/// 	4.4 (2013)
@@ -111,7 +109,7 @@ namespace fw
 			/// 	1.1 (1997)
 			/// 	1.0 (1992)
 			/// Above 4.5 every version is considered valid
-			/// 
+			///
 			/////////////////////////////////////////////////////////////
 			void decreaseVersion();
 		};
@@ -188,7 +186,7 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		bool create(const fm::vec2s &size,fw::GLContext::Settings settings = fw::GLContext::Settings());
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Initializes the context without a visible window
 		///
@@ -258,11 +256,9 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		const fw::GLContext::Settings &getSettings() const;
-		
+
 		friend class priv::theSharedContextInitializer;
 	};
 }
-
-#endif // FRONTIER_NO_CONTEXT
 
 #endif // FRONTIER_GLCONTEXT_INCLUDED

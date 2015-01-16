@@ -25,7 +25,6 @@
 #define FRONTIER_WINDOW
 #include <string>
 
-#ifndef FRONTIER_NO_WINDOW
 namespace fw
 {
 	class Event;
@@ -38,14 +37,14 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Window : public fm::NonCopyable
 	{
-		priv::Window *m_window;
-		fw::GLContext m_context;
+		priv::Window *m_window;  ///< The underlying implementation
+		fw::GLContext m_context; ///< The window has a context too
 	public:
 		typedef Window &reference;
 		typedef const Window &const_reference;
 
 		typedef priv::WindowHandle Handle; ///< The window handle type
-		typedef priv::WindowEventCallback EventCallback; //< The type of the event callback (os specific)
+		typedef priv::WindowEventCallback EventCallback; ///< The type of the event callback (os specific)
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Enumeration used to indicate window style
@@ -54,16 +53,19 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		enum WindowStyle {
-			None       = 0x00000000,
-			Close      = 0x00000001,
-			Border     = 0x00000010,
-			Resize     = 0x00000100,
-			Hidden     = 0x00001000,
-			Minimize   = 0x00010000,
-			Maximize   = 0x00100000,
-			Titlebar   = 0x01000000,
-			Fullscreen = 0x10000000,
-			Default    = 0x01111111
+			None        = 0x000, // The window is borderless
+			Menu        = 0x001, // The window is borderless and not shown in the taskbar
+			Close       = 0x002, // The window has a close button (adds Border and Titlebar)
+			Border      = 0x004, // The window has border
+			Resize      = 0x008, // The window is resizeable (adds Border)
+			Hidden      = 0x010, // The window is not set visible when created
+			Toolbar     = 0x020, // The window is a floating toolbar
+			Minimize    = 0x040, // The window has minimize button (adds Border and Titlebar)
+			Maximize    = 0x080, // The window has maximize button (adds Border and Titlebar)
+			Titlebar    = 0x100, // The window has titlebar (adds Border)
+			Fullscreen  = 0x200, // The window is fullscreen
+			SkipTaskbar = 0x400, // The window is not shown in the taskbar
+			Default     = 0x1CE  // The window is an ordinary window
 		};
 
 		/////////////////////////////////////////////////////////////
@@ -81,11 +83,12 @@ namespace fw
 		/// @param size The size of the window
 		/// @param title Title of the window
 		/// @param style Style of the window (see fw::WindowStyle)
-		/// @param parent The parent of the window
+		/// @param parent The parent of the window (when the parent is deactivated so is the child)
+		/// @param container The window that contains the new one
 		/// @param settings The settings (hints) for the OpenGL context
 		///
 		/////////////////////////////////////////////////////////////
-		Window(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Handle parent = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
+		Window(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Window *parent = 0,Handle container = NULL,fw::GLContext::Settings settings = fw::GLContext::Settings());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -108,13 +111,14 @@ namespace fw
 		/// @param size The size of the window
 		/// @param title Title of the window
 		/// @param style Style of the window (see fw::WindowStyle)
-		/// @param parent The parent of the window
+		/// @param parent The parent of the window (when the parent is deactivated so is the child)
+		/// @param container The window that contains the new one
 		/// @param settings The settings (hints) for the OpenGL context
 		///
 		/// @return True iff everything went right
 		///
 		/////////////////////////////////////////////////////////////
-		bool open(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Handle parent = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
+		bool open(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Window *parent = 0,Handle container = NULL,fw::GLContext::Settings settings = fw::GLContext::Settings());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Destroy the GL context
@@ -123,7 +127,7 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		bool destroyContext();
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief (Re)create the GL context
 		///
@@ -439,42 +443,40 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		priv::Window &getOSWindow();
 	};
-	
+
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator |
-	/// 
+	///
 	/// @param left Left operand
 	/// @param right Right operand
-	/// 
+	///
 	/// @return left|right casted to fw::Window::WindowStyle
 	///
 	/////////////////////////////////////////////////////////////
 	Window::WindowStyle operator|(const Window::WindowStyle &left,const Window::WindowStyle &right);
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator &
-	/// 
+	///
 	/// @param left Left operand
 	/// @param right Right operand
-	/// 
+	///
 	/// @return left|right casted to fw::Window::WindowStyle
 	///
 	/////////////////////////////////////////////////////////////
 	Window::WindowStyle operator&(const Window::WindowStyle &left,const Window::WindowStyle &right);
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of unary operator ~
-	/// 
+	///
 	/// @param left Left operand
 	/// @param right Right operand
-	/// 
+	///
 	/// @return ~style casted to fw::Window::WindowStyle
 	///
 	/////////////////////////////////////////////////////////////
 	Window::WindowStyle operator~(const Window::WindowStyle &style);
 }
-
-#endif // FRONTIER_NO_WINDOW
 
 #endif // FRONTIER_WINDOW_HPP_INCLUDED
