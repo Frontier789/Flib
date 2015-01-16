@@ -11,7 +11,7 @@
 /// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
 /// is not required but highly appreciated.                            ///
 ///                                                                    ///
-/// You should have recieved a copy of GNU GPL with this software      ///
+/// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Xlib/XlibWindow.hpp>
@@ -176,8 +176,6 @@ namespace fw
 			// A resizeable window needs border
 			if (style & fw::Window::Resize)
 				style |= fw::Window::Border;
-			else
-				style &= ~(fw::Window::Minimize|fw::Window::Maximize);
 
 			// A x button needs titlebar
 			if (style & fw::Window::Close)

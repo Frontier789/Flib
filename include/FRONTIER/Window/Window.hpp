@@ -11,7 +11,7 @@
 /// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
 /// is not required but highly appreciated.                            ///
 ///                                                                    ///
-/// You should have recieved a copy of GNU GPL with this software      ///
+/// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_WINDOW_HPP_INCLUDED
@@ -88,7 +88,7 @@ namespace fw
 		/// @param settings The settings (hints) for the OpenGL context
 		///
 		/////////////////////////////////////////////////////////////
-		Window(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Window *parent = 0,Handle container = NULL,fw::GLContext::Settings settings = fw::GLContext::Settings());
+		Window(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Window *parent = NULL,Handle container = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -118,7 +118,7 @@ namespace fw
 		/// @return True iff everything went right
 		///
 		/////////////////////////////////////////////////////////////
-		bool open(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Window *parent = 0,Handle container = NULL,fw::GLContext::Settings settings = fw::GLContext::Settings());
+		bool open(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Window *parent = NULL,Handle container = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Destroy the GL context

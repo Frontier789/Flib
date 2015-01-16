@@ -11,443 +11,1157 @@
 /// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
 /// is not required but highly appreciated.                            ///
 ///                                                                    ///
-/// You should have recieved a copy of GNU GPL with this software      ///
+/// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_XLIB_WINDOW_INCLUDED
-#define FRONTIER_XLIB_WINDOW_INCLUDED
-#include <FRONTIER/System/NonCopyable.hpp>
-#include <FRONTIER/System/macros/API.h>
-#include <FRONTIER/Window/Event.hpp>
-#define FRONTIER_XLIB_WINDOW
-
-#define XK_MISCELLANY
-#include <X11/keysymdef.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-#include <X11/Xlib.h>
-#include <X11/Xos.h>
-
+#include <FRONTIER/Window/Xlib/XlibWindow.hpp>
+#include <FRONTIER/Graphics/Image.hpp>
+#include <FRONTIER/Window/Window.hpp>
+#include <FRONTIER/Window/FwLog.hpp>
+#include <algorithm>
 #include <string>
-#include <deque>
+#include <vector>
 
-namespace fg
+#define MOTIF_HINTS_FUNCTIONS   1
+#define MOTIF_HINTS_DECORATIONS 2
+#define MOTIF_DECOR_BORDER      2
+#define MOTIF_DECOR_RESIZEH     4
+#define MOTIF_DECOR_TITLE       8
+#define MOTIF_DECOR_MENU        16
+#define MOTIF_DECOR_MINIMIZE    32
+#define MOTIF_DECOR_MAXIMIZE    32
+#define MOTIF_FUNC_RESIZE       2
+#define MOTIF_FUNC_MOVE         4
+#define MOTIF_FUNC_MINIMIZE     8
+#define MOTIF_FUNC_MAXIMIZE     16
+#define MOTIF_FUNC_CLOSE        32
+
+class MotifHints
 {
-	class Image;
+public:
+	unsigned long flags;
+	unsigned long functions;
+	unsigned long decorations;
+	long          inputMode;
+	unsigned long state;
+};
+
+std::string getProperty(Display *disp,Window win,Atom property,Atom rtype,bool del=false)
+{
+	std::string ret;
+	int format;
+	unsigned long nitems, after = 1;
+	long offset = 0;
+	Atom type = None;
+	char *data;
+	long rsize = XMaxRequestSize(disp)-10;
+	while(after > 0) 
+	{
+		if(XGetWindowProperty(disp,win,property,offset,rsize,del ? True : False,
+	                          rtype,&type,&format,&nitems,&after,(unsigned char **)&data) != Success)
+	    	break;
+	    if(type == None)
+	        break;
+		if(data) 
+		{
+			char *ptr = data;
+			for (unsigned int i=0;i<nitems * format / 8;i++,ptr++)
+				ret+=*ptr;
+			XFree(data);
+			offset += nitems / (32 / format);
+		}
+		else
+			break;
+	}
+	return ret;
+}
+std::vector<int> getPropertyInts(Display *disp,Window win,Atom property,Atom rtype,bool del=false)
+{
+	std::vector<int> ret;
+	std::string str = getProperty(disp,win,property,rtype,del);
+	const long int *ptr = (const long int *)(&str[0]);
+	const long int *lim = ptr + str.length()/sizeof(long int);
+	ret.reserve(str.length()/sizeof(long int));
+	while(ptr != lim)
+		ret.push_back(*ptr++);
+	return ret;
 }
 
 namespace fw
 {
-	/////////////////////////////////////////////////////////////
-	///
-	/// 	@brief Classes related to xlib are held in this namespace
-	///
-	/////////////////////////////////////////////////////////////
-	namespace Xlib
+	namespace Xlib 
 	{
-		/////////////////////////////////////////////////////////////
-		/// @brief Used by fw::Xlib::Window for storing DragNDrop related atoms
-		///
-		/////////////////////////////////////////////////////////////
-		class XdndAtoms
+		/////////////////////////////////////////////////////////////		
+		void XdndAtoms::init(Display *disp)
 		{
-		public:
-			Atom XdndAware;      ///< Holds the atom named "XdndAware"
-			Atom XdndPosition;   ///< Holds the atom named "XdndPosition"
-			Atom XdndEnter;      ///< Holds the atom named "XdndEnter"
-			Atom XdndStatus;     ///< Holds the atom named "XdndStatus"
-			Atom XdndDrop;       ///< Holds the atom named "XdndDrop"
-			Atom XdndSelection;  ///< Holds the atom named "XdndSelection"
-			Atom XdndFinished;   ///< Holds the atom named "XdndFinished"
-			Atom XdndActionCopy; ///< Holds the atom named "XdndActionCopy"
-			Atom XdndTypeList;   ///< Holds the atom named "XdndTypeList"
-			Atom exchangeAtom;   ///< Holds the atom named "exchangeAtom"
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Fills in the atoms' values
-			/// 
-			/// @param disp The connection to the X server
-			/// 
-			/////////////////////////////////////////////////////////////
-			void init(Display *disp);
-		};
-
+			XdndAware      = XInternAtom(disp,"XdndAware",False);
+			XdndPosition   = XInternAtom(disp,"XdndPosition",False);
+			XdndEnter      = XInternAtom(disp,"XdndEnter",False);
+			XdndStatus     = XInternAtom(disp,"XdndStatus",False);
+			XdndDrop       = XInternAtom(disp,"XdndDrop",False);
+			XdndSelection  = XInternAtom(disp,"XdndSelection",False);
+			XdndFinished   = XInternAtom(disp,"XdndFinished",False);
+			XdndActionCopy = XInternAtom(disp,"XdndActionCopy",False);
+			XdndTypeList   = XInternAtom(disp,"XdndTypeList",False);
+			exchangeAtom   = XInternAtom(disp,"FRONTIER_EXCHANGE_ATOM",False);
+		}
+				
 		/////////////////////////////////////////////////////////////
-		///
-		/// 	@brief Class used to open, resize and process events of a window in X
-		///
-		/////////////////////////////////////////////////////////////
-		class FRONTIER_API Window : public fm::NonCopyable
+		Keyboard::Key keyFromKS(unsigned int param)
 		{
-		public:
-			typedef bool (*EventCallback)(Window *,XEvent &);
+			if (param == XK_Left)          return Keyboard::Left; 
+			if (param == XK_Right)         return Keyboard::Right;  
+			if (param == XK_Down)          return Keyboard::Down; 
+			if (param == XK_Up)            return Keyboard::Up;
+			if (param == XK_Escape)        return Keyboard::Escape;   
+			if (param == XK_Return)        return Keyboard::Enter;   
+			if (param == XK_Sys_Req)       return Keyboard::PrintScreen;    
+			if (param == XK_Scroll_Lock)   return Keyboard::ScrollLock;        
+			if (param == XK_Pause)         return Keyboard::PauseBreak;  
+			if (param == XK_BackSpace)     return Keyboard::Backspace;      
+			if (param == XK_Insert)        return Keyboard::Insert;   
+			if (param == XK_Delete)        return Keyboard::Delete;   
+			if (param == XK_Home)          return Keyboard::Home; 
+			if (param == XK_End)           return Keyboard::End;
+			if (param == XK_Page_Up)       return Keyboard::PageUp;    
+			if (param == XK_Page_Down)     return Keyboard::PageDown;      
+			if (param == XK_KP_Divide)     return Keyboard::Divide;      
+			if (param == XK_KP_Multiply)   return Keyboard::Multiply;        
+			if (param == XK_KP_Subtract)   return Keyboard::Minus;        
+			if (param == XK_KP_Add)        return Keyboard::Plus;   
+			if (param == XK_KP_Separator)  return Keyboard::Comma;         
+			if (param == XK_Tab)           return Keyboard::Tab;
+			if (param == XK_Caps_Lock)     return Keyboard::CapsLock;      
+			if (param == XK_Shift_L)       return Keyboard::LShift;    
+			if (param == XK_Shift_R)       return Keyboard::RShift;    
+			if (param == XK_Control_L)     return Keyboard::LCtrl;      
+			if (param == XK_Control_R)     return Keyboard::RCtrl;      
+			if (param == XK_Super_L)       return Keyboard::LSuper;    
+			if (param == XK_Super_R)       return Keyboard::RSuper;    
+			if (param == XK_Print)         return Keyboard::Print;  
+			if (param == XK_Alt_L)         return Keyboard::LAlt;  
+			if (param == XK_Alt_R)         return Keyboard::RAlt;  
+			if (param == XK_space)         return Keyboard::Space;
 			
-		private:
-			std::deque<Event> m_eventQueue; ///< A queue holding the unhandled events
-			void processEvent(XEvent &xev); ///< Internal function used to convert xevents
-			bool checkDisplay(); ///< Internal function
-			bool m_opened;       ///< Indicates whether the window is open
-			bool m_enableRepeat; ///< Indicates whether key repeat is enabled
-			KeySym m_lastDown;   ///< Holds the last pressed key
-			Display *m_disp;     ///< The connection to the x server
-			Atom m_delAtom;      ///< The id of the window deletion message
-			Atom m_stateAtom;    ///< The id of the window state
-			bool m_resizeable;   ///< Indicates whether the window can be resized on the borders
-			unsigned int m_prevW;       ///< The width after the last resize
-			unsigned int m_prevH;       ///< The height after the last resize
-			Atom m_stateHiddenAtom;     ///< The id of the hidden state
-			Atom m_maxHorAtom;          ///< The id of the horizontally maximization state
-			Atom m_maxVertAtom;         ///< The id of the vertical maximization state
-			Atom m_uri_listAtom;        ///< The id of the uri list storing
-			bool m_supportUriList;      ///< Indicates whether the dropped data is uri list
-			Cursor m_emptyCursor;       ///< Cannot "hide" the cursor so display this empty one instead
-			XdndAtoms m_xdndAtoms;      ///< Holds the dragNdrop related atoms
-			mutable ::Window m_win;     ///< The handle of the xwindow
-			mutable ::Window m_rootWin; ///< A handle to the root window
-			EventCallback m_eventCallback; ///< Holds the handle of the event callback
-			void getStateProperties(Atom *&atoms,unsigned long *count) const;  ///< Internal function used to get properties of the window
-		public:
-			typedef Window &reference;
-			typedef const Window &const_reference;
+			if (param >= XK_0 && param <= XK_9)
+				return Keyboard::Key(Keyboard::Num0+param-XK_0);
 
-			typedef ::Window Handle; ///< The window handle type
+			if (param >= XK_KP_0 && param <= XK_KP_9)
+				return Keyboard::Key(Keyboard::Numpad0+param-XK_KP_0);
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Default constructor
-			///
-			/// This function does not open the window
-			///
-			/////////////////////////////////////////////////////////////
-			Window();
+			if (param >= XK_F1 && param <= XK_F12)
+				return Keyboard::Key(Keyboard::F1+param-XK_F1);
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Construct the window from its attributes
-			///
-			/// Upon internal error a message is prompted to fw::Wapi::log
-			///
-			/// @param x X position of the window
-			/// @param y Y position of the window
-			/// @param w Width of the window
-			/// @param h Height of the window
-			/// @param title Title of the window
-			/// @param style Style of the window (see fw::WindowStyle)
-			/// @param parent The parent of the window
-			///
-			/////////////////////////////////////////////////////////////
-			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent = None);
+			if (param >= XK_A && param <= XK_Z)
+				return Keyboard::Key(Keyboard::A+param-XK_A);
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Default destructor
-			///
-			/////////////////////////////////////////////////////////////
-			~Window();
+			if (param >= XK_a && param <= XK_z)
+				return Keyboard::Key(Keyboard::A+param-XK_a);
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Closes the window
-			///
-			/// Closing a closed window wont result in anything
-			///
-			/////////////////////////////////////////////////////////////
-			void close();
+			return Keyboard::Unknown;
 
-			/////////////////////////////////////////////////////////////
-			/// @brief (Re)Open the window
-			///
-			/// Upon internal error a message is prompted to fw::Wapi::log
-			///
-			/// @param x X position of the window
-			/// @param y Y position of the window
-			/// @param w Width of the window
-			/// @param h Height of the window
-			/// @param title Title of the window
-			/// @param style Style of the window (see fw::WindowStyle)
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent = None,bool toolwindow=false);
+		}
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Check if the window is opened
-			///
-			/// @return True iff the window is open
-			///
-			/////////////////////////////////////////////////////////////
-			bool isOpen() const;
+		/////////////////////////////////////////////////////////////
+		Mouse::Button buttonFromBn(unsigned int param)
+		{
+			if (param == Button1) return Mouse::Left;
+			if (param == Button3) return Mouse::Right;
+			if (param == Button2) return Mouse::Middle;
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Minimizes the window
-			///
-			/////////////////////////////////////////////////////////////
-			void minimize();
+			return Mouse::Unknown;
+		}
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Discover whether the window is minimized
-			///
-			/// @return True iff the window is minimized
-			///
-			/////////////////////////////////////////////////////////////
-			bool isMinimized() const;
+		MotifHints motifHintsFromStyle(unsigned int &style)
+		{
+			// A resizeable window needs border
+			if (style & fw::Window::Resize)
+				style |= fw::Window::Border;
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Maximazes the window
-			///
-			/////////////////////////////////////////////////////////////
-			void maximize();
+			// A x button needs titlebar
+			if (style & fw::Window::Close)
+				style |= fw::Window::Titlebar;
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Discover whether the window is maximized
-			///
-			/// @return True iff the window is maximized
-			///
-			/////////////////////////////////////////////////////////////
-			bool isMaximized() const;
+			// So does a minimize button
+			if (style & fw::Window::Minimize)
+				style |= fw::Window::Titlebar|fw::Window::Close;
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Brings window in front
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool setActive();
+			// And a maximize button
+			if (style & fw::Window::Maximize)
+				style |= fw::Window::Titlebar|fw::Window::Close;
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Shows or hides the cursor in the window
-			///
-			/// By default it is shown
-			///
-			/// @param show The cursor is shown iff true
-			///
-			/////////////////////////////////////////////////////////////
-			void showCursor(bool show = true);
+			// A titlebar means border
+			if (style & fw::Window::Titlebar)
+				style |= fw::Window::Border;
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Changes the position and the size of the window
-			///
-			/// The given data is used to determine the properties
-			/// of the client (drawing) area, not the complete window
-			///
-			/// @param x The offset on the X axis from the left side
-			/// @param y The offset on the Y axis from the upper side
-			/// @param w The width of the window
-			/// @param h The height of the window
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool setRect(int x,int y,unsigned int w,unsigned int h);
+			MotifHints ret;
+			ret.flags = MOTIF_HINTS_FUNCTIONS|MOTIF_HINTS_DECORATIONS;
+			ret.decorations = 0;
+			ret.functions = 0;
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Retrieve the position and the size of the window
-			///
-			/// The returned data describes the client rect
-			///
-			/// @param x The offset on the X axis from the left side
-			/// @param y The offset on the Y axis from the upper side
-			/// @param w The width of the window
-			/// @param h The height of the window
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool getRect(int &x,int &y,unsigned int &w,unsigned int &h);
-
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Changes the position of the window
-			///
-			/// The given data is used to determine the properties
-			/// of the client (drawing) area, not the complete window
-			///
-			/// @param x The offset on the X axis from the left side
-			/// @param y The offset on the Y axis from the upper side
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool setPosition(int x,int y);
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Retrieve the position of the window
-			///
-			/// The returned data describes the client rect
-			///
-			/// @param x The offset on the X axis from the left side
-			/// @param y The offset on the Y axis from the upper side
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool getPosition(int &x,int &y) const;
-
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Changes the size of the window
-			///
-			/// The given data is used to determine the properties
-			/// of the client (drawing) area, not the complete window
-			///
-			/// @param w The width of the window
-			/// @param h The height of the window
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool setSize(unsigned int w,unsigned int h);
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Retrieve the size of the window
-			///
-			/// The returned data describes the client rect
-			///
-			/// @param w The width of the window
-			/// @param h The height of the window
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool getSize(unsigned int &w,unsigned int &h) const;
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Set the title of the window
-			///
-			/// @param title The new title
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool setTitle(const std::string &title);
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Retrieve the title of the window
-			///
-			/// @param title Set to the title
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool getTitle(std::string &title) const;
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Show or hide the window
-			///
-			/// @param visible If true the window is shown
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			void setVisible(bool visible = true);
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Retrive the last event
-			///
-			/// If the event queue is empty false is returned and
-			/// @a ev is not modified
-			///
-			/// @param ev Set to the last event
-			///
-			/// @return True iff there was a event
-			///
-			/////////////////////////////////////////////////////////////
-			bool popEvent(Event &ev);
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Suspend thread until a event occures
-			///
-			/// If an error occures false is returned and ev is not modified
-			///
-			/// @param ev Set to the last event
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool waitEvent(Event &ev);
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Adds a new event to the back of the event queue
-			///
-			/// @param ev The new event
-			///
-			/////////////////////////////////////////////////////////////
-			void postEvent(const Event &ev);
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Enables or disables keyrepeat
-			///
-			/// If enabled, when a key is held down
-			/// multiple press events will be sent
-			///
-			/// @param enable True to enable false to disable
-			///
-			/////////////////////////////////////////////////////////////
-			void enableKeyRepeat(bool enable = true);
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Returns whether keyrepeat is enabled
-			///
-			/// @return True iff enabled
-			///
-			/////////////////////////////////////////////////////////////
-			bool isKeyRepeatEnabled() const;
+			if (style & fw::Window::Border)
+				ret.decorations |= MOTIF_DECOR_BORDER;
 			
-			/////////////////////////////////////////////////////////////
-			/// @brief Enables or disables resize of the window
-			///
-			/// @param enable True to enable false to disable
-			///
-			/////////////////////////////////////////////////////////////
-			void enableResize(bool enable = true);
+			if (style & fw::Window::Titlebar)
+				ret.decorations |= MOTIF_DECOR_TITLE | MOTIF_DECOR_MENU,
+				ret.functions   |= MOTIF_FUNC_MOVE;
+			
+			if (style & fw::Window::Minimize)
+				 ret.decorations |= MOTIF_DECOR_MINIMIZE,
+				 ret.functions   |= MOTIF_FUNC_MINIMIZE;
+			
+			if (style & fw::Window::Maximize)
+				 ret.decorations |= MOTIF_DECOR_MAXIMIZE,
+				 ret.functions   |= MOTIF_FUNC_MAXIMIZE;
+			
+			if (style & fw::Window::Resize)
+				ret.decorations |= MOTIF_DECOR_RESIZEH,
+				ret.functions   |= MOTIF_FUNC_RESIZE;
+			
+			if (style & fw::Window::Close)
+				ret.functions |= MOTIF_FUNC_CLOSE;
+			
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Returns whether resize is enabled
-			///
-			/// @return True iff enabled
-			///
-			/////////////////////////////////////////////////////////////
-			bool isResizeEnabled() const;
+			return ret;
+		}
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Set the small and the big icon of the window
-			///
-			/// @param icon The new icon
-			///
-			/// @return True iff the operation was successful
-			///
-			/////////////////////////////////////////////////////////////
-			void setIcon(const fg::Image &icon);
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Implicitly convert to HWND
-			///
-			/// If the window is closed (not opened) NULL is returned
-			///
-			/// @return The HandleWiNDow
-			///
-			/////////////////////////////////////////////////////////////
-			operator ::Window() const;
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Get the window's handle
-			///
-			/// If the window is closed (not opened) NULL is returned
-			///
-			/// @return The HandleWiNDow
-			///
-			/////////////////////////////////////////////////////////////
-			::Window getHandle() const;
+		/////////////////////////////////////////////////////////////
+		void Window::getStateProperties(Atom *&atoms,unsigned long *count) const
+		{
+			Atom actual_type;
+			int actual_format;
+			unsigned long bytes_after;
 
-			/////////////////////////////////////////////////////////////
-			/// @brief Set the event callback
-			/// 
-			/// This function is called before a event is being handled
-			/// The functions should return true iff no further processing is required
-			/// 
-			/// @param callback The new callback
-			/// 
-			/////////////////////////////////////////////////////////////
-			void setEventCallback(EventCallback callback);
-		};
+			XGetWindowProperty(m_disp,m_win,
+							   m_stateAtom,
+							   0,1024,False,XA_ATOM, 
+							   &actual_type,&actual_format,count,&bytes_after,
+							   (unsigned char**)&atoms);
+		}
+
+		////////////////////////////////////////////////////////////
+		void Window::processEvent(XEvent &xev)
+		{
+			if (m_eventCallback && m_eventCallback(this,xev))
+				return;
+			
+			// mouse got outside our window
+			if (xev.type == LeaveNotify)
+			{
+				Event ev(Event::MouseLeft);
+				postEvent(ev);
+			}
+			
+			// mouse got inside our window
+			if (xev.type == EnterNotify)
+			{
+				Event ev(Event::MouseEntered);
+				postEvent(ev);
+			}
+			
+			// gained focus
+			if (xev.type == FocusIn)
+			{
+				Event ev(Event::FocusGained);
+				postEvent(ev);
+			}
+			
+			// lost focus
+			if (xev.type == FocusOut)
+			{
+				Event ev(Event::FocusLost);
+				postEvent(ev);
+			}
+			
+			// the windows position/size/Z-order changed
+			if (xev.type == ConfigureNotify)
+			{
+				// process only resize
+				if ((unsigned int)xev.xconfigure.width  != m_prevW || 
+					(unsigned int)xev.xconfigure.height != m_prevH)
+				{
+					m_prevW = xev.xconfigure.width;
+					m_prevH = xev.xconfigure.height;
+					
+					Event ev(Event::Resized);
+					ev.size.w = xev.xconfigure.width;
+					ev.size.h = xev.xconfigure.height;
+					postEvent(ev);
+				}
+			}
+
+			// A mouse button was pressed or released or mouse wheel was rolled
+			if (xev.type == ButtonPress || xev.type == ButtonRelease)
+			{
+				// mouse wheel
+				if (xev.xbutton.button == Button4 || 
+					xev.xbutton.button == Button5)
+				{
+					// handle it only once (since it gets posted as release too)
+					if (xev.type == ButtonPress)
+					{
+						Event ev(Event::MouseWheelMoved);
+						if (xev.xbutton.button == Button4)
+							ev.wheel.delta = 1;
+						if (xev.xbutton.button == Button5)
+							ev.wheel.delta = -1;
+
+						// get mod states
+						ev.wheel.shift = fw::Keyboard::isKeyHeld(fw::Keyboard::LShift) || fw::Keyboard::isKeyHeld(fw::Keyboard::RShift);
+						ev.wheel.ctrl  = fw::Keyboard::isKeyHeld(fw::Keyboard::LCtrl)  || fw::Keyboard::isKeyHeld(fw::Keyboard::RCtrl);
+						ev.wheel.alt   = fw::Keyboard::isKeyHeld(fw::Keyboard::LAlt)   || fw::Keyboard::isKeyHeld(fw::Keyboard::RAlt);
+						
+						// copy position
+						ev.wheel.x =  xev.xbutton.x;
+						ev.wheel.y =  xev.xbutton.y;
+						postEvent(ev);						
+					}
+
+					return;
+				}
+
+				Event ev(xev.type == ButtonPress ? Event::ButtonPressed : Event::ButtonReleased);
+
+				ev.mouse.button = buttonFromBn(xev.xbutton.button);
+
+				ev.mouse.x = xev.xbutton.x;
+				ev.mouse.y = xev.xbutton.y;
+				postEvent(ev);
+			}
+
+			// the mouse was moved
+			if (xev.type == MotionNotify)
+			{
+				Event ev(Event::MouseMoved);
+				ev.pos.x = xev.xmotion.x;
+				ev.pos.y = xev.xmotion.y;
+				postEvent(ev);
+			}
+
+			// key press or release
+			if (xev.type == KeyPress || xev.type == KeyRelease)
+			{
+				// retrieve the keysym
+				KeySym xkeysym;
+				char c;
+				if (XLookupString(&xev.xkey,&c,0,&xkeysym,0) == 1)
+				{
+					// if it was a release
+					if (xev.type == KeyRelease)
+					{
+						// and the next event is a corresponding repeat-press
+						if (XEventsQueued(m_disp,QueuedAfterReading))
+						{
+							XEvent nxev;
+							XPeekEvent(m_disp, &nxev);
+
+							if (nxev.type == KeyPress)
+								if (nxev.xkey.time == xev.xkey.time &&
+					    			nxev.xkey.keycode == xev.xkey.keycode)
+									return; // then ignore it
+						}
+					}
+
+					// if it is a repeat-press, ignore if repeat is disabled
+					if (xkeysym == m_lastDown && !m_enableRepeat && xev.type == KeyPress)
+						return; 
+
+					// if it is the final release
+					if (xev.type == KeyRelease)
+						m_lastDown = XK_VoidSymbol; // reset the last_down
+					else
+						m_lastDown = xkeysym; // else note the pressed key
+					
+					Event ev(xev.type == KeyPress ? Event::KeyPressed : Event::KeyReleased);
+					ev.key.code = keyFromKS(xkeysym);
+					ev.key.shift = fw::Keyboard::isKeyHeld(fw::Keyboard::LShift) || fw::Keyboard::isKeyHeld(fw::Keyboard::RShift);
+					ev.key.ctrl  = fw::Keyboard::isKeyHeld(fw::Keyboard::LCtrl)  || fw::Keyboard::isKeyHeld(fw::Keyboard::RCtrl);
+					ev.key.alt   = fw::Keyboard::isKeyHeld(fw::Keyboard::LAlt)   || fw::Keyboard::isKeyHeld(fw::Keyboard::RAlt);
+					postEvent(ev);
+
+					// post a keyrepeat event
+					if (xev.type == KeyPress && !XFilterEvent(&xev, None))
+					{
+						char buf[16];
+						if (XLookupString(&xev.xkey,buf,sizeof(buf),NULL,NULL))
+						{
+							fw::Event ev(fw::Event::TextEntered);
+							ev.text.character  = (char)buf[0];
+							ev.text.wcharacter = (wchar_t)buf[0];
+							postEvent(ev);
+						}
+					}
+				}
+			}
+
+
+			if (xev.type == ClientMessage)
+			{
+				// the window was asked to close
+				if ((Atom)xev.xclient.data.l[0] == m_delAtom)
+				{
+					Event ev(Event::Closed);
+					postEvent(ev);					
+				}
+
+				if (xev.xclient.message_type == m_xdndAtoms.XdndEnter)
+				{
+					m_supportUriList = false;
+
+					if(xev.xclient.data.l[1] & 1) 
+					{
+						std::vector<int> v = getPropertyInts(m_disp,xev.xclient.data.l[0],m_xdndAtoms.XdndTypeList,XA_ATOM);
+						for(unsigned int i = 0; i < v.size(); i++)
+							if ((Atom)v[i] == m_uri_listAtom)
+								m_supportUriList = true;
+					}
+					else
+						for(int i = 2; i <= 4; i++)
+							if ((Atom)xev.xclient.data.l[i] == m_uri_listAtom)
+								m_supportUriList = true;
+				}
+
+
+				// the user is dragging something in the window
+				if (xev.xclient.message_type == m_xdndAtoms.XdndPosition) 
+				{
+					XEvent reply;
+					::Window srcWin = xev.xclient.data.l[0];
+
+					reply.xclient.type    = ClientMessage;
+					reply.xclient.display = m_disp;
+					reply.xclient.window  = srcWin;
+					reply.xclient.message_type = m_xdndAtoms.XdndStatus;
+					reply.xclient.format = 32;
+					reply.xclient.data.l[0] = m_win;
+					reply.xclient.data.l[1] = (true ? 0x1UL : 0); // false to decline
+					reply.xclient.data.l[2] = 0;
+					reply.xclient.data.l[3] = 0;
+        			reply.xclient.data.l[4] = m_xdndAtoms.XdndActionCopy;
+					XSendEvent(m_disp,srcWin,0,0,&reply);
+				}
+
+				// the user dropped something into our window
+				if (xev.xclient.message_type == m_xdndAtoms.XdndDrop) 
+				{
+					XConvertSelection(m_disp,m_xdndAtoms.XdndSelection,m_supportUriList ? m_uri_listAtom : XA_STRING,
+									  m_xdndAtoms.exchangeAtom,m_win,CurrentTime);
+				}
+/*
+				char *name = XGetAtomName(m_disp, xev.xclient.message_type);
+
+				fw_log << name << " happened" << std::endl;
+				XFree(name);*/
+			}
+
+			// our window is getting a selection
+			if (xev.type ==  SelectionNotify)
+			{
+			    std::string msg = getProperty(m_disp,m_win,m_xdndAtoms.exchangeAtom,m_supportUriList ? m_uri_listAtom : XA_STRING,true);
+
+			    if (m_supportUriList)
+			    {
+			    	fm::vec2i p = fw::Mouse::getPosition(*this);
+			    	std::string file;
+
+			    	fw::Event ev(fw::Event::FileDrop);
+			    	ev.drop.x = p.x;
+			    	ev.drop.y = p.y;
+
+			    	std::size_t length = msg.length();
+			    	for (std::size_t i=0;i<length;i++)
+			    	{
+			    		if (msg[i] == '\r') continue;
+			    		if (msg[i] == '\n')
+			    		{
+			    			ev.drop.files.push_back(file);
+			    			file = std::string();
+			    			continue;
+			    		}
+			    		if (i<length-2 && msg[i]=='%')
+			    		{
+			    			file += (char)(msg[i+1]-'0')*16+(msg[i+2]-'0');
+			    			i+=2;
+			    			continue;
+			    		}
+			    		file += msg[i];
+			    	}
+			    	if (file.length())
+			    		ev.drop.files.push_back(file);
+
+			    	postEvent(ev);
+			    }
+
+			    // fw_log << "msg = " << msg << std::endl;
+			    
+			    // reply with finish
+			    XEvent reply;
+			    reply.xclient.type         = ClientMessage;
+			    reply.xclient.display      = m_disp;
+			    reply.xclient.window       = m_win;
+			    reply.xclient.message_type = m_xdndAtoms.XdndFinished;
+			    reply.xclient.format       = 32;
+			    reply.xclient.data.l[0]    = m_win;
+
+			    XSendEvent(m_disp,XGetSelectionOwner(m_disp,m_xdndAtoms.XdndSelection),0,0,&reply);
+
+    		}
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::checkDisplay()
+		{
+			if (m_disp) 
+				return true;
+
+			m_disp = XOpenDisplay(NULL);
+
+			if (!m_disp)
+			{
+				fw_log << "XOpenDisplay failed" << std::endl;
+				return false;
+			}
+
+			m_rootWin = DefaultRootWindow(m_disp);
+
+			return true;
+		}
+
+		////////////////////////////////////////////////////////////
+		Window::Window() : m_opened(false),
+						   m_enableRepeat(true),
+						   m_lastDown(XK_VoidSymbol),
+						   m_disp(NULL),
+						   m_delAtom(0),
+						   m_stateAtom(0),
+						   m_resizeable(true),
+						   m_prevW(0),
+						   m_prevH(0),
+						   m_stateHiddenAtom(0),
+						   m_maxHorAtom(0),
+						   m_maxVertAtom(0),
+						   m_uri_listAtom(0),
+						   m_supportUriList(false),
+						   m_emptyCursor(None),
+						   m_parent(NULL),
+						   m_eventCallback(NULL)
+		{
+
+		}
+
+		////////////////////////////////////////////////////////////
+		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Xlib::Window *parent,::Window container) : m_opened(false),
+																																					    m_enableRepeat(true),
+																																					    m_lastDown(XK_VoidSymbol),
+																																					    m_disp(NULL),
+																																					    m_delAtom(0),
+																																					    m_stateAtom(0),
+																																					    m_resizeable(true),
+																																					    m_prevW(0),
+																																					    m_prevH(0),
+																																					    m_stateHiddenAtom(0),
+																																					    m_maxHorAtom(0),
+																																					    m_maxVertAtom(0),
+																																					    m_uri_listAtom(0),
+																																					    m_supportUriList(false),
+																																					    m_emptyCursor(None),
+																																					    m_parent(NULL),
+																																					    m_eventCallback(NULL)
+		{
+			open(x,y,w,h,title,style,parent,container);
+		}
+
+		////////////////////////////////////////////////////////////
+		Window::~Window()
+		{
+			close();
+
+			if (m_disp)
+				XCloseDisplay(m_disp);
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Xlib::Window *parent,::Window container)
+		{
+			if (!checkDisplay())
+				return false;
+
+			// close the window if we had it open
+			close();
+			
+			m_parent = parent;
+
+			// ask X to create a window
+			XSetWindowAttributes wa;                                                     
+			wa.override_redirect = (style & fw::Window::Menu) ? True : False;  
+			m_win = XCreateWindow(m_disp,container ? container : m_rootWin,x,y,w,h,5,CopyFromParent,InputOutput,CopyFromParent,CWOverrideRedirect,&wa);
+			
+			if (m_win != (::Window)NULL)
+			{
+				if (m_parent)
+					style |= fw::Window::SkipTaskbar,
+					m_parent->m_children.push_back(this);
+
+				m_opened = true;
+
+				XSelectInput(m_disp,m_win,LeaveWindowMask|EnterWindowMask|FocusChangeMask|StructureNotifyMask|PointerMotionMask|ButtonPressMask|ButtonReleaseMask|KeyPressMask|KeyReleaseMask);
+
+				// get atoms
+				m_stateAtom       = XInternAtom(m_disp,"_NET_WM_STATE",False);
+				m_stateHiddenAtom = XInternAtom(m_disp,"_NET_WM_STATE_HIDDEN",False);
+				m_delAtom         = XInternAtom(m_disp,"WM_DELETE_WINDOW",False);
+				m_maxHorAtom      = XInternAtom(m_disp,"_NET_WM_STATE_MAXIMIZED_HORZ",False);
+				m_maxVertAtom     = XInternAtom(m_disp,"_NET_WM_STATE_MAXIMIZED_VERT",False);
+				m_uri_listAtom    = XInternAtom(m_disp,"text/uri-list",False);
+
+				m_xdndAtoms.init(m_disp);
+
+				// mark our window as drop target
+				int xdnd_version = 3;
+				XChangeProperty(m_disp,m_win,m_xdndAtoms.XdndAware,XA_ATOM,32,PropModeAppend,(unsigned char*)&xdnd_version,1);
+
+				// register deletion event
+				XSetWMProtocols(m_disp,m_win,&m_delAtom,1);
+
+				// manually set title and position
+				setTitle(title);
+				setPosition(x,y);
+				
+
+				// setup window decoration hints
+				MotifHints hints = motifHintsFromStyle(style);
+
+				Atom _MOTIF_WM_HINTS = XInternAtom(m_disp,"_MOTIF_WM_HINTS",False);
+
+				XChangeProperty(m_disp,m_win,
+								_MOTIF_WM_HINTS,
+								_MOTIF_WM_HINTS,
+								32,PropModeReplace,
+								(unsigned char*)&hints,5);
+
+				if (style & fw::Window::SkipTaskbar)
+				{
+					Atom _NET_WM_STATE_SKIP_TASKBAR = XInternAtom(m_disp,"_NET_WM_STATE_SKIP_TASKBAR",False);
+
+					XChangeProperty(m_disp,m_win,
+									m_stateAtom,XA_ATOM,
+									32,PropModeReplace,
+									(unsigned char*)&_NET_WM_STATE_SKIP_TASKBAR,1);					
+				}
+
+				if (style & fw::Window::Toolbar)
+				{
+					Atom _NET_WM_WINDOW_TYPE_UTILITY = XInternAtom(m_disp,"_NET_WM_WINDOW_TYPE_UTILITY",False);
+					Atom _NET_WM_WINDOW_TYPE = XInternAtom(m_disp,"_NET_WM_WINDOW_TYPE",False);
+
+					XChangeProperty(m_disp,m_win,
+									_NET_WM_WINDOW_TYPE,XA_ATOM,
+									32,PropModeReplace,
+									(unsigned char*)&_NET_WM_WINDOW_TYPE_UTILITY,1);					
+				}
+
+
+
+
+				// enable resize
+				enableResize(style & fw::Window::Resize);
+
+				// tell X to show it
+				XMapWindow(m_disp,m_win);
+				
+				// reset storages
+				enableKeyRepeat(false);
+				m_lastDown = XK_VoidSymbol;
+				m_prevW = 0;
+				m_prevH = 0;
+
+				// build the empty cursor
+				char empty[] = {0, 0, 0, 0, 0, 0, 0, 0};
+				Pixmap pmap   = XCreateBitmapFromData(m_disp,m_win,empty, 8, 8);
+				Colormap cmap = DefaultColormap(m_disp,DefaultScreen(m_disp));
+				XColor cblack,cdummy;
+				XAllocNamedColor(m_disp,cmap,"black",&cblack,&cdummy);
+				m_emptyCursor = XCreatePixmapCursor(m_disp,pmap,pmap,&cblack,&cblack,0,0);
+
+				if (pmap != None)
+					XFreePixmap(m_disp,pmap);
+				XFreeColors(m_disp,cmap,&cblack.pixel,1,0);
+
+
+				// tell X to do what we asked, now
+				XFlush(m_disp);
+				
+				return true;
+			}
+			
+			return false;
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::isOpen() const
+		{
+			return m_opened;
+		}
+
+		/////////////////////////////////////////////////////////////
+		void Window::minimize()
+		{
+			if (isOpen())
+			{
+				if (isMinimized())
+					XMapWindow(m_disp,m_win);
+				else
+					XIconifyWindow(m_disp,m_win,XDefaultScreen(m_disp));
+			}
+		}
+
+		/////////////////////////////////////////////////////////////
+		bool Window::isMinimized() const
+		{
+			if (!isOpen())
+				return false;
+
+			unsigned long count;
+			Atom *atoms = NULL;
+
+			getStateProperties(atoms,&count);
+
+			for(unsigned long i=0;i<count; i++) 
+				if(atoms[i] == m_stateHiddenAtom) 
+				{
+					XFree(atoms);
+					return true;
+				}
+			XFree(atoms);
+			return false;
+		}
+
+		/////////////////////////////////////////////////////////////
+		void Window::maximize()
+		{
+			if (isOpen())
+			{
+				XEvent xev;
+
+				xev.type = ClientMessage;
+				xev.xclient.window = m_win;
+				xev.xclient.message_type = m_stateAtom;
+				xev.xclient.format = 32;
+
+				if (isMaximized())
+					xev.xclient.data.l[0] = 0;// _NET_WM_STATE_REMOVE
+				else
+					xev.xclient.data.l[0] = 1;// _NET_WM_STATE_ADD
+
+				xev.xclient.data.l[1] = m_maxHorAtom;
+				xev.xclient.data.l[2] = m_maxVertAtom;
+
+				XSendEvent(m_disp,DefaultRootWindow(m_disp),False,SubstructureNotifyMask,&xev);
+			}
+		}
+
+		/////////////////////////////////////////////////////////////
+		bool Window::isMaximized() const
+		{
+			if (isOpen())
+			{
+				bool maxVert = false;
+				bool maxHor  = false;
+
+				unsigned long count;
+				Atom *atoms = NULL;
+
+				getStateProperties(atoms,&count);
+
+				for(unsigned long i=0;i<count; i++)
+				{
+					if(atoms[i] == m_maxVertAtom) 
+						maxVert = true;
+					if(atoms[i] == m_maxHorAtom) 
+						maxHor  = true;
+
+					if (maxVert && maxHor)
+						return true;
+				}
+				XFree(atoms);
+			}
+			return false;
+		}
+
+		/////////////////////////////////////////////////////////////
+		bool Window::setActive()
+		{
+			if (isOpen())
+			{
+				XRaiseWindow(m_disp,m_win);
+				XSetInputFocus(m_disp,m_win,RevertToNone,CurrentTime);
+				return true;
+			}
+			return false;
+		}
+
+		/////////////////////////////////////////////////////////////
+		void Window::showCursor(bool show)
+		{
+			if (isOpen())
+			{
+				if (show)
+					XUndefineCursor(m_disp,m_win);
+				else
+					XDefineCursor(m_disp,m_win,m_emptyCursor);
+			}
+		}
+
+		////////////////////////////////////////////////////////////
+		void Window::close()
+		{
+			if (isOpen())
+			{
+				// destroy children properly
+				std::deque<Xlib::Window *> children = m_children;
+				fm::Size count = children.size();
+				for (fm::Size i = 0;i<count;i++)
+					children[i]->close();
+
+				// unregister this from parent's children
+				if (m_parent)
+				{
+					std::deque<Xlib::Window *>::iterator it = std::find(m_parent->m_children.begin(),m_parent->m_children.end(),this);
+					if (it != m_parent->m_children.end())
+						m_parent->m_children.erase(it);
+					
+					m_parent = NULL;
+				}
+
+				// delete cursor
+				if (m_emptyCursor != None)
+					XFreeCursor(m_disp,m_emptyCursor);
+
+				XDestroyWindow(m_disp,m_win);
+				XFlush(m_disp);
+				m_opened = false;
+
+				// empty out event queue
+				m_eventQueue.clear();
+			}
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::setRect(int x,int y,unsigned int w,unsigned int h)
+		{
+			if (!isOpen())
+				return false;
+
+			// simply tell X to resize and move the window
+			XMoveResizeWindow(m_disp,m_win,x,y,w,h);
+			XFlush(m_disp);
+
+			return true;
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::getRect(int &x,int &y,unsigned int &w,unsigned int &h)
+		{
+			if (!isOpen())
+				return false;
+
+			unsigned int border,depth;
+
+			// simply retrieve the data
+			XGetGeometry(m_disp,m_win,&m_rootWin,&x,&y,&w,&h,&border,&depth);
+
+			return true;
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::setPosition(int x,int y)
+		{
+			if (!isOpen())
+				return false;
+
+			// simply ask X to move the window
+			XMoveWindow(m_disp,m_win,x,y);
+			XFlush(m_disp);
+			
+			return true;
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::getPosition(int &x,int &y) const
+		{
+			if (!isOpen())
+				return false;
+
+			unsigned int border,depth;
+			unsigned int w,h;
+
+			// simply retrieve the data
+			XGetGeometry(m_disp,m_win,&m_rootWin,&x,&y,&w,&h,&border,&depth);
+
+			return true;
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::setSize(unsigned int w,unsigned int h)
+		{
+			if (!isOpen())
+				return false;
+
+			// simply ask X to resize the window
+			XResizeWindow(m_disp,m_win,w,h);
+			XFlush(m_disp);
+			
+			return true;
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::getSize(unsigned int &w,unsigned int &h) const
+		{
+			if (!isOpen())
+				return false;
+
+			int x,y;
+			unsigned int border,depth;
+
+			// simply retrieve the data
+			XGetGeometry(m_disp,m_win,&m_rootWin,&x,&y,&w,&h,&border,&depth);
+
+			return true;
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::setTitle(const std::string &title)
+		{
+			if (!isOpen())
+				return false;
+			
+			std::string s = title;
+			char *c = &s[0];
+			
+			XStoreName(m_disp,m_win,c); 
+
+			XFlush(m_disp);
+
+			return true;
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::getTitle(std::string &title) const
+		{
+			if (!isOpen())
+				return false;
+			
+			char *c;
+			
+			XFetchName(m_disp,m_win,&c);
+			title = c;
+			
+			XFree(c); 
+
+			XFlush(m_disp);
+
+			return true;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		void Window::setVisible(bool visible)
+		{
+			if (!isOpen())
+				return;
+			
+			if (visible)
+				XMapWindow(m_disp,m_win);
+			else
+				XUnmapWindow(m_disp,m_win);
+		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::popEvent(Event &ev)
+		{
+			if (!isOpen())
+				return false;
+
+			// Display is unique for every window therefore 
+			// we dont have to bother about events that dont belong
+			// to this window
+
+			XEvent xev;
+			while (XPending(m_disp))
+			{
+				XNextEvent(m_disp,&xev);
+
+				// process only the current window's events
+				if (xev.xany.window == m_win)
+					processEvent(xev);
+			}
+
+			if (!m_eventQueue.empty())
+			{
+				ev = m_eventQueue[0];
+				m_eventQueue.pop_front();
+				return true;
+			}
+			return false;
+		}
+
+		////////////////////////////////////////////////////////////
+		bool Window::waitEvent(Event &ev)
+		{
+			if (!isOpen())
+				return false;
+
+			// Display is unique for every window therefore 
+			// we dont have to bother about events that dont belong
+			// to this window
+
+			// if we have event in stock we return it
+			if (!m_eventQueue.empty())
+			{
+				ev = m_eventQueue[0];
+				m_eventQueue.pop_front();
+				return true;
+			}
+
+			// otherwise wait for one
+			XEvent xev;
+			while (m_eventQueue.empty())
+			{
+				XNextEvent(m_disp,&xev);
+
+				// process only the current window's events
+				if (xev.xany.window == m_win)
+					processEvent(xev);
+			}
+
+			ev = m_eventQueue[0];
+			m_eventQueue.pop_front();
+			return true;
+		}
+
+		////////////////////////////////////////////////////////////
+		void Window::postEvent(const Event &ev)
+		{
+			m_eventQueue.resize(m_eventQueue.size()+1,ev);
+		}
+
+		/////////////////////////////////////////////////////////////
+		void Window::enableKeyRepeat(bool enable)
+		{
+			m_enableRepeat = enable;
+		}
+
+		/////////////////////////////////////////////////////////////
+		bool Window::isKeyRepeatEnabled() const
+		{
+			return m_enableRepeat;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		void Window::enableResize(bool enable)
+		{
+			if (!isOpen())
+				return;
+			
+			unsigned int w,h;
+			getSize(w,h);
+			
+			m_resizeable = enable;
+			XSizeHints sizeHints;
+			sizeHints.flags = PMinSize | PMaxSize;
+			sizeHints.min_width  = enable ? 0 : w;
+			sizeHints.max_width  = enable ? 100000 : w;
+			sizeHints.min_height = enable ? 0 : h;
+			sizeHints.max_height = enable ? 100000 : h;
+			XSetWMNormalHints(m_disp,m_win,&sizeHints);
+		}
+
+		/////////////////////////////////////////////////////////////
+		bool Window::isResizeEnabled() const
+		{
+			return m_enableRepeat;
+		}
+
+		/////////////////////////////////////////////////////////////
+		void Window::setIcon(const fg::Image &icon)
+		{
+			std::vector<fg::Color> *iconPixels = (std::vector<fg::Color> *)&icon;
+				
+			fm::Size width  =  *((fm::Size *)(iconPixels+1));
+			fm::Size height = *(((fm::Size *)(iconPixels+1))+1);
+			fm::vec2s size(width,height);
+			
+			// convert RGBA to BGRA
+			fg::Color *BGRApixels = new fg::Color[size.w*size.h];
+			for (fm::Size i=0;i<size.w*size.h;i++)
+				BGRApixels[i] = iconPixels->at(i),
+				std::swap(BGRApixels[i].r,BGRApixels[i].b);
+
+			// obtain information about X setup
+			int screen         = DefaultScreen(m_disp); 
+			Visual *visual     = DefaultVisual(m_disp,screen);
+			unsigned int depth = DefaultDepth(m_disp,screen);
+			
+			// create an image
+			XImage *xIcon      = XCreateImage(m_disp,visual,depth,ZPixmap,0,(char*)BGRApixels,size.w,size.h,32,0);
+			if (!xIcon)
+			{
+				fw_log << "XCreateImage failed" << std::endl;
+				return;
+			}
+
+			// convert image to pixmap
+			Pixmap xpixmap = XCreatePixmap(m_disp,RootWindow(m_disp,screen),size.w,size.h,depth);
+			XGCValues xgcVals;
+			GC xIconGC = XCreateGC(m_disp,xpixmap,0,&xgcVals);
+			XPutImage(m_disp,xpixmap,xIconGC,xIcon,0,0,0,0,size.w,size.h);
+			XDestroyImage(xIcon);
+			XFreeGC(m_disp,xIconGC);
+
+			// create bitmask
+			fm::Size pitch = (size.w + 7) / 8;
+			fm::Uint8 *pixelMask = new fm::Uint8[pitch * size.h];
+			fm::Uint8 *pixels = (fm::Uint8*)BGRApixels;
+			for (fm::Size x=0;x<size.h;x++)
+				for (fm::Size y=0;y<pitch;y++)
+					for (fm::Size k = 0; k < 8; k++)
+						if (y * 8 + k < size.w)
+						{
+							fm::Uint8 opacity = pixels[(y * 8 + k + x * size.w) * 4 + 3] ? 1 : 0;
+							pixelMask[y + x * pitch] |= (opacity << k);                    
+						}
+
+			// upload bitmask
+			Pixmap maskPixmap = XCreatePixmapFromBitmapData(m_disp,m_win,(char*)&pixelMask[0],size.w,size.h, 1, 0, 1);
+
+			// finally set the icon
+			XWMHints* hints = XAllocWMHints();
+			hints->flags       = IconPixmapHint | IconMaskHint;
+			hints->icon_pixmap = xpixmap;
+			hints->icon_mask   = maskPixmap;
+			XSetWMHints(m_disp, m_win, hints);
+			XFree(hints);
+			
+			XFlush(m_disp);
+		}
+
+		////////////////////////////////////////////////////////////
+		::Window Window::getHandle() const
+		{
+			return m_win;
+		}
+
+		////////////////////////////////////////////////////////////
+		Window::operator ::Window() const
+		{
+			return m_win;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		void Window::setEventCallback(EventCallback callback)
+		{
+			m_eventCallback = callback;
+		}
 	}
 }
-
-#endif // FRONTIER_XLIB_WINDOW_INCLUDED

@@ -11,7 +11,7 @@
 /// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
 /// is not required but highly appreciated.                            ///
 ///                                                                    ///
-/// You should have recieved a copy of GNU GPL with this software      ///
+/// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Wapi/fwWapiPrintLastError.hpp>
@@ -643,11 +643,13 @@ namespace fw
 					
 					bool inTree = recFind(parent,(HWND)lParam);
 					
+					/*
 					std::string s1,s2;
 					getTitle(s1);
 					parent->getTitle(s2);
 					
-					//fw_log << "WM_NCACTIVATE wParam="<<wParam<<" lParam="<<lParam<<" name="<<s1<<" parent="<<s2<<" inTree="<<inTree<<std::endl; 
+					fw_log << "WM_NCACTIVATE wParam="<<wParam<<" lParam="<<lParam<<" name="<<s1<<" parent="<<s2<<" inTree="<<inTree<<std::endl; 
+					*/
 					
 					if (inTree)
 						wParam = 1;
@@ -899,7 +901,7 @@ namespace fw
 			
 			// Tell windows to show our window if its not hidden
 			if (!(style & fw::Window::Hidden))
-				ShowWindow(m_hwnd,(style & (fw::Window::Menu|fw::Window::Toolbar)) ? SW_SHOWNOACTIVATE : SW_SHOW);
+				ShowWindow(m_hwnd,(style & fw::Window::Toolbar) ? SW_SHOWNOACTIVATE : SW_SHOW);
 			
 			
 			return true;

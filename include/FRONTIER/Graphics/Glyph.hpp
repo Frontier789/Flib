@@ -11,7 +11,7 @@
 /// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
 /// is not required but highly appreciated.                            ///
 ///                                                                    ///
-/// You should have recieved a copy of GNU GPL with this software      ///
+/// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_GLYPH_HPP_INCLUDED

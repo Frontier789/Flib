@@ -11,7 +11,7 @@
 /// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
 /// is not required but highly appreciated.                            ///
 ///                                                                    ///
-/// You should have recieved a copy of GNU GPL with this software      ///
+/// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/GLContext.hpp>
@@ -127,21 +127,7 @@ namespace fw
 
 	/////////////////////////////////////////////////////////////
 	bool GLContext::create(priv::WindowHandle windowHandle,fw::GLContext::Settings settings)
-	{/*
-		if (!hasThreadGL())
-		{
-			// for some strange reason an OpenGL context 
-			// is needed to be active for sharing to work properly
-			fw::priv::GLContext tmpContext;
-			tmpContext.create();
-			tmpContext.setActive();
-			bool success = m_context->create((priv::Window::Handle)windowHandle,
-											 (priv::GLContext::Handle)priv::theSharedContext.getHandle(),
-											  settings);
-			tmpContext.setActive(false);
-			return success;
-		}*/
-		
+	{
 		// forward the call to the implementation
 		return m_context->create((priv::Window::Handle)windowHandle,
 								 (priv::GLContext::Handle)priv::theSharedContext.getHandle(),
@@ -150,26 +136,11 @@ namespace fw
 
 	/////////////////////////////////////////////////////////////
 	bool GLContext::create(const fm::vec2s &size,fw::GLContext::Settings settings)
-	{/*
-		bool useShared = false;
-		if (!hasThreadGL())
-		{
-			useShared = true;
-			priv::sharedContextMutex.lock();
-			priv::theSharedContext.setActive();
-		}
-*/
-		bool success = m_context->create((priv::GLContext::Handle)priv::theSharedContext.getHandle(),
-										  size.w,size.h,
-										  settings);
-
-	/*	if (useShared)
-		{
-			priv::theSharedContext.setActive(false);
-			priv::sharedContextMutex.unLock();
-		}*/
-
-		return success;
+	{
+		// forward the call to the implementation
+		return m_context->create((priv::GLContext::Handle)priv::theSharedContext.getHandle(),
+								  size.w,size.h,
+								  settings);
 	}
 
 	/////////////////////////////////////////////////////////////
