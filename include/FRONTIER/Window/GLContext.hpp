@@ -256,6 +256,41 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		const fw::GLContext::Settings &getSettings() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the view of the currently active GL context
+		/// 
+		/// Sets the projection matrix and the viewport
+		/// 
+		/// @param x The x coordinate of the viewport
+		/// @param y The y coordinate of the viewport
+		/// @param width  The width   of the viewport
+		/// @param height The height  of the viewport
+		/// @param left The X coordinate of the left-bottom corner
+		/// @param bottom The Y coordinate of the left-bottom corner
+		/// @param right The X coordinate of the right-top corner
+		/// @param top The Y coordinate of the right-top corner
+		/// @param znear The first limit of the distance (beyond this the object is not visible)
+		/// @param zfar The second limit of the distance (beyond this the object is not visible)
+		/// 
+		/////////////////////////////////////////////////////////////
+		static void setView2d(fm::Size x,fm::Size y,fm::Size width,fm::Size height,float left,float bottom,float right,float top,float znear=-1,float zfar=1);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Read the attributes of the context
+		/// 
+		/// Sets the projection matrix and the viewport
+		/// 
+		/// @param x The x coordinate of the viewport
+		/// @param y The y coordinate of the viewport
+		/// @param width  The width   of the viewport
+		/// @param height The height  of the viewport
+		/// @param fov The field of view in degrees
+		/// @param znear The distance of the nearest  visible object (should be greater than 0)
+		/// @param zfar  The distance of the furthest visible object (should be greater than @a znear)
+		/// 
+		/////////////////////////////////////////////////////////////
+		static void setView3d(fm::Size x,fm::Size y,fm::Size width,fm::Size height,float fov,float znear=1,float zfar=100);
 
 		friend class priv::theSharedContextInitializer;
 	};

@@ -39,6 +39,7 @@ namespace fw
 	{
 		priv::Window *m_window;  ///< The underlying implementation
 		fw::GLContext m_context; ///< The window has a context too
+		bool m_handleResize;     ///< If true then the class will set the viewport and projection matrix on resize
 	public:
 		typedef Window &reference;
 		typedef const Window &const_reference;
@@ -442,6 +443,24 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		priv::Window &getOSWindow();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Enable or disable the automatic resize handling
+		/// 
+		/// This is enabled by default
+		/// 
+		/// @param enable True to enable automatic resize handling
+		/// 
+		/////////////////////////////////////////////////////////////
+		void enableHandleResize(bool enable = true);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Check if the automatic resize handling is enabled
+		/// 
+		/// @return True iff automatic resize handling is enabled
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool handleResize() const;
 	};
 
 

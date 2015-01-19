@@ -29,13 +29,15 @@
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
-	Window::Window() : m_window(new priv::Window)
+	Window::Window() : m_window(new priv::Window),
+					   m_handleResize(true)
 	{
 
 	}
 
 	/////////////////////////////////////////////////////////////
-	Window::Window(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings) : m_window(new priv::Window)
+	Window::Window(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings) : m_window(new priv::Window),
+																																														 m_handleResize(true)
 	{
 		open(pos,size,title,style,parent,container,settings);
 	}
@@ -59,7 +61,10 @@ namespace fw
 		bool ok1 = m_window->open(pos.x,pos.y,size.w,size.h,title,style,(parent ? &parent->getOSWindow() : NULL),(priv::Window::Handle)container);
 		bool ok2 = m_context.create((priv::Window::Handle)m_window->getHandle(),settings);
 		bool ok3 = m_context.setActive();
-
+		
+		if (m_handleResize && ok1 && ok2 && ok3)
+			fw::GLContext::setView2d(0,0,size.w,size.h,0,size.h,size.w,0,-1,1);
+		
 		return ok1 && ok2 && ok3;
 	}
 
@@ -129,6 +134,9 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	bool Window::setRect(const fm::vec2i &pos,const fm::vec2u &size)
 	{
+		if (m_handleResize && getSize() != size)
+			fw::GLContext::setView2d(0,0,size.w,size.h,0,size.h,size.w,0,-1,1);
+		
 		return m_window->setRect(pos.x,pos.y,size.w,size.h);
 	}
 
@@ -155,6 +163,9 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	bool Window::setSize(const fm::vec2u &size)
 	{
+		if (m_handleResize && getSize() != size)
+			fw::GLContext::setView2d(0,0,size.w,size.h,0,size.h,size.w,0,-1,1);
+		
 		return m_window->setSize(size.x,size.y);
 	}
 
@@ -189,13 +200,23 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	bool Window::popEvent(Event &ev)
 	{
-		return m_window->popEvent(ev);
+		bool ok = m_window->popEvent(ev);
+		if (m_handleResize && ok)
+			if (ev.type == fw::Event::Resized)
+				fw::GLContext::setView2d(0,0,ev.size.w,ev.size.h,0,ev.size.h,ev.size.w,0,-1,1);
+		
+		return ok;
 	}
 
 	/////////////////////////////////////////////////////////////
 	bool Window::waitEvent(Event &ev)
 	{
-		return m_window->waitEvent(ev);
+		bool ok = m_window->waitEvent(ev);
+		if (m_handleResize && ok)
+			if (ev.type == fw::Event::Resized)
+				fw::GLContext::setView2d(0,0,ev.size.w,ev.size.h,0,ev.size.h,ev.size.w,0,-1,1);
+		
+		return ok;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -274,6 +295,18 @@ namespace fw
 	priv::Window &Window::getOSWindow()
 	{
 		return *m_window;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void Window::enableHandleResize(bool enable)
+	{
+		m_handleResize = enable;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Window::handleResize() const
+	{
+		return m_handleResize;
 	}
 
 	#define getByteRef(obj,i) (*(((unsigned char*)&obj)+i))

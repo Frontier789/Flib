@@ -17,8 +17,11 @@
 #include <FRONTIER/Window/GLContext.hpp>
 #include <FRONTIER/System/macros/OS.h>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/System/Mutex.hpp>
+#include <FRONTIER/System/Angle.hpp>
+#include <FRONTIER/OpenGL.hpp>
 
 #ifndef FRONTIER_NO_CONTEXT
 
@@ -189,6 +192,24 @@ namespace fw
 	const fw::GLContext::Settings &GLContext::getSettings() const
 	{
 		return m_context->getSettings();
+	}
+
+	/////////////////////////////////////////////////////////////
+	void GLContext::setView2d(fm::Size x,fm::Size y,fm::Size width,fm::Size height,float left,float bottom,float right,float top,float znear,float zfar)
+	{
+		fm::mat4 projM = fm::MATRIX::ortho<fm::MATRIX::ColumnMajor>(left,bottom,right,top,znear,zfar);
+		glViewport(x,y,width,height);
+		glMatrixMode(GL_PROJECTION);
+		glLoadMatrixf(&projM[0][0]);
+	}
+
+	/////////////////////////////////////////////////////////////
+	void GLContext::setView3d(fm::Size x,fm::Size y,fm::Size width,fm::Size height,float fov,float znear,float zfar)
+	{
+		fm::mat4 projM = fm::MATRIX::perspective<fm::MATRIX::ColumnMajor>(fm::deg(fov),float(width)/height,znear,zfar);
+		glViewport(x,y,width,height);
+		glMatrixMode(GL_PROJECTION);
+		glLoadMatrixf(&projM[0][0]);
 	}
 }
 
