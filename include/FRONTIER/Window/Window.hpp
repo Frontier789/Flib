@@ -35,11 +35,50 @@ namespace fw
 	/// @ingroup Window
 	///
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API Window : public fm::NonCopyable
+	class FRONTIER_API Window : public fw::GLContext
 	{
 		priv::Window *m_window;  ///< The underlying implementation
-		fw::GLContext m_context; ///< The window has a context too
 		bool m_handleResize;     ///< If true then the class will set the viewport and projection matrix on resize
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Override of the inherited create function
+		///
+		/// @param windowHandle The handle of the associated window (shouldn't be NULL)
+		/// @param settings The attributes of the context (only a hint!)
+		///
+		/// @return True if everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool create(priv::WindowHandle windowHandle,fw::GLContext::Settings settings);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Override of the inherited create function
+		///
+		/// @param size The size of the offscreen buffer
+		/// @param settings The attributes of the context (only a hint!)
+		///
+		/// @return True if everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool create(const fm::vec2s &size,fw::GLContext::Settings settings);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Override of the inherited create function
+		///
+		/// @param settings The attributes of the context (only a hint!)
+		///
+		/// @return True if everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool create(fw::GLContext::Settings settings);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Override of the inherited destroy function
+		///
+		/// @return True if everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool destroy();
 	public:
 		typedef Window &reference;
 		typedef const Window &const_reference;
@@ -411,7 +450,7 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		bool swapBuffers();
-
+/*
 		/////////////////////////////////////////////////////////////
 		/// @brief Access the GL context of the window
 		///
@@ -427,7 +466,7 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		fw::GLContext &getContext();
-
+*/
 		/////////////////////////////////////////////////////////////
 		/// @brief Access the underlying window implementation
 		///

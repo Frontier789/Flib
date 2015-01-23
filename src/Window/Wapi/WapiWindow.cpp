@@ -503,7 +503,7 @@ namespace fw
 					// let windows do his business
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
-				
+				/*
 				// resize event
 				case WM_SIZE:
 				{
@@ -516,6 +516,16 @@ namespace fw
 						return 0;
 					}
 					return DefWindowProc(hwnd, msg, wParam, lParam);
+				}*/
+				
+				case WM_EXITSIZEMOVE:
+				{
+					unsigned int w,h;
+					getSize(w,h);
+					Event ev(Event::Resized);
+					ev.size.w = w;
+					ev.size.h = h;
+					postEvent(ev);
 				}
 				
 				// character entered

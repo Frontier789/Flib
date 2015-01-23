@@ -29,6 +29,30 @@
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
+	bool Window::create(priv::WindowHandle windowHandle,fw::GLContext::Settings settings)
+	{
+		return fw::GLContext::create(windowHandle,settings);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Window::create(const fm::vec2s &size,fw::GLContext::Settings settings)
+	{
+		return fw::GLContext::create(size,settings);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Window::create(fw::GLContext::Settings settings)
+	{
+		return fw::GLContext::create(settings);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Window::destroy()
+	{
+		return fw::GLContext::destroy();
+	}
+		
+	/////////////////////////////////////////////////////////////
 	Window::Window() : m_window(new priv::Window),
 					   m_handleResize(true)
 	{
@@ -51,7 +75,7 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	void Window::close()
 	{
-		m_context.destroy();
+		this->destroy();
 		m_window->close();
 	}
 
@@ -59,8 +83,8 @@ namespace fw
 	bool Window::open(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings)
 	{
 		bool ok1 = m_window->open(pos.x,pos.y,size.w,size.h,title,style,(parent ? &parent->getOSWindow() : NULL),(priv::Window::Handle)container);
-		bool ok2 = m_context.create((priv::Window::Handle)m_window->getHandle(),settings);
-		bool ok3 = m_context.setActive();
+		bool ok2 = this->create((priv::Window::Handle)m_window->getHandle(),settings);
+		bool ok3 = this->setActive();
 		
 		if (m_handleResize && ok1 && ok2 && ok3)
 			fw::GLContext::setView2d(0,0,size.w,size.h,0,size.h,size.w,0,-1,1);
@@ -71,13 +95,13 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	bool Window::destroyContext()
 	{
-		return m_context.destroy();
+		return this->destroy();
 	}
 
 	/////////////////////////////////////////////////////////////
 	bool Window::createContext(fw::GLContext::Settings settings)
 	{
-		return m_context.create(settings);
+		return this->create(settings);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -122,7 +146,7 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	bool Window::setContextActive(bool active)
 	{
-		return m_context.setActive(active);
+		return this->setActive(active);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -270,20 +294,20 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	bool Window::swapBuffers()
 	{
-		return m_context.swapBuffers();
+		return fw::GLContext::swapBuffers();
 	}
-
+/*
 	/////////////////////////////////////////////////////////////
 	const fw::GLContext &Window::getContext() const
 	{
-		return m_context;
+		return *this;
 	}
 
 	/////////////////////////////////////////////////////////////
 	fw::GLContext &Window::getContext()
 	{
-		return m_context;
-	}
+		return *this;
+	}*/
 
 	/////////////////////////////////////////////////////////////
 	const priv::Window &Window::getOSWindow() const

@@ -22,6 +22,12 @@
 #include <FRONTIER/System/macros/API.h>
 #define FRONTIER_GLCONTEXT
 
+namespace fm
+{
+	template<class>
+	class vector4;
+}
+
 namespace fw
 {
 	class GLContext;
@@ -30,6 +36,33 @@ namespace fw
 		extern fw::GLContext theSharedContext;
 		class theSharedContextInitializer;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Encodes types of blending
+	/// 
+	/// By default blending is not used (same as Overwrite)
+	/// 
+	/////////////////////////////////////////////////////////////
+	enum BlendMode {
+		Overwrite, ///< Destination = Input
+		Additive,  ///< Destination = Destination + Input
+		Alpha      ///< Destination = Destination*(1-Input.a) + Input*Input.a
+	};
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Encodes types of depth testing
+	/// 
+	/// By default depth test is not used
+	/// 
+	/////////////////////////////////////////////////////////////
+	enum DepthTestMode {
+		Less,    ///< Writes the fragment iff it's distance is smaller than the current in the depth buffer
+		LEqual,  ///< Writes the fragment iff it's distance is smaller or equal than the current in the depth buffer
+		GEqual,  ///< Writes the fragment iff it's distance is greater or equal than the current in the depth buffer
+		Greater, ///< Writes the fragment iff it's distance is greater than the current in the depth buffer
+		Always,  ///< Always writes the fragment in the depth buffer
+		Unused   ///< Does not perform depth test
+	};
 
 	/////////////////////////////////////////////////////////////
 	/// @brief GLContext
@@ -142,7 +175,7 @@ namespace fw
 		/// @brief Default destructor
 		///
 		/////////////////////////////////////////////////////////////
-		~GLContext();
+		virtual ~GLContext();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Makes the context active in the current thread
@@ -174,7 +207,7 @@ namespace fw
 		/// @return True if everything went right
 		///
 		/////////////////////////////////////////////////////////////
-		bool create(priv::WindowHandle windowHandle,fw::GLContext::Settings settings = fw::GLContext::Settings());
+		virtual bool create(priv::WindowHandle windowHandle,fw::GLContext::Settings settings = fw::GLContext::Settings());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Initializes the context without a visible window
@@ -185,7 +218,7 @@ namespace fw
 		/// @return True if everything went right
 		///
 		/////////////////////////////////////////////////////////////
-		bool create(const fm::vec2s &size,fw::GLContext::Settings settings = fw::GLContext::Settings());
+		virtual bool create(const fm::vec2s &size,fw::GLContext::Settings settings = fw::GLContext::Settings());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Initializes the context without a visible window
@@ -277,7 +310,7 @@ namespace fw
 		static void setView2d(fm::Size x,fm::Size y,fm::Size width,fm::Size height,float left,float bottom,float right,float top,float znear=-1,float zfar=1);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Read the attributes of the context
+		/// @brief Set the view of the currently active GL context
 		/// 
 		/// Sets the projection matrix and the viewport
 		/// 
@@ -290,7 +323,55 @@ namespace fw
 		/// @param zfar  The distance of the furthest visible object (should be greater than @a znear)
 		/// 
 		/////////////////////////////////////////////////////////////
-		static void setView3d(fm::Size x,fm::Size y,fm::Size width,fm::Size height,float fov,float znear=1,float zfar=100);
+		static void setView3d(fm::Size x,fm::Size y,fm::Size width,fm::Size height,float fov,float znear=1,float zfar=100);		
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of the clearing color used by the currently active context
+		/// 
+		/// @param color The new clear-color
+		/// 
+		/////////////////////////////////////////////////////////////
+		static void setClearColor(const fm::vector4<float> &color);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the clearing depth used by the currently active context
+		/// 
+		/// @param depth The new clearing depth
+		/// 
+		/////////////////////////////////////////////////////////////
+		static void setClearDepth(float depth);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Clears the specified buffers of the currently active context
+		/// 
+		/// @param colorBuffer If true the color buffer will be cleared with the set clear-color
+		/// @param depthBuffer If true the depth buffer will be cleared with the specified value
+		/// @param stencilBuffer If true the stencil buffer will be cleared with the specified value
+		/// 
+		/// @see setClearColor
+		/// 
+		/////////////////////////////////////////////////////////////
+		static void clear(bool colorBuffer = true,bool depthBuffer = false,bool stencilBuffer = false);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the blending mode of the current context
+		/// 
+		/// @param mode The new blending mode
+		/// 
+		/// @see BlendMode
+		/// 
+		/////////////////////////////////////////////////////////////
+		static void setBlend(BlendMode mode);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the depthtest mode of the current context
+		/// 
+		/// @param mode The new depth-test mode
+		/// 
+		/// @see DepthTestMode
+		/// 
+		/////////////////////////////////////////////////////////////
+		static void setDepthTest(DepthTestMode mode);
 
 		friend class priv::theSharedContextInitializer;
 	};

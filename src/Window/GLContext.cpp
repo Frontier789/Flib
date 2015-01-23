@@ -211,6 +211,53 @@ namespace fw
 		glMatrixMode(GL_PROJECTION);
 		glLoadMatrixf(&projM[0][0]);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	void GLContext::setClearColor(const fm::vec4 &color)
+	{
+		glClearColor(color.r,color.g,color.b,color.a);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GLContext::setClearDepth(float depth)
+	{
+		glClearDepth(depth);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GLContext::clear(bool colorBuffer,bool depthBuffer,bool stencilBuffer)
+	{
+		if (colorBuffer || depthBuffer || stencilBuffer)
+			glClear((colorBuffer ? GL_COLOR_BUFFER_BIT : 0)|(depthBuffer ? GL_DEPTH_BUFFER_BIT : 0)|(stencilBuffer ? GL_STENCIL_BUFFER_BIT : 0));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GLContext::setBlend(BlendMode mode)
+	{
+		if (mode == Overwrite)
+			glDisable(GL_BLEND);
+		if (mode == Additive)
+			glEnable(GL_BLEND),
+			glBlendFunc(GL_ONE,GL_ONE);
+		if (mode == Alpha)
+			glEnable(GL_BLEND),
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GLContext::setDepthTest(DepthTestMode mode)
+	{
+		if (mode != Unused)
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
+			
+		if (mode == Less)    glDepthFunc(GL_LESS);
+		if (mode == LEqual)  glDepthFunc(GL_LEQUAL);
+		if (mode == GEqual)  glDepthFunc(GL_GEQUAL);
+		if (mode == Greater) glDepthFunc(GL_GREATER);
+		if (mode == Always)  glDepthFunc(GL_ALWAYS);
+	}
 }
 
 #endif // FRONTIER_NO_CONTEXT
