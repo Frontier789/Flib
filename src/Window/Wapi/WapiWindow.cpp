@@ -50,14 +50,14 @@ namespace fw
 	{
 		UINT scancode = (lParam & 0x00ff0000) >> 16;
 		int  extended = (lParam & 0x01000000) != 0;
-		
+
 		if (param == VK_SHIFT)
 			param = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
 		if (param == VK_CONTROL)
 			param = extended ? VK_RCONTROL : VK_LCONTROL;
 		if (param == VK_MENU)
 			param = extended ? VK_RMENU : VK_LMENU;
-    
+
 		if (param == VK_LEFT)      return Keyboard::Left;
 		if (param == VK_RIGHT)     return Keyboard::Right;
 		if (param == VK_DOWN)      return Keyboard::Down;
@@ -77,7 +77,7 @@ namespace fw
 		if (param == VK_DIVIDE)    return Keyboard::Divide;
 		if (param == VK_MULTIPLY)  return Keyboard::Multiply;
 		if (param == 0x6D) 		   return Keyboard::Minus;
-		if (param == 0x6B) 		   return Keyboard::Plus; 
+		if (param == 0x6B) 		   return Keyboard::Plus;
 		if (param == 0x6E) 		   return Keyboard::Comma;
 		if (param == VK_TAB)       return Keyboard::Tab;
 		if (param == VK_CAPITAL)   return Keyboard::CapsLock;
@@ -133,7 +133,7 @@ namespace fw
 			fw::WapiPrintLastError(fw_log,AdjustWindowRect);
 			return false;
 		}
-		
+
 		w = (Rct.right  - Rct.left)-50+w;
 		h = (Rct.bottom - Rct.top)-50+h;
 
@@ -143,10 +143,10 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	DWORD getDWORDfromStyle(unsigned int &style)
 	{
-		// menus have nothing 
+		// menus have nothing
 		if (style & Window::Menu)
 			style = Window::Menu|Window::SkipTaskbar;
-		
+
 		// A resizeable window needs border
 		if (style & Window::Resize)
 			style |= Window::Border;
@@ -154,7 +154,7 @@ namespace fw
 		// A x button needs titlebar
 		if (style & Window::Close)
 			style |= Window::Titlebar;
-		
+
 		// So does a minimize button
 		if (style & Window::Minimize)
 			style |= Window::Titlebar|Window::Close;
@@ -191,7 +191,7 @@ namespace fw
 
 
 		if (style == Window::Border ||
-			style == Window::None || 
+			style == Window::None ||
 			style & Window::Menu)
 				ret &= ~WS_OVERLAPPED;
 
@@ -206,15 +206,15 @@ namespace fw
 			// check if it is the one
 			if (ancestor->getHandle() == hwnd)
 				return true;
-			
+
 			// recursive call on every children
 			for (fm::Size i=0;i<ancestor->m_children.size();i++)
 				if (recFind(ancestor->m_children[i],hwnd))
 					return true;
-			
+
 			return false;
 		}
-			
+
 		////////////////////////////////////////////////////////////
 		LRESULT CALLBACK Window::forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
@@ -253,7 +253,7 @@ namespace fw
 														(fm::IntPtr)lParam,
 														&userResult))
 				return (LRESULT)userResult;
-			
+
 			switch(msg)
 			{
 				// our window got focus
@@ -289,7 +289,7 @@ namespace fw
 
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
-				
+
 				// the mouse left the window
 				case WM_MOUSELEAVE:
 				{
@@ -303,7 +303,7 @@ namespace fw
 				case WM_MOUSEMOVE:
 				{
 					// if no button is down
-					if (!(wParam & MK_LBUTTON || 
+					if (!(wParam & MK_LBUTTON ||
 						  wParam & MK_MBUTTON ||
 						  wParam & MK_RBUTTON))
 					{
@@ -316,7 +316,7 @@ namespace fw
 						// else set capture to receive move event outside the window
 						SetCapture(m_hwnd);
 					}
-					
+
 					if (!m_cursorInside)
 					{
 						TRACKMOUSEEVENT tme;
@@ -325,13 +325,13 @@ namespace fw
 						tme.dwHoverTime = HOVER_DEFAULT;
 						tme.hwndTrack = m_hwnd;
 						TrackMouseEvent(&tme);
-						
+
 						m_cursorInside = true;
-						
+
 						Event event(Event::MouseEntered);
 						postEvent(event);
 					}
-					
+
 					Event ev(Event::MouseMoved);
 					ev.pos.x = ((int)(short)LOWORD(lParam));
 					ev.pos.y = ((int)(short)HIWORD(lParam));
@@ -407,8 +407,8 @@ namespace fw
 						ReleaseCapture();
 						DefWindowProc(m_hwnd,WM_MOUSEMOVE,0,lParam);
 					}
-						
-					
+
+
 					Event ev(Event::ButtonReleased);
 
 					if (msg==WM_LBUTTONUP)
@@ -428,7 +428,7 @@ namespace fw
 				case WM_NCHITTEST:
 				{
 					LRESULT defResult = DefWindowProc(hwnd, msg, wParam, lParam);
-					
+
 					// in case we dont want resize we change to simple border upon finding resizeable part
 					if (!m_resizeable)
 						if (defResult == HTBOTTOM ||
@@ -440,8 +440,8 @@ namespace fw
 							defResult == HTTOPLEFT ||
 							defResult == HTTOPRIGHT)
 								defResult = HTBORDER;
-					
-					
+
+
 					if (!m_cursorHitTest) // if the user didn't specify a function
 						return defResult;
 					else // if the user did specify a function
@@ -483,7 +483,7 @@ namespace fw
 					// prevent opening the window menu by clicking on the icon
 					if (wParam==HTSYSMENU)
 						wParam = HTCAPTION;
-					
+
 					// forward maximazition to user
 					if (m_resizeable && wParam==HTCAPTION && msg==WM_NCLBUTTONDBLCLK)
 					{
@@ -491,7 +491,7 @@ namespace fw
 							maximize();
 						else
 							ShowWindow(hwnd,SW_RESTORE);
-						
+
 						return 0;
 					}
 
@@ -517,7 +517,7 @@ namespace fw
 					}
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}*/
-				
+
 				case WM_EXITSIZEMOVE:
 				{
 					unsigned int w,h;
@@ -526,8 +526,9 @@ namespace fw
 					ev.size.w = w;
 					ev.size.h = h;
 					postEvent(ev);
+					break;
 				}
-				
+
 				// character entered
 				case WM_CHAR:
 				{
@@ -537,7 +538,7 @@ namespace fw
 					postEvent(ev);
 					return 0;
 				}
-				
+
 				// window-button pressed
 				case WM_SYSCOMMAND:
 				{
@@ -547,19 +548,19 @@ namespace fw
 						minimize();
 						return 0;
 					}
-					
+
 					// maximization request
 					if (wParam == SC_MAXIMIZE)
 					{
 						maximize();
 						return 0;
 					}
-					
+
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
 
 				// we do little change here so we can have bigger windows than the desktop
-				case WM_GETMINMAXINFO: 
+				case WM_GETMINMAXINFO:
 				{
 					DefWindowProc(hwnd, msg, wParam, lParam);
 					MINMAXINFO *pmmi = (MINMAXINFO*)lParam;
@@ -571,7 +572,7 @@ namespace fw
 						// get client size
 						unsigned int w,h;
 						getSize(w,h);
-						
+
 						RECT Rct;
 						Rct.top    = 100;
 						Rct.left   = 100;
@@ -584,20 +585,20 @@ namespace fw
 							fw::WapiPrintLastError(fw_log,AdjustWindowRect);
 							return false;
 						}
-						
+
 						w += (Rct.right  - Rct.left)-50;
 						h += (Rct.bottom - Rct.top)-50;
-						
+
 						pmmi->ptMinTrackSize.x = w;
 						pmmi->ptMaxTrackSize.x = w;
 
 						pmmi->ptMinTrackSize.y = h;
 						pmmi->ptMaxTrackSize.y = h;
 					}*/
-					
+
 					return 0;
 				}
-				
+
 				// mouse wheel moved
 				case WM_MOUSEWHEEL:
 				{
@@ -612,74 +613,74 @@ namespace fw
 					postEvent(ev);
 					return 0;
 				}
-				
+
 				// file drop
 				case WM_DROPFILES:
 				{
 					HDROP hDrop = (HDROP)wParam;
-					
+
 					// query the number of files
 					unsigned int fileCount = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
-					
+
 					Event ev(Event::FileDrop);
 					fm::vec2i pos = Mouse::getPosition(*this);
 					ev.drop.x = pos.x;
 					ev.drop.y = pos.y;
-					
+
 					for (unsigned int i=0;i<fileCount;i++)
 					{
 						unsigned int bufSize = DragQueryFile(hDrop,i,NULL,0);
-						
+
 						char *buf = new char[bufSize+1];
-						
+
 						DragQueryFile(hDrop,i,buf,bufSize+1);
-						
+
 						buf[bufSize] = '\0';
-						
+
 						ev.drop.files.push_back(std::string(buf));
-						
+
 						delete[] buf;
 					}
 					postEvent(ev);
 					return 0;
 				}
-				
+
 				// decoration switched to "active" state
 				case WM_NCACTIVATE:
 				{
 					Wapi::Window *parent = this;
 					while (parent->m_parent)
 						parent = parent->m_parent;
-					
+
 					bool inTree = recFind(parent,(HWND)lParam);
-					
+
 					/*
 					std::string s1,s2;
 					getTitle(s1);
 					parent->getTitle(s2);
-					
-					fw_log << "WM_NCACTIVATE wParam="<<wParam<<" lParam="<<lParam<<" name="<<s1<<" parent="<<s2<<" inTree="<<inTree<<std::endl; 
+
+					fw_log << "WM_NCACTIVATE wParam="<<wParam<<" lParam="<<lParam<<" name="<<s1<<" parent="<<s2<<" inTree="<<inTree<<std::endl;
 					*/
-					
+
 					if (inTree)
 						wParam = 1;
 					else
 						SendMessage(parent->getHandle(),WM_FACTIVATE_TREE,wParam,lParam);
-					
+
 					m_decorActive = wParam;
 				}
-				
+
 				// custom message (WM_USER+1)
 				case WM_FACTIVATE_TREE:
 				{
 					// forward to children
 					for (fm::Size i=0;i<m_children.size();i++)
 						SendMessage(m_children[i]->getHandle(),WM_FACTIVATE_TREE,wParam,lParam);
-					
-					
+
+
 					// save decor state
 					m_decorActive = wParam;
-					
+
 					return DefWindowProc(hwnd, WM_NCACTIVATE, wParam, lParam);
 				}
 
@@ -694,7 +695,7 @@ namespace fw
 
 		////////////////////////////////////////////////////////////
 		unsigned int Window::m_windowCount = 0;
-		
+
 		////////////////////////////////////////////////////////////
 		fm::Mutex Window::m_windowCountMutex;
 
@@ -750,19 +751,19 @@ namespace fw
 			fm::Size count = children.size();
 			for (fm::Size i = 0;i<count;i++)
 				children[i]->close();
-			
+
 			m_children.clear();
-			
+
 			// delete window
 			if (m_hwnd)
 			{
 				if (!DestroyWindow(m_hwnd))
 					fw::WapiPrintLastError(fw_log,DestroyWindow);
-				
+
 				m_hwnd = NULL;
 			}
-			
-			
+
+
 			// decrease window count
 			if (m_isOpened)
 			{
@@ -772,36 +773,36 @@ namespace fw
 					if (!UnregisterClassA(FRONTIER_WINDOWS_CLASS_NAME, GetModuleHandle(NULL)))
 						fw::WapiPrintLastError(fw_log,UnregisterClassA);
 				m_windowCountMutex.unLock();
-				
+
 				m_isOpened = false;
 			}
-			
+
 			// delete owned parent
 			if (m_ownedParent)
 			{
 				if (!DestroyWindow(m_ownedParent))
 					fw::WapiPrintLastError(fw_log,DestroyWindow);
-				
+
 				m_ownedParent = NULL;
 			}
-			
-			
+
+
 			// unregister this from parent's children
 			if (m_parent)
 			{
 				std::deque<Wapi::Window *>::iterator it = std::find(m_parent->m_children.begin(),m_parent->m_children.end(),this);
 				if (it != m_parent->m_children.end())
 					m_parent->m_children.erase(it);
-				
+
 				m_parent = NULL;
 			}
-			
-			
+
+
 			// destroy icon
 			if (m_icon)
 				DestroyIcon(m_icon),
 				m_icon = NULL;
-			
+
 			return true;
 		}
 
@@ -809,7 +810,7 @@ namespace fw
 		bool Window::createClass()
 		{
 			WNDCLASS winClass;
-			
+
 			ZeroMemory(&winClass,sizeof(winClass));
 
 			// Fill in the fields of the WNDCLASS
@@ -827,7 +828,7 @@ namespace fw
 			// Tell windows we have a class
 			if (RegisterClassA(&winClass))
 				return true;
-			
+
 			fw::WapiPrintLastError(fw_log,RegisterClassA);
 			return false;
 		}
@@ -846,25 +847,25 @@ namespace fw
 
 			// convert style to dword
 			DWORD createStyle = getDWORDfromStyle(style);
-			
+
 			m_parent = parent;
-			
+
 			if (m_parent)
 				m_parent->m_children.push_back(this);
-			
+
 			// if the window shouldn't appear on the taskbar (automatic for WS_EX_TOOLWINDOW)
 			// create a hidden parent
 			if ((style & fw::Window::SkipTaskbar) && !m_parent)
 				m_ownedParent = CreateWindowExA(0,FRONTIER_WINDOWS_CLASS_NAME,"invisible window",0,0,0,1,1,NULL,NULL,NULL,NULL);
-			
+
 			// update windowCount
 			m_windowCountMutex.lock();
 			if (m_windowCount==0)
 				createClass();
 			m_windowCount++;
 			m_windowCountMutex.unLock();
-			
-			
+
+
 			// initialize the window
 			m_hwnd = CreateWindowExA(((style & fw::Window::Toolbar) ? WS_EX_TOOLWINDOW : 0),
 									 FRONTIER_WINDOWS_CLASS_NAME,
@@ -874,14 +875,14 @@ namespace fw
 									 m_parent ? m_parent->getHandle() : m_ownedParent,
 									 NULL,NULL,
 									 this); // set createdata to 'this'
-			
+
 			// SetParent raises the window even if container is NULL
 			if (container)
 				SetParent(m_hwnd,container);
-			
+
 			// windows wouldn't let us initially create a window bigger than the screen
 			setSize(w,h);
-			
+
 			// If the window is intended to be resizeable we note it
 			m_resizeable = (style & fw::Window::Resize);
 
@@ -889,31 +890,31 @@ namespace fw
 			{
 				// if we fail...
 				fw::WapiPrintLastError(fw_log,CreateWindow);
-				
+
 				m_isOpened = false;
-				
+
 				return false;
 			}
-			else 
+			else
 				m_isOpened = true;
-			
+
 			// note the window's style
 			m_style   = GetWindowLongPtr(m_hwnd, GWL_STYLE);
 			m_exStyle = GetWindowLongPtr(m_hwnd, GWL_EXSTYLE);
-			
+
 			// go fullscreen if requested
 			if (style & fw::Window::Fullscreen)
 				setFullscreen(w,h);
-			
+
 			// enable drag 'n' drop
 			DragAcceptFiles(m_hwnd,m_acceptDrop);
-			
-			
+
+
 			// Tell windows to show our window if its not hidden
 			if (!(style & fw::Window::Hidden))
 				ShowWindow(m_hwnd,(style & fw::Window::Toolbar) ? SW_SHOWNOACTIVATE : SW_SHOW);
-			
-			
+
+
 			return true;
 		}
 
@@ -963,12 +964,12 @@ namespace fw
 			if (m_hwnd)
 			{
 				ShowWindow(m_hwnd,SW_SHOWMAXIMIZED);
-				
+
 				Event ev(Event::Resized);
 				getSize(ev.size.w,ev.size.h);
 				postEvent(ev);
 			}
-				
+
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -1028,7 +1029,7 @@ namespace fw
 			{
 				if (!adjustWindowSize(w,h,GetWindowLong(m_hwnd,GWL_STYLE),GetWindowLong(m_hwnd,GWL_EXSTYLE)))
 					return false;
-				
+
 				if (!SetWindowPos(m_hwnd, // target HWND
 								  NULL,   // Z-order specifier
 								  x,y,    // new position
@@ -1039,7 +1040,7 @@ namespace fw
 						return false;
 					}
 			}
-				
+
 			return true;
 		}
 
@@ -1144,7 +1145,7 @@ namespace fw
 					fw::WapiPrintLastError(fw_log,GetClientRect);
 					return false;
 				}
-				
+
 				w = client_rect.right;
 				h = client_rect.bottom;
 			}
@@ -1289,7 +1290,7 @@ namespace fw
 			m_eventQueue.resize(m_eventQueue.size()+1,ev);
 			//m_eventQueue.push_back(ev);
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		void Window::enableDrop(bool enable)
 		{
@@ -1297,7 +1298,7 @@ namespace fw
 			if (m_hwnd)
 				DragAcceptFiles(m_hwnd,m_acceptDrop);
 		}
-			
+
 		/////////////////////////////////////////////////////////////
 		bool Window::isDropEnabled() const
 		{
@@ -1328,7 +1329,7 @@ namespace fw
 			return m_resizeable;
 		}
 
-		
+
 		////////////////////////////////////////////////////////////
 		bool Window::setFullscreen(unsigned int width,unsigned int height,bool fullscreen)
 		{
@@ -1343,27 +1344,27 @@ namespace fw
 						HMONITOR hMonitor = MonitorFromWindow(m_hwnd,MONITOR_DEFAULTTONULL);
 						MONITORINFO monInfo;
 						monInfo.cbSize = sizeof(monInfo);
-						
+
 						if (!hMonitor)
 						{
 							fw_log << "Couldn't find the corresponding monitor (Wapi,fullscreen)" << std::endl;
 							return false;
 						}
-						
+
 						if (!GetMonitorInfo(hMonitor,&monInfo))
 						{
 							fw::WapiPrintLastError(fw_log,GetWindowPlacement);
 							return false;
 						}
-						
+
 						// set width and height to match the monitor's
 						width  = monInfo.rcMonitor.right  - monInfo.rcMonitor.left;
 						height = monInfo.rcMonitor.bottom - monInfo.rcMonitor.top;
 					}
-					
+
 					// take off the decor
 					SetWindowLongPtr(m_hwnd, GWL_STYLE,(m_style | WS_VISIBLE) &~ (WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU));
-					
+
 					// set topmost
 					if (!SetWindowPos(m_hwnd, HWND_TOPMOST, 0,0,width,height,SWP_FRAMECHANGED | SWP_NOMOVE))
 					{
@@ -1375,11 +1376,11 @@ namespace fw
 				{
 					// put decor back
 					SetWindowLongPtr(m_hwnd, GWL_STYLE,m_style|WS_VISIBLE);
-					
-					
+
+
 					if (!adjustWindowSize(width,height,m_style,m_exStyle))
 						return false;
-					
+
 					// set notopmost
 					if (!SetWindowPos(m_hwnd, HWND_NOTOPMOST,0,0,width,height,SWP_NOMOVE))
 					{
@@ -1388,7 +1389,7 @@ namespace fw
 					}
 				}
 
-				return true;				
+				return true;
 			}
 			return false;
 		}
@@ -1401,35 +1402,35 @@ namespace fw
 				// delete last icon
 				if (m_icon)
 					DestroyIcon(m_icon);
-				
+
 				std::vector<fg::Color> *iconPixels = (std::vector<fg::Color> *)&icon;
-				
+
 				fm::Size width  =  *((fm::Size *)(iconPixels+1));
 				fm::Size height = *(((fm::Size *)(iconPixels+1))+1);
 				fm::Size size   = iconPixels->size();
-				
+
 				unsigned char *iconBytes = NULL;
-				
+
 				if (size)
 				{
 					iconBytes = new unsigned char [width*height*4];
-					
+
 					// swap RGBA to BGRA
 					for (fm::Size i=0;i<size;i++)
 						iconBytes[i*4+0] = (*iconPixels)[i].b,
 						iconBytes[i*4+1] = (*iconPixels)[i].g,
 						iconBytes[i*4+2] = (*iconPixels)[i].r,
-						iconBytes[i*4+3] = (*iconPixels)[i].a;				
+						iconBytes[i*4+3] = (*iconPixels)[i].a;
 				}
-				
+
 				// convert to HICON
 				m_icon = CreateIcon(NULL, width, height, 1, sizeof(fg::Color)*FRONTIER_BITS_PER_BYTE, NULL, iconBytes);
-				
+
 				// delete allocated memory
 				delete[] iconBytes;
-				
-				SendMessage(m_hwnd,WM_SETICON,ICON_SMALL,(LPARAM)m_icon);			
-				SendMessage(m_hwnd,WM_SETICON,ICON_BIG,(LPARAM)m_icon);			
+
+				SendMessage(m_hwnd,WM_SETICON,ICON_SMALL,(LPARAM)m_icon);
+				SendMessage(m_hwnd,WM_SETICON,ICON_BIG,(LPARAM)m_icon);
 			}
 		}
 
@@ -1444,7 +1445,7 @@ namespace fw
 		{
 			return m_hwnd;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		void Window::setEventCallback(EventCallback callback)
 		{

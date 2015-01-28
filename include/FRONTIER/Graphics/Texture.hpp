@@ -46,7 +46,7 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	///
-	/// 	@brief Class used to handle OpenGL 2D textures 
+	/// 	@brief Class used to handle OpenGL 2D textures
 	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Texture : public GlObject
@@ -56,17 +56,21 @@ namespace fg
 		bool m_isRepeated;	  ///< True if the texture is repeated after its bounds
 		bool m_isSmooth;	  ///< If true then linear interpolation is used on magnifying
 		static void (*m_setTexMat)(const fm::matrix<4,4,float> &m); ///< Function used to set the texture matrix
+		virtual fm::Int32  getInternalFormat() const; ///< Internal function
+		virtual fm::Uint32 getAttachement() const; ///< Internal function
+		virtual fm::Uint32 getFormat() const; ///< Internal function
+		virtual fm::Uint32 getType() const; ///< Internal function
 	public:
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Indicate what coordinate system the texture is bound
 		///
 		/////////////////////////////////////////////////////////////
 		enum CoordinateSystem {
-			Normalized, ///< Texture coordinates are in range [0;1],[0;1] 
+			Normalized, ///< Texture coordinates are in range [0;1],[0;1]
 			Pixels		///< Texture coordinates are in range [0;w],[0;h]
 		};
-		
+
 	public:
 		typedef Texture &reference;
 		typedef const Texture &const_reference;
@@ -84,11 +88,11 @@ namespace fg
 		///
 		/// Copies the whole texture back to client memory
 		/// and sends the data to a new texture unit
-		/// it is a S-L-O-W operation 
-		/// 
+		/// it is a S-L-O-W operation
+		///
 		/// If @a copy is invalid then the texture is leaved invalid
-		/// 
-		/// @param copy The texture to be copied 
+		///
+		/// @param copy The texture to be copied
 		///
 		/////////////////////////////////////////////////////////////
 		Texture(const Texture &copy);
@@ -97,12 +101,12 @@ namespace fg
 		/// @brief Create a OpenGL texture from image
 		///
 		/// This function sends the client-side data (the image)
-		/// to OpenGL 
-		/// 
+		/// to OpenGL
+		///
 		/// If @a img has an invalid size (w or h is 0) or its width or height
 		/// is bigger than getMaximumSize() then an error is prompted to fg_log
 		/// and the texture is leaved invalid
-		/// 
+		///
 		/// @param img The image to send to OpenGL
 		///
 		/////////////////////////////////////////////////////////////
@@ -114,7 +118,7 @@ namespace fg
 		/// Automatically deletes the OpenGL id
 		///
 		/////////////////////////////////////////////////////////////
-		~Texture();
+		virtual ~Texture();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief (re)create the texture with given size
@@ -124,7 +128,7 @@ namespace fg
 		///
 		/// The content of the texture is undefined after successfully calling this
 		/// function and should be filled by fg::Texture::update or any other method
-		/// before usage 
+		/// before usage
 		///
 		/// @param width The requested width
 		/// @param height The requested height
@@ -142,7 +146,7 @@ namespace fg
 		///
 		/// The content of the texture is undefined after successfully calling this
 		/// function and should be filled by fg::Texture::update or any other method
-		/// before usage 
+		/// before usage
 		///
 		/// @param size The requested size
 		///
@@ -155,12 +159,12 @@ namespace fg
 		/// @brief Create a OpenGL texture from image
 		///
 		/// This function sends the client-side data (the image)
-		/// to OpenGL 
-		/// 
+		/// to OpenGL
+		///
 		/// If @a img has an invalid size (w or h is 0) or its width or height
 		/// is bigger than getMaximumSize() then an error is prompted to fg_log
 		/// and the texture is not modified
-		/// 
+		///
 		/// @param img The image to send to OpenGL
 		///
 		/// @return True if no error occured
@@ -172,15 +176,15 @@ namespace fg
 		/// @brief Load a OpenGL texture from a file
 		///
 		/// This function sends the client-side data (the loaded image)
-		/// to OpenGL 
-		/// 
+		/// to OpenGL
+		///
 		/// This function loads the file with fg::Image::loadFromFile and
 		/// sends it to OpenGL using fg::Texture::loadFromImage
-		/// 
+		///
 		/// If the file is not accessible or has an unsopported extension
 		/// or has invalid data then an error is prompted to fg_log and the texture
 		/// is not modified
-		/// 
+		///
 		/// @param filename The name of the image file
 		///
 		/// @return True if no error occured
@@ -191,7 +195,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the repeate flag
 		///
-		/// That flag is used by OpenGL when requesting out-of-bounds 
+		/// That flag is used by OpenGL when requesting out-of-bounds
 		/// texels of the texture;
 		///
 		/// @param repeat New value of the repeated flag
@@ -300,8 +304,8 @@ namespace fg
 		/// If @a pixel is NULL or the texture is invalid then
 		/// NO error is prompted and the texture is not modified
 		///
-		/// The target rectangle is understood to be ((0,0),(w,h)) where 
-		/// (w,h) is the size of the texture 
+		/// The target rectangle is understood to be ((0,0),(w,h)) where
+		/// (w,h) is the size of the texture
 		///
 		/// @param pixels Pointer to the new color values
 		///
@@ -356,7 +360,7 @@ namespace fg
 		/// if not glGetTexImage will be used (if available)
 		/// if neither of the above then a white fg::Image (same size as texture) is returned
 		/// and an error is prompted to fg_log
-		/// 
+		///
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
@@ -364,7 +368,7 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the texture for usage
-		/// 
+		///
 		/// This function uses the GL_TXTURE_2D target
 		/// This function does not modify the texture matrix
 		///
@@ -373,9 +377,9 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the texture for usage
-		/// 
+		///
 		/// This function uses the GL_TXTURE_2D target
-		/// This function calls fg::Texture::m_setTexMat 
+		/// This function calls fg::Texture::m_setTexMat
 		/// (can be modifed by changeSetTexMat) to set the texture matrix
 		///
 		/// @param coordinateSystem The used texture coordinate system
@@ -385,11 +389,11 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a texture for usage
-		/// 
+		///
 		/// This function uses the GL_TXTURE_2D target
-		/// This function calls fg::Texture::m_setTexMat 
+		/// This function calls fg::Texture::m_setTexMat
 		/// (can be modifed by changeSetTexMat) to set the texture matrix
-		/// If @a texture is NULL the actually bound texture will be 
+		/// If @a texture is NULL the actually bound texture will be
 		/// unbound
 		///
 		/// @param texture The texture to be bound (or NULL)
@@ -400,10 +404,10 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a texture for usage
-		/// 
+		///
 		/// This function uses the GL_TXTURE_2D target
 		/// This function does not modify the texture matrix
-		/// If @a texture is NULL the actually bound texture will be 
+		/// If @a texture is NULL the actually bound texture will be
 		/// unbound
 		///
 		/// @param texture The texture to be bound (or NULL)
@@ -413,9 +417,9 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a texture for usage
-		/// 
+		///
 		/// This function uses the GL_TXTURE_2D target
-		/// This function calls fg::Texture::m_setTexMat 
+		/// This function calls fg::Texture::m_setTexMat
 		/// (can be modifed by changeSetTexMat) to set the texture matrix
 		///
 		/// @param texture The texture to be bound (or NULL)
@@ -426,7 +430,7 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a texture for usage
-		/// 
+		///
 		/// This function uses the GL_TXTURE_2D target
 		/// This function does not modify the texture matrix
 		///
@@ -463,7 +467,7 @@ namespace fg
 		/// @brief Change the function used to modify the texture matrix
 		///
 		/// If @a newFunc is NULL then the default function fill be used
-		/// (which uses the fixed pipeline) 
+		/// (which uses the fixed pipeline)
 		///
 		/// @param newFunc The new function
 		///
@@ -500,31 +504,31 @@ namespace fg
 ///
 /// fg::Texture is used to send data to OpenGL and
 /// handle the returned id
-/// 
+///
 /// Usage example:
 /// @code
-/// 
+///
 /// fg::Image img;
 /// img.create(500,500);
 /// for (fm::Size x=0;x<img.getSize().w;x++)
 /// 	for (fm::Size y=0;y<img.getSize().h;y++)
 /// 		img.setPixel(x,y,(y%50<25 ? (x%50<25) : ((49-(x%50))<25)) ? fg::Color(80,80,80) : fg::Color(200,200,200));
-/// 
+///
 /// fg::Texture tex(img);
-/// 
+///
 /// fm::vertex2f verts[]={fm::vertex2f(fm::vec2(0,0),fm::vec4::White,fm::vec2(0,0)),
 ///					      fm::vertex2f(fm::vec2(1,0),fm::vec4::White,fm::vec2(1,0)),
 ///					      fm::vertex2f(fm::vec2(0,1),fm::vec4::White,fm::vec2(0,1)),
 ///					      fm::vertex2f(fm::vec2(1,1),fm::vec4::White,fm::vec2(1,1))};
-/// 
+///
 /// glEnable(GL_TEXTURE_2D);
-/// 
+///
 /// tex.bind();
 /// fg::Drawable::draw(verts);
-/// 
+///
 ///
 /// @endcode
-/// 
+///
 /// @see fg::Color
 ///
 ////////////////////////////////////////////////////////////

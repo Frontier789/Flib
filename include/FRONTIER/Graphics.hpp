@@ -21,7 +21,7 @@
 /// @defgroup Graphics Graphics (OpenGL) module
 ///
 /// This module defines OpenGL related classes
-/// 
+///
 ////////////////////////////////////////////////////////////
 
 
@@ -31,7 +31,7 @@
 /////////////////////////////////////////////////////////////
 namespace fg
 {
-	
+
 }
 
 #include <FRONTIER/Graphics/Font.hpp>
@@ -48,6 +48,7 @@ namespace fg
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Graphics/StaticText.hpp>
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
+#include <FRONTIER/Graphics/DepthTexture.hpp>
 #include <FRONTIER/Graphics/RenderStates.hpp>
 
 #endif // FRONTIER_GRAPICS_MODULE_HPP_INCLUDED

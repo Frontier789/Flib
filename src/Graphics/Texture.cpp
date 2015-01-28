@@ -37,6 +37,12 @@ namespace fg
 	}
 	void (*Texture::m_setTexMat)(const fm::mat4 &m) = priv::defaultSetTextureMatrixFunc;
 
+	////////////////////////////////////////////////////////////
+	fm::Int32  Texture::getInternalFormat() const {return GL_RGBA8;}
+	fm::Uint32 Texture::getAttachement() const {return GL_COLOR_ATTACHMENT0;}
+	fm::Uint32 Texture::getFormat() const {return GL_RGBA;}
+	fm::Uint32 Texture::getType() const {return GL_UNSIGNED_BYTE;}
+
 	/// constructor /////////////////////////////////////////////////////////
 	Texture::Texture() : m_isRepeated(false),
 						 m_isSmooth(false)
@@ -70,7 +76,7 @@ namespace fg
 	/// destructor /////////////////////////////////////////////////////////
 	Texture::~Texture()
 	{
-		if (glIsTexture(getGlId())==GL_TRUE)
+		if (getGlId() && glIsTexture(getGlId())==GL_TRUE)
 		{
 			GLuint glId = getGlId();
 			glCheck(glDeleteTextures(1,&glId));
@@ -127,7 +133,8 @@ namespace fg
 
 		glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
 		glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
-		glCheck(glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,m_realSize.w,m_realSize.h,0,GL_RGBA,GL_UNSIGNED_BYTE, NULL));
+
+		glCheck(glTexImage2D(GL_TEXTURE_2D,0,getInternalFormat(),m_realSize.w,m_realSize.h,0,getFormat(),getType(),NULL));
 
 		return true;
 	}
@@ -147,7 +154,7 @@ namespace fg
 		{
 			priv::TextureSaver save;
 			glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
-			glCheck(glTexSubImage2D(GL_TEXTURE_2D,0,0,0,img.getSize().w,img.getSize().h,GL_RGBA,GL_UNSIGNED_BYTE, img.getPixelsPtr()));
+			glCheck(glTexSubImage2D(GL_TEXTURE_2D,0,0,0,img.getSize().w,img.getSize().h,getFormat(),getType(), img.getPixelsPtr()));
 		}
 		else
 			return false;
@@ -231,7 +238,7 @@ namespace fg
 			priv::TextureSaver save;
 
 			glCheck(glBindTexture(GL_TEXTURE_2D, getGlId()));
-			glCheck(glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels));
+			glCheck(glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, getFormat(), getType(), pixels));
 		}
 		return *this;
 	}
@@ -292,42 +299,55 @@ namespace fg
 		if (!getGlId())
 			return Image();
 
-		#ifdef GL_FRAMEBUFFER_BINDING
+		// retrieve bound framebuffer
 		GLint framebuffer;
 		glGetIntegerv(GL_FRAMEBUFFER_BINDING,&framebuffer);
+
+		// error means framebuffers aren't supported
 		if (glGetError() == GL_NO_ERROR)
 		{
+			// build a new framebuffer
 			GLuint fb_id;
 			glCheck(glGenFramebuffers(1,&fb_id));
 			glCheck(glBindFramebuffer(GL_FRAMEBUFFER,fb_id));
-			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,getGlId(),0));
+			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER,getAttachement(),GL_TEXTURE_2D,getGlId(),0));
 
+			// Tell GL no draw and read buffers will be needed
+			if (getAttachement() == GL_DEPTH_ATTACHMENT)
+			{
+				glCheck(glDrawBuffer(GL_NONE));
+				glCheck(glReadBuffer(GL_NONE));
+			}
+
+			// read back texture
 			fg::Image ret;
 			ret.create(m_size);
-			glCheck(glReadPixels(0,0,m_size.w,m_size.h,GL_RGBA,GL_UNSIGNED_BYTE,ret.getPixelsPtr()));
+			glCheck(glReadPixels(0,0,m_size.w,m_size.h,getFormat(),getType(),ret.getPixelsPtr()));
 			glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
 			glDeleteFramebuffers(1,&fb_id);
 			return ret;
 		}
-		#endif
 
-		#ifdef glGetTexImage
-
+		// prepare image
 		priv::TextureSaver save;
 		Image ret;
 		ret.create(m_size);
 
+		// if npot textures are present or m_size is pot
 		if (m_size == m_realSize)
 		{
+			// simply copy back texture
 			glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
-			glCheck(glGetTexImage(GL_TEXTURE_2D,0,GL_RGBA,GL_UNSIGNED_BYTE,ret.getPixelsPtr()));
+			glCheck(glGetTexImage(GL_TEXTURE_2D,0,getFormat(),getType(),ret.getPixelsPtr()));
 		}
 		else
 		{
+			// copy the whole texture
 			std::vector<Color> allPixels(m_realSize.w * m_realSize.h);
 			glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
-			glCheck(glGetTexImage(GL_TEXTURE_2D,0,GL_RGBA,GL_UNSIGNED_BYTE,&allPixels[0]));
+			glCheck(glGetTexImage(GL_TEXTURE_2D,0,getFormat(),getType(),&allPixels[0]));
 
+			// cut the useful part
 			const Color *src = &allPixels[0];
 			Color *dst = ret.getPixelsPtr();
 
@@ -340,11 +360,6 @@ namespace fg
 		}
 
 		return ret;
-		#endif
-
-		fg_log << "Error no available method found to retrieve teture data " << std::endl;
-
-		return Image(m_size,fg::Color::White);
 	}
 
 
@@ -368,6 +383,7 @@ namespace fg
 				m_setTexMat(fm::mat4::identity);
 		}
 	}
+
 
 
 	////////////////////////////////////////////////////////////
@@ -461,7 +477,7 @@ namespace fg
 	{
 		m_setTexMat = newFunc ? newFunc : priv::defaultSetTextureMatrixFunc;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Texture::operator bool() const
 	{

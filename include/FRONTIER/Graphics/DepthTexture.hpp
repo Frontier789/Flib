@@ -14,84 +14,78 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_RENDERSTATES_HPP_INCLUDED
-#define FRONTIER_RENDERSTATES_HPP_INCLUDED
-#include <FRONTIER/System/macros/API.h>
+#ifndef FRONTIER_DEPTHTEXTURE_HPP_INCLUDED
+#define FRONTIER_DEPTHTEXTURE_HPP_INCLUDED
+#include <FRONTIER/Graphics/Texture.hpp>
+#define FRONTIER_DEPTHTEXTURE
 
-#include <FRONTIER/System/macros/dont_include_inl_begin>
-
-#include <FRONTIER/System/Matrix.hpp>
-
-#include <FRONTIER/System/macros/dont_include_inl_end>
-
-#define FRONTIER_RENDERSTATES
 namespace fg
 {
-	class Texture;
-	class Shader;
-
 	/////////////////////////////////////////////////////////////
-	/// @brief Class used to hold the texture, the shader used when drawing
+	/// @brief A special texture used to hold depth values
 	///
+	/// A depth texture treats its pixels as if they were one unsigned integer each
+	///
+	/// @ingroup Graphics
+	/// @see fg::Texture
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API RenderStates
+	class FRONTIER_API DepthTexture : public Texture
 	{
+		fm::Int32  getInternalFormat() const; ///< Internal function
+		fm::Uint32 getAttachement() const; ///< Internal function
+		fm::Uint32 getFormat() const; ///< Internal function
+		fm::Uint32 getType() const; ///< Internal function
 	public:
-		typedef RenderStates &reference;
-		typedef const RenderStates &const_reference;
-
-		const Texture *texture; ///< The texture
-		Shader *shader;         ///< The shader
-
+		typedef DepthTexture &reference;
+		typedef const DepthTexture &const_reference;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct the states
+		/// @brief Default constructor
 		///
-		/// @param texture A pointer to the texture
-		/// @param shader A pointer to the shader
+		/// Leaves the texture uninitialized thus invalid
 		///
 		/////////////////////////////////////////////////////////////
-		RenderStates(const Texture *texture = 0,Shader *shader = 0);
+		DepthTexture();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct the states
+		/// @brief Copy constructor
 		///
-		/// @param texture The texture
-		/// @param shader A pointer to the shader
+		/// Copies the whole texture back to client memory
+		/// and sends the data to a new texture unit
+		/// it is a S-L-O-W operation
 		///
-		/////////////////////////////////////////////////////////////
-		RenderStates(const Texture &texture,Shader *shader = 0);
-
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct the states
+		/// If @a copy is invalid then the texture is leaved invalid
 		///
-		/// @param texture A pointer to the texture
-		/// @param shader The shader
+		/// @param copy The texture to be copied
 		///
 		/////////////////////////////////////////////////////////////
-		RenderStates(const Texture *texture,Shader &shader);
-
+		explicit DepthTexture(const DepthTexture &copy);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct the states
+		/// @brief Create a OpenGL texture from image
 		///
-		/// @param texture The texture
-		/// @param shader The shader
+		/// This function sends the client-side data (the image)
+		/// to OpenGL
+		///
+		/// If @a img has an invalid size (w or h is 0) or its width or height
+		/// is bigger than getMaximumSize() then an error is prompted to fg_log
+		/// and the texture is leaved invalid
+		///
+		/// @param img The image to send to OpenGL
 		///
 		/////////////////////////////////////////////////////////////
-		RenderStates(const Texture &texture,Shader &shader);
+		explicit DepthTexture(const Image &img);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct the states
+		/// @brief Retrieve the texture in a humanly understandable way
 		///
-		/// Sets the texture to NULL and
-		/// the transformation to identity
+		/// The nearest object would get the color @a znear and the furthest would be @a zfar
 		///
-		/// @param shader The shader
+		/// @param znear The color of the near clipping plane
+		/// @param zfar  The color of the far  clipping plane
 		///
 		/////////////////////////////////////////////////////////////
-		RenderStates(Shader &shader);
+		fg::Image copyConvertToImage(fg::Color znear = fg::Color::Black,fg::Color zfar = fg::Color::White) const;
 	};
 }
 #endif

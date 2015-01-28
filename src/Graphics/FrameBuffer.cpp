@@ -63,16 +63,26 @@ namespace fg
 {
 	////////////////////////////////////////////////////////////
 	FrameBuffer::DepthBuffer::DepthBuffer(const fm::vec2s &size) : width(*((fm::Size*)&size)),
-																   height(*((fm::Size*)&size+1))
+																   height(*((fm::Size*)&size+1)),
+																   dtex(NULL)
 	{
-		
+
 	}
 
 	////////////////////////////////////////////////////////////
 	FrameBuffer::DepthBuffer::DepthBuffer(const fm::Size &w,const fm::Size &h) : width(w),
-																					   height(h)
+																				 height(h),
+																				 dtex(NULL)
 	{
-		
+
+	}
+
+	////////////////////////////////////////////////////////////
+	FrameBuffer::DepthBuffer::DepthBuffer(const DepthTexture &depthTexture) : width(0),
+																			  height(0),
+																			  dtex(&depthTexture)
+	{
+
 	}
 
 	////////////////////////////////////////////////////////////
@@ -81,7 +91,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	FrameBuffer::FrameBuffer() : m_depthBufID(0)
 	{
-		
+
 	}
 
 	////////////////////////////////////////////////////////////
@@ -109,13 +119,13 @@ namespace fg
 	bool FrameBuffer::setColorAttachments(Texture *colorAttachments,unsigned int count)
 	{
 		init();
-		
+
 		if (!colorAttachments || !count)
 		{
 			fg_log << "Error: no attachment is specified in framebuffer constructor" << std::endl;
 			return false;
 		}
-		
+
 		ObjectBinder binder(getGlId());
 		C(count)
 			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, (colorAttachments+i)->getGlId(), 0));
@@ -130,23 +140,28 @@ namespace fg
 		*/
 		return checkFramebufferStatus();
 	}
-	
+
 	bool FrameBuffer::setDepthBuffer(const DepthBuffer &depthBuf)
 	{
-		if (depthBuf.width && depthBuf.height)
+		if (depthBuf.dtex)
+		{
+			ObjectBinder binder(getGlId());
+			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuf.dtex->getGlId(), 0));
+		}
+		else if (depthBuf.width && depthBuf.height)
 		{
 			ObjectBinder binder(getGlId());
 			if (glIsRenderbuffer(m_depthBufID)==GL_FALSE)
 				glCheck(glGenRenderbuffers(1, &m_depthBufID));
 			glCheck(glBindRenderbuffer(GL_RENDERBUFFER, m_depthBufID));
 			glCheck(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, depthBuf.width, depthBuf.height));
-			glCheck(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBufID));			
+			glCheck(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBufID));
 		}
 		return checkFramebufferStatus();
 	}
 
 	////////////////////////////////////////////////////////////
-	void FrameBuffer::init() 
+	void FrameBuffer::init()
 	{
 		if (glIsFramebuffer(getGlId())==GL_FALSE)
 			glCheck(glGenFramebuffers(1, &getGlId()));

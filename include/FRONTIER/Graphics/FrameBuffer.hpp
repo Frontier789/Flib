@@ -19,6 +19,7 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_begin>
 
+#include <FRONTIER/Graphics/DepthTexture.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
@@ -62,6 +63,7 @@ namespace fg
 		public:
 			fm::Size width;  ///< The width of the depth buffer
 			fm::Size height; ///< The height of the depth buffer
+			const DepthTexture *dtex; ///< The depth texture (if any)
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Construct the depth buffer from its size
@@ -79,6 +81,15 @@ namespace fg
 			///
 			/////////////////////////////////////////////////////////////
 			DepthBuffer(const fm::Size &w,const fm::Size &h);
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Construct the depth buffer from its size
+			///
+			/// @param w The width of the depth buffer
+			/// @param h The height of the depth buffer
+			///
+			/////////////////////////////////////////////////////////////
+			DepthBuffer(const DepthTexture &depthTexture);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Indicates that no depth buffer is present

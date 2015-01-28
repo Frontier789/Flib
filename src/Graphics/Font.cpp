@@ -16,8 +16,8 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
-#include <FRONTIER/Graphics/Font.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/Graphics/Font.hpp>
 #include <FRONTIER/System/Rect.hpp>
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype/stb_truetype.h"
@@ -277,7 +277,6 @@ namespace fg
 		fm::vec2u pos(rowToInsert->width-glyphImg.getSize().w,rowToInsert->start+1);
 
 		ret = Glyph(atlas,pos,glyphImg.getSize(),leftDown);
-		
 
 		return ret;
     }
