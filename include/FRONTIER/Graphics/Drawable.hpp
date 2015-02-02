@@ -111,8 +111,7 @@ namespace fg
 		/// This function shall resolve to call(s) to fg::draw
 		/// Which means only the set function (using setDrawFunc) will be used
 		///
-		/// @param texture The texture to be used
-		/// @param shader The shader to be used
+		/// @param states The rendering states of the draw call
 		///
 		/////////////////////////////////////////////////////////////
 		virtual void draw(const fg::RenderStates &states) const = 0;
@@ -356,7 +355,6 @@ namespace fg
 	/// @param vertices A pointer to the vertices
 	/// @param primitive The way vertices should be rasterized
 	/// @param states The states used when drawing
-	/// @param indices The properties of he indices
 	///
 	/////////////////////////////////////////////////////////////
 	template <class pt,class ct,class tpt,class nt,fm::Size vertexCount>

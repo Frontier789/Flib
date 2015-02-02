@@ -98,6 +98,8 @@ namespace fw
 			/// @brief Initializes the context with a dummy (hidden) window
 			///
 			/// @param sharedContext The context to share the OpenGL objects with
+			/// @param width  The width  of the offscreen target
+			/// @param height The height of the offscreen target
 			/// @param settings The attributes of the context (only a hint!)
 			///
 			/// @return True if everything went right

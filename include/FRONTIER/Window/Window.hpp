@@ -528,8 +528,7 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of unary operator ~
 	///
-	/// @param left Left operand
-	/// @param right Right operand
+	/// @param style The value to be inverted
 	///
 	/// @return ~style casted to fw::Window::WindowStyle
 	///

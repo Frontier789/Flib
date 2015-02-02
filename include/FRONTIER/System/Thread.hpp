@@ -335,11 +335,6 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a pointer to the implementation
 		/// 
-		/// You need to include FRONTIER/System/*/Thread.hpp 
-		/// and cast it to the appropriate type (fm::*::Thread)
-		/// You shouldn't delete this pointer
-		/// The pointer is invalid after deleting this object
-		/// 
 		/// @return The pointer (never NULL)
 		/// 
 		/////////////////////////////////////////////////////////////
@@ -347,11 +342,6 @@ namespace fm
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a pointer to the implementation
-		/// 
-		/// You need to include FRONTIER/System/*/Thread.hpp 
-		/// and cast it to the appropriate type (fm::*::Thread)
-		/// You shouldn't delete this pointer
-		/// The pointer is invalid after deleting this object
 		/// 
 		/// @return The pointer (never NULL)
 		/// 

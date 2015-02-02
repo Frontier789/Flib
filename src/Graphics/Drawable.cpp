@@ -163,9 +163,6 @@ namespace fg
 		else
 			glDisable(GL_TEXTURE_2D);
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadMatrixf(&states.transform.transpose()[0][0]);
-
 		if (indices.m_bytesPerIndex && (indices.m_ptr || indices.m_buffer))
 		{
 			fg::Buffer::bind(indices.m_buffer,fg::IndexBuffer);

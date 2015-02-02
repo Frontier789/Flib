@@ -515,6 +515,7 @@ namespace fg
 		///
 		/// @param data The file in memory
 		/// @param byteCount The number of bytes in the file
+		/// @param ext The extension (file type) of the file in memory
 		///
 		/// @return A vector of images
 		///

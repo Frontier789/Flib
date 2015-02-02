@@ -102,7 +102,7 @@ namespace fm
 		////////////////////////////////////////////////////////////
 		/// @brief Set the rotation
 		///
-		/// @param z The rotation around the z axis
+		/// @param angle The angle of the rotation around the z axis
 		///
 		/// @return Reference to itself
 		///
@@ -169,7 +169,8 @@ namespace fm
 		/// @brief Set the origin of the translation
 		///
 		/// @param origin The origin
-		///
+		/// @param z The third coordinate of the origin
+		/// 
 		/// @return Reference to itself
 		///
 		////////////////////////////////////////////////////////////

@@ -85,8 +85,7 @@ namespace fg
 			/////////////////////////////////////////////////////////////
 			/// @brief Construct the depth buffer from its size
 			///
-			/// @param w The width of the depth buffer
-			/// @param h The height of the depth buffer
+			/// @param depthTexture The target of the depth rendering
 			///
 			/////////////////////////////////////////////////////////////
 			DepthBuffer(const DepthTexture &depthTexture);

@@ -441,7 +441,8 @@ namespace fw
 		/// @brief Initialize event with a type
 		///
 		/// @param type The initial type
-		///
+		/// @param data The initial data of the event
+		/// 
 		/////////////////////////////////////////////////////////////
 		Event(EventType type,EventData data);
 		

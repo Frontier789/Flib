@@ -19,65 +19,41 @@
 #include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 namespace fg
-{ 
+{
 	/// constructors /////////////////////////////////////////////////////////
-	RenderStates::RenderStates(const Texture *texture,Shader *shader, const fm::mat4 &transform) : texture(texture),
-																								   shader(shader),
-																								   transform(transform)
+	RenderStates::RenderStates(const Texture *texture,Shader *shader) : texture(texture),
+																		shader(shader)
 	{
 
 	}
 
 
 	////////////////////////////////////////////////////////////
-	RenderStates::RenderStates(const Texture &texture,Shader *shader, const fm::mat4 &transform) : texture(&texture),
-																								   shader(shader),
-																								   transform(transform)
+	RenderStates::RenderStates(const Texture &texture,Shader *shader) : texture(&texture),
+																		shader(shader)
 	{
 
 	}
 
 
 	////////////////////////////////////////////////////////////
-	RenderStates::RenderStates(const Texture *texture,Shader &shader, const fm::mat4 &transform) : texture(texture),
-																								   shader(&shader),
-																								   transform(transform)
+	RenderStates::RenderStates(const Texture *texture,Shader &shader) : texture(texture),
+																		shader(&shader)
 	{
 
 	}
 
 
 	////////////////////////////////////////////////////////////
-	RenderStates::RenderStates(const Texture &texture,Shader &shader, const fm::mat4 &transform) : texture(&texture ),
-																								   shader(&shader ),
-																								   transform(transform)
+	RenderStates::RenderStates(const Texture &texture,Shader &shader) : texture(&texture),
+																		shader(&shader)
 	{
 
 	}
-
-
-	////////////////////////////////////////////////////////////
-	RenderStates::RenderStates(const Texture &texture) : texture(&texture),
-	                                                     shader(0),
-	                                                     transform(fm::mat4::identity)
-	{
-
-	}
-
 
 	////////////////////////////////////////////////////////////
 	RenderStates::RenderStates(Shader &shader) : texture(0),
-	                                             shader(&shader),
-	                                             transform(fm::mat4::identity)
-	{
-
-	}
-
-
-	////////////////////////////////////////////////////////////
-	RenderStates::RenderStates(const fm::mat4 &transform) : texture(0),
-															shader(0),
-															transform(transform)
+	                                             shader(&shader)
 	{
 
 	}

@@ -11,13 +11,14 @@
 /// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
 /// is not required but highly appreciated.                            ///
 ///                                                                    ///
-/// You should have received a copy of GNU GPL with this software      ///
+/// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Xlib/XlibWindow.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -544,30 +545,32 @@ namespace fw
 						   m_uri_listAtom(0),
 						   m_supportUriList(false),
 						   m_emptyCursor(None),
+						   m_parent(NULL),
 						   m_eventCallback(NULL)
 		{
 
 		}
 
 		////////////////////////////////////////////////////////////
-		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent) : m_opened(false),
-																																m_enableRepeat(true),
-																																m_lastDown(XK_VoidSymbol),
-																																m_disp(NULL),
-																																m_delAtom(0),
-																																m_stateAtom(0),
-																																m_resizeable(true),
-																																m_prevW(0),
-																																m_prevH(0),
-																																m_stateHiddenAtom(0),
-																																m_maxHorAtom(0),
-																																m_maxVertAtom(0),
-																																m_uri_listAtom(0),
-																																m_supportUriList(false),
-																																m_emptyCursor(None),
-																																m_eventCallback(NULL)
+		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Xlib::Window *parent,::Window container) : m_opened(false),
+																																					    m_enableRepeat(true),
+																																					    m_lastDown(XK_VoidSymbol),
+																																					    m_disp(NULL),
+																																					    m_delAtom(0),
+																																					    m_stateAtom(0),
+																																					    m_resizeable(true),
+																																					    m_prevW(0),
+																																					    m_prevH(0),
+																																					    m_stateHiddenAtom(0),
+																																					    m_maxHorAtom(0),
+																																					    m_maxVertAtom(0),
+																																					    m_uri_listAtom(0),
+																																					    m_supportUriList(false),
+																																					    m_emptyCursor(None),
+																																					    m_parent(NULL),
+																																					    m_eventCallback(NULL)
 		{
-			open(x,y,w,h,title,style,parent);
+			open(x,y,w,h,title,style,parent,container);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -580,21 +583,27 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,::Window parent,bool toolwindow)
+		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Xlib::Window *parent,::Window container)
 		{
 			if (!checkDisplay())
 				return false;
 
 			// close the window if we had it open
 			close();
+			
+			m_parent = parent;
 
 			// ask X to create a window
 			XSetWindowAttributes wa;                                                     
-			wa.override_redirect = toolwindow ? True : False;  
-			m_win = XCreateWindow(m_disp,parent ? parent : m_rootWin,x,y,w,h,5,CopyFromParent,InputOutput,CopyFromParent,CWOverrideRedirect,&wa);
+			wa.override_redirect = (style & fw::Window::Menu) ? True : False;  
+			m_win = XCreateWindow(m_disp,container ? container : m_rootWin,x,y,w,h,5,CopyFromParent,InputOutput,CopyFromParent,CWOverrideRedirect,&wa);
 			
 			if (m_win != (::Window)NULL)
 			{
+				if (m_parent)
+					style |= fw::Window::SkipTaskbar,
+					m_parent->m_children.push_back(this);
+
 				m_opened = true;
 
 				XSelectInput(m_disp,m_win,LeaveWindowMask|EnterWindowMask|FocusChangeMask|StructureNotifyMask|PointerMotionMask|ButtonPressMask|ButtonReleaseMask|KeyPressMask|KeyReleaseMask);
@@ -632,7 +641,7 @@ namespace fw
 								32,PropModeReplace,
 								(unsigned char*)&hints,5);
 
-				if (toolwindow && false)
+				if (style & fw::Window::SkipTaskbar)
 				{
 					Atom _NET_WM_STATE_SKIP_TASKBAR = XInternAtom(m_disp,"_NET_WM_STATE_SKIP_TASKBAR",False);
 
@@ -640,6 +649,17 @@ namespace fw
 									m_stateAtom,XA_ATOM,
 									32,PropModeReplace,
 									(unsigned char*)&_NET_WM_STATE_SKIP_TASKBAR,1);					
+				}
+
+				if (style & fw::Window::Toolbar)
+				{
+					Atom _NET_WM_WINDOW_TYPE_UTILITY = XInternAtom(m_disp,"_NET_WM_WINDOW_TYPE_UTILITY",False);
+					Atom _NET_WM_WINDOW_TYPE = XInternAtom(m_disp,"_NET_WM_WINDOW_TYPE",False);
+
+					XChangeProperty(m_disp,m_win,
+									_NET_WM_WINDOW_TYPE,XA_ATOM,
+									32,PropModeReplace,
+									(unsigned char*)&_NET_WM_WINDOW_TYPE_UTILITY,1);					
 				}
 
 
@@ -721,7 +741,7 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		void Window::maximize()
 		{
-			if (m_opened)
+			if (isOpen())
 			{
 				XEvent xev;
 
@@ -745,7 +765,7 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		bool Window::isMaximized() const
 		{
-			if (m_opened)
+			if (isOpen())
 			{
 				bool maxVert = false;
 				bool maxHor  = false;
@@ -773,7 +793,7 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		bool Window::setActive()
 		{
-			if (m_opened)
+			if (isOpen())
 			{
 				XRaiseWindow(m_disp,m_win);
 				XSetInputFocus(m_disp,m_win,RevertToNone,CurrentTime);
@@ -785,7 +805,7 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		void Window::showCursor(bool show)
 		{
-			if (m_opened)
+			if (isOpen())
 			{
 				if (show)
 					XUndefineCursor(m_disp,m_win);
@@ -797,8 +817,25 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		void Window::close()
 		{
-			if (m_opened)
+			if (isOpen())
 			{
+				// destroy children properly
+				std::deque<Xlib::Window *> children = m_children;
+				fm::Size count = children.size();
+				for (fm::Size i = 0;i<count;i++)
+					children[i]->close();
+
+				// unregister this from parent's children
+				if (m_parent)
+				{
+					std::deque<Xlib::Window *>::iterator it = std::find(m_parent->m_children.begin(),m_parent->m_children.end(),this);
+					if (it != m_parent->m_children.end())
+						m_parent->m_children.erase(it);
+					
+					m_parent = NULL;
+				}
+
+				// delete cursor
 				if (m_emptyCursor != None)
 					XFreeCursor(m_disp,m_emptyCursor);
 
@@ -1033,10 +1070,10 @@ namespace fw
 			m_resizeable = enable;
 			XSizeHints sizeHints;
 			sizeHints.flags = PMinSize | PMaxSize;
-			sizeHints.min_width  = w;
-			sizeHints.max_width  = w;
-			sizeHints.min_height = h;
-			sizeHints.max_height = h;
+			sizeHints.min_width  = enable ? 0 : w;
+			sizeHints.max_width  = enable ? 100000 : w;
+			sizeHints.min_height = enable ? 0 : h;
+			sizeHints.max_height = enable ? 100000 : h;
 			XSetWMNormalHints(m_disp,m_win,&sizeHints);
 		}
 
