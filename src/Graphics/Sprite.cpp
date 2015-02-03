@@ -127,7 +127,7 @@ namespace fg
 	void Sprite::draw(const fg::RenderStates &states) const
 	{
 		fg::RenderStates states2 = states;
-		states2.transform = states.transform * getTransform();
+		//states2.transform = states.transform * getTransform();
 		states2.texture = m_texture;
 		fg::draw(m_vertices,fg::TriangleStrip,states2);
 	}

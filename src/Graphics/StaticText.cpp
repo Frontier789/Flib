@@ -217,7 +217,7 @@ namespace fg
 	{
 		fg::RenderStates states2 = states;
 		states2.texture = m_texture;
-		states2.transform *= getTransform();
+		//states2.transform *= getTransform();
 
 		fg::draw(fg::Attr<fm::vec2>(m_posBuf),
 				 fg::Attr<fm::vec4>(m_clrBuf),

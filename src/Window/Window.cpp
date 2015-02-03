@@ -197,7 +197,7 @@ namespace fw
 	fm::vec2u Window::getSize() const
 	{
 		fm::vec2u ret;
-		m_window->setSize(ret.w,ret.h);
+		m_window->getSize(ret.w,ret.h);
 		return ret;
 	}
 
