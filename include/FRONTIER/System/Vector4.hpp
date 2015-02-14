@@ -758,9 +758,10 @@ namespace fm
 
 #endif
 
-	typedef vector4<float> 		  vec4;
-	typedef vector4<float> 		  vec4f;
-	typedef vector4<int>   		  vec4i;
+	typedef vector4<float> 	      vec4;
+	typedef vector4<float> 	      vec4f;
+	typedef vector4<double>       vec4d;
+	typedef vector4<int>   	      vec4i;
 	typedef vector4<unsigned int> vec4u;
 }
 

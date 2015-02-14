@@ -291,47 +291,12 @@ namespace fw
 		const fw::GLContext::Settings &getSettings() const;
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the view of the currently active GL context
-		/// 
-		/// Sets the projection matrix and the viewport
-		/// 
-		/// @param x The x coordinate of the viewport
-		/// @param y The y coordinate of the viewport
-		/// @param width  The width   of the viewport
-		/// @param height The height  of the viewport
-		/// @param left The X coordinate of the left-bottom corner
-		/// @param bottom The Y coordinate of the left-bottom corner
-		/// @param right The X coordinate of the right-top corner
-		/// @param top The Y coordinate of the right-top corner
-		/// @param znear The first limit of the distance (beyond this the object is not visible)
-		/// @param zfar The second limit of the distance (beyond this the object is not visible)
-		/// 
-		/////////////////////////////////////////////////////////////
-		static void setView2d(fm::Size x,fm::Size y,fm::Size width,fm::Size height,float left,float bottom,float right,float top,float znear=-1,float zfar=1);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the view of the currently active GL context
-		/// 
-		/// Sets the projection matrix and the viewport
-		/// 
-		/// @param x The x coordinate of the viewport
-		/// @param y The y coordinate of the viewport
-		/// @param width  The width   of the viewport
-		/// @param height The height  of the viewport
-		/// @param fov The field of view in degrees
-		/// @param znear The distance of the nearest  visible object (should be greater than 0)
-		/// @param zfar  The distance of the furthest visible object (should be greater than @a znear)
-		/// 
-		/////////////////////////////////////////////////////////////
-		static void setView3d(fm::Size x,fm::Size y,fm::Size width,fm::Size height,float fov,float znear=1,float zfar=100);		
-		
-		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of the clearing color used by the currently active context
 		/// 
 		/// @param color The new clear-color
 		/// 
 		/////////////////////////////////////////////////////////////
-		static void setClearColor(const fm::vector4<float> &color);
+		void setClearColor(const fm::vector4<float> &color);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the clearing depth used by the currently active context
@@ -339,7 +304,7 @@ namespace fw
 		/// @param depth The new clearing depth
 		/// 
 		/////////////////////////////////////////////////////////////
-		static void setClearDepth(float depth);
+		void setClearDepth(float depth);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Clears the specified buffers of the currently active context
@@ -351,7 +316,7 @@ namespace fw
 		/// @see setClearColor
 		/// 
 		/////////////////////////////////////////////////////////////
-		static void clear(bool colorBuffer = true,bool depthBuffer = false,bool stencilBuffer = false);
+		void clear(bool colorBuffer = true,bool depthBuffer = false,bool stencilBuffer = false);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the blending mode of the current context
@@ -361,7 +326,7 @@ namespace fw
 		/// @see BlendMode
 		/// 
 		/////////////////////////////////////////////////////////////
-		static void setBlend(BlendMode mode);
+		void setBlend(BlendMode mode);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the depthtest mode of the current context
@@ -371,7 +336,7 @@ namespace fw
 		/// @see DepthTestMode
 		/// 
 		/////////////////////////////////////////////////////////////
-		static void setDepthTest(DepthTestMode mode);
+		void setDepthTest(DepthTestMode mode);
 
 		friend class priv::theSharedContextInitializer;
 	};

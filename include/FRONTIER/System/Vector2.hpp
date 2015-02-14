@@ -721,9 +721,10 @@ namespace fm
 
 #endif
 
-	typedef vector2<float> 		  vec2;
-	typedef vector2<float> 		  vec2f;
-	typedef vector2<int>   		  vec2i;
+	typedef vector2<float> 	      vec2;
+	typedef vector2<float> 	      vec2f;
+	typedef vector2<double>       vec2d;
+	typedef vector2<int>   	      vec2i;
 	typedef vector2<unsigned int> vec2u;
 
 }

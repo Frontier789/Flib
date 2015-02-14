@@ -17,6 +17,7 @@
 #ifndef FRONTIER_INTERPOLER_INL_INCLUDED
 #define FRONTIER_INTERPOLER_INL_INCLUDED
 #include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/C.hpp>
 #include <cmath>
 namespace fm
 {
@@ -401,7 +402,7 @@ namespace fm
 
 		if (!m_data.size())
 			return VAL();
-        const T *dt=NULL;
+        const T *dt=0;
 		fm::Size mindti=0;
 		C(m_data.size())
             if (!dt || std::abs(m_data[i].t-t)<std::abs(*dt - t))

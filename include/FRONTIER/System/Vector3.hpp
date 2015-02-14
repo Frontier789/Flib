@@ -695,9 +695,10 @@ namespace fm
 
 #endif
 
-	typedef vector3<float> 		  vec3;
-	typedef vector3<float> 		  vec3f;
-	typedef vector3<int>   		  vec3i;
+	typedef vector3<float> 	      vec3;
+	typedef vector3<float> 	      vec3f;
+	typedef vector3<double>       vec3d;
+	typedef vector3<int>   	      vec3i;
 	typedef vector3<unsigned int> vec3u;
 
 }

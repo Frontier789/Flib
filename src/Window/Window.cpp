@@ -86,9 +86,6 @@ namespace fw
 		bool ok2 = this->create((priv::Window::Handle)m_window->getHandle(),settings);
 		bool ok3 = this->setActive();
 		
-		if (m_handleResize && ok1 && ok2 && ok3)
-			fw::GLContext::setView2d(0,0,size.w,size.h,0,size.h,size.w,0,-1,1);
-		
 		return ok1 && ok2 && ok3;
 	}
 
@@ -158,9 +155,6 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	bool Window::setRect(const fm::vec2i &pos,const fm::vec2u &size)
 	{
-		if (m_handleResize && getSize() != size)
-			fw::GLContext::setView2d(0,0,size.w,size.h,0,size.h,size.w,0,-1,1);
-		
 		return m_window->setRect(pos.x,pos.y,size.w,size.h);
 	}
 
@@ -187,9 +181,6 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	bool Window::setSize(const fm::vec2u &size)
 	{
-		if (m_handleResize && getSize() != size)
-			fw::GLContext::setView2d(0,0,size.w,size.h,0,size.h,size.w,0,-1,1);
-		
 		return m_window->setSize(size.x,size.y);
 	}
 
@@ -224,23 +215,13 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	bool Window::popEvent(Event &ev)
 	{
-		bool ok = m_window->popEvent(ev);
-		if (m_handleResize && ok)
-			if (ev.type == fw::Event::Resized)
-				fw::GLContext::setView2d(0,0,ev.size.w,ev.size.h,0,ev.size.h,ev.size.w,0,-1,1);
-		
-		return ok;
+		return m_window->popEvent(ev);
 	}
 
 	/////////////////////////////////////////////////////////////
 	bool Window::waitEvent(Event &ev)
 	{
-		bool ok = m_window->waitEvent(ev);
-		if (m_handleResize && ok)
-			if (ev.type == fw::Event::Resized)
-				fw::GLContext::setView2d(0,0,ev.size.w,ev.size.h,0,ev.size.h,ev.size.w,0,-1,1);
-		
-		return ok;
+		return m_window->waitEvent(ev);
 	}
 
 	/////////////////////////////////////////////////////////////
