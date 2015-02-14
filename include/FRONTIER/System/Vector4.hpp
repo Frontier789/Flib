@@ -158,7 +158,7 @@ namespace fm
 		/// @param W w coordinate
 		///
 		/////////////////////////////////////////////////////////////
-		vector4(const T &XYZ,const T &W=T(1.0));
+		explicit vector4(const T &XYZ,const T &W=T(1.0));
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct 4D vector from four coordinates
@@ -563,14 +563,6 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		template<class T2>
 		static vector4<T> loadrgba(const T2 &vec);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Convert the vector to bool
-		///
-		/// @return True iff the vector's length is not 0 (at least one of x,y,z,w is not 0)
-		///
-		/////////////////////////////////////////////////////////////
-		operator bool() const;
 	};
 	
 #ifndef FRONTIER_ONLY_FOR_DOXYGEN

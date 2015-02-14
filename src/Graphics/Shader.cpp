@@ -30,28 +30,40 @@ namespace fg
 	/// compile shader objects /////////////////////////////////////////////////////////
     unsigned int Shader::compileSubShader(const std::string &text,unsigned int type)
     {
+		// ask GL for an id
         unsigned int s = glCreateShader(type);
 		if (!s)
 		{
 			fg_log<<"Couldn't create shader type "<<type<<std::endl;
 			return 0;
 		}
-		std::string s2 = text;
-		const char *c_text = &s2[0];
 		
+		// make text acceptable for gl
+		const char *c_text = text.c_str();
+		
+		// send shader source to GL
 		glCheck(glShaderSource(s,1,&c_text,NULL));
 		glCheck(glCompileShader(s));
+		
+		// check compilation result
 		int success;
 		glCheck(glGetShaderiv(s, GL_COMPILE_STATUS, &success));
-		if (success == 0)
+		if (!success)
 		{
-			int log_size;
-			glCheck(glGetShaderiv(s, GL_INFO_LOG_LENGTH, &log_size));
-			char *Log;
-			Log = new char[log_size];
-			glCheck(glGetShaderInfoLog(s, log_size, NULL, &Log[0]));
-			fg_log<<"Error compiling shader type "<<type<<" : "<<Log<<std::endl;
-			delete[] Log;
+			// get needed size for error log
+			int logSize;
+			glCheck(glGetShaderiv(s, GL_INFO_LOG_LENGTH, &logSize));
+			
+			// allocate memory for log
+			char *logData;
+			logData = new char[logSize];
+			
+			// retrieve error log
+			glCheck(glGetShaderInfoLog(s, logSize, NULL, &logData[0]));
+			fg_log<<"Error compiling shader type "<<type<<" : "<<logData<<std::endl;
+			
+			// free allocated memory
+			delete[] logData;
 			return 0;
 		}
 		return s;
@@ -61,15 +73,19 @@ namespace fg
 	////////////////////////////////////////////////////////////
     unsigned int Shader::compileSubShaderFromFile(const std::string &file,unsigned int type)
     {
+		// open file
         std::ifstream in(file.c_str(), std::ios::in | std::ios::binary);
 		if (in)
 		{
+			// read whole file
 			std::string contents;
 			in.seekg(0, std::ios::end);
 			contents.resize(in.tellg());
 			in.seekg(0, std::ios::beg);
 			in.read(&contents[0], contents.size());
 			in.close();
+			
+			// compile
 			return compileSubShader(contents,type);
 		}
 		fg_log<<"file "<<file<<" couldn't be read"<<std::endl;
@@ -90,52 +106,55 @@ namespace fg
     ////////////////////////////////////////////////////////////
 	bool Shader::link()
 	{
+		// init GlId
 		init();
 		if (!getGlId())
 			return false;
-		m_texCount = 0;
+		
+		// reset containers
+		m_texCounter = 0;
 		m_textures.clear();
 	    m_attribs.clear();
 		m_uniforms.clear();
 		C(m_subShaders.size())
 			glCheck(glAttachShader(getGlId(),m_subShaders[i]));
-
+		
+		// check for compilation errors
 		int success;
 		glCheck(glLinkProgram(getGlId()));
 		glCheck(glGetProgramiv(getGlId(), GL_LINK_STATUS, &success));
-		if (!success)
+		if (success)
 		{
-			int log_size;
-			glCheck(glGetProgramiv(getGlId(), GL_INFO_LOG_LENGTH, &log_size));
-			char *Log;
-			Log = new char[log_size];
-			glCheck(glGetProgramInfoLog(getGlId(), log_size, NULL, &Log[0]));
-			fg_log<<"Error linking shader program: "<<Log<<std::endl;
-			delete[] Log;
-			return false;
+			// on success validate status
+			glCheck(glValidateProgram(getGlId()));
+			glCheck(glGetProgramiv(getGlId(), GL_VALIDATE_STATUS, &success));
 		}
-
-		glCheck(glValidateProgram(getGlId()));
-		glCheck(glGetProgramiv(getGlId(), GL_VALIDATE_STATUS, &success));
+		
+		// on error print description
 		if (!success)
 		{
-			int log_size;
-			glCheck(glGetProgramiv(getGlId(), GL_INFO_LOG_LENGTH, &log_size)); 
-			char *Log;
-			Log = new char[log_size];
-			glCheck(glGetProgramInfoLog(getGlId(), log_size, NULL, &Log[0]));
-			fg_log<<"Invalid shader program: "<<Log<<std::endl;
-			delete[] Log;
+			// get needed size for error log
+			int logSize;
+			glCheck(glGetProgramiv(getGlId(), GL_INFO_LOG_LENGTH, &logSize));
+			
+			// allocate memory for log
+			char *logData;
+			logData = new char[logSize];
+			
+			// retrieve error log
+			glCheck(glGetProgramInfoLog(getGlId(), logSize, NULL, &logData[0]));
+			fg_log<<"Error compiling shader program: "<<logData<<std::endl;
+			
+			// free allocated memory
+			delete[] logData;
 			return false;
 		}
 		
 		return true;
 	}
 
-
-
 	/// constructor /////////////////////////////////////////////////////////
-	Shader::Shader() : m_texCount(0)
+	Shader::Shader() : m_texCounter(0)
 	{
 		
 	}
@@ -146,29 +165,33 @@ namespace fg
 	{
 		if (glIsProgram(getGlId()))
 		{
-			C(m_subShaders.size())
-				if (glIsShader(m_subShaders[i]))
-					glCheck(glDetachShader(getGlId(),m_subShaders[i])),
-					glCheck(glDeleteShader(m_subShaders[i]));
+			freeSubShaders();
 			glCheck(glDeleteProgram(getGlId()));
 		}
 	}
-
+	
+	////////////////////////////////////////////////////////////
+	void Shader::freeSubShaders()
+	{
+		C(m_subShaders.size())
+			if (glIsShader(m_subShaders[i]))
+				glCheck(glDetachShader(getGlId(),m_subShaders[i])),
+				glCheck(glDeleteShader(m_subShaders[i]));
+	}
 
 	/// functions /////////////////////////////////////////////////////////
 	bool Shader::loadFromFiles(const std::string *files,const unsigned int *types,unsigned int count)
 	{
+		// init GlId
 		init();
 		if (!getGlId())
 		{
 			fg_log<<"couldn't create shader program"<<std::endl;
 			return false;
 		}
-		C(m_subShaders.size())
-			if (glIsShader(m_subShaders[i]))
-				glCheck(glDetachShader(getGlId(),m_subShaders[i])),
-				glCheck(glDeleteShader(m_subShaders[i]));
-				
+		
+		// refill sub shaders
+		freeSubShaders();
 		m_subShaders.resize(count);
 		C(count)
 		{
@@ -185,17 +208,16 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	bool Shader::loadFromMemory(const std::string *data,const unsigned int *types,unsigned int count)
 	{
+		// init GlId
 		init();
 		if (!getGlId())
 		{
 			fg_log<<"couldn't create shader program"<<std::endl;
 			return false;
 		}
-		C(m_subShaders.size())
-			if (glIsShader(m_subShaders[i]))
-				glCheck(glDetachShader(getGlId(),m_subShaders[i])),
-				glCheck(glDeleteShader(m_subShaders[i]));
 		
+		// refill sub shaders
+		freeSubShaders();
 		m_subShaders.resize(count);
 		C(count)
 		{
@@ -211,22 +233,6 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	bool Shader::loadFromFiles(const std::string &vertexShaderFile,const std::string &fragmentShaderFile)
 	{
-		if (vertexShaderFile == std::string())
-		{
-			if (fragmentShaderFile == std::string())
-				return false;
-			std::string files[] = {fragmentShaderFile};
-			unsigned int types[] = {GL_FRAGMENT_SHADER};
-			
-			return loadFromFiles(files,types,1);
-		}
-		if (fragmentShaderFile == std::string())
-		{
-			std::string files[] = {vertexShaderFile};
-			unsigned int types[] = {GL_VERTEX_SHADER};
-			
-			return loadFromFiles(files,types,1);
-		}
 		std::string files[] = {vertexShaderFile,fragmentShaderFile};
 		unsigned int types[] = {GL_VERTEX_SHADER,GL_FRAGMENT_SHADER};
 		
@@ -237,22 +243,6 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	bool Shader::loadFromMemory(const std::string &vertexShaderFile,const std::string &fragmentShaderFile)
 	{
-		if (vertexShaderFile == std::string())
-		{
-			if (fragmentShaderFile == std::string())
-				return false;
-			std::string files[] = {fragmentShaderFile};
-			unsigned int types[] = {GL_FRAGMENT_SHADER};
-			
-			return loadFromMemory(files,types,1);
-		}
-		if (fragmentShaderFile == std::string())
-		{
-			std::string files[] = {vertexShaderFile};
-			unsigned int types[] = {GL_VERTEX_SHADER};
-			
-			return loadFromMemory(files,types,1);
-		}
 		std::string files[] = {vertexShaderFile,fragmentShaderFile};
 		unsigned int types[] = {GL_VERTEX_SHADER,GL_FRAGMENT_SHADER};
 		
@@ -282,7 +272,6 @@ namespace fg
         program.bind();
 	}
 
-
 	////////////////////////////////////////////////////////////
 	int Shader::getUniformLocation(const std::string &name)
 	{
@@ -291,19 +280,36 @@ namespace fg
 			fg_log << "Error: trying to get location of \""<<name<<"\" uniform from unitialized shader" << std::endl;
 			return -1;
 		}
-			
-		std::map<std::string, int>::const_iterator it = m_uniforms.find(name);
-		if (it != m_uniforms.end())
-			return it->second;
 
-		int location = glGetUniformLocation(getGlId(),name.c_str());
-
-		if (location != -1)
-			m_uniforms.insert(std::make_pair(name, location));
-		else
+		int location = hasUniform(name)-1;
+		
+		// check for error
+		if (location == -1)
 			fg_log << "Couldn't find uniform "<<name<<" in shader."<<std::endl;
 
 		return location;
+	}
+	
+	////////////////////////////////////////////////////////////
+	int Shader::hasUniform(const std::string &name)
+	{
+		if (!getGlId())
+			return 0;
+		
+		// check if already in dictionary
+		std::map<std::string, int>::const_iterator it = m_uniforms.find(name);
+		if (it != m_uniforms.end())
+			return it->second+1;
+		
+		// get location from GL
+		int location = glGetUniformLocation(getGlId(),name.c_str());
+		
+		// insert into dictionary
+		if (location != -1)
+			m_uniforms.insert(std::make_pair(name, location));
+		
+		// on error location is -1
+		return location+1;
 	}
 
 
@@ -315,20 +321,37 @@ namespace fg
 			fg_log << "Error: trying to get location of \""<<name<<"\" attribute from unitialized shader" << std::endl;
 			return -1;
 		}
+
+		int location = hasAttribute(name)-1;
 		
-		std::map<std::string,int>::const_iterator it = m_attribs.find(name);
-		if (it != m_attribs.end())
-			return it->second;
-
-		int location = glGetAttribLocation(getGlId(),name.c_str());
-
-		if (location != -1)
-			m_attribs.insert(std::make_pair(name,location)),
-			glCheck(glEnableVertexAttribArray(location));
-		else
+		// check for error
+		if (location == -1)
 			fg_log << "Couldn't find attribute "<<name<<" in shader."<<std::endl;
 
 		return location;
+	}
+	
+	////////////////////////////////////////////////////////////
+	int Shader::hasAttribute(const std::string &name)
+	{
+		if (!getGlId())
+			return 0;
+		
+		// check if already in dictionary
+		std::map<std::string, int>::const_iterator it = m_attribs.find(name);
+		if (it != m_attribs.end())
+			return it->second+1;
+		
+		// get location from GL
+		int location = glGetAttribLocation(getGlId(),name.c_str());
+		
+		// insert into dictionary
+		if (location != -1)
+			m_attribs.insert(std::make_pair(name, location)),
+			glCheck(glEnableVertexAttribArray(location));
+		
+		// on error location is -1
+		return location+1;
 	}
 
 	#define CREATE_SET_UNIFORM(argList,callFunc)                       \
@@ -337,14 +360,14 @@ namespace fg
 		if (getGlId())                                                 \
 		{                                                              \
 			int program;                                               \
-			glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program)); \
-			glCheck(glUseProgram(getGlId()));                    \
+			glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));       \
+			glCheck(glUseProgram(getGlId()));                          \
                                                                        \
 			int location = getUniformLocation(name);                   \
 			if (location != -1)                                        \
 				glCheck(callFunc);                                     \
                                                                        \
-			glCheck(glUseProgram(program));                      \
+			glCheck(glUseProgram(program));                            \
 		}                                                              \
 		return *this;                                                  \
 	}
@@ -371,10 +394,12 @@ namespace fg
 			int program;
 			glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
 			glCheck(glUseProgram(getGlId()));
-
+			
+			// get location of the uniform
 			int location = getUniformLocation(name);
 			if (location != -1)
 			{
+				// transpose the matrix if needed and upload
 				if (storeOrder==fm::MATRIX::RowMajor)
 					glCheck(glUniformMatrix3fv(location, 1, GL_FALSE, &(m.transpose())[0][0]));
 				else
@@ -395,9 +420,11 @@ namespace fg
 			glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
 			glCheck(glUseProgram(getGlId()));
 
+			// get location of the uniform
 			int location = getUniformLocation(name);
 			if (location != -1)
 			{
+				// transpose the matrix if needed and upload
 				if (storeOrder==fm::MATRIX::RowMajor)
 					glCheck(glUniformMatrix4fv(location, 1, GL_FALSE, &(m.transpose())[0][0]));
 				else
@@ -425,25 +452,33 @@ namespace fg
 			int program;
 			glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
 			glCheck(glUseProgram(getGlId()));
-
+			
+			// check if the uniform is in the dictionary
 			std::map<std::string, TexUniformData >::iterator it = m_textures.find(name);
 			if (it != m_textures.end())
 			{
+				// activate slot
 				glCheck(glActiveTexture(GL_TEXTURE0+it->second.slot));
 				glCheck(glBindTexture(GL_TEXTURE_2D,tex ? tex->getGlId() : 0));
 				it->second.act_id = tex ? tex->getGlId() : 0;
 			}
 			else
 			{
+				// get uniform location
 				int location = glGetUniformLocation(getGlId(),name.c_str());
 
 				if (location != -1)
 				{
-					m_textures.insert(std::make_pair(name, TexUniformData(location,m_texCount,tex ? tex->getGlId() : 0)));
-					glCheck(glUniform1i(location, m_texCount));
-					glCheck(glActiveTexture(GL_TEXTURE0+m_texCount));
+					// add to dictionary
+					m_textures.insert(std::make_pair(name, TexUniformData(location,m_texCounter,tex ? tex->getGlId() : 0)));
+					
+					// assign id to texture slot
+					glCheck(glUniform1i(location, m_texCounter));
+					
+					// activate slot
+					glCheck(glActiveTexture(GL_TEXTURE0+m_texCounter));
 					glCheck(glBindTexture(GL_TEXTURE_2D,tex ? tex->getGlId() : 0));
-					m_texCount++;
+					m_texCounter++;
 				}
 				else
 					fg_log << "Couldn't find texture "<<name<<" in shader."<<std::endl;
@@ -474,6 +509,6 @@ namespace fg
     bool Shader::isAvailable()
     {
 		std::string glslVer = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
-		return (glGetError()==GL_NO_ERROR && glslVer.size()>0);
+		return (glGetError() == GL_NO_ERROR && glslVer.size()>0);
     }
 }

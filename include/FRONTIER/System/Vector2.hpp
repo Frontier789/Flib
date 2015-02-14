@@ -104,7 +104,7 @@ namespace fm
 		/// @param XY x and y coordinate
 		///
 		/////////////////////////////////////////////////////////////
-		vector2(const T &XY);
+		explicit vector2(const T &XY);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct 2D vector from two coordinates
@@ -526,14 +526,6 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		template<class T2>
 		static vector2<T> loadwh(const T2 &other);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Convert the vector to bool
-		///
-		/// @return True iff the vector's length is not 0 (at least one of x,y is not 0)
-		///
-		/////////////////////////////////////////////////////////////
-		operator bool() const;
 	};
 
 #ifndef FRONTIER_ONLY_FOR_DOXYGEN

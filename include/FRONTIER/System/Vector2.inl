@@ -393,13 +393,6 @@ namespace fm
 		y/=scalar;
 		return *this;
 	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	vector2<T>::operator bool() const
-	{
-		return (x!=T() || y!=T());
-	}
 }
 
 namespace std

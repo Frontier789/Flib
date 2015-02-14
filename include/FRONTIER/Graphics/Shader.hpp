@@ -97,9 +97,10 @@ namespace fg
 		std::map<std::string, int> m_uniforms;   ///< The "id" of the uniforms and their name
 		std::map<std::string, int> m_attribs;    ///< The "id" of the attributes and their name
 		std::map<std::string, TexUniformData > m_textures; ///< The state and name of the texture uniforms
-		unsigned int m_texCount; ///< The number of bound textures
+		unsigned int m_texCounter; ///< The counter used when activating texture slots
 		bool link(); ///< Internal function used to link the compiled shaders to the shader program
 		void init(); ///< Internal function used at setup
+		void freeSubShaders(); ///< Internal function used at clean-up
     public:
         typedef Shader &reference;
         typedef const Shader &const_reference;
@@ -216,6 +217,16 @@ namespace fg
         int getUniformLocation(const std::string &name);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Check if a uniform of a given name is present
+		///
+		/// @param name The name of the uniform to find
+		///
+		/// @return 0 on error, the location+1 otherwise
+		///
+		/////////////////////////////////////////////////////////////
+        int hasUniform(const std::string &name);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Find the "id" of an attribute
 		///
 		/// If the shader program is invalid or @a name does not
@@ -230,6 +241,16 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
         int getAttribLocation(const std::string &name);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Check if an attribute of a given name is present
+		///
+		/// @param name The name of the attribute to find
+		///
+		/// @return 0 on error, the location+1 otherwise
+		///
+		/////////////////////////////////////////////////////////////
+        int hasAttribute(const std::string &name);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with two attributes

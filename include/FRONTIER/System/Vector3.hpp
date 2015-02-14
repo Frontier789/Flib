@@ -108,8 +108,7 @@ namespace fm
 		/// @param XYZ x,y and z coordinates
 		///
 		/////////////////////////////////////////////////////////////
-		vector3(const T &XYZ);
-
+		explicit vector3(const T &XYZ);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct 3D vector from three coordinates
@@ -500,14 +499,6 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		template<class T2>
 		static vector3<T> loadrgb(const T2 &other);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Convert the vector to bool
-		///
-		/// @return True iff the vector's length is not 0 (at least one of x,y,z is not 0)
-		///
-		/////////////////////////////////////////////////////////////
-		operator bool() const;
 	};
 
 #ifndef FRONTIER_ONLY_FOR_DOXYGEN
