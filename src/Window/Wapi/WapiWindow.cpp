@@ -127,7 +127,7 @@ namespace fw
 		Rct.right  = 150;
 		Rct.bottom = 150;
 
-		// we want to specify the client rect not the whole window rect
+		// convert window-rect to client-rect
 		if (!AdjustWindowRectEx(&Rct,style,FALSE,exStyle))
 		{
 			fw::WapiPrintLastError(fw_log,AdjustWindowRect);
@@ -218,8 +218,6 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		LRESULT CALLBACK Window::forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
-			// Thankfully we recieve a pointer to the created window
-			// beacuse we set it in CreateWindow
 			if (msg == WM_NCCREATE)
 			{
 				// Associate the pointer with the HWND as userdata
@@ -228,11 +226,11 @@ namespace fw
 				return DefWindowProc(hwnd, msg, wParam, lParam); // Let windows do his thing
 			}
 
-			// ALT key or F10 would pause the execution so we prevent windows from handling them
+			// ALT key or F10 would pause the execution
 			if ((msg == WM_SYSCOMMAND) && (wParam == SC_KEYMENU))
 				return 0;
 
-			// we now can extract our window pointer from user data
+			// extract the window pointer from user data
 			Window *win = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 
@@ -240,7 +238,7 @@ namespace fw
 				return win->handleEvent(hwnd,msg,wParam,lParam);
 
 
-			// If we did not handle the event then we pass it to windows
+			// unhandled events are passed to windows
 			return DefWindowProc(hwnd, msg, wParam, lParam);
 		}
 
@@ -400,8 +398,7 @@ namespace fw
 				case WM_RBUTTONUP:
 				case WM_MBUTTONUP:
 				{
-					// if we captured the mouse then we must post a move event in order to
-					// signal the item under the cursor
+					// post a move event for the item under the captured cursor 
 					if (GetCapture() == m_hwnd)
 					{
 						ReleaseCapture();
@@ -428,8 +425,8 @@ namespace fw
 				case WM_NCHITTEST:
 				{
 					LRESULT defResult = DefWindowProc(hwnd, msg, wParam, lParam);
-
-					// in case we dont want resize we change to simple border upon finding resizeable part
+					
+					// disable parts where the user could resize the window if needed
 					if (!m_resizeable)
 						if (defResult == HTBOTTOM ||
 							defResult == HTBOTTOMLEFT ||
@@ -559,7 +556,7 @@ namespace fw
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
 
-				// we do little change here so we can have bigger windows than the desktop
+				// this trick lets the window be bigger than the desktop
 				case WM_GETMINMAXINFO:
 				{
 					DefWindowProc(hwnd, msg, wParam, lParam);
@@ -825,7 +822,7 @@ namespace fw
 			winClass.lpszMenuName  = NULL;
 			winClass.lpszClassName = FRONTIER_WINDOWS_CLASS_NAME; // The name of the class
 
-			// Tell windows we have a class
+			// Tell windows about the new class
 			if (RegisterClassA(&winClass))
 				return true;
 
@@ -883,12 +880,12 @@ namespace fw
 			// windows wouldn't let us initially create a window bigger than the screen
 			setSize(w,h);
 
-			// If the window is intended to be resizeable we note it
+			// Note if the window is intended to be resizeable
 			m_resizeable = (style & fw::Window::Resize);
 
 			if(!m_hwnd)
 			{
-				// if we fail...
+				// upon fail...
 				fw::WapiPrintLastError(fw_log,CreateWindow);
 
 				m_isOpened = false;
@@ -1185,7 +1182,7 @@ namespace fw
 				char *ret = new char[bufsize];
 				if (!GetWindowTextA(m_hwnd, ret, bufsize))
 				{
-					 // we must delete allocated memory!
+					 // delete allocated memory!
 					delete ret;
 					fw::WapiPrintLastError(fw_log,GetWindowText);
 					return false;
@@ -1205,7 +1202,7 @@ namespace fw
 				wchar_t *ret = new wchar_t[bufsize];
 				if (!GetWindowTextW(m_hwnd, ret, bufsize))
 				{
-					 // we must delete allocated memory!
+					 // delete allocated memory!
 					delete ret;
 					fw::WapiPrintLastError(fw_log,GetWindowText);
 					return false;
@@ -1244,8 +1241,7 @@ namespace fw
 				DispatchMessage (&msg);
 			}
 
-			// if we have an event to report
-			// then return true and pop the queue
+			// pop the queue and return true
 			if (!m_eventQueue.empty())
 			{
 				ev = m_eventQueue[0];
@@ -1264,7 +1260,7 @@ namespace fw
 			if (!m_hwnd)
 				return false;
 
-			// we loop until we dont have a event
+			// loop waiting for an event
 			while (m_eventQueue.empty())
 			{
 				MSG msg;
@@ -1337,7 +1333,7 @@ namespace fw
 			{
 				if (fullscreen)
 				{
-					// assume we want the screen resolution
+					// assume the screen resolution
 					if (!width || !height)
 					{
 						// find the monitor of the window
@@ -1407,30 +1403,29 @@ namespace fw
 
 				fm::Size width  =  *((fm::Size *)(iconPixels+1));
 				fm::Size height = *(((fm::Size *)(iconPixels+1))+1);
-				fm::Size size   = iconPixels->size();
+				fm::Size size   = width*height;
 
-				unsigned char *iconBytes = NULL;
+				std::vector<fg::Color> iconColors;
 
 				if (size)
 				{
-					iconBytes = new unsigned char [width*height*4];
+					iconColors.reserve(size);
+					iconColors.resize (size);
 
 					// swap RGBA to BGRA
 					for (fm::Size i=0;i<size;i++)
-						iconBytes[i*4+0] = (*iconPixels)[i].b,
-						iconBytes[i*4+1] = (*iconPixels)[i].g,
-						iconBytes[i*4+2] = (*iconPixels)[i].r,
-						iconBytes[i*4+3] = (*iconPixels)[i].a;
+						iconColors[i] = (*iconPixels)[i],
+						std::swap(iconColors[i].r,iconColors[i].b);
 				}
 
 				// convert to HICON
-				m_icon = CreateIcon(NULL, width, height, 1, sizeof(fg::Color)*FRONTIER_BITS_PER_BYTE, NULL, iconBytes);
-
-				// delete allocated memory
-				delete[] iconBytes;
-
-				SendMessage(m_hwnd,WM_SETICON,ICON_SMALL,(LPARAM)m_icon);
-				SendMessage(m_hwnd,WM_SETICON,ICON_BIG,(LPARAM)m_icon);
+				m_icon = CreateIcon(NULL, width, height, 1, sizeof(fg::Color)*FRONTIER_BITS_PER_BYTE, NULL, (unsigned char*)&iconColors[0]);
+				
+				if (m_icon)
+				{
+					SendMessage(m_hwnd,WM_SETICON,ICON_SMALL,(LPARAM)m_icon);
+					SendMessage(m_hwnd,WM_SETICON,ICON_BIG,(LPARAM)m_icon);
+				}
 			}
 		}
 

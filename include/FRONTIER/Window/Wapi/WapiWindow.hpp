@@ -483,8 +483,6 @@ namespace fw
 			///
 			/// @param icon The new icon
 			///
-			/// @return True iff the operation was successful
-			///
 			/////////////////////////////////////////////////////////////
 			void setIcon(const fg::Image &icon);
 

@@ -25,6 +25,11 @@
 #define FRONTIER_WINDOW
 #include <string>
 
+namespace fg
+{
+	class Image;
+}
+
 namespace fw
 {
 	class Event;
@@ -409,6 +414,14 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		bool isResizeEnabled() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the icon of the window
+		///
+		/// @param icon The new icon
+		///
+		/////////////////////////////////////////////////////////////
+		void setIcon(const fg::Image &icon);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Implicitly convert to HWND

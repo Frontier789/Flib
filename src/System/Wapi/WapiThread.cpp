@@ -46,7 +46,7 @@ namespace fm
 		void Thread::cleanUp()
 		{
 			// since the thread is not running at this point
-			// we can safely set it by =
+			// operator= is safe
 			m_isExiting = 0;
 			
 			// delete windows handle

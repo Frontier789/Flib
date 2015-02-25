@@ -179,10 +179,10 @@ namespace fg
 		if (!source.m_sizeW || !source.m_sizeH/* || !m_sizeW || !m_sizeH*/)
 			return *this;
 		
-		// copy the source rect so we can adjust it
+		// copy the source rect so for adjusting
 		fm::rect2s sRect = sourceRect;
 		
-		// ah! we want to copy the whole image!
+		// copy the whole image
 		if (!sRect.area())
 		{
 			sRect.pos(0,0);
@@ -226,7 +226,7 @@ namespace fg
 		{
 			fm::Size copyBytesPerRow = sRect.size.w*sizeof(Color);
 			
-			// we can use memcpy which is a lot faster
+			// use memcpy (a lot faster)
 			if (sRect.size.w == m_sizeW && sRect.size.w == source.m_sizeW)
 				std::memcpy(&getPixel(destX,destY),&source.getPixel(sourceRect.pos.x,sourceRect.pos.y), copyBytesPerRow*sRect.size.h);
 			else
@@ -288,8 +288,8 @@ namespace fg
 			// copy the data
 			m_sizeW = width;
 			m_sizeH = height;
-			m_pixels.resize(width * height * 4);
-			memcpy(&m_pixels[0], ptr, m_pixels.size());
+			m_pixels.resize(width * height);
+			memcpy(&m_pixels[0], ptr, m_pixels.size()*sizeof(fg::Color));
 			
 			// let stbi free its used memory
 			stbi_image_free(ptr);
@@ -319,7 +319,7 @@ namespace fg
 			// copy the data
 			m_sizeW = width;
 			m_sizeH = height;
-			m_pixels.resize(width * height * 4);
+			m_pixels.resize(width * height);
 			memcpy(&m_pixels[0], ptr, m_pixels.size());
 			
 			// let stbi free its used memory
@@ -460,7 +460,7 @@ namespace fg
 			{
 				std::string pngfilename = filename+".png";
 				
-				// Unknown extension so we output it as png
+				// Unknown extension, output it as png
 				fg_log << "Unknown extension \"" << extension <<"\" changed output name to "<<pngfilename<<std::endl;
 
 				if (stbi_write_png(pngfilename.c_str(), m_sizeW, m_sizeH, 4, &m_pixels[0],0))

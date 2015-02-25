@@ -64,7 +64,7 @@ namespace fw
 
 		bool GLContext::createContext(GLXFBConfig config,::GLXContext sharedContext)
 		{
-			// chack if we have GL
+			// chack for OpenGL support
 			int buf;
 			if (!glXQueryExtension(m_disp,&buf,&buf)) 
 			{
@@ -72,7 +72,7 @@ namespace fw
 				return false;
 			}
 
-			// if we have GLX_ARB_create_context that means we can use OpenGL 3.0+
+			// if GLX_ARB_create_context is present that means OpenGL 3.0+ is available
 			std::string extensions =  glXQueryExtensionsString(m_disp, DefaultScreen(m_disp));
 			if (extensions.find("GLX_ARB_create_context") != std::string::npos)
 			{
@@ -278,7 +278,7 @@ namespace fw
 				m_handle = NULL;
 			}
 
-			// if we created a pixel buffer delete it too
+			// delete pixel buffer
 			if (m_pbuf)
 			{
 				glXDestroyPbuffer(m_disp,m_pbuf);

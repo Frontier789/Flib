@@ -253,6 +253,12 @@ namespace fw
 	{
 		return m_window->isResizeEnabled();
 	}
+	
+	/////////////////////////////////////////////////////////////
+	void Window::setIcon(const fg::Image &icon)
+	{
+		m_window->setIcon(icon);
+	}
 
 	/////////////////////////////////////////////////////////////
 	Window::operator Window::Handle() const

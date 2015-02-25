@@ -588,7 +588,7 @@ namespace fw
 			if (!checkDisplay())
 				return false;
 
-			// close the window if we had it open
+			// close the window if it is open
 			close();
 			
 			m_parent = parent;
@@ -690,7 +690,7 @@ namespace fw
 				XFreeColors(m_disp,cmap,&cblack.pixel,1,0);
 
 
-				// tell X to do what we asked, now
+				// tell X to complete operations now
 				XFlush(m_disp);
 				
 				return true;
@@ -984,8 +984,7 @@ namespace fw
 				return false;
 
 			// Display is unique for every window therefore 
-			// we dont have to bother about events that dont belong
-			// to this window
+			// all passed events belong to this window
 
 			XEvent xev;
 			while (XPending(m_disp))
@@ -1013,10 +1012,9 @@ namespace fw
 				return false;
 
 			// Display is unique for every window therefore 
-			// we dont have to bother about events that dont belong
-			// to this window
+			// all passed events belong to this window
 
-			// if we have event in stock we return it
+			// return top event from queue if there is one
 			if (!m_eventQueue.empty())
 			{
 				ev = m_eventQueue[0];

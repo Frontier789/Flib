@@ -37,7 +37,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	priv::CodePoint::CodePoint(char c)
 	{
-		// on windows we have this nice mbtowc
+		// on windows use mbtowc
 		#if defined(FRONTIER_OS_WINDOWS) &&                       \
 		   (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&     \
 		  !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))
@@ -46,7 +46,7 @@ namespace fg
 			mbtowc(&character, &c, 1);
 			cp = (fm::Uint32)character;
 
-		#else // otherwise we'll use std::locale
+		#else // otherwise use std::locale
 
 			cp = (fm::Uint32)(std::use_facet< std::ctype<wchar_t> >(std::locale()).widen(c));
 
@@ -105,7 +105,7 @@ namespace fg
 			if (gmap.rows[i].height >= glyphImg.getSize().h+2 &&
 				gmap.rows[i].height <= glyphImg.getSize().h*1.3 +2 &&
 				gmap.rows[i].width+1+glyphImg.getSize().w < gmap.atlas.getSize().w)
-					return &gmap.rows[i]; // if so we found it
+					return &gmap.rows[i]; // found it
 
 		// if there is not a single row
 		if (!gmap.rows.size() && glyphImg.getSize().h+2 < gmap.atlas.getSize().h)
@@ -181,10 +181,10 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-    void Font::setSize(unsigned int size) const
+    void Font::setCharacterSize(unsigned int size) const
     {
         if (m_renderer)
-            m_renderer->setSize(size);
+            m_renderer->setCharacterSize(size);
     }
 
 
@@ -194,7 +194,7 @@ namespace fg
     	if (!m_renderer)
 			return Glyph();
 
-		// we try finding it in the dictionary
+		// try finding it in the dictionary
         std::map<priv::GlyphMap::Identifier,Glyph>::const_iterator it=(*m_glyphMaps)[m_renderer->m_currentSize].glyphTable.find(priv::GlyphMap::Identifier(letter,style));
 		if (it!=(*m_glyphMaps)[m_renderer->m_currentSize].glyphTable.end())
 			return it->second;
@@ -218,15 +218,15 @@ namespace fg
 		if (!m_renderer || !m_glyphMaps)
 			return Glyph();
 
-		// note if we dont have a dictionary for this size yet
+		// note if have a dictionary for this size yet
 		bool newTex = m_glyphMaps->find(characterSize)==m_glyphMaps->end();
 
 		// notify renderer
-		setSize(characterSize);
+		setCharacterSize(characterSize);
 
 		priv::GlyphMap &gmap = (*m_glyphMaps)[characterSize];
 
-		if (newTex) // if the dictionary is new we create a small image for it
+		if (newTex) // if the dictionary is new create a small image for it
 			gmap.atlas.loadFromImage(Image(characterSize*1.5,characterSize*1.2,Color(0,0,0,0))),
 			gmap.atlas.setRepeated(false),
 			gmap.atlas.setSmooth(false);
@@ -235,17 +235,17 @@ namespace fg
 		fm::vec2 leftDown;
 		Image glyphImg = renderGlyph(codePoint,style,&leftDown);
 
-		// find out which row we'll insert to
+		// find out which row to insert to
 		priv::GlyphMap::Row *rowToInsert = findGlyphPlace(gmap,glyphImg);
 
-		// in case we couldn't find a good row
+		// in case a good row wasn't found
 		if (!rowToInsert)
 		{
-			// check if we can expand the atlas big enough
+			// calculate new atlas size
 			fm::vec2 maxSize(Texture::getMaximumSize());
 			fm::vec2 newSize = gmap.atlas.getSize();
 			newSize.h = std::max(newSize.h*2.0,newSize.h+glyphImg.getSize().h*2.0);
-			newSize.w = std::min(std::max(newSize.w*2,(float)glyphImg.getSize().w*2)  ,maxSize.w); // we can let width be maxSize.w, because we then crate a new row instead
+			newSize.w = std::min(std::max(newSize.w*2,(float)glyphImg.getSize().w*2)  ,maxSize.w); // width can be maxSize.w, because a new row can be created
 			if (newSize.h > maxSize.h)
 			{
 				fg_log << "fg::Font is out of Texture space" << std::endl;
@@ -265,7 +265,7 @@ namespace fg
 		if (!rowToInsert) // theorically can never happen
 			return Glyph();
 
-		//glyphImg.flipVertically();
+		// glyphImg.flipVertically();
 
 		// Finally update the texture with the new glyph
 		gmap.atlas.update(glyphImg,rowToInsert->width+1,rowToInsert->start+1);
@@ -310,7 +310,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	void Font::init()
 	{
-		// first clean up so we dont leak memory
+		// first clean up
         cleanUp();
 		m_renderer  = new Font::Renderer;
 		m_refCount  = new(unsigned int);
@@ -332,6 +332,15 @@ namespace fg
         }
         return m_renderer->getMetrics();
     }
+    
+	/////////////////////////////////////////////////////////////
+	int Font::getKerning(priv::CodePoint leftCodePoint,priv::CodePoint rightCodePoint) const
+	{
+		if (m_renderer)
+			return m_renderer->getKerning(leftCodePoint,rightCodePoint);
+		
+		return 0;
+	}
 
 	////////////////////////////////////////////////////////////
 	const Texture &Font::getTexture() const
@@ -389,7 +398,7 @@ namespace fg
 				return false;
 			}
 
-			// we now know how many characters to expect
+			// allocate file content buffer
 			m_fileContent.resize(length);
 
 			// find the begining of the file
@@ -421,7 +430,7 @@ namespace fg
 		}
 
 		m_loaded = true;
-		setSize(size); // set default size
+		setCharacterSize(size); // set default size
 
 		return true;
 	}
@@ -444,7 +453,7 @@ namespace fg
 		}
 
 		m_loaded = true;
-		setSize(size); // set default size
+		setCharacterSize(size); // set default size
 
 		return true;
 	}
@@ -458,7 +467,7 @@ namespace fg
 		// if rendering upper/lower index decrease size
 		unsigned int originalSize = m_currentSize;
 		if ((style & Font::Subscript) xor (style & Font::Superscript))
-			setSize(m_currentSize*.7);
+			setCharacterSize(m_currentSize*.7);
 
 		// find out the size of the glyph image
 		int xmin,ymin,xmax,ymax;
@@ -483,7 +492,7 @@ namespace fg
 		// manually embolden if requested
 		if (style & Font::Bold)
 		{
-			// we'll need a bigger bitmap
+			// allocate a bigger bitmap
 			std::vector<unsigned char> obitmap = bitmap;
 			bitmap.resize((w+2)*(h+2));
 			Cxy(w+2,h+2)
@@ -584,7 +593,7 @@ namespace fg
 		// manually create outline through if requested
 		if (style & Font::Outline)
 		{
-			// we'll end up with a bigger bitmap
+			// get a bigger bitmap
 			std::vector<unsigned char> obitmap = bitmap;
 			bitmap.resize((w+2)*(h+2));
 			Cxy(w+2,h+2)
@@ -644,9 +653,9 @@ namespace fg
 				}
 				
 
-		// set the size back if we rendered index
+		// reset the size back if needed
 		if ((style & Font::Subscript) xor (style & Font::Superscript))
-			setSize(originalSize);
+			setCharacterSize(originalSize);
 
 		// create the image from the monochrome bitmap
 		Image ret;
@@ -654,7 +663,7 @@ namespace fg
 		Cxy(w,h)
 			ret.setPixel(x,y,Color(255,bitmap[x+y*w]));
 
-		// if the caller needs the offset of the lower left corner, we gracefully grant it
+		// give the caller the offset of the lower left corner
 		if (leftDown)
 			(*leftDown) = fm::vec2(xmin,ymin);
 
@@ -671,11 +680,20 @@ namespace fg
 
 		return ret;
 	}
+    
+	/////////////////////////////////////////////////////////////
+	int Font::Renderer::getKerning(priv::CodePoint leftCodePoint,priv::CodePoint rightCodePoint) const
+	{
+		if (m_loaded)
+			return stbtt_GetCodepointKernAdvance((stbtt_fontinfo*)m_fontInfo,leftCodePoint,rightCodePoint)*m_scale;
+		
+		return 0;
+	}
 
 	////////////////////////////////////////////////////////////
-	void Font::Renderer::setSize(unsigned int size) const
+	void Font::Renderer::setCharacterSize(unsigned int size) const
 	{
-		// setting size means calculating and we'd avoid it if not necessary
+		// avoid setting same size twice
 		if (m_loaded && size != m_currentSize)
 		{
 			m_currentSize = size;
@@ -687,6 +705,7 @@ namespace fg
 			m_maxH 	  *= m_scale;
 			m_minH 	  *= m_scale;
 			m_lineGap *= m_scale;
+			m_lineGap += m_maxH-m_minH;
 		}
 	}
 }

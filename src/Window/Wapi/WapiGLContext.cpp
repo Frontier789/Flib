@@ -56,16 +56,16 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		bool GLContext::destroy()
 		{
-			if (m_ownWindow) // if we created that window
+			if (m_ownWindow) // if the context created that window
 			{
-				if (m_hwnd) // if the window was valid we destroy it
+				if (m_hwnd) // if the window was valid, destroy it
 				{
 					if (DestroyWindow(m_hwnd))
 					{
 						m_hwnd = NULL;
 						m_contextWindowCount--;
 
-						// If we dont have any dummy windows left we unregister our dummy window class
+						// If there are no more dummy windows deregister their class
 						if (!m_contextWindowCount)
 							if (!UnregisterClassA(FRONTIER_DUMMY_WINDOW_CLASS, GetModuleHandle(NULL)))
 							{
@@ -82,7 +82,7 @@ namespace fw
 				m_ownWindow = false;
 			}
 
-			// If we have a context then discard it
+			// Discard context
 			if (m_hglrc)
 			{
 				if (!wglDeleteContext(m_hglrc))
@@ -93,7 +93,7 @@ namespace fw
 				m_hglrc = NULL;
 			}
 
-			// Release the DC if we have one
+			// Release the DC
 			if (m_hdc)
 				ReleaseDC(m_hwnd,m_hdc),
 				m_hdc = NULL;
@@ -129,7 +129,7 @@ namespace fw
 			// wglCreateContextAttribsARB is suitable for creating GL context 3.x and above
 			while (m_settings.majorVersion >= 3)
 			{
-				// we must retrieve the function pointer ourshelves
+				// Retrieve the neede function pointer
 				HGLRC (*wglCreateContextAttribsARB)(HDC,HGLRC,const int*)  = (HGLRC (*)(HDC,HGLRC,const int*))wglGetProcAddress("wglCreateContextAttribsARB");
 
 				// the function may not be available
@@ -151,10 +151,10 @@ namespace fw
 				else break;
 			}
 
-			// If we still do not have a context
+			// If the context still not created
 			if (!m_hglrc)
 			{
-				// use the good old wglCreateContext
+				// use wglCreateContext
 				m_hglrc = wglCreateContext(m_hdc);
 				if (!m_hglrc)
 				{
@@ -168,12 +168,12 @@ namespace fw
 				{
 					unsigned int i=0;
 
-					// find out what version we got
+					// find out the version
 					wglMakeCurrent(m_hdc,m_hglrc);
 
 					m_settings.majorVersion = 0;
 					m_settings.minorVersion = 0;
-					const unsigned char *version = glGetString(0x1F02 /*GL_VERSION*/); // MAJOR.MINOR....(extra)
+					const unsigned char *version = glGetString(0x1F02 /*GL_VERSION*/); // "MAJOR.MINOR....(extra)"
 
 					// extract major version (loop until the '.')
 					for (;*(version+i) >= '0' && *(version+i) <= '9';i++)
@@ -214,7 +214,7 @@ namespace fw
 			m_hwnd = windowHandle;
 			m_settings = settings;
 
-			// we didn't create the window here
+			// The context does not own the window
 			m_ownWindow = false;
 
 			bool ret = init(sharedContext);
@@ -228,7 +228,7 @@ namespace fw
 			// Start by cleaning
 			destroy();
 
-			// if we don't have a dummy class, create it
+			// iIf needed create a dummy class
 			if (m_contextWindowCount == 0)
 			{
 				WNDCLASS winClass;
@@ -238,7 +238,7 @@ namespace fw
 				winClass.lpfnWndProc   = (WNDPROC)DefWindowProc;
 				winClass.lpszClassName = FRONTIER_DUMMY_WINDOW_CLASS; // The name of the dummy class
 
-				// Tell windows we have a class
+				// Tell windows about the new class
 				if (!RegisterClassA(&winClass))
 				{
 					fw::WapiPrintLastError(fw_log,RegisterClassA);
@@ -246,7 +246,7 @@ namespace fw
 				}
 			}
 
-			// note that we create a new window
+			// note that a new window is being created
 			m_contextWindowCount++;
 
 			// create the new (hidden) window
@@ -261,7 +261,7 @@ namespace fw
 				return false;
 			}
 
-			// we own this window
+			// the context owns this window
 			m_ownWindow = true;
 
 			// copy the settings
@@ -280,11 +280,11 @@ namespace fw
 		bool GLContext::setActive(bool active)
 		{
 			BOOL result = 0;
-			// If this class owns a valid context and we want to activate it
+			// If this class owns a valid context and it is being activated
 			if (m_hdc && m_hglrc && active)
 				result = wglMakeCurrent(m_hdc,m_hglrc); // Then activate it
 			else
-				result = wglMakeCurrent(m_hdc,NULL);     // Otherwise deactivate the current
+				result = wglMakeCurrent(m_hdc,NULL);    // Otherwise deactivate the current
 
 			if (!result) // Check for errors
 			{

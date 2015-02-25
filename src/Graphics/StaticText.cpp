@@ -37,7 +37,7 @@ namespace fg
 			m_indexCount = 0;
 		else
 		{
-			// we need a font
+			// a font is needed
 			if (!m_font)
 				return;
 
@@ -46,7 +46,7 @@ namespace fg
 			std::vector<fm::vec2> texPoses;
 			std::vector<unsigned int> indices;
 
-			m_font->setSize(m_characterSize);
+			m_font->setCharacterSize(m_characterSize);
 
 			// reset some values
 			m_boundings = fm::vec2();

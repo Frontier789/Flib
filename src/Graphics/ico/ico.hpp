@@ -129,7 +129,7 @@ namespace Ico
 			// write as png if its too big for bmp
 			if (imgs[i].getSize().w>=256 || imgs[i].getSize().h>=256)
 			{
-				// write what we allocated
+				// write what the allocated pngs
 				out.write((char*)pngSourcesP[pngCounter],pngSourcesS[pngCounter]);
 				
 				// and deallocate it

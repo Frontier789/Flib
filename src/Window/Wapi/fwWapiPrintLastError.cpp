@@ -32,9 +32,9 @@ namespace fw
 					   (LPTSTR)&errorText,0,NULL);
 		if (errorText)
 		{
-			// if we got any description then we convert it to string
+			// convert description to string
 			ret=std::string(errorText);
-			::LocalFree(errorText); //we free up the allocated memory
+			::LocalFree(errorText); // free up the allocated memory
 		}
 		
 		while (ret.length() && (ret[ret.length()-1]=='\t' || 

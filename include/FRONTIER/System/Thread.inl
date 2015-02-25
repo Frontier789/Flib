@@ -37,7 +37,7 @@ namespace fm
 			/// virtual destructor enables us to destruct the derived object from a ThreadFuntionCaller*
 			inline virtual ~ThreadFuntionCaller() {}
 			
-			/// we'll implement this function in the templated sepcifications
+			/// this function will be implemented in the templated sepcifications
 			virtual void callFunc() = 0;
 		};
 		
