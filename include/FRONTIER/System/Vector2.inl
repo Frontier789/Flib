@@ -212,7 +212,14 @@ namespace fm
 		return vector2<T>(y*T(-1),x);
 	}
 
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline T vector2<T>::area() const
+	{
+		return w*h;
+	}
 
+	/////////////////////////////////////////////////////////////
 	template<class T>
 	template<class T2>
 	inline vector2<T> vector2<T>::load(const T2 &other)

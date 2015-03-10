@@ -1833,9 +1833,11 @@ void stbtt_MakeGlyphBitmapSubpixel(const stbtt_fontinfo *info, unsigned char *ou
    gbm.w = out_w;
    gbm.h = out_h;
    gbm.stride = out_stride;
+   
 
    if (gbm.w && gbm.h)
-      stbtt_Rasterize(&gbm, 0.35f, vertices, num_verts, scale_x, scale_y, shift_x, shift_y, ix0,iy0, 1, info->userdata);
+      stbtt_Rasterize(&gbm, .35f, vertices, num_verts, scale_x, scale_y, shift_x, shift_y, ix0,iy0, 1, info->userdata);
+   
 
    STBTT_free(vertices, info->userdata);
 }

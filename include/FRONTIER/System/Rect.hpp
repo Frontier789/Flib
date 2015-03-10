@@ -163,13 +163,24 @@ namespace fm
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculate the area of the rectangle
-		/// 
+		///
 		/// The area is always non-negative
-		/// 
+		///
 		/// @return The area
 		///
 		/////////////////////////////////////////////////////////////
 		T area() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Find out if the first rectangle is bigger than the second
+		///
+		/// @param left The supposedly bigger rectangle
+		/// @param right The supposedly smaller rectangle
+		///
+		/// @return True iff @a left is bigger than @a right
+		///
+		/////////////////////////////////////////////////////////////
+		static bool isBigger(const rect<T> &left,const rect<T> &right);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Test if two rectangles are the same
@@ -221,14 +232,14 @@ namespace fm
 ///
 /// Usage example:
 /// @code
-/// 
+///
 /// fm::rect2f r(5,5,10,10);
 /// fm::vec2 p(6,7);
 /// std::cout<<(r.contains(p) ? "p is in r" : "p is not in r")<<std::endl;
 /// r.extend(fm::vec2(11.11,12.112));
 /// r.size = fm::vec2(5,5);
 /// std::cout<<"r\'s new area is:"<<r.area()<<std::endl;
-/// 
+///
 /// @endcode
 ///
 /// @see fm::vector2

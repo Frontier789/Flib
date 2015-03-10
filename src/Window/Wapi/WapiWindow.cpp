@@ -398,7 +398,7 @@ namespace fw
 				case WM_RBUTTONUP:
 				case WM_MBUTTONUP:
 				{
-					// post a move event for the item under the captured cursor 
+					// post a move event for the item under the captured cursor
 					if (GetCapture() == m_hwnd)
 					{
 						ReleaseCapture();
@@ -425,7 +425,7 @@ namespace fw
 				case WM_NCHITTEST:
 				{
 					LRESULT defResult = DefWindowProc(hwnd, msg, wParam, lParam);
-					
+
 					// disable parts where the user could resize the window if needed
 					if (!m_resizeable)
 						if (defResult == HTBOTTOM ||
@@ -602,9 +602,9 @@ namespace fw
 					fm::vec2i pos = Mouse::getPosition(*this);
 					Event ev(Event::MouseWheelMoved);
 					ev.wheel.delta = GET_WHEEL_DELTA_WPARAM(wParam)/WHEEL_DELTA;
-					ev.wheel.ctrl  = GetKeyState(VK_CONTROL);
-					ev.wheel.alt   = GetKeyState(VK_MENU);
-					ev.wheel.shift = GetKeyState(VK_SHIFT);
+					ev.wheel.ctrl  = (GetKeyState(VK_CONTROL) & 0x8000);
+					ev.wheel.alt   = (GetKeyState(VK_MENU)    & 0x8000);
+					ev.wheel.shift = (GetKeyState(VK_SHIFT)   & 0x8000);
 					ev.wheel.x     = pos.x;
 					ev.wheel.y     = pos.y;
 					postEvent(ev);
@@ -1420,7 +1420,7 @@ namespace fw
 
 				// convert to HICON
 				m_icon = CreateIcon(NULL, width, height, 1, sizeof(fg::Color)*FRONTIER_BITS_PER_BYTE, NULL, (unsigned char*)&iconColors[0]);
-				
+
 				if (m_icon)
 				{
 					SendMessage(m_hwnd,WM_SETICON,ICON_SMALL,(LPARAM)m_icon);

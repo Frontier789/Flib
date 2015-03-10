@@ -24,6 +24,7 @@
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
 #define FRONTIER_FONT
+#include <locale>
 #include <string>
 #include <vector>
 #include <map>
@@ -51,9 +52,10 @@ namespace fg
 			/// @brief Construct codepoint from character
 			///
 			/// @param c single-byte character
-			///
+			/// @param locale The locale to use 
+			/// 
 			/////////////////////////////////////////////////////////////
-			CodePoint(char c);
+			CodePoint(char c,const std::locale &locale = std::locale(""));
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Construct codepoint from wide character

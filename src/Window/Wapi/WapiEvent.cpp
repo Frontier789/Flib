@@ -28,7 +28,7 @@ namespace fw
 		if (button == Mouse::Left)   return VK_LBUTTON;
 		if (button == Mouse::Right)  return VK_RBUTTON;
 		if (button == Mouse::Middle) return VK_MBUTTON;
-		
+
 		return 0;
 	}
 
@@ -68,29 +68,29 @@ namespace fw
 		if (key == Keyboard::LAlt)         return VK_LMENU;
 		if (key == Keyboard::RAlt)         return VK_RMENU;
 		if (key == Keyboard::Space)        return VK_SPACE;
-		
+
 		if (key>=Keyboard::Num0 && key<=Keyboard::Num9)
 			return 0x30+(key-Keyboard::Num0);
-			
+
 		if (key>=Keyboard::Numpad0 && key<=Keyboard::Numpad9)
 			return VK_NUMPAD0+(key-Keyboard::Numpad0);
-			
+
 		if (key>=Keyboard::F1 && key<=Keyboard::F12)
 			return VK_F1+(key-Keyboard::F1);
-			
+
 		if (key>=Keyboard::A && key<=Keyboard::Z)
 			return 0x41+(key-Keyboard::A);
-		
+
 		return 0;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool Keyboard::isKeyHeld(Keyboard::Key code)
 	{
 		int VKcode = VKfromKey(code);
 		if (!VKcode)
 			return false;
-		return GetAsyncKeyState(VKcode);
+		return (GetAsyncKeyState(VKcode) & 0x8000);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -99,9 +99,9 @@ namespace fw
 		int VKcode = VKfromButton(button);
 		if (!VKcode)
 			return false;
-		return GetAsyncKeyState(VKcode);
+		return (GetAsyncKeyState(VKcode) & 0x8000);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	fm::vec2i Mouse::getPosition()
 	{
@@ -113,7 +113,7 @@ namespace fw
 		}
 		return fm::vec2u::loadxy(p);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	fm::vec2i Mouse::getPosition(const fw::priv::Window &window)
 	{
@@ -123,7 +123,7 @@ namespace fw
 			fw::WapiPrintLastError(fw_log,GetCursorPos);
 			return fm::vec2i();
 		}
-		
+
 		if (!ScreenToClient(window.getHandle(), &p))
 		{
 			fw::WapiPrintLastError(fw_log,ScreenToClient);
@@ -131,14 +131,14 @@ namespace fw
 		}
 		return fm::vec2i::loadxy(p);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void Mouse::setPosition(const fm::vec2i &pos)
 	{
 		if (!SetCursorPos(pos.x,pos.y))
 			fw::WapiPrintLastError(fw_log,SetCursorPos);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void Mouse::setPosition(const fm::vec2i &pos,const fw::priv::Window &window)
 	{

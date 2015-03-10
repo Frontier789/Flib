@@ -23,6 +23,7 @@
 	#define Cx(nnn) for (fm::Size x=0;x<(nnn);x++)
 	#define Cy(nnn) for (fm::Size y=0;y<(nnn);y++)
 	#define Cz(nnn) for (fm::Size z=0;z<(nnn);z++)
-	#define Cxy(Xnnn,Ynnn) for (fm::Size x=0;x<(Xnnn);x++)  for (fm::Size y=0;y<(Ynnn);y++)
+	#define Cf(nnn,ii) for (fm::Size ii=0;ii<(nnn);ii++)
+	#define Cxy(Xnnn,Ynnn) for (fm::Size x=0;x<(Xnnn);x++) for (fm::Size y=0;y<(Ynnn);y++)
 
 #endif // FRONTIER_C_HPP_INCLUDED

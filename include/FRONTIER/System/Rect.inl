@@ -23,14 +23,14 @@ namespace fm
 	inline rect<T>::rect() : pos(vector2<T>()),
 							 size(vector2<T>())
 	{
-		
+
 	}
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline rect<T>::rect(const vector2<T> &pos) : pos(pos),
 												  size(vector2<T>())
 	{
-		
+
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@ namespace fm
 	inline rect<T>::rect(const vector2<T> &pos,const vector2<T> &size) : pos(pos),
 																		 size(size)
 	{
-		
+
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ namespace fm
 	inline rect<T>::rect(const T &x,const T &y,const vector2<T> &size) : pos(x,y),
 																		 size(size)
 	{
-		
+
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ namespace fm
 	inline rect<T>::rect(const T &x,const T &y,const T &w,const T &h) : pos(x,y),
 																 size(w,h)
 	{
-		
+
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ namespace fm
 	inline rect<T>::rect(const vector2<T> &pos,const T &w,const T &h) : pos(pos),
 																		size(w,h)
 	{
-		
+
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -71,19 +71,19 @@ namespace fm
 	inline rect<T>::rect(const rect<T2> &copy) : pos(vector2<T>(copy.pos)),
 												 size(vector2<T>(copy.size))
 	{
-		
+
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline bool rect<T>::contains(const vector2<T> &p) const
 	{
-		return ((pos.x<=p.x && pos.x+size.w>=p.x) || (pos.x>=p.x && pos.x+size.w<=p.x)) && 
+		return ((pos.x<=p.x && pos.x+size.w>=p.x) || (pos.x>=p.x && pos.x+size.w<=p.x)) &&
 			   ((pos.y<=p.y && pos.y+size.h>=p.y) || (pos.y>=p.y && pos.y+size.h<=p.y));
 	}
 
 	/////////////////////////////////////////////////////////////
-	
+
 	namespace priv
 	{
 		template<class T>
@@ -121,7 +121,7 @@ namespace fm
 		return (priv::max(tmp1.pos.x,tmp2.pos.x) <= priv::min(tmp1.pos.x+tmp1.size.w,tmp2.pos.x+tmp2.size.w) &&
 				priv::max(tmp1.pos.y,tmp2.pos.y) <= priv::min(tmp1.pos.y+tmp1.size.h,tmp2.pos.y+tmp2.size.h));
 	}
-	
+
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
@@ -186,6 +186,14 @@ namespace fm
 	inline T rect<T>::area() const
 	{
 		return priv::abs(size.w*size.h);
+	}
+
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline bool rect<T>::isBigger(const rect<T> &left,const rect<T> &right)
+	{
+		return left.area() > right.area();
 	}
 
 	/////////////////////////////////////////////////////////////

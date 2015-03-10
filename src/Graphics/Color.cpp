@@ -101,6 +101,18 @@ namespace fg
 
 	}
 
+	/////////////////////////////////////////////////////////////
+	const fm::vector3<fm::Uint8> &Color::rgb() const
+	{
+		return *((fm::vector3<fm::Uint8>*)this);
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::vector3<fm::Uint8> &Color::rgb()
+	{
+		return *((fm::vector3<fm::Uint8>*)this);
+	}
+
 
     /// operators /////////////////////////////////////////////////////////
 	Color &Color::operator()(unsigned char r,unsigned char g,unsigned char b)

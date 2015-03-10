@@ -35,20 +35,22 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	priv::CodePoint::CodePoint(char c)
+	priv::CodePoint::CodePoint(char c,const std::locale &locale)
 	{
 		// on windows use mbtowc
 		#if defined(FRONTIER_OS_WINDOWS) &&                       \
 		   (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&     \
 		  !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))
-
+			
+			(void)locale;
+			
 			wchar_t character = 0;
 			mbtowc(&character, &c, 1);
 			cp = (fm::Uint32)character;
 
 		#else // otherwise use std::locale
 
-			cp = (fm::Uint32)(std::use_facet< std::ctype<wchar_t> >(std::locale()).widen(c));
+			cp = (fm::Uint32)(std::use_facet< std::ctype<wchar_t> >(locale).widen(c));
 
 		#endif
 	}
@@ -56,7 +58,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	priv::CodePoint::CodePoint(wchar_t c) : cp(c)
 	{
-
+		
 	}
 
 	////////////////////////////////////////////////////////////
@@ -488,6 +490,26 @@ namespace fg
 		// if stbtt fails
 		if (w==0 && h==0)
 			return Image();
+		
+		
+		// sharpen the small images
+		//if (m_lineGap < 20)
+			Cxy(w,h)
+			{
+				int sum = 0;
+				Cf(3,dx)
+					Cf(3,dy)
+					{
+						fm::vec2 p(x,y),d(dx-1.0,dy-1.0);
+						int dist = int(dx!=1) + int(dy!=1);
+						int val = fm::rect2i(0,0,w-1,h-1).contains(p+d) ? bitmap[(x+d.x)+(y+d.y)*w] : 0;
+						sum+=val * (dist==0 ? 1.2 : (dist==1 ? .1 : .05));
+					}
+				// write it back (check for too big value)
+				unsigned char &b = bitmap[x+y*w];
+				unsigned char val = std::min(255,sum);
+				b = b<30 ? b : (b < 90 ? (b/2+val/2) : val);
+			}
 
 		// manually embolden if requested
 		if (style & Font::Bold)
@@ -506,13 +528,13 @@ namespace fg
 					//if (fm::vec2(x1,y1).LENGTH()<=1)
 					{
 						int deltaVal=(fm::rect2i(0,0,w-1,h-1).contains(fm::vec2(ax+x1,ay+y1))) ? obitmap[(ax+x1)+(ay+y1)*w]: 0;
-						sum+=std::abs(deltaVal) * (fm::vec2(x1,y1).LENGTH()>=1 ? (fm::vec2(x1,y1).LENGTH()==1 ? .22 : .12) : 1.1),
+						sum+=deltaVal * (fm::vec2(x1,y1).LENGTH()>=1 ? (fm::vec2(x1,y1).LENGTH()==1 ? .22 : .12) : 1.1),
 						db++;
 					}
 				}
 
 				// write it back (check for too big value)
-				bitmap[x+y*(w+2)] = std::min(255.0,db ? sum : 0.0);
+				bitmap[x+y*(w+2)] = std::min(255,sum);
 			}
 
 			// update glyph image details
@@ -640,18 +662,6 @@ namespace fg
 					std::swap(bitmap[x+int(h*1.5f-y-1)*w],bitmap[x+int(h-y-1)*w]);
 			h+=h/2.f;
 		}
-		
-		// sharpen the created image
-		if (w*h < 200)
-			Cx(w)
-				Cy(h)
-				{
-					float X = bitmap[x+y*w]/255.0;
-					if (X<.5) X=X*X*2;
-					else X=-0.8 + 3.4*X + -1.6*X*X;
-					bitmap[x+y*w] = X*255;
-				}
-				
 
 		// reset the size back if needed
 		if ((style & Font::Subscript) xor (style & Font::Superscript))

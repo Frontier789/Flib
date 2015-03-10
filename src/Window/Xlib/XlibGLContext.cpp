@@ -101,12 +101,13 @@ namespace fw
 					m_handle = glXCreateContextAttribsARB(m_disp,config,sharedContext,True,attributes);
 
 					if (m_handle)
+					{/*
+						fw_log << attributes[5] << " _kecske" << std::endl;
+						int profile;
+						glGetIntegerv(GL_CONTEXT_PROFILE_MASK,&profile);
+						fw_log << profile << std::endl;*/
 						return true;
-
-					if (m_settings.majorVersion == 3 && 
-						m_settings.minorVersion == 0 && 
-						attributes[5] == GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB)
-						attributes[5] =  GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
+					}
 
 					m_settings.decreaseVersion();
 

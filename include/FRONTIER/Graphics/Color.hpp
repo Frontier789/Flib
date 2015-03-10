@@ -167,6 +167,22 @@ namespace fg
 		Color(const fm::vector4<float> &color);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the rgb part of the color
+		///
+		/// @return The rgb value (in range 0-255)
+		///
+		/////////////////////////////////////////////////////////////
+		const fm::vector3<fm::Uint8> &rgb() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the rgb part of the color
+		///
+		/// @return The rgb value (in range 0-255)
+		///
+		/////////////////////////////////////////////////////////////
+		fm::vector3<fm::Uint8> &rgb();
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Change the Red, Green and Blue copmonents of the color
 		///
 		/// @param r New Red value
@@ -332,9 +348,9 @@ namespace fg
 ///
 /// fg::Color is used to hold the value of a color in RGBA color space
 /// you can read about it <a href="http://en.wikipedia.org/wiki/RGBA_color_space">in this wikipeda article</a>
-/// 
+///
 /// fg::Color is laid out in memory as |red bit||green bit||blue bit||alpha bit|
-/// 
+///
 /// @see fg::Image
 ///
 ////////////////////////////////////////////////////////////
