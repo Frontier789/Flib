@@ -179,6 +179,8 @@ namespace fg
 		///
 		/// @param copy The source image
 		///
+		/// @return reference to itself
+		///
 		/////////////////////////////////////////////////////////////
 		reference create(const Image &copy);
 
@@ -187,6 +189,8 @@ namespace fg
 		///
 		/// @param copy The source image
 		/// @param sourceRect The rect to be copied
+		///
+		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
 		reference create(const Image &copy,const fm::rect2s &sourceRect);
@@ -527,27 +531,31 @@ namespace fg
 		///
 		/// Supports: .ico
 		///
-		/// @param file The name of the file
 		/// @param images The images
+		/// @param imageCount The number of images
+		/// @param file The name of the file
 		///
 		/// @return A vector of images
 		///
 		/////////////////////////////////////////////////////////////
-		static bool saveMultipleImagesToFile(const std::vector<Image> &images,const std::string &file);
+		static bool saveMultipleImagesToFile(Image const* const *images,fm::Size imageCount,const std::string &file);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Save image(s) to a file in memory
 		///
 		/// Supports: .ico
+		/// Returns allocated memory in @a memory
+		/// Uses operator[] new for allocation
 		///
 		/// @param images The images
-		/// @param byteCount The number of bytes written
+		/// @param imageCount The number of images
+		/// @param memory The written memory
 		/// @param ext The extension
 		///
-		/// @return The file in memory
+		/// @return The number of bytes written
 		///
 		/////////////////////////////////////////////////////////////
-		static const fm::Uint8 *saveMultipleImagesToMemory(const std::vector<Image> &images,fm::Size &byteCount,const std::string &ext);
+		static fm::Size saveMultipleImagesToMemory(Image const* const* images,fm::Size imageCount,fm::Uint8 *(&memory),const std::string &ext);
 	};
 }
 #endif

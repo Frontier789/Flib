@@ -68,13 +68,13 @@ namespace Ico
 		ptr+=sizeof(T)/sizeof(fm::Uint8);
 	}
 	
-	void writeImages(std::ostream &out,const std::vector<fg::Image> &imgs)
+	void writeImages(std::ostream &out,fg::Image const* const* imgs,fm::Size imgCount)
 	{
 		// write the icon header
 		IconHeader iconHead;
 		iconHead.reserved = 0;
 		iconHead.type     = 1;
-		iconHead.count    = imgs.size();
+		iconHead.count    = imgCount;
 		out.write((char*)&iconHead,sizeof(iconHead));
 		
 		// calculate the used storage by the header and the entries
@@ -89,7 +89,7 @@ namespace Ico
 		{
 			// write as png if its too big for bmp
 			bool png = false;
-			if (imgs[i].getSize().w>=256 || imgs[i].getSize().h>=256)
+			if (imgs[i]->getSize().w>=256 || imgs[i]->getSize().h>=256)
 			{
 				png = true;
 				
@@ -98,21 +98,21 @@ namespace Ico
 				pngSourcesS.push_back(0);
 				
 				// write png source
-				pngSourcesP[pngCounter] = imgs[i].saveToMemory(pngSourcesS[pngCounter],"png");
+				pngSourcesP[pngCounter] = imgs[i]->saveToMemory(pngSourcesS[pngCounter],"png");
 				pngCounter++;
 			}
 			
 			// fill out entry
 			Entry currentEntry;
-			currentEntry.width  = imgs[i].getSize().w;
-			currentEntry.height = imgs[i].getSize().h;
+			currentEntry.width  = imgs[i]->getSize().w;
+			currentEntry.height = imgs[i]->getSize().h;
 			currentEntry.colorCount = 0;
 			currentEntry.reserved = 0;
 			currentEntry.planes = 1;
 			currentEntry.bpp = 32;
 			
 			// if png then the size of the png otherwise (bmp) 32bpp for w*h +40 (header)
-			currentEntry.byteCount = png ? pngSourcesS[pngCounter-1] : sizeof(fg::Color)*imgs[i].getSize().w*imgs[i].getSize().h+40;
+			currentEntry.byteCount = png ? pngSourcesS[pngCounter-1] : sizeof(fg::Color)*imgs[i]->getSize().w*imgs[i]->getSize().h+40;
 			currentEntry.offsetInFile = offsetInFile;
 			
 			// write the entry
@@ -127,7 +127,7 @@ namespace Ico
 		for (fm::Size i=0;i<iconHead.count;i++)
 		{
 			// write as png if its too big for bmp
-			if (imgs[i].getSize().w>=256 || imgs[i].getSize().h>=256)
+			if (imgs[i]->getSize().w>=256 || imgs[i]->getSize().h>=256)
 			{
 				// write what the allocated pngs
 				out.write((char*)pngSourcesP[pngCounter],pngSourcesS[pngCounter]);
@@ -143,8 +143,8 @@ namespace Ico
 			
 			// fill bmp header
 			bmpH.size = 40;
-			bmpH.width = imgs[i].getSize().w;
-			bmpH.height = imgs[i].getSize().h*2;
+			bmpH.width = imgs[i]->getSize().w;
+			bmpH.height = imgs[i]->getSize().h*2;
 			bmpH.planes = 1;
 			bmpH.bitCount = 32;
 			bmpH.compression = 0;
@@ -158,10 +158,10 @@ namespace Ico
 			out.write((char*)&bmpH,sizeof(bmpH));
 			
 			// write raw color data
-			for (fm::Size y=0;y<imgs[i].getSize().h;y++)
-				for (fm::Size x=0;x<imgs[i].getSize().w;x++)
+			for (fm::Size y=0;y<imgs[i]->getSize().h;y++)
+				for (fm::Size x=0;x<imgs[i]->getSize().w;x++)
 				{
-					fg::Color c = imgs[i].getPixel(x,imgs[i].getSize().h-y-1);
+					fg::Color c = imgs[i]->getPixel(x,imgs[i]->getSize().h-y-1);
 					std::swap(c.r,c.b);
 					out.write((char*)&c,sizeof(c));
 				}
@@ -169,8 +169,8 @@ namespace Ico
 	}
 	
 	
-	fg::Image extractImage(const fm::Uint8 *,Entry &,fm::Size&);
-
+	void extractImage(const fm::Uint8 *buffer,Entry &entry,fm::Size &realBitsCount,fg::Image &ret);
+	
 	std::vector<fg::Image> getImages(const fm::Uint8 *buffer,fm::Size byteCount,std::string &error)
 	{
 		(void)byteCount;
@@ -208,7 +208,7 @@ namespace Ico
 			Entry currentEntry;
 			readBuffer<Entry>(currentEntry,bufPtr);
 
-			ret[i] = extractImage(buffer,currentEntry,realBitsCount);
+			extractImage(buffer,currentEntry,realBitsCount,ret[i]);
 		}
 
 		return ret;
@@ -223,7 +223,7 @@ namespace Ico
 		return ret;
 	}
 
-	fg::Image extractImage(const fm::Uint8 *buffer,Entry &entry,fm::Size &realBitsCount)
+	void extractImage(const fm::Uint8 *buffer,Entry &entry,fm::Size &realBitsCount,fg::Image &ret)
 	{/**
 		fg::fg_log << "found icon with " << std::endl;
 		fg::fg_log << "width = " << (int)entry.width << std::endl;
@@ -247,11 +247,10 @@ namespace Ico
 			*(begin+6) == 0x1A && 
 			*(begin+7) == 0x0A)
 		{
-			fg::Image ret;
 			ret.loadFromMemory(begin,entry.byteCount);
-			return ret;
+			return;
 		}
-				
+		
 		
 		BitmapHeader bmpHeader = *((BitmapHeader*)begin);
 		
@@ -261,7 +260,6 @@ namespace Ico
 		fg::fg_log << "w1 = " << width  << std::endl;
 		fg::fg_log << "h1 = " << height << std::endl;
 */
-		fg::Image ret;
 		ret.create(width,height);
 
 		realBitsCount = (bmpHeader.bitCount ? bmpHeader.bitCount : realBitsCount);
@@ -383,7 +381,6 @@ namespace Ico
 				c.a *= 1 - mask;
 			}
 		}
-		return ret;
 	}
 }
 

@@ -611,24 +611,44 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	bool Image::saveMultipleImagesToFile(const std::vector<Image> &images,const std::string &file)
+	bool Image::saveMultipleImagesToFile(Image const* const *images,fm::Size imageCount,const std::string &file)
 	{
+		if (!imageCount)
+			return false;
+		
 		std::ofstream ki(file.c_str(),std::ios_base::binary);
 		
 		if (!ki)
 		{
-			fg_log << "Error reading file " << file << std::endl;
+			fg_log << "Error writing file " << file << std::endl;
 			return false;
 		}
 		
-		Ico::writeImages(ki,images);
+		Ico::writeImages(ki,images,imageCount);
 		
 		return true;
 	}
-		
+
+
 	/////////////////////////////////////////////////////////////
-	const fm::Uint8 *saveMultipleImagesToMemory(const std::vector<Image> &images,fm::Size &byteCount,const std::string &ext)
+	fm::Size Image::saveMultipleImagesToMemory(Image const* const* images,fm::Size imageCount,fm::Uint8 *(&memory),const std::string &ext = "ico")
 	{
-		return NULL;
+		(void)ext;
+		
+		if (!imageCount)
+			return 0;
+		
+		// write to a stringstream
+		std::stringstream ss(std::ios_base::binary);
+		Ico::writeImages(ss,images,imageCount);
+		
+		// read back buffer
+		std::string data = ss.str();
+		
+		// allocate and fill memory
+		memory = new fm::Uint8[data.length()];
+		memcpy(memory,&data[0],data.length());
+		
+		return data.length();
 	}
 }
