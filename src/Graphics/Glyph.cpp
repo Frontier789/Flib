@@ -51,5 +51,17 @@ namespace fg
 	{
 
 	}
+		
+	//////////////////////////////////
+	bool Glyph::operator==(const Glyph &glyph) const
+	{
+		return tex==glyph.tex && pos==glyph.pos && size==glyph.size && leftdown==glyph.leftdown;
+	}
+	
+	//////////////////////////////////
+	bool Glyph::operator!=(const Glyph &glyph) const
+	{
+		return tex!=glyph.tex || pos!=glyph.pos || size!=glyph.size || leftdown!=glyph.leftdown;
+	}
 }
 

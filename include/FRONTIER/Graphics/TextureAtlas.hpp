@@ -16,7 +16,6 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_TEXTUREATLAS_HPP_INCLUDED
 #define FRONTIER_TEXTUREATLAS_HPP_INCLUDED
-#include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/System/NullPtr.hpp>
@@ -49,7 +48,7 @@ namespace fg
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class MappedType,class Compare = std::less<MappedType> >
-	class TextureAtlas : public fm::NonCopyable
+	class TextureAtlas
 	{
 		std::map<MappedType,Glyph,Compare> m_glyphTable; ///< The map of uploaded textures
 		priv::TextureAtlasImpl *m_impl; ///< The underlying non-templated implementation
@@ -130,6 +129,16 @@ namespace fg
 		TextureAtlas(const Compare &comparator = Compare());
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Default copy constructor
+		/// 
+		/// Very slow if there is at least one uploaded texture in @ copy
+		/// 
+		/// @param copy The instance to be copied
+		/// 
+		/////////////////////////////////////////////////////////////
+		TextureAtlas(const TextureAtlas &copy);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
 		///
 		/////////////////////////////////////////////////////////////
@@ -182,10 +191,20 @@ namespace fg
 		/// 
 		/// @param point The key of the Texture to be retrieved
 		/// 
-		/// @param The properties of the Texture
+		/// @return The Glyph
 		/// 
 		/////////////////////////////////////////////////////////////
 		Glyph fetch(const MappedType &point) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Test whether a given key is associated with an image or not
+		/// 
+		/// @param point The key to be tested
+		/// 
+		/// @return True iff the key is associated with an image
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool isUploaded(const MappedType &point) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Reset the whole Atlas

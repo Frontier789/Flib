@@ -41,7 +41,7 @@ namespace fg
 		const Texture *tex; ///< The texture in which the glyph is defined
 		fm::vec2u pos;      ///< The position in the texture in pixels
 		fm::vec2u size;     ///< The size in the texture in pixels
-		fm::vec2i leftdown; ///< The difference from the leftdown corner
+		fm::vec2i leftdown; ///< The offset from the leftdown corner
 
 		//////////////////////////////////
 		/// @brief Default constructor
@@ -51,21 +51,56 @@ namespace fg
 
 		//////////////////////////////////
 		/// @brief Copy constructor
-		///
+		/// 
+		/// @param copy The Glyph to be copied
+		/// 
 		//////////////////////////////////
 		Glyph(const_reference copy);
 
 		//////////////////////////////////
 		/// @brief Construct the Glyph from its values
-		///
+		/// 
+		/// @param tex The texture in which the glyph is defined
+		/// @param x The x coordinate of the position in the texture in pixels
+		/// @param y The y coordinate of the position in the texture in pixels
+		/// @param w The width of the subTexture in pixels
+		/// @param h The height of the subTexture in pixels
+		/// @param xMin The x offset from the leftdown corner
+		/// @param yMin The y offset from the leftdown corner
+		/// 
 		//////////////////////////////////
 		Glyph(const Texture *tex,unsigned int x,unsigned int y,unsigned int w,unsigned int h,int xMin,int yMin);
 
 		//////////////////////////////////
 		/// @brief Construct the Glyph from its values
-		///
+		/// 
+		/// @param tex The texture in which the glyph is defined
+		/// @param pos The position in the texture in pixels
+		/// @param size The size in the texture in pixels
+		/// @param leftdown The offset from the leftdown corner
+		/// 
 		//////////////////////////////////
 		Glyph(const Texture *tex,const fm::vec2u &pos,const fm::vec2u &size,const fm::vec2i &leftdown);
+		
+		//////////////////////////////////
+		/// @brief Test whether two glyph are the same
+		/// 
+		/// @param glyph The Glyph to compare to
+		/// 
+		/// @return True iff the two glyphs are the same
+		/// 
+		//////////////////////////////////
+		bool operator==(const Glyph &glyph) const;
+		
+		//////////////////////////////////
+		/// @brief Test whether two glyph are different
+		///
+		/// @param glyph The Glyph to compare to
+		/// 
+		/// @return True iff the two glyphs are different
+		/// 
+		//////////////////////////////////
+		bool operator!=(const Glyph &glyph) const;
 	};
 }
 #endif

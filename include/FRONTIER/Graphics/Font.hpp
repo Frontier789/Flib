@@ -16,6 +16,13 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_FONT_HPP_INCLUDED
 #define FRONTIER_FONT_HPP_INCLUDED
+
+#include <FRONTIER/System/macros/dont_include_inl_begin>
+
+#include <FRONTIER/Graphics/TextureAtlas.hpp>
+
+#include <FRONTIER/System/macros/dont_include_inl_end>
+
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/Glyph.hpp>
@@ -30,133 +37,50 @@
 #include <map>
 namespace fg
 {
-	namespace priv
-	{
-		/////////////////////////////////////////////////////////////
-		///
-		/// 	@brief Simple class used to convert characters to codepoints
-		///
-		/////////////////////////////////////////////////////////////
-		class FRONTIER_API CodePoint
-		{
-		public:
-			fm::Uint32 cp; ///< The value of the codepoint
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Default constructor
-			///
-			/////////////////////////////////////////////////////////////
-			CodePoint();
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Construct codepoint from character
-			///
-			/// @param c single-byte character
-			/// @param locale The locale to use 
-			/// 
-			/////////////////////////////////////////////////////////////
-			CodePoint(char c,const std::locale &locale = std::locale(""));
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Construct codepoint from wide character
-			///
-			/// @param c multi-byte character
-			///
-			/////////////////////////////////////////////////////////////
-			CodePoint(wchar_t c);
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Convert codepoint to integer value
-			///
-			/// @return The integer value
-			///
-			/////////////////////////////////////////////////////////////
-			operator fm::Uint32();
-		};
-
-		/////////////////////////////////////////////////////////////
-		///
-		/// 	@brief Class used to store glyph mapping on the font atlas
-		///
-		/////////////////////////////////////////////////////////////
-		class FRONTIER_API GlyphMap
-		{
-		public:
-			/////////////////////////////////////////////////////////////
-			///
-			/// 	@brief Class used store data about a character that uniquely identifies it
-			///
-			/////////////////////////////////////////////////////////////
-			class FRONTIER_API Identifier
-			{
-			public:
-				CodePoint codePoint; ///< The codepoint of the character
-				unsigned int style;  ///< The style of the character (e.g. Underlined)
-
-				/////////////////////////////////////////////////////////////
-				/// @brief Default constructor
-				///
-				/////////////////////////////////////////////////////////////
-				Identifier();
-
-				/////////////////////////////////////////////////////////////
-				/// @brief Construct the identifier from codepoint and style
-				///
-				/// @param codePoint The codepoint
-				/// @param style The style
-				///
-				/////////////////////////////////////////////////////////////
-				Identifier(CodePoint codePoint,unsigned int style);
-
-				/////////////////////////////////////////////////////////////
-				/// @brief Overload of binary operator <
-				///
-				/// This function is used by std::map when sorting
-				///
-				/// @param other Right operand
-				///
-				/////////////////////////////////////////////////////////////
-				bool operator<(const Identifier &other) const;
-			};
-
-			/////////////////////////////////////////////////////////////
-			///
-			/// 	@brief Class used to store data about a glyph-row in the font atlas
-			///
-			/////////////////////////////////////////////////////////////
-			class FRONTIER_API Row
-			{
-			public:
-				fm::Size start;  ///< The vertical offset of the row
-				fm::Size height; ///< The height of the row
-				fm::Size width;  ///< Indicates how long is the row filled
-
-				/////////////////////////////////////////////////////////////
-				/// @brief Default constructor
-				///
-				/////////////////////////////////////////////////////////////
-				Row();
-
-				/////////////////////////////////////////////////////////////
-				/// @brief Construct the row data from its data
-				///
-				/// @param start The vertical offset of the row
-				/// @param height The height of the row
-				/// @param width Indicates how long is the row filled
-				///
-				/////////////////////////////////////////////////////////////
-				Row(fm::Size start,fm::Size height,fm::Size width=0);
-			};
-			std::vector<Row> rows;                 ///< Holds the data of the rows in the texture atlas
-			std::map<Identifier,Glyph> glyphTable; ///< Maps Identifiers to Glyphs
-			fg::Texture atlas;                     ///< The texture atlas
-		};
-	}
-
-
-	//////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	/// @brief Simple class used to convert characters to codepoints
 	///
-	/// 	@brief Font class that implements <a href="http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02#Creating_a_texture_atlas">Font atlas</a> technique
+	/////////////////////////////////////////////////////////////
+	class FRONTIER_API CodePoint
+	{
+	public:
+		fm::Uint32 cp; ///< The value of the codepoint
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Default constructor
+		///
+		/////////////////////////////////////////////////////////////
+		CodePoint();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct codepoint from character
+		///
+		/// @param c single-byte character
+		/// @param locale The locale to use 
+		/// 
+		/////////////////////////////////////////////////////////////
+		CodePoint(char c,const std::locale &locale = std::locale(""));
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct codepoint from wide character
+		///
+		/// @param c multi-byte character
+		///
+		/////////////////////////////////////////////////////////////
+		CodePoint(wchar_t c);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Convert codepoint to integer value
+		///
+		/// @return The integer value
+		///
+		/////////////////////////////////////////////////////////////
+		operator fm::Uint32() const;
+	};
+	
+	
+	//////////////////////////////////
+	/// @brief Font class that implements <a href="http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02#Creating_a_texture_atlas">Font atlas</a> technique
 	///
 	/// @ingroup Graphics
 	///
@@ -164,7 +88,6 @@ namespace fg
 	class FRONTIER_API Font
 	{
 	public:
-
 		/////////////////////////////////////////////////////////////
 		/// @brief Values that indicate the style of a text
 		///
@@ -178,7 +101,7 @@ namespace fg
 			Italic      = 0x10, ///< Indicates that the text is itlicized
 			Superscript = 0x20, ///< Indicates that the text is saller and is stituated above th baseline
 			Subscript   = 0x40  ///< Indicates that the text is saller and is stituated below the baseline
-        };
+		};
 
 		class Renderer;
 
@@ -189,14 +112,16 @@ namespace fg
 		class FRONTIER_API Metrics
 		{
 		public:
-			int maxH;    ///< The highest amount a glyph ascends above the baseline
-			int minH;    ///< The highest amount a glyph descends below the baseline (usually negative)
+			int maxH;	///< The highest amount a glyph ascends above the baseline
+			int minH;	///< The highest amount a glyph descends below the baseline (usually negative)
 			int lineGap; ///< The space between two rows (not always equal to maxH-minH)
 		};
 	private:
+		class Identifier; ///< Uniquely defines a character
+		
 		unsigned int *m_refCount; ///< How many instances does reference this object
 		Renderer 	 *m_renderer; ///< A pointer to a fg::Font::Renderer that does the rendering part
-		mutable std::map<unsigned int,priv::GlyphMap> *m_glyphMaps; ///< Maps characer sizes to different font atlases
+		mutable std::map<unsigned int,TextureAtlas<Identifier> > *m_TexAtlases; ///< Maps characer sizes to different font atlases
 	public:
 		typedef Font &reference;
 		typedef const Font &const_reference;
@@ -251,7 +176,7 @@ namespace fg
 		/// @return True if everything went right false otherwise
 		///
 		/////////////////////////////////////////////////////////////
-        bool loadFromMemory(const void *fileContent,unsigned int fileSizeInBytes,unsigned int size=64);
+		bool loadFromMemory(const void *fileContent,unsigned int fileSizeInBytes,unsigned int size=64);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the mignification and magnification filter on the texture atlases
@@ -261,7 +186,7 @@ namespace fg
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-        reference setSmooth(bool smooth);
+		reference setSmooth(bool smooth);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a glyph from its codepoint and style with the current size
@@ -275,7 +200,7 @@ namespace fg
 		/// @return The glyph
 		///
 		/////////////////////////////////////////////////////////////
-        Glyph getGlyph(priv::CodePoint letter,unsigned int type = Font::Regular) const;
+		Glyph getGlyph(const CodePoint &letter,unsigned int type = Font::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Render a glyph's image with the current size
@@ -289,7 +214,7 @@ namespace fg
 		/// @return The rendered image
 		///
 		/////////////////////////////////////////////////////////////
-        Image renderGlyph(priv::CodePoint letter,unsigned int type = Font::Regular,fm::vector2<float> *leftDown=NULL) const;
+		Image renderGlyph(const CodePoint &letter,unsigned int type = Font::Regular,fm::vector2<float> *leftDown=NULL) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a glyph with given size
@@ -303,7 +228,7 @@ namespace fg
 		/// @return The glyph
 		///
 		/////////////////////////////////////////////////////////////
-        Glyph createGlyph(priv::CodePoint codePoint, unsigned int characterSize,unsigned int type = Font::Regular) const;
+		Glyph createGlyph(const CodePoint &codePoint, unsigned int characterSize,unsigned int type = Font::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get information about the font metrics
@@ -311,7 +236,7 @@ namespace fg
 		/// @return The metrics of the font
 		///
 		/////////////////////////////////////////////////////////////
-        Metrics getMetrics() const;
+		Metrics getMetrics() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the kerning offset between two glyphs
@@ -322,7 +247,7 @@ namespace fg
 		/// @return The kerning offset
 		///
 		/////////////////////////////////////////////////////////////
-		int getKerning(priv::CodePoint leftCodePoint,priv::CodePoint rightCodePoint) const;
+		int getKerning(const CodePoint &leftCodePoint,const CodePoint &rightCodePoint) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the currently used size
@@ -330,7 +255,7 @@ namespace fg
 		/// @param size The new size
 		///
 		/////////////////////////////////////////////////////////////
-        void setCharacterSize(unsigned int size) const;
+		void setCharacterSize(unsigned int size) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the currently used font atlas
@@ -338,14 +263,29 @@ namespace fg
 		/// @return The font atlas
 		///
 		/////////////////////////////////////////////////////////////
-        const Texture &getTexture() const;
-    private:
+		const Texture &getTexture() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the image of a glyph manually
+		///
+		/// @param img The image of the glyph
+		/// @param letter The codepoint of the glyph
+		/// @param type The style of the glyph
+		/// @param leftdown The offset of the glyph from the baseline
+		/// @param characterSize The target character size (0 means the currently set)
+		///
+		/// @return The glyph of the uploaded image
+		///
+		/////////////////////////////////////////////////////////////
+		Glyph upload(const fg::Image &img,const CodePoint &letter,unsigned int type = Font::Regular,const fm::vec2s &leftdown=fm::vec2s(),unsigned int characterSize=0);
+		
+	private:
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Internal function used to clean up the resources
 		///
 		/////////////////////////////////////////////////////////////
-        void cleanUp();
+		void cleanUp();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Internal function used to initialize the resources
@@ -354,7 +294,6 @@ namespace fg
 		void init();
 	};
 
-
 	//////////////////////////////////
 	///
 	/// 	@brief The heart of the Font class, this renders the glyph images
@@ -362,13 +301,13 @@ namespace fg
 	//////////////////////////////////
 	class FRONTIER_API Font::Renderer : fm::NonCopyable
 	{
-		bool  m_loaded;                           ///< Internal data
-		void *m_fontInfo;                         ///< Internal data
-		mutable float m_scale;                    ///< Internal data
-		mutable unsigned int m_currentSize;       ///< Internal data
-        mutable int m_maxH;                       ///< Internal data
-        mutable int m_minH;                       ///< Internal data
-        mutable int m_lineGap;                    ///< Internal data
+		bool  m_loaded;						   ///< Internal data
+		void *m_fontInfo;						 ///< Internal data
+		mutable float m_scale;					///< Internal data
+		mutable unsigned int m_currentSize;	   ///< Internal data
+		mutable int m_maxH;					   ///< Internal data
+		mutable int m_minH;					   ///< Internal data
+		mutable int m_lineGap;					///< Internal data
 		std::vector<unsigned char> m_fileContent; ///< Internal data
 	public:
 		typedef Renderer &reference;
@@ -416,7 +355,7 @@ namespace fg
 		/// @return True if everything went right false otherwise
 		///
 		/////////////////////////////////////////////////////////////
-        bool loadFromMemory(const void *fileContent,unsigned int fileSizeInBytes,unsigned int size=64);
+		bool loadFromMemory(const void *fileContent,unsigned int fileSizeInBytes,unsigned int size=64);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Render a glyph's image with the current size
@@ -432,7 +371,7 @@ namespace fg
 		/// @return The rendered image
 		///
 		/////////////////////////////////////////////////////////////
-        Image renderGlyph(priv::CodePoint letter,unsigned int type = Font::Regular,fm::vector2<float> *leftDown=NULL) const;
+		Image renderGlyph(const CodePoint &letter,unsigned int type = Font::Regular,fm::vector2<float> *leftDown=NULL) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get information about the font metrics
@@ -440,7 +379,7 @@ namespace fg
 		/// @return The metrics of the font
 		///
 		/////////////////////////////////////////////////////////////
-        Font::Metrics getMetrics() const;
+		Font::Metrics getMetrics() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the kerning offset between two glyphs
@@ -451,7 +390,7 @@ namespace fg
 		/// @return The kerning offset
 		///
 		/////////////////////////////////////////////////////////////
-		int getKerning(priv::CodePoint leftCodePoint,priv::CodePoint rightCodePoint) const;
+		int getKerning(const CodePoint &leftCodePoint,const CodePoint &rightCodePoint) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the currently used size
@@ -459,9 +398,9 @@ namespace fg
 		/// @param size The new size
 		///
 		/////////////////////////////////////////////////////////////
-        void setCharacterSize(unsigned int size) const;
+		void setCharacterSize(unsigned int size) const;
 
-        friend class Font;
+		friend class Font;
 	};
 	////////////////////////////////////////////////////////////
 	/// @class fg::Font

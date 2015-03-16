@@ -22,6 +22,7 @@ namespace fg
 {
 	namespace priv
 	{
+		/////////////////////////////////////////////////////////////
 		class TextureAtlasImpl::Node
 		{
 		public:
@@ -30,6 +31,7 @@ namespace fg
 
 			fm::rect2f rct;
 
+			/////////////////////////////////////////////////////////////
 			Node() : left(fm::nullPtr),
 					 right(fm::nullPtr),
 					 rct(fm::vec2(),fm::vec2(-1,-1))
@@ -37,18 +39,33 @@ namespace fg
 
 			}
 
+			/////////////////////////////////////////////////////////////
+			Node(const Node &copy) : left(fm::nullPtr),
+									 right(fm::nullPtr),
+									 rct(copy.rct)
+			{
+				if (copy.left)
+					left = new Node(*(copy.left));
+				
+				if (copy.right)
+					right = new Node(*(copy.right));
+			}
+
+			/////////////////////////////////////////////////////////////
 			~Node()
 			{
 				delete left;
 				delete right;
 			}
 
+			/////////////////////////////////////////////////////////////
 			fm::vec2 getRealSize(const fm::vec2s &imgSize)
 			{
 				return fm::vec2( (rct.size.w!=-1) ? rct.size.w : imgSize.w-rct.pos.x,
 								 (rct.size.h!=-1) ? rct.size.h : imgSize.h-rct.pos.y );
 			}
 
+			/////////////////////////////////////////////////////////////
 			fm::vec2 correct(fm::vec2 s)
 			{
 				if (s.x<0) s.x=-1;
@@ -57,6 +74,7 @@ namespace fg
 				return s;
 			}
 
+			/////////////////////////////////////////////////////////////
 			Node *insert(fm::vec2s rctSize,const fm::vec2s &imgSize)
 			{
 				Node *best = fm::nullPtr;
@@ -67,8 +85,10 @@ namespace fg
 				return best;
 			}
 
+			/////////////////////////////////////////////////////////////
 			void findBest(fm::vec2s rctSize,const fm::vec2s &imgSize,Node *&best)
 			{
+				// if not a leaf, continue recursion
 				if (left || right)
 				{
 					left->findBest(rctSize,imgSize,best);
@@ -76,22 +96,27 @@ namespace fg
 
 					return;
 				}
-
+				
+				// calculate empty size
 				fm::vec2 freeSpace = getRealSize(imgSize);
-
+				
+				// test if there is enough empty space
 				if (rctSize.w > freeSpace.w || rctSize.h > freeSpace.h)
 					return;
-
+				
+				// test if this place is better than the current best
 				fm::vec2 bestPos = best ? best->rct.pos : fm::vec2();
 
 				fm::vec2 bestFreeSpace = best ? best->getRealSize(imgSize) : fm::vec2();
-
+				
+				// if the empty space is nearly as big as the rectangle choose it
 				if (best && freeSpace.area()/rctSize.area()<1.1 && freeSpace.area()<bestFreeSpace.area())
 				{
 					best = this;
 					return;
 				}
-
+				
+				// select the closest one to the origin
 				if (!best || bestPos.LENGTH()>rct.pos.LENGTH())
 					best = this;
 			}
@@ -102,9 +127,12 @@ namespace fg
 
 				fm::Size w = freeSpace.w - rctSize.w;
 				fm::Size h = freeSpace.h - rctSize.h;
+				
+				// insert new leaves
 				left = new Node;
 				right = new Node;
-
+				
+				// slice the area in an optimal way
 				if (w < h)
 				{
 					right->rct.pos = rct.pos + fm::vec2(rctSize.w,0);
@@ -125,10 +153,18 @@ namespace fg
 				rct.size = rctSize;
 			}
 		};
+		
 		/////////////////////////////////////////////////////////////
 		TextureAtlasImpl::TextureAtlasImpl() : m_root(new Node)
 		{
 			
+		}
+
+		/////////////////////////////////////////////////////////////
+		TextureAtlasImpl::TextureAtlasImpl(const TextureAtlasImpl &copy) : m_root(new Node(*(copy.m_root)))
+		{
+			if (copy.m_tex.getSize().area())
+				m_tex.loadFromImage(copy.m_tex.copyToImage());
 		}
 		
 		/////////////////////////////////////////////////////////////
@@ -140,12 +176,12 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		void TextureAtlasImpl::resizeTex(const fm::vec2s &newSize)
 		{
+			// if a texture is present recreate it
 			if (m_tex.getSize().area())
 			{
 				fg::Image img = m_tex.copyToImage();
 				
 				m_tex.create(newSize);
-				
 				m_tex.update(img,fm::vec2s());
 			}
 			else
@@ -159,6 +195,7 @@ namespace fg
 			Node *inserted = fm::nullPtr;
 			fm::vec2s size = img.getSize();
 			
+			// resize texture until the image fits
 			while (true)
 			{
 				fm::vec2s texSize = m_tex.getSize();
@@ -169,6 +206,7 @@ namespace fg
 				resizeTex(texSize+size*1.1);
 			}
 			
+			// upload image
 			m_tex.update(img,inserted->rct.pos);
 			
 			return Glyph(&m_tex,inserted->rct.pos,size,midpt);
@@ -188,17 +226,21 @@ namespace fg
 		{
 			Glyph *ret = new Glyph[count];
 			
+			// for each glyph
 			for (fm::Size i=0;i<count;i++)
 			{
+				// there is a rect, a vec2 and a MappedType in glyphPoints with give stride
 				fm::rect2s *rectPtr = (fm::rect2s*)((char*)glyphPoints + stride*i);
 				fm::vec2s *midPtPtr = ( fm::vec2s*)((char*)glyphPoints + stride*i + sizeof(fm::rect2s));
 				
+				// copy the important part of the image
 				fg::Image img;
 				img.create(atlas,fm::rect2s(rectPtr->pos,rectPtr->size));
 				
 				Node *inserted = fm::nullPtr;
 				fm::vec2s size = img.getSize();
 				
+				// resize texture until the image fits
 				while (true)
 				{
 					fm::vec2s texSize = m_tex.getSize();
@@ -209,8 +251,10 @@ namespace fg
 					resizeTex(texSize+size*1.1);
 				}
 				
+				// upload image
 				m_tex.update(img,inserted->rct.pos);
 				
+				// store created glyph
 				ret[i] = Glyph(&m_tex,inserted->rct.pos,size,*midPtPtr);
 			}
 			

@@ -14,6 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Graphics/TextureAtlas.hpp>
 #include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/System/Vector2.hpp>
@@ -27,15 +28,31 @@
 #include <cmath>
 namespace fg
 {
+	/////////////////////////////////////////////////////////////
+	class FRONTIER_API Font::Identifier
+	{
+	public:
+		CodePoint codePoint; ///< The codepoint of the character
+		unsigned int style;  ///< The style of the character (e.g. Underlined)
 
+		/////////////////////////////////////////////////////////////
+		Identifier();
+
+		/////////////////////////////////////////////////////////////
+		Identifier(const CodePoint &codePoint,unsigned int style);
+
+		/////////////////////////////////////////////////////////////
+		bool operator<(const Identifier &other) const;
+	};
+		
 	////////////////////////////////////////////////////////////
-	priv::CodePoint::CodePoint()
+	CodePoint::CodePoint()
 	{
 
 	}
 
 	////////////////////////////////////////////////////////////
-	priv::CodePoint::CodePoint(char c,const std::locale &locale)
+	CodePoint::CodePoint(char c,const std::locale &locale)
 	{
 		// on windows use mbtowc
 		#if defined(FRONTIER_OS_WINDOWS) &&                       \
@@ -56,83 +73,39 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	priv::CodePoint::CodePoint(wchar_t c) : cp(c)
+	CodePoint::CodePoint(wchar_t c) : cp(c)
 	{
 		
 	}
 
 	////////////////////////////////////////////////////////////
-	priv::CodePoint::operator fm::Uint32()
+	CodePoint::operator fm::Uint32() const
 	{
 		return cp;
 	}
 
 	/// FontImpl::GlyphMap::Identifier /////////////////////////////////////////////////////////
-	priv::GlyphMap::Identifier::Identifier() {}
+	Font::Identifier::Identifier() {}
 
 
 	////////////////////////////////////////////////////////////
-	priv::GlyphMap::Identifier::Identifier(priv::CodePoint codePoint,unsigned int style) : codePoint(codePoint),
-																						   style    (style)
+	Font::Identifier::Identifier(const CodePoint &codePoint,unsigned int style) : codePoint(codePoint),
+																				  style    (style)
 	{
 
 	}
 
-
 	////////////////////////////////////////////////////////////
-	bool priv::GlyphMap::Identifier::operator<(const Identifier &other) const
+	bool Font::Identifier::operator<(const Identifier &other) const
 	{
-		// only used when ordering/(searching ordered) storage
+		// used for sorting
 		return (codePoint.cp==other.codePoint.cp ? style < other.style : codePoint.cp<other.codePoint.cp);
 	}
 
-
-	/// FontImpl::GlyphMap::Row /////////////////////////////////////////////////////////
-	priv::GlyphMap::Row::Row() {}
-
-
-	////////////////////////////////////////////////////////////
-	priv::GlyphMap::Row::Row(fm::Size start,fm::Size height,fm::Size width) : start (start ),
-																			  height(height),
-																			  width (width )
-	{
-
-	}
-
-	////////////////////////////////////////////////////////////
-	priv::GlyphMap::Row *findGlyphPlace(priv::GlyphMap &gmap,const Image &glyphImg)
-	{
-		// check for all rows if they big enough for the new glyph image
-		C(gmap.rows.size())
-			if (gmap.rows[i].height >= glyphImg.getSize().h+2 &&
-				gmap.rows[i].height <= glyphImg.getSize().h*1.3 +2 &&
-				gmap.rows[i].width+1+glyphImg.getSize().w < gmap.atlas.getSize().w)
-					return &gmap.rows[i]; // found it
-
-		// if there is not a single row
-		if (!gmap.rows.size() && glyphImg.getSize().h+2 < gmap.atlas.getSize().h)
-		{
-			// then add the first row (a little bigger than the glyph)
-			gmap.rows.push_back(priv::GlyphMap::Row(0,glyphImg.getSize().h+2));
-			return &gmap.rows[0];
-		}
-		else // check if adding the new row would be out of bounds
-			if (gmap.rows.size() && gmap.rows.back().start+gmap.rows.back().height+glyphImg.getSize().h+2 < gmap.atlas.getSize().h)
-			{
-				gmap.rows.push_back(priv::GlyphMap::Row(gmap.rows.back().start+gmap.rows.back().height,glyphImg.getSize().h+2));
-				return &gmap.rows.back();
-			}
-		return NULL;
-	}
-
-
-
-
-
 	/// constructors /////////////////////////////////////////////////////////
-    Font::Font() : m_refCount(NULL),
-                   m_renderer(NULL),
-                   m_glyphMaps(NULL)
+    Font::Font() : m_refCount(fm::nullPtr),
+                   m_renderer(fm::nullPtr),
+                   m_TexAtlases(fm::nullPtr)
     {
 
     }
@@ -141,7 +114,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
     Font::Font(Font::const_reference copy) : m_refCount(copy.m_refCount),
                                              m_renderer(copy.m_renderer),
-                                             m_glyphMaps(copy.m_glyphMaps)
+                                             m_TexAtlases(copy.m_TexAtlases)
     {
 		if (m_refCount)
 		    (*m_refCount)++;
@@ -175,9 +148,9 @@ namespace fg
     Font::reference Font::setSmooth(bool smooth)
     {
 		// set for all the atlases
-		if (m_glyphMaps)
-			for (std::map<unsigned int,priv::GlyphMap>::iterator it = m_glyphMaps->begin();it!=m_glyphMaps->end();it++)
-				it->second.atlas.setSmooth(smooth);
+		if (m_TexAtlases)
+			for (std::map<unsigned int,TextureAtlas<Identifier> >::iterator it = m_TexAtlases->begin();it!=m_TexAtlases->end();it++)
+				it->second.getTexture().setSmooth(smooth);
 		return *this;
     }
 
@@ -191,98 +164,30 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-    Glyph Font::getGlyph(priv::CodePoint letter,unsigned int style) const
+    Glyph Font::getGlyph(const CodePoint &letter,unsigned int style) const
     {
     	if (!m_renderer)
 			return Glyph();
 
 		// try finding it in the dictionary
-        std::map<priv::GlyphMap::Identifier,Glyph>::const_iterator it=(*m_glyphMaps)[m_renderer->m_currentSize].glyphTable.find(priv::GlyphMap::Identifier(letter,style));
-		if (it!=(*m_glyphMaps)[m_renderer->m_currentSize].glyphTable.end())
-			return it->second;
+		const TextureAtlas<Identifier> &texAtlas = (*m_TexAtlases)[m_renderer->m_currentSize];
+		Glyph glyph = texAtlas.fetch(Identifier(letter,style));
+		
+		if (glyph!=Glyph())
+			return glyph;
 
 		// no match, create it
-		return createGlyph(letter,m_renderer->m_currentSize,style);
+		return (*m_TexAtlases)[m_renderer->m_currentSize].upload(renderGlyph(letter,style),Identifier(letter,style));
     }
 
 
 	////////////////////////////////////////////////////////////
-    Image Font::renderGlyph(priv::CodePoint letter,unsigned int style,fm::vec2 *leftDown) const
+    Image Font::renderGlyph(const CodePoint &letter,unsigned int style,fm::vec2 *leftDown) const
     {
         if (!m_renderer)
             return Image();
         return m_renderer->renderGlyph(letter,style,leftDown);
     }
-
-	////////////////////////////////////////////////////////////
-    Glyph Font::createGlyph(priv::CodePoint codePoint, unsigned int characterSize,unsigned int style) const
-    {
-		if (!m_renderer || !m_glyphMaps)
-			return Glyph();
-
-		// note if have a dictionary for this size yet
-		bool newTex = m_glyphMaps->find(characterSize)==m_glyphMaps->end();
-
-		// notify renderer
-		setCharacterSize(characterSize);
-
-		priv::GlyphMap &gmap = (*m_glyphMaps)[characterSize];
-
-		if (newTex) // if the dictionary is new create a small image for it
-			gmap.atlas.loadFromImage(Image(characterSize*1.5,characterSize*1.2,Color(0,0,0,0))),
-			gmap.atlas.setRepeated(false),
-			gmap.atlas.setSmooth(false);
-
-		// render the glyph
-		fm::vec2 leftDown;
-		Image glyphImg = renderGlyph(codePoint,style,&leftDown);
-
-		// find out which row to insert to
-		priv::GlyphMap::Row *rowToInsert = findGlyphPlace(gmap,glyphImg);
-
-		// in case a good row wasn't found
-		if (!rowToInsert)
-		{
-			// calculate new atlas size
-			fm::vec2 maxSize(Texture::getMaximumSize());
-			fm::vec2 newSize = gmap.atlas.getSize();
-			newSize.h = std::max(newSize.h*2.0,newSize.h+glyphImg.getSize().h*2.0);
-			newSize.w = std::min(std::max(newSize.w*2,(float)glyphImg.getSize().w*2)  ,maxSize.w); // width can be maxSize.w, because a new row can be created
-			if (newSize.h > maxSize.h)
-			{
-				fg_log << "fg::Font is out of Texture space" << std::endl;
-				return Glyph();
-			}
-
-			/** the S_L_O_W part **/
-
-			Image newImg;
-			Image oldImg = gmap.atlas.copyToImage(); // copy back the texture
-			newImg.create(newSize,Color(0,0,0,0));  //  create bigger new image
-			oldImg.copyTo(newImg,0,0);             //   copy the old image to the new
-			gmap.atlas.loadFromImage(newImg);     //    send the new texture to gl
-			rowToInsert = findGlyphPlace(gmap,glyphImg);
-		}
-
-		if (!rowToInsert) // theorically can never happen
-			return Glyph();
-
-		// glyphImg.flipVertically();
-
-		// Finally update the texture with the new glyph
-		gmap.atlas.update(glyphImg,rowToInsert->width+1,rowToInsert->start+1);
-		rowToInsert->width+=glyphImg.getSize().w+1;
-
-		fg::Glyph &ret = gmap.glyphTable[priv::GlyphMap::Identifier(codePoint,style)];
-
-		fg::Texture *atlas = &gmap.atlas;
-		fm::vec2u pos(rowToInsert->width-glyphImg.getSize().w,rowToInsert->start+1);
-
-		ret = Glyph(atlas,pos,glyphImg.getSize(),leftDown);
-
-		return ret;
-    }
-
 
 	////////////////////////////////////////////////////////////
 	void Font::cleanUp()
@@ -294,8 +199,8 @@ namespace fg
             (*m_refCount)--;
 			if (!(*m_refCount)) // if no more shares left free up resources
             {
-				if (m_glyphMaps)
-					delete m_glyphMaps;
+				if (m_TexAtlases)
+					delete m_TexAtlases;
                 if (m_renderer)
                     delete m_renderer;
                 if (m_refCount)
@@ -303,9 +208,9 @@ namespace fg
             }
         }
 
-		m_glyphMaps = NULL;
-		m_renderer  = NULL;
-		m_refCount  = NULL;
+		m_TexAtlases = fm::nullPtr;
+		m_renderer   = fm::nullPtr;
+		m_refCount   = fm::nullPtr;
 	}
 
 
@@ -316,7 +221,7 @@ namespace fg
         cleanUp();
 		m_renderer  = new Font::Renderer;
 		m_refCount  = new(unsigned int);
-		m_glyphMaps = new std::map<unsigned int,priv::GlyphMap>;
+		m_TexAtlases = new std::map<unsigned int,TextureAtlas<Identifier> >;
         (*m_refCount) = 1;
 	}
 
@@ -336,7 +241,7 @@ namespace fg
     }
     
 	/////////////////////////////////////////////////////////////
-	int Font::getKerning(priv::CodePoint leftCodePoint,priv::CodePoint rightCodePoint) const
+	int Font::getKerning(const CodePoint &leftCodePoint,const CodePoint &rightCodePoint) const
 	{
 		if (m_renderer)
 			return m_renderer->getKerning(leftCodePoint,rightCodePoint);
@@ -347,8 +252,15 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	const Texture &Font::getTexture() const
 	{
-	    return (*m_glyphMaps)[m_renderer->m_currentSize].atlas;
+	    return (*m_TexAtlases)[m_renderer->m_currentSize].getTexture();
 	}
+	
+	/////////////////////////////////////////////////////////////
+	Glyph Font::upload(const fg::Image &img,const CodePoint &letter,unsigned int type,const fm::vec2s &leftdown,unsigned int characterSize)
+	{
+		return (*m_TexAtlases)[characterSize ? characterSize : m_renderer->m_currentSize].upload(img,Identifier(letter,type),leftdown);
+	}
+		
 
 
 
@@ -461,7 +373,7 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Image Font::Renderer::renderGlyph(priv::CodePoint letter,unsigned int style,fm::vector2<float> *leftDown) const
+	Image Font::Renderer::renderGlyph(const CodePoint &letter,unsigned int style,fm::vector2<float> *leftDown) const
 	{
 		if (!m_loaded)
 			return Image();
@@ -692,7 +604,7 @@ namespace fg
 	}
     
 	/////////////////////////////////////////////////////////////
-	int Font::Renderer::getKerning(priv::CodePoint leftCodePoint,priv::CodePoint rightCodePoint) const
+	int Font::Renderer::getKerning(const CodePoint &leftCodePoint,const CodePoint &rightCodePoint) const
 	{
 		if (m_loaded)
 			return stbtt_GetCodepointKernAdvance((stbtt_fontinfo*)m_fontInfo,leftCodePoint,rightCodePoint)*m_scale;

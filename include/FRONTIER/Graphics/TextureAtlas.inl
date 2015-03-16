@@ -73,6 +73,9 @@ namespace fg
 			TextureAtlasImpl();
 
 			/////////////////////////////////////////////////////////////
+			TextureAtlasImpl(const TextureAtlasImpl &copy);
+
+			/////////////////////////////////////////////////////////////
 			~TextureAtlasImpl();
 
 			/////////////////////////////////////////////////////////////
@@ -90,6 +93,15 @@ namespace fg
 			/////////////////////////////////////////////////////////////
 			const Texture &getTexture() const;
 		};
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class MT,class Cp>
+	TextureAtlas<MT,Cp>::TextureAtlas(const TextureAtlas &copy) : m_glyphTable(copy.m_glyphTable),
+																  m_impl(new priv::TextureAtlasImpl(*(copy.m_impl))),
+																  m_comp(copy.m_comp)
+	{
+		
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -121,6 +133,13 @@ namespace fg
 		typename std::map<MT,Glyph,Cp>::const_iterator it = m_glyphTable.find(point);
 
 		return it==m_glyphTable.end() ? Glyph() : it->second;
+	}
+		
+	/////////////////////////////////////////////////////////////
+	template<class MT,class Cp>
+	inline bool TextureAtlas<MT,Cp>::isUploaded(const MT &point) const
+	{
+		return m_glyphTable.find(point)!=m_glyphTable.end();
 	}
 
 	/////////////////////////////////////////////////////////////
