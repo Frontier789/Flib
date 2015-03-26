@@ -52,7 +52,7 @@ namespace fw
 		int  extended = (lParam & 0x01000000) != 0;
 
 		if (param == VK_SHIFT)
-			param = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
+			param = MapVirtualKey(scancode,3 /*MAPVK_VSC_TO_VK_EX*/);
 		if (param == VK_CONTROL)
 			param = extended ? VK_RCONTROL : VK_LCONTROL;
 		if (param == VK_MENU)
@@ -500,30 +500,61 @@ namespace fw
 					// let windows do his business
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
-				/*
+				
 				// resize event
 				case WM_SIZE:
 				{
-					if (wParam==0) // dont process minimize and maximize
+					// window is resized not moved
+					m_windowMoved = false;
+					
+					// if the user is not sizing by hand
+					if (!m_inSizeMoveMode && wParam != SIZE_MINIMIZED)
 					{
 						Event ev(Event::Resized);
 						ev.size.w = LOWORD(lParam);
 						ev.size.h = HIWORD(lParam);
 						postEvent(ev);
-						return 0;
+						break;
 					}
+					
 					return DefWindowProc(hwnd, msg, wParam, lParam);
-				}*/
+				}
+				
+				// the window is being moved
+				case WM_MOVE:
+				{
+					// window is moved not resized
+					m_windowMoved = true;
+					
+					return DefWindowProc(hwnd, msg, wParam, lParam);
+				}
+				
+				// the user started to resize the window
+				case WM_ENTERSIZEMOVE:
+				{
+					m_inSizeMoveMode = true;
+					return DefWindowProc(hwnd, msg, wParam, lParam);
+				}
 
+				// the user finished resizing the window
 				case WM_EXITSIZEMOVE:
 				{
-					unsigned int w,h;
-					getSize(w,h);
-					Event ev(Event::Resized);
-					ev.size.w = w;
-					ev.size.h = h;
-					postEvent(ev);
-					break;
+					m_inSizeMoveMode  = false;
+					
+					if (!m_windowMoved)
+					{
+						unsigned int w,h;
+						getSize(w,h);
+						Event ev(Event::Resized);
+						ev.size.w = w;
+						ev.size.h = h;
+						postEvent(ev);
+						break;
+					}
+					
+					m_windowMoved = false;
+					
+					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
 
 				// character entered
@@ -686,7 +717,7 @@ namespace fw
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 			}
 
-			// shouldn't be reached
+			// shouldn't be reached (unless break)
 			return 0;
 		}
 
@@ -710,6 +741,8 @@ namespace fw
 						   m_ownedParent(NULL),
 						   m_parent(NULL),
 						   m_decorActive(false),
+						   m_inSizeMoveMode(false),
+						   m_windowMoved(false),
 						   m_cursorHitTest(NULL)
 		{
 
@@ -729,6 +762,8 @@ namespace fw
 																																					m_ownedParent(NULL),
 																																					m_parent(NULL),
 																																					m_decorActive(false),
+																																					m_inSizeMoveMode(false),
+																																					m_windowMoved(false),
 																																					m_cursorHitTest(NULL)
 		{
 			open(x,y,w,h,title,style,parent,container);

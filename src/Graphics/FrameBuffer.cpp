@@ -19,6 +19,7 @@
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
+#include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Log.hpp>
 #include <FRONTIER/OpenGL.hpp>
 class ObjectBinder
@@ -62,8 +63,8 @@ bool checkFramebufferStatus()
 namespace fg
 {
 	////////////////////////////////////////////////////////////
-	FrameBuffer::DepthBuffer::DepthBuffer(const fm::vec2s &size) : width(*((fm::Size*)&size)),
-																   height(*((fm::Size*)&size+1)),
+	FrameBuffer::DepthBuffer::DepthBuffer(const fm::vec2s &size) : width(size.w),
+																   height(size.h),
 																   dtex(NULL)
 	{
 
@@ -89,15 +90,27 @@ namespace fg
 	const FrameBuffer::DepthBuffer FrameBuffer::DepthBuffer::noDepthBuffer = FrameBuffer::DepthBuffer(0,0);
 
 	////////////////////////////////////////////////////////////
-	FrameBuffer::FrameBuffer() : m_depthBufID(0)
+	FrameBuffer::FrameBuffer() : m_depthBufID(0),
+								 m_width(0),
+								 m_height(0)
 	{
 
 	}
 
 	////////////////////////////////////////////////////////////
-	FrameBuffer::FrameBuffer(Texture *colorAttachments,unsigned int count,const DepthBuffer &depthBuf) : m_depthBufID(0)
+	FrameBuffer::FrameBuffer(const Texture *colorAttachments,fm::Size count,const DepthBuffer &depthBuf) : m_depthBufID(0),
+																										   m_width(0),
+																										   m_height(0)
 	{
 		create(colorAttachments,count,depthBuf);
+	}
+
+	////////////////////////////////////////////////////////////
+	FrameBuffer::FrameBuffer(const Texture &colorAttachment,const DepthBuffer &depthBuf) : m_depthBufID(0),
+																						   m_width(0),
+																						   m_height(0)
+	{
+		create(&colorAttachment,1,depthBuf);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -110,13 +123,19 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	bool FrameBuffer::create(Texture *colorAttachments,unsigned int count,const DepthBuffer &depthBuf)
+	bool FrameBuffer::create(const Texture *colorAttachments,fm::Size count,const DepthBuffer &depthBuf)
 	{
 		return setColorAttachments(colorAttachments,count) && setDepthBuffer(depthBuf);
 	}
 
 	////////////////////////////////////////////////////////////
-	bool FrameBuffer::setColorAttachments(Texture *colorAttachments,unsigned int count)
+	bool FrameBuffer::create(const Texture &colorAttachment,const DepthBuffer &depthBuf)
+	{
+		return setColorAttachments(&colorAttachment,1) && setDepthBuffer(depthBuf);
+	}
+
+	////////////////////////////////////////////////////////////
+	bool FrameBuffer::setColorAttachments(const Texture *colorAttachments,fm::Size count)
 	{
 		init();
 
@@ -128,8 +147,15 @@ namespace fg
 
 		ObjectBinder binder(getGlId());
 		C(count)
+		{
 			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, (colorAttachments+i)->getGlId(), 0));
-		glViewport(0,0,colorAttachments->getSize().w,colorAttachments->getSize().h);
+			
+			fm::vec2s size = (colorAttachments+i)->getRealSize();
+			
+			if (!i || size.w < m_width ) m_width  = size.w;
+			if (!i || size.h < m_height) m_height = size.h;
+		}
+
 		/*
 		GLenum *DrawBuffers;
 		DrawBuffers = new GLenum[count];
@@ -191,5 +217,17 @@ namespace fg
 	void FrameBuffer::bind(const FrameBuffer &fbo)
 	{
 		bind(&fbo);
+	}
+
+	////////////////////////////////////////////////////////////
+	void FrameBuffer::setViewport(const fm::rect2s &viewport)
+	{
+		glViewport(viewport.pos.x,viewport.pos.y,viewport.size.w,viewport.size.h);
+	}
+
+	////////////////////////////////////////////////////////////
+	const fm::vec2s &FrameBuffer::getSize() const
+	{
+		return *((const fm::vec2s*)&m_width);
 	}
 }

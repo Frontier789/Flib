@@ -114,7 +114,8 @@ namespace fw
 			if (param == XK_Down)          return Keyboard::Down; 
 			if (param == XK_Up)            return Keyboard::Up;
 			if (param == XK_Escape)        return Keyboard::Escape;   
-			if (param == XK_Return)        return Keyboard::Enter;   
+			if (param == XK_Return)        return Keyboard::Enter;
+			if (param == XK_KP_Enter)      return Keyboard::Enter;
 			if (param == XK_Sys_Req)       return Keyboard::PrintScreen;    
 			if (param == XK_Scroll_Lock)   return Keyboard::ScrollLock;        
 			if (param == XK_Pause)         return Keyboard::PauseBreak;  
@@ -344,54 +345,51 @@ namespace fw
 			if (xev.type == KeyPress || xev.type == KeyRelease)
 			{
 				// retrieve the keysym
-				KeySym xkeysym;
-				char c;
-				if (XLookupString(&xev.xkey,&c,0,&xkeysym,0) == 1)
+				KeySym xkeysym = XLookupKeysym(&xev.xkey,0);
+				
+				// if it was a release
+				if (xev.type == KeyRelease)
 				{
-					// if it was a release
-					if (xev.type == KeyRelease)
+					// and the next event is a corresponding repeat-press
+					if (XEventsQueued(m_disp,QueuedAfterReading))
 					{
-						// and the next event is a corresponding repeat-press
-						if (XEventsQueued(m_disp,QueuedAfterReading))
-						{
-							XEvent nxev;
-							XPeekEvent(m_disp, &nxev);
+						XEvent nxev;
+						XPeekEvent(m_disp, &nxev);
 
-							if (nxev.type == KeyPress)
-								if (nxev.xkey.time == xev.xkey.time &&
-					    			nxev.xkey.keycode == xev.xkey.keycode)
-									return; // then ignore it
-						}
+						if (nxev.type == KeyPress)
+							if (nxev.xkey.time == xev.xkey.time &&
+				    			nxev.xkey.keycode == xev.xkey.keycode)
+								return; // then ignore it
 					}
+				}
 
-					// if it is a repeat-press, ignore if repeat is disabled
-					if (xkeysym == m_lastDown && !m_enableRepeat && xev.type == KeyPress)
-						return; 
+				// if it is a repeat-press, ignore if repeat is disabled
+				if (xkeysym == m_lastDown && !m_enableRepeat && xev.type == KeyPress)
+					return; 
 
-					// if it is the final release
-					if (xev.type == KeyRelease)
-						m_lastDown = XK_VoidSymbol; // reset the last_down
-					else
-						m_lastDown = xkeysym; // else note the pressed key
-					
-					Event ev(xev.type == KeyPress ? Event::KeyPressed : Event::KeyReleased);
-					ev.key.code = keyFromKS(xkeysym);
-					ev.key.shift = fw::Keyboard::isKeyHeld(fw::Keyboard::LShift) || fw::Keyboard::isKeyHeld(fw::Keyboard::RShift);
-					ev.key.ctrl  = fw::Keyboard::isKeyHeld(fw::Keyboard::LCtrl)  || fw::Keyboard::isKeyHeld(fw::Keyboard::RCtrl);
-					ev.key.alt   = fw::Keyboard::isKeyHeld(fw::Keyboard::LAlt)   || fw::Keyboard::isKeyHeld(fw::Keyboard::RAlt);
-					postEvent(ev);
+				// if it is the final release
+				if (xev.type == KeyRelease)
+					m_lastDown = XK_VoidSymbol; // reset the last_down
+				else
+					m_lastDown = xkeysym; // else note the pressed key
+				
+				Event ev(xev.type == KeyPress ? Event::KeyPressed : Event::KeyReleased);
+				ev.key.code = keyFromKS(xkeysym);
+				ev.key.shift = fw::Keyboard::isKeyHeld(fw::Keyboard::LShift) || fw::Keyboard::isKeyHeld(fw::Keyboard::RShift);
+				ev.key.ctrl  = fw::Keyboard::isKeyHeld(fw::Keyboard::LCtrl)  || fw::Keyboard::isKeyHeld(fw::Keyboard::RCtrl);
+				ev.key.alt   = fw::Keyboard::isKeyHeld(fw::Keyboard::LAlt)   || fw::Keyboard::isKeyHeld(fw::Keyboard::RAlt);
+				postEvent(ev);
 
-					// post a keyrepeat event
-					if (xev.type == KeyPress && !XFilterEvent(&xev, None))
+				// post a keyrepeat event
+				if (xev.type == KeyPress && !XFilterEvent(&xev, None))
+				{
+					char buf[16];
+					if (XLookupString(&xev.xkey,buf,sizeof(buf),NULL,NULL))
 					{
-						char buf[16];
-						if (XLookupString(&xev.xkey,buf,sizeof(buf),NULL,NULL))
-						{
-							fw::Event ev(fw::Event::TextEntered);
-							ev.text.character  = (char)buf[0];
-							ev.text.wcharacter = (wchar_t)buf[0];
-							postEvent(ev);
-						}
+						fw::Event ev(fw::Event::TextEntered);
+						ev.text.character  = (char)buf[0];
+						ev.text.wcharacter = (wchar_t)buf[0];
+						postEvent(ev);
 					}
 				}
 			}
@@ -894,12 +892,10 @@ namespace fw
 			if (!isOpen())
 				return false;
 
-			unsigned int border,depth;
-			unsigned int w,h;
-
-			// simply retrieve the data
-			XGetGeometry(m_disp,m_win,&m_rootWin,&x,&y,&w,&h,&border,&depth);
-
+			// use XTranslateCoordinates because XGetGeometry sometimes returns 0,0
+			::Window child;
+			XTranslateCoordinates(m_disp, m_win, m_rootWin, 0, 0, &x, &y, &child);
+			
 			return true;
 		}
 

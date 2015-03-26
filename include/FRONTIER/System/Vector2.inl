@@ -16,7 +16,8 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_VECTOR2_INL_INCLUDED
 #define FRONTIER_VECTOR2_INL_INCLUDED
-#include <cmath>
+#include <FRONTIER/System/Math.hpp>
+
 namespace fm
 {
 
@@ -98,7 +99,7 @@ namespace fm
 	template<class T>
 	inline T vector2<T>::length() const
 	{
-		return std::sqrt(x*x+y*y);
+		return fm::sqrt3(x*x+y*y);
 	}
 
 
@@ -115,7 +116,7 @@ namespace fm
 	inline vector2<T> vector2<T>::norm() const
 	{
 		T lth=LENGTH();
-		return (lth==1 || lth==0) ? *this : *this/std::sqrt(lth);
+		return (lth==1 || lth==0) ? *this : (*this)*fm::invsqrt3(lth);
 	}
 
 
@@ -133,7 +134,7 @@ namespace fm
 	inline vector2<T> vector2<T>::sgn() const
 	{
 		T lth=LENGTH();
-		return (lth==1 || lth==0) ? *this : *this/std::sqrt(lth);
+		return (lth==1 || lth==0) ? *this : (*this)*fm::invsqrt3(lth);
 	}
 
 

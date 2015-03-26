@@ -33,35 +33,33 @@ namespace fw
 	{
 		return fw::GLContext::create(windowHandle,settings);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool Window::create(const fm::vec2s &size,fw::GLContext::Settings settings)
 	{
 		return fw::GLContext::create(size,settings);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool Window::create(fw::GLContext::Settings settings)
 	{
 		return fw::GLContext::create(settings);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool Window::destroy()
 	{
 		return fw::GLContext::destroy();
 	}
-		
+
 	/////////////////////////////////////////////////////////////
-	Window::Window() : m_window(new priv::Window),
-					   m_handleResize(true)
+	Window::Window() : m_window(new priv::Window)
 	{
 
 	}
 
 	/////////////////////////////////////////////////////////////
-	Window::Window(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings) : m_window(new priv::Window),
-																																														 m_handleResize(true)
+	Window::Window(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings) : m_window(new priv::Window)
 	{
 		open(pos,size,title,style,parent,container,settings);
 	}
@@ -85,7 +83,7 @@ namespace fw
 		bool ok1 = m_window->open(pos.x,pos.y,size.w,size.h,title,style,(parent ? &parent->getOSWindow() : NULL),(priv::Window::Handle)container);
 		bool ok2 = this->create((priv::Window::Handle)m_window->getHandle(),settings);
 		bool ok3 = this->setActive();
-		
+
 		return ok1 && ok2 && ok3;
 	}
 
@@ -253,7 +251,7 @@ namespace fw
 	{
 		return m_window->isResizeEnabled();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void Window::setIcon(const fg::Image &icon)
 	{
@@ -306,18 +304,6 @@ namespace fw
 	priv::Window &Window::getOSWindow()
 	{
 		return *m_window;
-	}
-	
-	/////////////////////////////////////////////////////////////
-	void Window::enableHandleResize(bool enable)
-	{
-		m_handleResize = enable;
-	}
-	
-	/////////////////////////////////////////////////////////////
-	bool Window::handleResize() const
-	{
-		return m_handleResize;
 	}
 
 	#define getByteRef(obj,i) (*(((unsigned char*)&obj)+i))

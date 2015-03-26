@@ -82,6 +82,8 @@ namespace fw
 			Wapi::Window *m_parent; ///< The parent of the window
 			bool m_decorActive;     ///< Indicates whether the window decoration is active
 			std::deque<Wapi::Window *> m_children; ///< The handles of the windows whose parent is this window
+			bool m_inSizeMoveMode; ///< True when the user is sizing or moving the window by hand
+			bool m_windowMoved; ///< True if the user moved the window
 
 			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that deduces the object and calls handleEvent
 			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that handles events of the window

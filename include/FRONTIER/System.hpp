@@ -41,6 +41,7 @@ namespace fm
 #include <FRONTIER/System/Log.hpp>
 #include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/System/Time.hpp>
+#include <FRONTIER/System/Math.hpp>
 #include <FRONTIER/System/Clock.hpp>
 #include <FRONTIER/System/FmLog.hpp>
 #include <FRONTIER/System/Angle.hpp>

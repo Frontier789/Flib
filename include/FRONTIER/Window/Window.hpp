@@ -43,8 +43,7 @@ namespace fw
 	class FRONTIER_API Window : public fw::GLContext
 	{
 		priv::Window *m_window;  ///< The underlying implementation
-		bool m_handleResize;     ///< If true then the class will set the viewport and projection matrix on resize
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Override of the inherited create function
 		///
@@ -66,7 +65,7 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		bool create(const fm::vec2s &size,fw::GLContext::Settings settings);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Override of the inherited create function
 		///
@@ -463,23 +462,7 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		bool swapBuffers();
-/*
-		/////////////////////////////////////////////////////////////
-		/// @brief Access the GL context of the window
-		///
-		/// @return The context
-		///
-		/////////////////////////////////////////////////////////////
-		const fw::GLContext &getContext() const;
 
-		/////////////////////////////////////////////////////////////
-		/// @brief Access the GL context of the window
-		///
-		/// @return The context
-		///
-		/////////////////////////////////////////////////////////////
-		fw::GLContext &getContext();
-*/
 		/////////////////////////////////////////////////////////////
 		/// @brief Access the underlying window implementation
 		///
@@ -495,24 +478,6 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		priv::Window &getOSWindow();
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Enable or disable the automatic resize handling
-		/// 
-		/// This is enabled by default
-		/// 
-		/// @param enable True to enable automatic resize handling
-		/// 
-		/////////////////////////////////////////////////////////////
-		void enableHandleResize(bool enable = true);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Check if the automatic resize handling is enabled
-		/// 
-		/// @return True iff automatic resize handling is enabled
-		/// 
-		/////////////////////////////////////////////////////////////
-		bool handleResize() const;
 	};
 
 

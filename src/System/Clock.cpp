@@ -88,6 +88,13 @@ namespace fm
     
     
     ////////////////////////////////////////////////////////////
+    Clock::reference Clock::resume()
+    {
+		return unPause();
+    }
+    
+    
+    ////////////////////////////////////////////////////////////
     Clock::reference Clock::restart()
     {
     	return setTime(Time::Zero);

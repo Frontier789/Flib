@@ -34,8 +34,8 @@
 namespace fm
 {
 	template<class>
-	class vector2;
-	typedef vector2<fm::Size> vec2s;
+	class rect;
+	typedef rect<fm::Size> rect2s;
 }
 namespace fg
 {
@@ -50,6 +50,8 @@ namespace fg
 	{
 		unsigned int m_depthBufID; ///< The id of the depth buffer
 		void init(); ///< Internal function used at setup
+		fm::Size m_width;  ///< The width of the FrameBuffer
+		fm::Size m_height; ///< The height of the FrameBuffer
 	public:
 		typedef FrameBuffer &reference;
 		typedef const FrameBuffer &const_reference;
@@ -108,7 +110,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the framebuffer from attachments and depth buffer
 		///
-		/// If colorAttachments is NULL or count is 0 then an error is prompted to
+		/// If @a colorAttachments is NULL or count is 0 then an error is prompted to
 		/// fg_log and the framebuffer becomes invalid
 		///
 		/// @param colorAttachments A pointer to the textures that will be used as color attachments
@@ -116,7 +118,19 @@ namespace fg
 		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
 		///
 		/////////////////////////////////////////////////////////////
-		FrameBuffer(Texture *colorAttachments,unsigned int count,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
+		FrameBuffer(const Texture *colorAttachments,fm::Size count,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct the framebuffer from attachments and depth buffer
+		///
+		/// If @a olorAttachment is not created an error is prompted to
+		/// fg_log and the framebuffer becomes invalid
+		///
+		/// @param colorAttachment The texturesthat will be used as color attachment
+		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
+		///
+		/////////////////////////////////////////////////////////////
+		explicit FrameBuffer(const Texture &colorAttachment,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -138,7 +152,7 @@ namespace fg
 		/// @return True if no error is occured
 		///
 		/////////////////////////////////////////////////////////////
-		bool setColorAttachments(Texture *colorAttachments,unsigned int count);
+		bool setColorAttachments(const Texture *colorAttachments,fm::Size count);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the framebuffer's depth attachment
@@ -166,12 +180,26 @@ namespace fg
 		/// @return True if no error is occured
 		///
 		/////////////////////////////////////////////////////////////
-		bool create(Texture *colorAttachments,unsigned int count,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
+		bool create(const Texture *colorAttachments,fm::Size count,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct the framebuffer from attachments and depth buffer
+		///
+		/// If @a olorAttachment is not created an error is prompted to
+		/// fg_log and the framebuffer becomes invalid
+		///
+		/// @param colorAttachment The texturesthat will be used as color attachment
+		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
+		///
+		/// @return True if no error is occured
+		///
+		/////////////////////////////////////////////////////////////
+		bool create(const Texture &colorAttachment,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a framebuffer for usage
 		///
-		/// @param fbo The framebuffer to be bound (can be NULL which means unbind)
+		/// @param fbo The framebuffer to be bound (can be NULL which means default framebuffer)
 		///
 		/////////////////////////////////////////////////////////////
 		static void bind(const FrameBuffer *fbo);
@@ -189,12 +217,32 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		static bool isAvailable();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the viewport
+		///
+		/// The viewport specifies the part of the render 
+		/// target that is used for rendering (in pixels)
+		/// For more details see <a href="https://www.opengl.org/sdk/docs/man/html/glViewport.xhtml">this article</a>
+		/// 
+		/// @param viewport The new viewport
+		///
+		/////////////////////////////////////////////////////////////
+		static void setViewport(const fm::rect2s &viewport);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the framebuffer for usage
 		///
 		/////////////////////////////////////////////////////////////
 		void bind() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the size of the FrameBuffer
+		/// 
+		/// The size of the framebuffer
+		/// 
+		/////////////////////////////////////////////////////////////
+		const fm::vec2s &getSize() const;
 	};
 }
 #endif // FRONTIER_FRAMEBUFFER_INCLUDED
