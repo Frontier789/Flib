@@ -44,45 +44,6 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		bool operator<(const Identifier &other) const;
 	};
-		
-	////////////////////////////////////////////////////////////
-	CodePoint::CodePoint()
-	{
-
-	}
-
-	////////////////////////////////////////////////////////////
-	CodePoint::CodePoint(char c,const std::locale &locale)
-	{
-		// on windows use mbtowc
-		#if defined(FRONTIER_OS_WINDOWS) &&                       \
-		   (defined(__GLIBCPP__) || defined (__GLIBCXX__)) &&     \
-		  !(defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION))
-			
-			(void)locale;
-			
-			wchar_t character = 0;
-			mbtowc(&character, &c, 1);
-			cp = (fm::Uint32)character;
-
-		#else // otherwise use std::locale
-
-			cp = (fm::Uint32)(std::use_facet< std::ctype<wchar_t> >(locale).widen(c));
-
-		#endif
-	}
-
-	////////////////////////////////////////////////////////////
-	CodePoint::CodePoint(wchar_t c) : cp(c)
-	{
-		
-	}
-
-	////////////////////////////////////////////////////////////
-	CodePoint::operator fm::Uint32() const
-	{
-		return cp;
-	}
 
 	/// FontImpl::GlyphMap::Identifier /////////////////////////////////////////////////////////
 	Font::Identifier::Identifier() {}

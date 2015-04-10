@@ -24,61 +24,20 @@
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
 #include <FRONTIER/System/NonCopyable.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/Graphics/CodePoint.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Graphics/Glyph.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
-#include <FRONTIER/System/macros/TYPES.hpp>
-#include <FRONTIER/System/macros/SIZE.hpp>
-#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_FONT
 #include <locale>
 #include <string>
 #include <vector>
 #include <map>
+
 namespace fg
 {
-	/////////////////////////////////////////////////////////////
-	/// @brief Simple class used to convert characters to codepoints
-	///
-	/////////////////////////////////////////////////////////////
-	class FRONTIER_API CodePoint
-	{
-	public:
-		fm::Uint32 cp; ///< The value of the codepoint
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Default constructor
-		///
-		/////////////////////////////////////////////////////////////
-		CodePoint();
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct codepoint from character
-		///
-		/// @param c single-byte character
-		/// @param locale The locale to use 
-		/// 
-		/////////////////////////////////////////////////////////////
-		CodePoint(char c,const std::locale &locale = std::locale(""));
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct codepoint from wide character
-		///
-		/// @param c multi-byte character
-		///
-		/////////////////////////////////////////////////////////////
-		CodePoint(wchar_t c);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Convert codepoint to integer value
-		///
-		/// @return The integer value
-		///
-		/////////////////////////////////////////////////////////////
-		operator fm::Uint32() const;
-	};
-	
-	
 	//////////////////////////////////
 	/// @brief Font class that implements <a href="http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02#Creating_a_texture_atlas">Font atlas</a> technique
 	///
