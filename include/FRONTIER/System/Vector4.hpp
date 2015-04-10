@@ -42,7 +42,7 @@ namespace fm
 		enum {
 			components = 4u ///< Public value indicating the amount of component_type's in the class
 		};
-		
+
 		static vector4<T> White;     ///< 0xFFFFFFFF
 		static vector4<T> Silver;    ///< 0xBFBFBFFF
 		static vector4<T> Gray;      ///< 0x7B7B7BFF
@@ -73,7 +73,14 @@ namespace fm
 		static vector4<T> Coral;     ///< 0xFF7F4FFF
 		static vector4<T> Lavender;  ///< 0xB57FDBFF
 		static vector4<T> Indigo;    ///< 0x490082FF
-		
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Anonymous union holding the value of first dimension
+		///
+		/// x and r refer to the same memory region with the same type
+		/// thus they are interchangeable
+		///
+		/////////////////////////////////////////////////////////////
 		union {
 
 			///
@@ -89,8 +96,15 @@ namespace fm
 			///
 			T r;
 
-		}; ///< Anonymous union holding the value of first dimension
-		
+		};
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Anonymous union holding the value of second dimension
+		///
+		/// y and g refer to the same memory region with the same type
+		/// thus they are interchangeable
+		///
+		/////////////////////////////////////////////////////////////
 		union {
 
 			///
@@ -106,8 +120,15 @@ namespace fm
 			///
 			T g;
 
-		}; ///< Anonymous union holding the value of second dimension
-		
+		};
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Anonymous union holding the value of third dimension
+		///
+		/// z and b refer to the same memory region with the same type
+		/// thus they are interchangeable
+		///
+		/////////////////////////////////////////////////////////////
 		union {
 
 			///
@@ -123,8 +144,15 @@ namespace fm
 			///
 			T b;
 
-		}; ///< Anonymous union holding the value of third dimension
-		
+		};
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Anonymous union holding the value of third dimension
+		///
+		/// w and a refer to the same memory region with the same type
+		/// thus they are interchangeable
+		///
+		/////////////////////////////////////////////////////////////
 		union {
 
 			///
@@ -140,7 +168,7 @@ namespace fm
 			///
 			T a;
 
-		}; ///< Anonymous union holding the value of fourth dimension
+		};
 
 
 		/////////////////////////////////////////////////////////////
@@ -226,7 +254,7 @@ namespace fm
 		/// @brief Construct 4D vector from 2D vector with different type
 		///
 		/// This constructor sets the x,y coordinates to @a vec 's x and y
-		/// z to @a Z and w to @a W 
+		/// z to @a Z and w to @a W
 		///
 		/// @param vec 2D vector to construct from
 		/// @param Z z's new value
@@ -239,7 +267,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct 4D vector from 3D vector with different type
 		///
-		/// This constructor uses @a vec to fill the x, y and z fileds 
+		/// This constructor uses @a vec to fill the x, y and z fileds
 		/// and sets the w field to 1
 		///
 		/// @param vec 3D vector to construct from
@@ -251,7 +279,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct 4D vector from 3D vector with different type
 		///
-		/// This constructor uses @a vec to fill the x, y and z fileds 
+		/// This constructor uses @a vec to fill the x, y and z fileds
 		/// and sets the w field to @a W
 		///
 		/// @param vec 3D vector to construct from
@@ -564,7 +592,7 @@ namespace fm
 		template<class T2>
 		static vector4<T> loadrgba(const T2 &vec);
 	};
-	
+
 #ifndef FRONTIER_ONLY_FOR_DOXYGEN
 
 	/////////////////////////////////////////////////////////////
@@ -751,10 +779,12 @@ namespace fm
 #endif
 
 	typedef vector4<float> 	      vec4;
+	typedef vector4<int>   	      vec4i;
+	typedef vector4<bool>         vec4b;
 	typedef vector4<float> 	      vec4f;
 	typedef vector4<double>       vec4d;
-	typedef vector4<int>   	      vec4i;
 	typedef vector4<unsigned int> vec4u;
+
 }
 
 #endif // FRONTIER_VECTOR4_HPP_INCLUDED

@@ -177,7 +177,10 @@ namespace fg
 			return glyph;
 
 		// no match, create it
-		return (*m_TexAtlases)[m_renderer->m_currentSize].upload(renderGlyph(letter,style),Identifier(letter,style));
+		fm::vec2 leftdown;
+		fg::Image img = renderGlyph(letter,style,&leftdown);
+		
+		return (*m_TexAtlases)[m_renderer->m_currentSize].upload(img,Identifier(letter,style),leftdown);
     }
 
 
@@ -406,6 +409,7 @@ namespace fg
 		
 		// sharpen the small images
 		//if (m_lineGap < 20)
+		/*
 			Cxy(w,h)
 			{
 				int sum = 0;
@@ -421,7 +425,7 @@ namespace fg
 				unsigned char &b = bitmap[x+y*w];
 				unsigned char val = std::min(255,sum);
 				b = b<30 ? b : (b < 90 ? (b/2+val/2) : val);
-			}
+			}*/
 
 		// manually embolden if requested
 		if (style & Font::Bold)

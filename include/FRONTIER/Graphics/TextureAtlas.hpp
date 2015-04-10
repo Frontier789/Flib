@@ -66,18 +66,18 @@ namespace fg
 		{
 		public:
 			const fg::Image *img; ///< The associated Image
-			MappedType point; ///< The key value
-			fm::vec2s midpt;  ///< The associated offset
+			MappedType point;     ///< The key value
+			fm::vec2 leftdown;    ///< The associated offset
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Default constructor
 			/// 
 			/// @param img The associated Image
 			/// @param point The key value
-			/// @param midpt The associated offset
+			/// @param leftdown The associated offset
 			/// 
 			/////////////////////////////////////////////////////////////
-			MapPoint(const fg::Image *img = fm::nullPtr,MappedType point = MappedType(),fm::vec2s midpt = fm::vec2s());
+			MapPoint(const fg::Image *img = fm::nullPtr,MappedType point = MappedType(),const fm::vec2 &leftdown = fm::vec2());
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief The internal comparation function that is used when sorting MapPoints
@@ -96,19 +96,19 @@ namespace fg
 		class GlyphPoint
 		{
 		public:
-			fm::rect2s rct;   ///< The layout of the subimage
-			fm::vec2s  midpt; ///< The associated offset
-			MappedType point; ///< The key value
+			fm::rect2f rct;      ///< The layout of the subimage
+			fm::vec2   leftdown; ///< The associated offset
+			MappedType point;    ///< The key value
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Default constructor
 			/// 
 			/// @param rct The layout of the subimage
-			/// @param midpt The associated offset
+			/// @param leftdown The associated offset
 			/// @param point The key value
 			/// 
 			/////////////////////////////////////////////////////////////
-			GlyphPoint(fm::rect2s rct = fm::rect2s(),fm::vec2s midpt = fm::vec2s(),MappedType point = MappedType());
+			GlyphPoint(const fm::rect2s &rct = fm::rect2s(),const fm::vec2 &leftdown = fm::vec2(),MappedType point = MappedType());
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief The internal comparation function that is used when sorting GlyphPoints
@@ -149,12 +149,12 @@ namespace fg
 		/// 
 		/// @param img The image of the new Texture
 		/// @param point The associated key
-		/// @param midpt The associated offset
+		/// @param leftdown The associated offset
 		/// 
 		/// @return The properties of the uploaded Texture in a Glyph
 		/// 
 		/////////////////////////////////////////////////////////////
-		Glyph upload(const fg::Image &img,const MappedType &point,const fm::vec2s &midpt=fm::vec2s());
+		Glyph upload(const fg::Image &img,const MappedType &point,const fm::vec2 &leftdown = fm::vec2());
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Add new Textures to the atlas
@@ -167,7 +167,7 @@ namespace fg
 		/// @param sortPoints Iff true @a points will be sorted
 		/// 
 		/////////////////////////////////////////////////////////////
-		void upload(MapPoint *points,fm::Size pointCount,bool sortPoints=true);
+		void upload(MapPoint *points,fm::Size pointCount,bool sortPoints = true);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Add new Textures from one shared Image to the atlas
@@ -181,7 +181,7 @@ namespace fg
 		/// @param sortPoints Iff true @a points will be sorted (as an optimization)
 		/// 
 		/////////////////////////////////////////////////////////////
-		void upload(const fg::Image &atlas,GlyphPoint *points,fm::Size pointCount,bool sortPoints=true);
+		void upload(const fg::Image &atlas,GlyphPoint *points,fm::Size pointCount,bool sortPoints = true);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Retrieve the properties of an alredy uploaded Texture

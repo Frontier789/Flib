@@ -381,11 +381,12 @@ namespace fg
 		///
 		/// @param w The new width
 		/// @param h The new height
+		/// @param linearFilter Iff true linear filtering is used (nearest neighbour otherwise)
 		///
 		/// @return The resized image
 		///
 		/////////////////////////////////////////////////////////////
-		Image scale(fm::Size w,fm::Size h);
+		Image scale(fm::Size w,fm::Size h,bool linearFilter = true);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get size of the image

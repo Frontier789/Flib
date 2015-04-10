@@ -19,7 +19,6 @@
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/Window/Window.hpp>
-#include <FRONTIER/System/Mutex.hpp>
 #include <FRONTIER/System/Angle.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
@@ -40,7 +39,6 @@ namespace fw
 	namespace priv
 	{
 		fw::GLContext theSharedContext;
-		fm::Mutex sharedContextMutex;
 		class theSharedContextInitializer
 		{
 		public:
@@ -52,17 +50,17 @@ namespace fw
 		theSharedContextInitializer initit(&theSharedContext);
 	}
 	/////////////////////////////////////////////////////////////
-	GLContext::Settings::Settings(unsigned char bitsPerPixel,
-								  unsigned char depthBits,
-								  unsigned char stencilBits,
-								  unsigned char majorVersion,
+	GLContext::Settings::Settings(unsigned char majorVersion,
 								  unsigned char minorVersion,
-								  bool compatiblityProfile) : bitsPerPixel(bitsPerPixel),
-															  depthBits(depthBits),
-															  stencilBits(stencilBits),
-															  majorVersion(majorVersion),
-															  minorVersion(minorVersion),
-															  compatiblityProfile(compatiblityProfile)
+								  bool compatiblityProfile,
+								  unsigned char bitsPerPixel,
+								  unsigned char depthBits,
+								  unsigned char stencilBits) : majorVersion(majorVersion),
+															   minorVersion(minorVersion),
+															   compatiblityProfile(compatiblityProfile),
+															   bitsPerPixel(bitsPerPixel),
+															   depthBits(depthBits),
+															   stencilBits(stencilBits)
 	{
 
 	}
@@ -239,6 +237,17 @@ namespace fw
 		if (mode == GEqual)  glDepthFunc(GL_GEQUAL);
 		if (mode == Greater) glDepthFunc(GL_GREATER);
 		if (mode == Always)  glDepthFunc(GL_ALWAYS);
+	}
+
+	/////////////////////////////////////////////////////////////
+	fg::Image GLContext::capture(const fm::vec2s &pos,const fm::vec2s &size,bool flip)
+	{
+		fg::Image ret;
+		ret.create(size);
+		glReadPixels(pos.x,pos.y,size.w,size.h,GL_RGBA,GL_UNSIGNED_BYTE,&ret.getPixel(0,0));
+		if (flip)
+			ret.flipVertically();
+		return ret;
 	}
 }
 

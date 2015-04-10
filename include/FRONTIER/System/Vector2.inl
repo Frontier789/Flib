@@ -86,12 +86,21 @@ namespace fm
 	}
 
 
+	////////////////////////////////////////////////////////////
 	template<class T>
 	inline typename vector2<T>::reference vector2<T>::unsign()
 	{
 		x = (x < T(0) ? x*T(-1) : x);
 		y = (y < T(0) ? y*T(-1) : y);
 		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline vector2<T> vector2<T>::unsign() const
+	{
+		return vector2<T>(x < T(0) ? x*T(-1) : x,
+						  y < T(0) ? y*T(-1) : y);
 	}
 
 

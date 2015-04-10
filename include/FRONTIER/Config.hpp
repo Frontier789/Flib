@@ -26,11 +26,11 @@
 #define FRONTIER_C_HPP_INCLUDED
 #define FRONTIER_C
 
-	#define C(nnn)  for (fm::Size i=0;i<(nnn);i++)
-	#define Cx(nnn) for (fm::Size x=0;x<(nnn);x++)
-	#define Cy(nnn) for (fm::Size y=0;y<(nnn);y++)
-	#define Cz(nnn) for (fm::Size z=0;z<(nnn);z++)
-	#define Cxy(Xnnn,Ynnn) for (fm::Size x=0;x<(Xnnn);x++)  for (fm::Size y=0;y<(Ynnn);y++)
+	#define C(nnn)  for (fm::Size i=0,FRONTIER_N=(nnn);i<FRONTIER_N;i++)
+	#define Cx(nnn) for (fm::Size x=0,FRONTIER_N=(nnn);x<FRONTIER_N;x++)
+	#define Cy(nnn) for (fm::Size y=0,FRONTIER_N=(nnn);y<FRONTIER_N;y++)
+	#define Cz(nnn) for (fm::Size z=0,FRONTIER_N=(nnn);z<FRONTIER_N;z++)
+	#define Cxy(Xnnn,Ynnn) for (fm::Size x=0,FRONTIER_XN=(Xnnn);x<FRONTIER_XN;x++)  for (fm::Size y=0,FRONTIER_YN=(Ynnn);y<FRONTIER_YN;y++)
 
 #endif // FRONTIER_C_HPP_INCLUDED
 
@@ -49,7 +49,7 @@
 		defined(__WIN32__)   || \
 		defined(__TOS_WIN__) || \
 		defined(__WINDOWS__) || defined(FRONTIER_OS_WINDOWS)
-			
+
 			#ifndef NOMINMAX
 				#define NOMINMAX
 			#endif
@@ -63,7 +63,7 @@
 	#endif
 
 	#if defined(__ANDROID__) || defined(FRONTIER_OS_ANDROID)
-			
+
 			#ifndef FRONTIER_OS_ANDROID
 				#define FRONTIER_OS_ANDROID
 			#endif
@@ -98,7 +98,7 @@
 	#if defined(__linux__) || \
 		defined(  linux  ) || \
 		defined(__linux  ) || defined(FRONTIER_OS_LINUX)
-			
+
 			#ifndef FRONTIER_OS_LINUX
 				#define FRONTIER_OS_LINUX
 			#endif
@@ -111,7 +111,7 @@
 	#if defined(macintosh) || \
 		defined(Macintosh) || \
 	   (defined(__APPLE__) && defined(__MACH__)) || defined(FRONTIER_OS_MACOS)
-			
+
 			#ifndef FRONTIER_OS_MACOS
 				#define FRONTIER_OS_MACOS
 			#endif
@@ -125,7 +125,7 @@
 		defined(__MSDOS__) || \
 		defined( _MSDOS  ) || \
 		defined(  __DOS__) || defined(FRONTIER_OS_DOS)
-			
+
 			#ifndef FRONTIER_OS_DOS
 				#define FRONTIER_OS_DOS
 			#endif
@@ -159,19 +159,19 @@
 	#ifdef FRONTIER_DYNAMIC
 
 		#ifdef FRONTIER_OS_WINDOWS
-			
+
 			#ifdef FRONTIER_LIBBUILD
 				#define FRONTIER_API __declspec(dllexport)
-			#else 
+			#else
 				#define FRONTIER_API __declspec(dllimport)
 			#endif
-			
+
 			#ifdef _MSC_VER
 				#pragma warning(disable : 4251)
 			#endif
 
 		#else
-			
+
 			#if defined(__GNUC__) && __GNUC__ >= 4
 				#define FRONTIER_API __attribute__ ((__visibility__ ("default")))
 			#else
@@ -183,7 +183,7 @@
 	#else
 		#define FRONTIER_API
 	#endif
-	
+
 #endif // FRONTIER_API_H_INCLUDED
 
 //////////////////////////////////
@@ -195,6 +195,6 @@
 namespace fm
 {
 	const float PI = 3.14159265358979f;
-	const float euler_e = 2.71828f;	
+	const float euler_e = 2.71828f;
 }
 #endif

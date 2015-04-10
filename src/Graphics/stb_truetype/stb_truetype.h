@@ -1288,7 +1288,7 @@ int stbtt_GetGlyphShape(const stbtt_fontinfo *info, int glyph_index, stbtt_verte
    } else {
       // numberOfCounters == 0, do nothing
    }
-
+   
    *pvertices = vertices;
    return num_vertices;
 }
@@ -1761,9 +1761,30 @@ error:
    *num_contours = 0;
    return NULL;
 }
-
+/*
+#include <iostream>
+using namespace std;
+*/
 void stbtt_Rasterize(stbtt__bitmap *result, float flatness_in_pixels, stbtt_vertex *vertices, int num_verts, float scale_x, float scale_y, float shift_x, float shift_y, int x_off, int y_off, int invert, void *userdata)
 {
+	/*
+	static bool doneOnce = false;
+	
+	for (int i=0;i<num_verts;i++)
+		vertices[i].x = (long(vertices[i].x*scale_x*3+.5))/scale_x/3,
+		vertices[i].y = (long(vertices[i].y*scale_y*3+.5))/scale_y/3;
+		
+	if (!doneOnce)
+	{
+		cout << scale_x << " x " << scale_y << endl;
+		for (int i=0;i<num_verts;i++)
+			cout<<vertices[i].x<<" "<<vertices[i].y<<" _ ",
+			cout<<vertices[i].cx<<" "<<vertices[i].cy<<endl;
+			
+		doneOnce = true;
+	}
+	*/
+	
    float scale = scale_x > scale_y ? scale_y : scale_x;
    int winding_count, *winding_lengths;
    stbtt__point *windings = stbtt_FlattenCurves(vertices, num_verts, flatness_in_pixels / scale, &winding_lengths, &winding_count, userdata);
@@ -1834,10 +1855,8 @@ void stbtt_MakeGlyphBitmapSubpixel(const stbtt_fontinfo *info, unsigned char *ou
    gbm.h = out_h;
    gbm.stride = out_stride;
    
-
    if (gbm.w && gbm.h)
       stbtt_Rasterize(&gbm, .35f, vertices, num_verts, scale_x, scale_y, shift_x, shift_y, ix0,iy0, 1, info->userdata);
-   
 
    STBTT_free(vertices, info->userdata);
 }

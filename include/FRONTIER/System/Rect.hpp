@@ -152,6 +152,16 @@ namespace fm
 		bool intersects(const rect<T> &other,rect<T> &intersection) const;
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the middle point of the rectangle
+		///
+		/// Equals to pos+size/2
+		///
+		/// @return The middle point
+		///
+		/////////////////////////////////////////////////////////////
+		vector2<T> midpt() const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Expand the rectangle to contain @a p
 		///
 		/// @param p This point will be in the rectangle after the call

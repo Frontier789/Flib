@@ -14,31 +14,40 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_WINDOW_MODULE_HPP_INCLUDED
-#define FRONTIER_WINDOW_MODULE_HPP_INCLUDED
+#ifndef FRONTIER_MATH_INL_INCLUDED
+#define FRONTIER_MATH_INL_INCLUDED
 
-////////////////////////////////////////////////////////////
-/// @defgroup Window Window module
-///
-/// This module defines platform-specific and
-/// wrapper classes for managing windows and OpenGL Contexts
-///
-////////////////////////////////////////////////////////////
+#include <FRONTIER/System/macros/dont_include_inl_begin>
+#include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/macros/dont_include_inl_end>
 
+#include <FRONTIER/System/Math.hpp>
 
-/////////////////////////////////////////////////////////////
-///
-/// 	@brief Namespace that holds window and OpenGL Context managing classes
-///
-/////////////////////////////////////////////////////////////
-namespace fw
+namespace fm
 {
+	/////////////////////////////////////////////////////////////
+	namespace math
+	{
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		inline const T &min(const T &left,const T &right)
+		{
+			if (left < right)
+				return left;
 
+			return right;
+		}
+
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		inline const T &max(const T &left,const T &right)
+		{
+			if (left > right)
+				return left;
+
+			return right;
+		}
+	}
 }
 
-#include <FRONTIER/Window/GLContext.hpp>
-#include <FRONTIER/Window/Window.hpp>
-#include <FRONTIER/Window/Event.hpp>
-#include <FRONTIER/Window/FwLog.hpp>
-
-#endif // FRONTIER_WINDOW_MODULE_HPP_INCLUDED
+#endif // FRONTIER_MATH_INL_INCLUDED

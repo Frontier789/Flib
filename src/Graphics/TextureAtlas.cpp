@@ -75,7 +75,7 @@ namespace fg
 			}
 
 			/////////////////////////////////////////////////////////////
-			Node *insert(fm::vec2s rctSize,const fm::vec2s &imgSize)
+			Node *insert(const fm::vec2s &rctSize,const fm::vec2s &imgSize)
 			{
 				Node *best = fm::nullPtr;
 				findBest(rctSize,imgSize,best);
@@ -86,7 +86,7 @@ namespace fg
 			}
 
 			/////////////////////////////////////////////////////////////
-			void findBest(fm::vec2s rctSize,const fm::vec2s &imgSize,Node *&best)
+			void findBest(const fm::vec2s &rctSize,const fm::vec2s &imgSize,Node *&best)
 			{
 				// if not a leaf, continue recursion
 				if (left || right)
@@ -121,7 +121,7 @@ namespace fg
 					best = this;
 			}
 
-			void split(fm::vec2 rctSize,const fm::vec2s &imgSize)
+			void split(const fm::vec2 &rctSize,const fm::vec2s &imgSize)
 			{
 				fm::vec2 freeSpace = getRealSize(imgSize);
 
@@ -190,7 +190,7 @@ namespace fg
 		}
 		
 		/////////////////////////////////////////////////////////////
-		Glyph TextureAtlasImpl::upload(const fg::Image &img,const fm::vec2s &midpt)
+		Glyph TextureAtlasImpl::upload(const fg::Image &img,const fm::vec2 &leftdown)
 		{
 			Node *inserted = fm::nullPtr;
 			fm::vec2s size = img.getSize();
@@ -209,7 +209,7 @@ namespace fg
 			// upload image
 			m_tex.update(img,inserted->rct.pos);
 			
-			return Glyph(&m_tex,inserted->rct.pos,size,midpt);
+			return Glyph(&m_tex,inserted->rct.pos,size,leftdown);
 		}
 		
 		/////////////////////////////////////////////////////////////
@@ -231,7 +231,7 @@ namespace fg
 			{
 				// there is a rect, a vec2 and a MappedType in glyphPoints with give stride
 				fm::rect2s *rectPtr = (fm::rect2s*)((char*)glyphPoints + stride*i);
-				fm::vec2s *midPtPtr = ( fm::vec2s*)((char*)glyphPoints + stride*i + sizeof(fm::rect2s));
+				fm::vec2   *leftdownPtr = (fm::vec2*)((char*)glyphPoints + stride*i + sizeof(fm::rect2s));
 				
 				// copy the important part of the image
 				fg::Image img;
@@ -255,7 +255,7 @@ namespace fg
 				m_tex.update(img,inserted->rct.pos);
 				
 				// store created glyph
-				ret[i] = Glyph(&m_tex,inserted->rct.pos,size,*midPtPtr);
+				ret[i] = Glyph(&m_tex,inserted->rct.pos,size,*leftdownPtr);
 			}
 			
 			return ret;

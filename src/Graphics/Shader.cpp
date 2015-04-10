@@ -385,6 +385,8 @@ namespace fg
 	CREATE_SET_UNIFORM((const std::string &name,const fm::vec2 &v),glUniform2f(location,v.x,v.y))
 	CREATE_SET_UNIFORM((const std::string &name,const fm::vec3 &v),glUniform3f(location,v.x,v.y,v.z))
 	CREATE_SET_UNIFORM((const std::string &name,const fm::vec4 &v),glUniform4f(location,v.x,v.y,v.z,v.w))
+
+	CREATE_SET_UNIFORM((const std::string &name,const fg::Color &c),glUniform4f(location,c.r/255.f,c.g/255.f,c.b/255.f,c.a/255.f))
 	               
 	////////////////////////////////////////////////////////////       
 	Shader::reference Shader::setUniform(const std::string &name,const fm::mat3 &m,fm::MATRIX::StorageOrder storeOrder)
@@ -504,6 +506,12 @@ namespace fg
 		}
 		return *this;
     }
+	
+	/////////////////////////////////////////////////////////////
+	Shader::reference Shader::setAttribPointer(const std::string &name,const fg::Color *pointer,unsigned int stride)
+	{
+		return setAttribPointer(name,fg::Color::components,fg::is_GLDataType<fg::Color::component_type>::enumVal,false,pointer,stride);
+	}
 
 	////////////////////////////////////////////////////////////
     bool Shader::isAvailable()

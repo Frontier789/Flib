@@ -42,6 +42,14 @@ namespace fm
 		enum {
 			components = 3u ///< Public value indicating the amount of component_type's in the class
 		};
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Anonymous union holding the value of first dimension
+		///
+		/// x and r refer to the same memory region with the same type
+		/// thus they are interchangeable
+		///
+		/////////////////////////////////////////////////////////////
 		union {
 
 			///
@@ -57,8 +65,15 @@ namespace fm
 			///
 			T r;
 
-		}; ///< Anonymous union holding the value of first dimension
+		};
 
+		/////////////////////////////////////////////////////////////
+		/// @brief Anonymous union holding the value of second dimension
+		///
+		/// y and g refer to the same memory region with the same type
+		/// thus they are interchangeable
+		///
+		/////////////////////////////////////////////////////////////
 		union {
 
 			///
@@ -74,8 +89,15 @@ namespace fm
 			///
 			T g;
 
-		}; ///< Anonymous union holding the value of second dimension
+		};
 
+		/////////////////////////////////////////////////////////////
+		/// @brief Anonymous union holding the value of third dimension
+		///
+		/// z and b refer to the same memory region with the same type
+		/// thus they are interchangeable
+		///
+		/////////////////////////////////////////////////////////////
 		union {
 
 			///
@@ -91,7 +113,7 @@ namespace fm
 			///
 			T b;
 
-		}; ///< Anonymous union holding the value of third dimension
+		};
 
 
 		/////////////////////////////////////////////////////////////
@@ -141,7 +163,7 @@ namespace fm
 		///
 		/// This constructor sets the z coordinate to Z and
 		/// uses @a other to fill x and y
-		/// 
+		///
 		/// @param other 2D vector to construct from
 		///
 		/////////////////////////////////////////////////////////////
@@ -153,7 +175,7 @@ namespace fm
 		///
 		/// This constructor sets the z coordinate to Z and
 		/// uses @a other to fill x and y
-		/// 
+		///
 		/// @param other 2D vector to construct from
 		/// @param Z The z coordinate
 		///
@@ -249,7 +271,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Project the vector to @a target
 		///
-		/// target * (v <B>Â·</B> target) / |v|^2
+		/// target * (v <B>·</B> target) / |v|^2
 		///
 		/// @param target The vector to project to
 		///
@@ -261,7 +283,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Project the vector to a plane
 		///
-		/// target - target * (v <B>Â·</B> target) / |v|^2
+		/// target - target * (v <B>·</B> target) / |v|^2
 		///
 		/// @param normal the normal vector of the plane
 		///
@@ -273,7 +295,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Reflect the vector on @a target
 		///
-		/// v * (v <B>Â·</B> target) / |v|^2 - v
+		/// v * (v <B>·</B> target) / |v|^2 - v
 		///
 		/// @param target The vector to reflect on
 		///
@@ -687,9 +709,10 @@ namespace fm
 #endif
 
 	typedef vector3<float> 	      vec3;
+	typedef vector3<int>   	      vec3i;
+	typedef vector3<bool>         vec3b;
 	typedef vector3<float> 	      vec3f;
 	typedef vector3<double>       vec3d;
-	typedef vector3<int>   	      vec3i;
 	typedef vector3<unsigned int> vec3u;
 
 }

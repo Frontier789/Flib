@@ -35,13 +35,13 @@ namespace fw
 	}
 	
 	////////////////////////////////////////////////////////////
-	Event::EventData::EventData(KeyboardEvent key)     : key(key)     {}
-	Event::EventData::EventData(ButtonEvent mouse)     : mouse(mouse) {}
-	Event::EventData::EventData(MouseEvent pos)        : pos(pos)     {}
-	Event::EventData::EventData(ResizeEvent size)      : size(size)   {}
-	Event::EventData::EventData(TextEvent text)        : text(text)   {}
-	Event::EventData::EventData(MouseWheelEvent wheel) : wheel(wheel) {}
-	Event::EventData::EventData(DropEvent drop)        : drop(drop)   {}
+	Event::EventData::EventData(KeyboardEvent key)     : key(key)       {}
+	Event::EventData::EventData(ButtonEvent mouse)     : mouse(mouse)   {}
+	Event::EventData::EventData(MotionEvent motion)    : motion(motion) {}
+	Event::EventData::EventData(ResizeEvent size)      : size(size)     {}
+	Event::EventData::EventData(TextEvent text)        : text(text)     {}
+	Event::EventData::EventData(MouseWheelEvent wheel) : wheel(wheel)   {}
+	Event::EventData::EventData(DropEvent drop)        : drop(drop)     {}
 	
 	////////////////////////////////////////////////////////////
 	Event::Event() : type(Empty)
@@ -58,13 +58,13 @@ namespace fw
 	////////////////////////////////////////////////////////////
 	Event::Event(Event::EventType type,EventData data) : type(type)
 	{
-		key   = data.key;
-		mouse = data.mouse;
-		pos   = data.pos;
-		size  = data.size;
-		text  = data.text;
-		wheel = data.wheel;
-		drop  = data.drop;
+		key    = data.key;
+		mouse  = data.mouse;
+		motion = data.motion;
+		size   = data.size;
+		text   = data.text;
+		wheel  = data.wheel;
+		drop   = data.drop;
 	}
 	
 	////////////////////////////////////////////////////////////

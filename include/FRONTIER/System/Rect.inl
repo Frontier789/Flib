@@ -144,6 +144,13 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
+	inline vector2<T> rect<T>::midpt() const
+	{
+		return pos+size/2;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
 	inline rect<T> &rect<T>::extend(const vector2<T> &p)
 	{
 		if (size.w > T(0.0))
@@ -210,4 +217,27 @@ namespace fm
 		return pos!=other.pos || size!=other.size;
 	}
 }
+
+namespace std
+{
+    template<typename,typename>
+    class basic_ostream;
+    template<typename,typename>
+    class basic_istream;
+    template<typename>
+    class char_traits;
+}
+
+template<class T>
+inline std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_ostream<char, std::char_traits<char> > &out, const fm::rect<T> &rct)
+{
+	return out<<rct.pos<<' '<<rct.size;
+}
+
+template<class T>
+inline std::basic_istream<char, std::char_traits<char> > &operator>>(std::basic_istream<char, std::char_traits<char> > &in, fm::rect<T> &rct)
+{
+	return in>>rct.pos>>rct.size;
+}
+
 #endif // FRONTIER_RECT_INL_INCLUDED

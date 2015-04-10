@@ -37,7 +37,7 @@ namespace fw
 								GLX_ALPHA_SIZE,    m_settings.bitsPerPixel/4,
 								GLX_DEPTH_SIZE,    m_settings.depthBits,
 								GLX_STENCIL_SIZE,  m_settings.stencilBits,
-								GLX_DRAWABLE_TYPE, m_pbuf ? GLX_PIXMAP_BIT : GLX_WINDOW_BIT,
+								GLX_DRAWABLE_TYPE, m_win ? GLX_WINDOW_BIT : GLX_PIXMAP_BIT,
 								None};
 
 			int count;

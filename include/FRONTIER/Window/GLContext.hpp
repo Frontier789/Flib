@@ -20,6 +20,7 @@
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/Graphics/Image.hpp>
 #define FRONTIER_GLCONTEXT
 
 namespace fm
@@ -92,32 +93,32 @@ namespace fw
 			typedef Settings &reference;
 			typedef const Settings &const_reference;
 
-			unsigned char bitsPerPixel; ///< The number of bits describing a pixel (usually 32)
-			unsigned char depthBits;    ///< The number of bits holding the depth value
-			unsigned char stencilBits;  ///< The number of stencil bits
 			unsigned char majorVersion; ///< The major OpenGL version
 			unsigned char minorVersion; ///< The minor OpenGL version
 			bool compatiblityProfile;   ///< Indicates that the context is backward compatible
+			unsigned char bitsPerPixel; ///< The number of bits describing a pixel (usually 32)
+			unsigned char depthBits;    ///< The number of bits holding the depth value
+			unsigned char stencilBits;  ///< The number of stencil bits
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Default constructor
 			///
 			/// If an attribute is 0 it means default value
 			///
+			/// @param majorVersion The major OpenGL version
+			/// @param minorVersion The minor OpenGL version
 			/// @param bitsPerPixel The number of bits describing a pixel (usually 32)
 			/// @param depthBits    The number of bits holding the depth value
 			/// @param stencilBits  The number of stencil bits
-			/// @param majorVersion The major OpenGL version
-			/// @param minorVersion The minor OpenGL version
 			/// @param compatiblityProfile Indicates that the context is backward compatible
 			///
 			/////////////////////////////////////////////////////////////
-			Settings(unsigned char bitsPerPixel = 32,
-					 unsigned char depthBits    = 24,
-					 unsigned char stencilBits  = 8,
-					 unsigned char majorVersion = 4,
+			Settings(unsigned char majorVersion = 4,
 					 unsigned char minorVersion = 5,
-					 bool compatiblityProfile   = true);
+					 bool compatiblityProfile   = true,
+					 unsigned char bitsPerPixel = 32,
+					 unsigned char depthBits    = 24,
+					 unsigned char stencilBits  = 8);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Decreases the OpenGL version AND keeps it valid (max knwown is 4.5)
@@ -296,7 +297,7 @@ namespace fw
 		/// @param color The new clear-color
 		/// 
 		/////////////////////////////////////////////////////////////
-		void setClearColor(const fm::vector4<float> &color);
+		static void setClearColor(const fm::vector4<float> &color);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the clearing depth used by the currently active context
@@ -304,7 +305,7 @@ namespace fw
 		/// @param depth The new clearing depth
 		/// 
 		/////////////////////////////////////////////////////////////
-		void setClearDepth(float depth);
+		static void setClearDepth(float depth);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Clears the specified buffers of the currently active context
@@ -316,7 +317,7 @@ namespace fw
 		/// @see setClearColor
 		/// 
 		/////////////////////////////////////////////////////////////
-		void clear(bool colorBuffer = true,bool depthBuffer = false,bool stencilBuffer = false);
+		static void clear(bool colorBuffer = true,bool depthBuffer = false,bool stencilBuffer = false);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the blending mode of the current context
@@ -326,7 +327,7 @@ namespace fw
 		/// @see BlendMode
 		/// 
 		/////////////////////////////////////////////////////////////
-		void setBlend(BlendMode mode);
+		static void setBlend(BlendMode mode);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the depthtest mode of the current context
@@ -336,7 +337,23 @@ namespace fw
 		/// @see DepthTestMode
 		/// 
 		/////////////////////////////////////////////////////////////
-		void setDepthTest(DepthTestMode mode);
+		static void setDepthTest(DepthTestMode mode);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy the content of the currently bound render target to the cpu
+		/// 
+		/// OpenGL uses a coordinate system with origin at the lower-left corner
+		/// so flipping the image is desireable if a coordinate system with origin at
+		/// the upper left corner is used
+		/// 
+		/// @param pos The coordinates of the rectangle to be read
+		/// @param size The size of the rectangle to be read
+		/// @param flip If true the image will be flipped vertically
+		/// 
+		/// @return The read Image
+		/// 
+		/////////////////////////////////////////////////////////////
+		static fg::Image capture(const fm::vec2s &pos,const fm::vec2s &size,bool flip = true);
 
 		friend class priv::theSharedContextInitializer;
 	};

@@ -554,15 +554,31 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Image Image::scale(fm::Size w,fm::Size h)
+	Image Image::scale(fm::Size w,fm::Size h,bool linearFilter)
 	{
 		Image ret;
 		ret.create(w,h);
-		if (!stbir_resize_uint8((unsigned char*)&m_pixels[0],m_sizeW,m_sizeH,0,
-								(unsigned char*)&ret.m_pixels[0],w,h,0,
-								4))
-			return Image();
-        
+
+		if (linearFilter)
+		{
+			// use stb's image resize
+			if (!stbir_resize_uint8((unsigned char*)&m_pixels[0],m_sizeW,m_sizeH,0,
+									(unsigned char*)&ret.m_pixels[0],w,h,0,
+									4))
+				return Image();		
+		}
+		else
+		{
+			// simple nearest neighbour interpolation
+			float rw = float(m_sizeW)/w;
+			float rh = float(m_sizeH)/h;
+
+			for (fm::Size x=0;x<w;x++)
+				for (fm::Size y=0;y<h;y++)
+					ret.setPixel(x,y,getPixel(x*rw,y*rh));
+		}
+
+		
 		return ret;
 	}
 	

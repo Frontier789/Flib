@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Wapi/fwWapiPrintLastError.hpp>
 #include <FRONTIER/Window/Wapi/WapiWindow.hpp>
+#include <FRONTIER/System/macros/LOCK_MUTEX.h>
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
@@ -291,6 +292,7 @@ namespace fw
 				// the mouse left the window
 				case WM_MOUSELEAVE:
 				{
+					// post leave event
 					m_cursorInside = false;
 					Event ev(Event::MouseLeft);
 					postEvent(ev);
@@ -317,23 +319,27 @@ namespace fw
 
 					if (!m_cursorInside)
 					{
+						// ask windows to send notification when mouse leaves
 						TRACKMOUSEEVENT tme;
 						tme.cbSize = sizeof(TRACKMOUSEEVENT);
 						tme.dwFlags = TME_LEAVE;
 						tme.dwHoverTime = HOVER_DEFAULT;
 						tme.hwndTrack = m_hwnd;
 						TrackMouseEvent(&tme);
-
+						
+						// the mouse came inside
 						m_cursorInside = true;
 
-						Event event(Event::MouseEntered);
-						postEvent(event);
+						Event ev(Event::MouseEntered);
+						postEvent(ev);
 					}
-
+				
+					// post move event
 					Event ev(Event::MouseMoved);
-					ev.pos.x = ((int)(short)LOWORD(lParam));
-					ev.pos.y = ((int)(short)HIWORD(lParam));
+					ev.motion.x = ((int)(short)LOWORD(lParam));
+					ev.motion.y = ((int)(short)HIWORD(lParam));
 					postEvent(ev);
+					
 					return 0;
 				}
 
@@ -350,7 +356,7 @@ namespace fw
 							m_lastDown = wParam;
 					}
 					Event ev(Event::KeyPressed);
-					ev.key.code = keyFromVK(wParam,lParam);
+					ev.key.code  = keyFromVK(wParam,lParam);
 					ev.key.ctrl  = GetKeyState(VK_CONTROL);
 					ev.key.alt   = GetKeyState(VK_MENU);
 					ev.key.shift = GetKeyState(VK_SHIFT);
@@ -724,8 +730,11 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		unsigned int Window::m_windowCount = 0;
 
+	#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 		////////////////////////////////////////////////////////////
 		fm::Mutex Window::m_windowCountMutex;
+	#endif
+
 
 		////////////////////////////////////////////////////////////
 		Window::Window() : m_hwnd(NULL),
@@ -799,12 +808,12 @@ namespace fw
 			// decrease window count
 			if (m_isOpened)
 			{
-				m_windowCountMutex.lock();
+				FRONTIER_LOCK_MUTEX(m_windowCountMutex);
 				m_windowCount--;
 				if (!m_windowCount) // unregister class if no more windows
 					if (!UnregisterClassA(FRONTIER_WINDOWS_CLASS_NAME, GetModuleHandle(NULL)))
 						fw::WapiPrintLastError(fw_log,UnregisterClassA);
-				m_windowCountMutex.unLock();
+				FRONTIER_UNLOCK_MUTEX(m_windowCountMutex);
 
 				m_isOpened = false;
 			}
@@ -891,11 +900,11 @@ namespace fw
 				m_ownedParent = CreateWindowExA(0,FRONTIER_WINDOWS_CLASS_NAME,"invisible window",0,0,0,1,1,NULL,NULL,NULL,NULL);
 
 			// update windowCount
-			m_windowCountMutex.lock();
+			FRONTIER_LOCK_MUTEX(m_windowCountMutex);
 			if (m_windowCount==0)
 				createClass();
 			m_windowCount++;
-			m_windowCountMutex.unLock();
+			FRONTIER_UNLOCK_MUTEX(m_windowCountMutex);
 
 
 			// initialize the window

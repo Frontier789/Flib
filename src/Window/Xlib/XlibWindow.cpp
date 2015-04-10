@@ -143,6 +143,19 @@ namespace fw
 			if (param == XK_Alt_L)         return Keyboard::LAlt;  
 			if (param == XK_Alt_R)         return Keyboard::RAlt;  
 			if (param == XK_space)         return Keyboard::Space;
+
+			// treat numpad keys without numLock correctly
+			if (param == XK_KP_Insert)    return Keyboard::Numpad0;
+			if (param == XK_KP_End)       return Keyboard::Numpad1;
+			if (param == XK_KP_Down)      return Keyboard::Numpad2;
+			if (param == XK_KP_Page_Down) return Keyboard::Numpad3;
+			if (param == XK_KP_Left)      return Keyboard::Numpad4;
+			if (param == XK_KP_Begin)     return Keyboard::Numpad5;
+			if (param == XK_KP_Right)     return Keyboard::Numpad6;
+			if (param == XK_KP_Home)      return Keyboard::Numpad7;
+			if (param == XK_KP_Up)        return Keyboard::Numpad8;
+			if (param == XK_KP_Page_Up)   return Keyboard::Numpad9;
+			
 			
 			if (param >= XK_0 && param <= XK_9)
 				return Keyboard::Key(Keyboard::Num0+param-XK_0);
@@ -336,8 +349,8 @@ namespace fw
 			if (xev.type == MotionNotify)
 			{
 				Event ev(Event::MouseMoved);
-				ev.pos.x = xev.xmotion.x;
-				ev.pos.y = xev.xmotion.y;
+				ev.motion.x = xev.xmotion.x;
+				ev.motion.y = xev.xmotion.y;
 				postEvent(ev);
 			}
 

@@ -19,7 +19,11 @@
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Window/Event.hpp>
-#include <FRONTIER/System/Mutex.hpp>
+
+#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+	#include <FRONTIER/System/Mutex.hpp>
+#endif
+
 #define FRONTIER_WAPI_WINDOW
 
 #ifndef _WIN32_WINNT
@@ -62,7 +66,9 @@ namespace fw
 			typedef bool (*EventCallback)(Window *,unsigned int,fm::UintPtr,fm::IntPtr,fm::IntPtr*);
 			
 		private:
+		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 			static fm::Mutex m_windowCountMutex;      ///< Protects the m_windowCount to be accessed at the same time
+		#endif
 			static unsigned int m_windowCount;        ///< The number of windows open
 			bool cleanUp();      ///< Internal function used to free resources
 			bool createClass();  ///< Internal function used at initialization
@@ -83,7 +89,7 @@ namespace fw
 			bool m_decorActive;     ///< Indicates whether the window decoration is active
 			std::deque<Wapi::Window *> m_children; ///< The handles of the windows whose parent is this window
 			bool m_inSizeMoveMode; ///< True when the user is sizing or moving the window by hand
-			bool m_windowMoved; ///< True if the user moved the window
+			bool m_windowMoved;    ///< True if the user moved the window
 
 			static LRESULT CALLBACK forwardEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that deduces the object and calls handleEvent
 			LRESULT handleEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam); ///< Internal function that handles events of the window

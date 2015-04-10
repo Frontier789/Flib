@@ -43,6 +43,14 @@ namespace fm
 		enum {
 			components = 2u ///< Public value indicating the amount of component_type's in the class
 		};
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Anonymous union holding the value of first dimension
+		///
+		/// x, w and u refer to the same memory region with the same type
+		/// thus they are interchangeable
+		///
+		/////////////////////////////////////////////////////////////
 		union {
 
 			///
@@ -58,14 +66,21 @@ namespace fm
 			///
 			T w;
 			///
-			/// @brief real part
+			/// @brief first texture coordinate
 			///
-			/// use first dimension as real part
+			/// use first dimension as texture coordinate
 			///
-			T r;
+			T u;
 
-		}; ///< Anonymous union holding the value of first dimension
+		};
 
+		/////////////////////////////////////////////////////////////
+		/// @brief Anonymous union holding the value of second dimension
+		///
+		/// y, h and v refer to the same memory region with the same type
+		/// thus they are interchangeable
+		///
+		/////////////////////////////////////////////////////////////
 		union {
 
 			///
@@ -81,13 +96,13 @@ namespace fm
 			///
 			T h;
 			///
-			/// @brief imaginary part
+			/// @brief second texture coordinate
 			///
-			/// use second dimension as imaginary part
+			/// use second dimension as texture coordinate
 			///
-			T c;
+			T v;
 
-		}; ///< Anonymous union holding the value of second dimension
+		};
 
 
 		/////////////////////////////////////////////////////////////
@@ -165,6 +180,16 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		reference unsign();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Strips both coordinates from their signs
+		///
+		/// x=|x|, y=|y|
+		///
+		/// @return The unsigned vector
+		///
+		/////////////////////////////////////////////////////////////
+		vector2<T> unsign() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the length of the 2D vector
@@ -311,7 +336,7 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		vector2<T> perp() const;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the area of the vector
 		///
@@ -722,9 +747,10 @@ namespace fm
 #endif
 
 	typedef vector2<float> 	      vec2;
+	typedef vector2<int>   	      vec2i;
+	typedef vector2<bool>         vec2b;
 	typedef vector2<float> 	      vec2f;
 	typedef vector2<double>       vec2d;
-	typedef vector2<int>   	      vec2i;
 	typedef vector2<unsigned int> vec2u;
 
 }

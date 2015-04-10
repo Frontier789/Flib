@@ -57,6 +57,7 @@ namespace fm
 namespace fg
 {
 	class Texture;
+	class Color;
 
 	/////////////////////////////////////////////////////////////
 	///
@@ -264,7 +265,7 @@ namespace fg
 		/// fg_log and -1 is returned
 		///
 		/// After successfully calling this function
-		/// a call to glDrawArrays, glDrawElements or fg::draw family
+		/// a call to glDrawArrays or glDrawElements
 		/// with this shader program being bound will use
 		/// this data
 		///
@@ -291,7 +292,7 @@ namespace fg
 		/// fg_log and -1 is returned
 		///
 		/// After successfully calling this function
-		/// a call to glDrawArrays, glDrawElements or fg::draw family
+		/// a call to glDrawArrays or glDrawElements
 		/// with this shader program being bound will use
 		/// this data
 		///
@@ -320,7 +321,7 @@ namespace fg
 		/// fg_log and -1 is returned
 		///
 		/// After successfully calling this function
-		/// a call to glDrawArrays, glDrawElements or fg::draw family
+		/// a call to glDrawArrays or glDrawElements
 		/// with this shader program being bound will use
 		/// this data
 		///
@@ -351,7 +352,7 @@ namespace fg
 		/// fg_log and -1 is returned
 		///
 		/// After successfully calling this function
-		/// a call to glDrawArrays, glDrawElements or fg::draw family
+		/// a call to glDrawArrays or glDrawElements
 		/// with this shader program being bound will use
 		/// this data
 		///
@@ -362,7 +363,7 @@ namespace fg
 		/// @param type The type of data component (e.g. GL_FLOAT)
 		/// @param normalize Specify if the data should be normalized when accessed
 		/// @param pointer A pointer to the data
-		/// @param stride Byte offset between the beginning of two attributes
+		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
 		///
 		/// @return reference to itself
 		///
@@ -381,13 +382,13 @@ namespace fg
 		/// fg_log and -1 is returned
 		///
 		/// After successfully calling this function
-		/// a call to glDrawArrays, glDrawElements or fg::draw family
+		/// a call to glDrawArrays or glDrawElements
 		/// with this shader program being bound will use
 		/// this data
 		///
 		/// @param name The name of the attribute
 		/// @param pointer A pointer to the data
-		/// @param stride Byte offset between the beginning of two attributes
+		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
 		///
 		/// @return reference to itself
 		///
@@ -407,13 +408,13 @@ namespace fg
 		/// fg_log and -1 is returned
 		///
 		/// After successfully calling this function
-		/// a call to glDrawArrays, glDrawElements or fg::draw family
+		/// a call to glDrawArrays or glDrawElements
 		/// with this shader program being bound will use
 		/// this data
 		///
 		/// @param name The name of the attribute
 		/// @param pointer A pointer to the data stored in fm::vec2
-		/// @param stride Byte offset between the beginning of two attributes
+		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
 		///
 		/// @return reference to itself
 		///
@@ -433,13 +434,13 @@ namespace fg
 		/// fg_log and -1 is returned
 		///
 		/// After successfully calling this function
-		/// a call to glDrawArrays, glDrawElements or fg::draw family
+		/// a call to glDrawArrays or glDrawElements
 		/// with this shader program being bound will use
 		/// this data
 		///
 		/// @param name The name of the attribute
 		/// @param pointer A pointer to the data stored in fm::vec3
-		/// @param stride Byte offset between the beginning of two attributes
+		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
 		///
 		/// @return reference to itself
 		///
@@ -459,19 +460,44 @@ namespace fg
 		/// fg_log and -1 is returned
 		///
 		/// After successfully calling this function
-		/// a call to glDrawArrays, glDrawElements or fg::draw family
+		/// a call to glDrawArrays or glDrawElements
 		/// with this shader program being bound will use
 		/// this data
 		///
 		/// @param name The name of the attribute
 		/// @param pointer A pointer to the data stored in fm::vec4
-		/// @param stride Byte offset between the beginning of two attributes
+		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
 		///
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
 		template<class T>
 		reference setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride=0);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the pointer data associated with one vec4 attributes
+		///
+		/// If the shader program is invalid no error will be prompted
+		/// and the shader program will not be modified
+		///
+		/// if @a name does not
+		/// correspond to an active attribute in
+		/// the shader program an error is prompted to
+		/// fg_log and -1 is returned
+		///
+		/// After successfully calling this function
+		/// a call to glDrawArrays or glDrawElements
+		/// with this shader program being bound will use
+		/// this data
+		///
+		/// @param name The name of the attribute
+		/// @param pointer A pointer to the data stored in fg::Color
+		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
+		///
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference setAttribPointer(const std::string &name,const fg::Color *pointer,unsigned int stride=0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a float uniform
@@ -773,6 +799,25 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		reference setUniform(const std::string &name,const fm::mat4 &m,fm::MATRIX::StorageOrder storeOrder = fm::MATRIX::RowMajor);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of color uniform (vec4)
+		///
+		/// If the shader program is invalid no error will be prompted
+		/// and the shader program will not be modified
+		///
+		/// if @a name does not
+		/// correspond to an active uniform in
+		/// the shader program an error is prompted to
+		/// fg_log and -1 is returned
+		///
+		/// @param name The name of the uniform
+		/// @param c The value of the uniform
+		///
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference setUniform(const std::string &name,const Color &c);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an sampler2D uniform

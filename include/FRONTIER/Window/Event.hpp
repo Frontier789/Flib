@@ -268,16 +268,16 @@ namespace fw
 	
 	/////////////////////////////////////////////////////////////
 	/// 
-	/// 	@brief Simple class used to store data about a MouseMoved event
+	/// 	@brief Simple class used to store data about MouseMoved events
 	///
 	/// @ingroup Window
 	///
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API MouseEvent
+	class FRONTIER_API MotionEvent
 	{
 	public:
-		int x; ///< X coordinate of the cursor
-		int y; ///< Y coordinate of the cursor
+		int x;  ///< X coordinate of the cursor
+		int y;  ///< Y coordinate of the cursor
 	};
 	
 	/////////////////////////////////////////////////////////////
@@ -308,8 +308,8 @@ namespace fw
 	class FRONTIER_API ResizeEvent
 	{
 	public:
-		unsigned int w; ///< new width
-		unsigned int h; ///< new height
+		unsigned int w; ///< The new width
+		unsigned int h; ///< The new height
 	};
 	
 	/////////////////////////////////////////////////////////////
@@ -372,8 +372,8 @@ namespace fw
 			MouseWheelMoved, ///< The mouse wheel was moved (The wheel field can be used to track further information)
 			MouseMoved,      ///< The cursor is moved inside the window is released (The pos field can be used to track further information)
 			FileDrop,        ///< The user dropped file(s) into the window
-			MouseLeft,       ///< The mouse left the window
-			MouseEntered     ///< The mouse entered the window
+			MouseLeft,       ///< The mouse left the window (the motion field can be used to track further information)
+			MouseEntered     ///< The mouse entered the window (the motion field can be used to track further information)
 		};
 		
 		EventType type; ///< The type of the event
@@ -385,12 +385,12 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		union {
-			KeyboardEvent   key;   ///< used with KeyPressed, KeyReleased events
-			ButtonEvent     mouse; ///< used with ButtonPressed, ButtonReleased events
-			MouseEvent      pos;   ///< used with MouseMoved event
-			ResizeEvent     size;  ///< used with Resize event
-			TextEvent       text;  ///< used with TextEntered event
-			MouseWheelEvent wheel; ///< used with MouseWheelMoved event
+			KeyboardEvent   key;    ///< used with KeyPressed, KeyReleased events
+			ButtonEvent     mouse;  ///< used with ButtonPressed, ButtonReleased events
+			MotionEvent     motion; ///< used with MouseMoved event
+			ResizeEvent     size;   ///< used with Resize event
+			TextEvent       text;   ///< used with TextEntered event
+			MouseWheelEvent wheel;  ///< used with MouseWheelMoved event
 		};
 		
 		DropEvent drop;  ///< used with FileDrop event
@@ -403,24 +403,23 @@ namespace fw
 		{
 		public:
 			union {
-				KeyboardEvent   key;   ///< used with KeyPressed KeyReleased events
-				ButtonEvent     mouse; ///< used with ButtonPressed ButtonReleased events
-				MouseEvent      pos;   ///< used with MouseMoved event
-				ResizeEvent     size;  ///< used with Resize event
-				TextEvent       text;  ///< used with TextEntered
-				MouseWheelEvent wheel; ///< used with MouseWheelMoved event
+				KeyboardEvent   key;    ///< used with KeyPressed KeyReleased events
+				ButtonEvent     mouse;  ///< used with ButtonPressed ButtonReleased events
+				MotionEvent     motion; ///< used with MouseMoved event
+				ResizeEvent     size;   ///< used with Resize event
+				TextEvent       text;   ///< used with TextEntered
+				MouseWheelEvent wheel;  ///< used with MouseWheelMoved event
 			};
 			
-			DropEvent drop;  ///< used with FileDrop event
+			DropEvent drop; ///< used with FileDrop event
 
-			
 			EventData(KeyboardEvent key);     ///< Set up the union to hold data for KeyPressed KeyReleased events
 			EventData(ButtonEvent mouse);     ///< Set up the union to hold data for ButtonPressed ButtonReleased events
-			EventData(MouseEvent pos);        ///< Set up the union to hold data for MouseMoved event
+			EventData(MotionEvent motion);    ///< Set up the union to hold data for MouseMoved event
 			EventData(ResizeEvent size);      ///< Set up the union to hold data for Resize event
 			EventData(TextEvent text);        ///< Set up the union to hold data for TextEntered
 			EventData(MouseWheelEvent wheel); ///< Set up the union to hold data for MouseWheelMoved event
-			EventData(DropEvent drop); ///< Set up the union to hold data for FileDrop event
+			EventData(DropEvent drop);        ///< Set up the union to hold data for FileDrop event
 		};
 		
 		/////////////////////////////////////////////////////////////

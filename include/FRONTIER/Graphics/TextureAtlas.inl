@@ -24,9 +24,9 @@ namespace fg
 {
 	/////////////////////////////////////////////////////////////
 	template<class MT,class Cp>
-	inline TextureAtlas<MT,Cp>::MapPoint::MapPoint(const fg::Image *img,MT point,fm::vec2s midpt) : img(img),
-																									point(point),
-																									midpt(midpt)
+	inline TextureAtlas<MT,Cp>::MapPoint::MapPoint(const fg::Image *img,MT point,const fm::vec2 &leftdown) : img(img),
+																											 point(point),
+																											 leftdown(leftdown)
 	{
 
 	}
@@ -40,9 +40,9 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class MT,class Cp>
-	inline TextureAtlas<MT,Cp>::GlyphPoint::GlyphPoint(fm::rect2s rct,fm::vec2s midpt,MT point) : rct(rct),
-																								  midpt(midpt),
-																								  point(point)
+	inline TextureAtlas<MT,Cp>::GlyphPoint::GlyphPoint(const fm::rect2s &rct,const fm::vec2 &leftdown,MT point) : rct(rct),
+																												  leftdown(leftdown),
+																												  point(point)
 	{
 
 	}
@@ -79,7 +79,7 @@ namespace fg
 			~TextureAtlasImpl();
 
 			/////////////////////////////////////////////////////////////
-			Glyph upload(const fg::Image &img,const fm::vec2s &midpt);
+			Glyph upload(const fg::Image &img,const fm::vec2 &leftdown);
 
 			/////////////////////////////////////////////////////////////
 			void reset();
@@ -121,9 +121,9 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class MT,class Cp>
-	inline Glyph TextureAtlas<MT,Cp>::upload(const fg::Image &img,const MT &point,const fm::vec2s &midpt)
+	inline Glyph TextureAtlas<MT,Cp>::upload(const fg::Image &img,const MT &point,const fm::vec2 &leftdown)
 	{
-		return m_glyphTable[point] = m_impl->upload(img,midpt);
+		return m_glyphTable[point] = m_impl->upload(img,leftdown);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -161,7 +161,7 @@ namespace fg
 		// upload each point
 		for (fm::Size i=0;i<pointCount;i++)
 			if (points[i].img)
-				upload(*points[i].img,*points[i].point,*points[i].midpt);
+				upload(*points[i].img,*points[i].point,*points[i].leftdown);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -200,7 +200,7 @@ namespace fg
 		{
 			const Glyph &glyph = it->second;
 			data[i].rct = fm::rect2s(glyph.pos,glyph.size);
-			data[i].midpt = glyph.leftdown;
+			data[i].leftdown = glyph.leftdown;
 			data[i].point = it->first;
 		}
 
