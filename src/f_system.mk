@@ -3,6 +3,7 @@ CPP_FILES_SYSTEM := $(wildcard $(PATH_TO_SRC)/System/*.cpp)
 STATIC_OBJ_FILES_SYSTEM  := $(addprefix $(LIBPATH)/static/System/,$(notdir $(CPP_FILES_SYSTEM:.cpp=.o)))
 DYNAMIC_OBJ_FILES_SYSTEM := $(addprefix $(LIBPATH)/dynamic/System/,$(notdir $(CPP_FILES_SYSTEM:.cpp=.o)))
 
+# append targets
 ifeq ($(PLATFORM),Windows)
 	DYNAMIC_TARGETS+=$(LIBPATH)/f-system.dll $(LIBPATH)/libf-system-dll.a
 endif

@@ -46,8 +46,8 @@ namespace fg
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>
-#include <FRONTIER/Graphics/StaticText.hpp>
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
+#include <FRONTIER/Graphics/FontRenderer.hpp>
 #include <FRONTIER/Graphics/DepthTexture.hpp>
 #include <FRONTIER/Graphics/TextureAtlas.hpp>
 #include <FRONTIER/Graphics/RenderStates.hpp>

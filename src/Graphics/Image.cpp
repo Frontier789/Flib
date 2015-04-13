@@ -583,6 +583,12 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
+	Image Image::scale(const fm::vec2s &size,bool linearFilter)
+	{
+		return scale(size.w,size.h,linearFilter);
+	}
+	
+	/////////////////////////////////////////////////////////////
 	std::vector<Image> Image::loadMultipleImagesFromFile(const std::string &file)
 	{
 		std::ifstream in(file.c_str(),std::ios_base::binary);

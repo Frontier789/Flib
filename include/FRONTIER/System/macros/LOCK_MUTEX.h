@@ -22,13 +22,15 @@
 		#define FRONTIER_LOCK_MUTEX(mutex) (mutex).lock()
 	#else
 		#define FRONTIER_LOCK_MUTEX(mutex) (void)
+    #endif
 #endif
 
 // used to unlock mutexes if protecting shared variables is enabled
 // mutex needn't exist if FRONTIER_PROTECT_SHARED_VARIABLES is not defined
 #ifndef FRONTIER_UNLOCK_MUTEX(mutex)
 	#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-		#define FRONTIER_LOCK_UNMUTEX(mutex) (mutex).unLock()
+		#define FRONTIER_UNLOCK_MUTEX(mutex) (mutex).unLock()
 	#else
-		#define FRONTIER_LOCK_UNMUTEX(mutex) (void)
+		#define FRONTIER_UNLOCK_MUTEX(mutex) (void)
+    #endif
 #endif

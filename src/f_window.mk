@@ -3,6 +3,7 @@ CPP_FILES_WINDOW := $(wildcard $(PATH_TO_SRC)/Window/*.cpp)
 STATIC_OBJ_FILES_WINDOW  := $(addprefix $(LIBPATH)/static/Window/,$(notdir $(CPP_FILES_WINDOW:.cpp=.o)))
 DYNAMIC_OBJ_FILES_WINDOW := $(addprefix $(LIBPATH)/dynamic/Window/,$(notdir $(CPP_FILES_WINDOW:.cpp=.o)))
 
+# append targets
 ifeq ($(PLATFORM),Windows)
 	DYNAMIC_TARGETS+=$(LIBPATH)/f-window.dll $(LIBPATH)/libf-window-dll.a
 endif

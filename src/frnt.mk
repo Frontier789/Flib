@@ -31,6 +31,9 @@ include f_gl.mk
 #include Window submake
 include f_window.mk
 
+#include FreeType submake
+include f_freetype.mk
+
 #include Window submake
 include f_graphics.mk
 

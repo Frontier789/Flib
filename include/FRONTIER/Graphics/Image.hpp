@@ -389,6 +389,20 @@ namespace fg
 		Image scale(fm::Size w,fm::Size h,bool linearFilter = true);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Resize The image
+		///
+		/// If anything goes wrong this function returns NULL and
+		/// a description of the error is printed to fg_log
+		///
+		/// @param size The new size
+		/// @param linearFilter Iff true linear filtering is used (nearest neighbour otherwise)
+		///
+		/// @return The resized image
+		///
+		/////////////////////////////////////////////////////////////
+		Image scale(const fm::vec2s &size,bool linearFilter = true);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Get size of the image
 		///
 		/// @return The size of the image

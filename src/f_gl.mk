@@ -3,6 +3,7 @@ CPP_FILES_GL := $(wildcard $(PATH_TO_SRC)/GL/*.cpp)
 STATIC_OBJ_FILES_GL  := $(addprefix $(LIBPATH)/static/GL/,$(notdir $(CPP_FILES_GL:.cpp=.o)))
 DYNAMIC_OBJ_FILES_GL := $(addprefix $(LIBPATH)/dynamic/GL/,$(notdir $(CPP_FILES_GL:.cpp=.o)))
 
+# append targets
 ifeq ($(PLATFORM),Windows)
 	DYNAMIC_TARGETS+=$(LIBPATH)/f-gl.dll $(LIBPATH)/libf-gl-dll.a
 endif
