@@ -14,32 +14,52 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_METRICS_HPP_INCLUDED
-#define FRONTIER_METRICS_HPP_INCLUDED
-#include <FRONTIER/System/macros/API.h>
-#define FRONTIER_METRICS
+#ifndef FRONTIER_LOG_INL_INCLUDED
+#define FRONTIER_LOG_INL_INCLUDED
 
-namespace fg
+#include <FRONTIER/System/macros/dont_include_inl_begin>
+#include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/Vector3.hpp>
+#include <FRONTIER/System/Vector4.hpp>
+#include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/System/macros/dont_include_inl_end>
+
+namespace fm
 {
-	//////////////////////////////////
-	/// @brief This simple class holds some typical information about a font
-	///
-	/// @ingroup Graphics
-	/// 
-	//////////////////////////////////
-	class FRONTIER_API Metrics
-	{
-	public:
-		int maxH;    ///< The highest amount a glyph ascends above the baseline
-		int minH;    ///< The highest amount a glyph descends below the baseline (usually negative)
-		int lineGap; ///< The space between two rows (not always equal to maxH-minH)
-
 		/////////////////////////////////////////////////////////////
-		/// @brief Default constructor
-		///
+		template<class T>
+		Log::reference Log::operator<<(const fm::vector2<T> &vec)
+		{
+			return (*this)<<vec.x<<' '<<vec.y;
+		}
+		
 		/////////////////////////////////////////////////////////////
-		Metrics(int maxH=0,int minH=0,int lineGap=0);
-	};
+		template<class T>
+		Log::reference Log::operator<<(const fm::vector3<T> &vec)
+		{
+			return (*this)<<vec.x<<' '<<vec.y<<' '<<vec.z;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		Log::reference Log::operator<<(const fm::vector4<T> &vec)
+		{
+			return (*this)<<vec.x<<' '<<vec.y<<' '<<vec.z<<' '<<vec.w;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		template<class T,fm::Size W,fm::Size H>
+		Log::reference Log::operator<<(const fm::matrix<W,H,T> &mat)
+		{
+			for (fm::Size x=0;x<W;x++)
+				for (fm::Size y=0;y<H;y++)
+		            if (y+1==H && x+1<W)
+		                (*this)<<mat[x][y]<<'\n';
+					else
+		                (*this)<<mat[x][y]<<' ';
+			
+			return *this;
+		}
 }
-
-#endif // FRONTIER_METRICS_HPP_INCLUDED
+	
+#endif // FRONTIER_LOG_INL_INCLUDED

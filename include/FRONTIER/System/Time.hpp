@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -21,7 +21,6 @@
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
-	///
 	/// @brief Class used to represent the amount of some time
 	///
 	/////////////////////////////////////////////////////////////

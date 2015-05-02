@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -226,6 +226,16 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
         int hasUniform(const std::string &name);
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Enable/disable a given attribute pointer
+		/// 
+		/// @param name The name of the attribute
+		/// @param enable True to enable false to disable
+		/// 
+		/// 
+		/////////////////////////////////////////////////////////////
+		void enableAttribPointer(const std::string &name,bool enable = true);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Find the "id" of an attribute

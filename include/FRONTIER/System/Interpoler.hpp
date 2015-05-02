@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -22,9 +22,10 @@
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
-	///
-	/// 	@brief Templated virtual base class of the fm::Interpoler class
-	///
+	/// @brief Templated virtual base class of the fm::Interpoler class
+	/// 
+	/// @ingroup System
+	/// 
 	/////////////////////////////////////////////////////////////
 	template<class VAL,class T=double>
 	class Interpoler_Base
@@ -226,6 +227,8 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	/// @brief Indicates the type of the interpolation
 	/// 
+	/// @ingroup System
+	/// 
 	/////////////////////////////////////////////////////////////
 	enum InterpolerType { 
 		Polynomial,  ///< <a href="http://en.wikipedia.org/wiki/Polynomial_interpolation">Polynomial interpolations</a>
@@ -234,9 +237,8 @@ namespace fm
 	};
 
 	/////////////////////////////////////////////////////////////
-	///
-	/// 	@brief Templated class for using
-	///			   <a href="http://en.wikipedia.org/wiki/Interpolation">interpolations</a>
+	/// @brief Templated class for using
+	///		   <a href="http://en.wikipedia.org/wiki/Interpolation">interpolations</a>
 	/// 
 	/// @ingroup System
 	/// 

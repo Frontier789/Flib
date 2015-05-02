@@ -311,6 +311,20 @@ namespace fg
 		// on error location is -1
 		return location+1;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	void Shader::enableAttribPointer(const std::string &name,bool enable)
+	{
+		int location = getAttribLocation(name);
+		
+		if (location == -1)
+			return;
+			
+		if (enable)
+			glCheck(glEnableVertexAttribArray(location));
+		else
+			glCheck(glDisableVertexAttribArray(location));
+	}
 
 
 	////////////////////////////////////////////////////////////
@@ -347,8 +361,7 @@ namespace fg
 		
 		// insert into dictionary
 		if (location != -1)
-			m_attribs.insert(std::make_pair(name, location)),
-			glCheck(glEnableVertexAttribArray(location));
+			m_attribs.insert(std::make_pair(name, location));
 		
 		// on error location is -1
 		return location+1;
@@ -502,7 +515,8 @@ namespace fg
 			int location = getAttribLocation(name);
 			
 			if (location!=-1)
-				glCheck(glVertexAttribPointer(location,components,type,normalize,stride,pointer));			
+				enableAttribPointer(name,true),
+				glCheck(glVertexAttribPointer(location,components,type,normalize,stride,pointer));
 		}
 		return *this;
     }

@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -27,7 +27,9 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Holds fast approximations to mathematical functions
-	///
+	/// 
+	/// @ingroup System
+	/// 
 	/// These functions do not use any std:: function
 	/// The idea for square root and inv square root are from Quake III engine (see <a href="http://en.wikipedia.org/wiki/Fast_inverse_square_root">this article</a>)
 	/// Also the result is less precise than their std:: sibling

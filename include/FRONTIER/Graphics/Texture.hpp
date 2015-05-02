@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -22,6 +22,7 @@
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Rect.hpp>
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
@@ -31,19 +32,8 @@
 
 #define FRONTIER_TEXTURE
 
-namespace fm
-{
-	template<fm::Size,fm::Size,class>
-	class matrix;
-}
-
 namespace fg
 {
-	namespace priv
-	{
-		void FRONTIER_API defaultSetTextureMatrixFunc(const fm::matrix<4,4,float> &m);
-	}
-
 	/////////////////////////////////////////////////////////////
 	///
 	/// 	@brief Class used to handle OpenGL 2D textures
@@ -55,21 +45,11 @@ namespace fg
 		fm::vec2s m_size;	  ///< The requested size of the texture
 		bool m_isRepeated;	  ///< True if the texture is repeated after its bounds
 		bool m_isSmooth;	  ///< If true then linear interpolation is used on magnifying
-		static void (*m_setTexMat)(const fm::matrix<4,4,float> &m); ///< Function used to set the texture matrix
+		fm::mat4 m_pixToUnit; ///< The transformation used to convert pixels to units
 		virtual fm::Int32  getInternalFormat() const; ///< Internal function
-		virtual fm::Uint32 getAttachement() const; ///< Internal function
+		virtual fm::Uint32 getAttachement() const;    ///< Internal function
 		virtual fm::Uint32 getFormat() const; ///< Internal function
-		virtual fm::Uint32 getType() const; ///< Internal function
-	public:
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Indicate what coordinate system the texture is bound
-		///
-		/////////////////////////////////////////////////////////////
-		enum CoordinateSystem {
-			Normalized, ///< Texture coordinates are in range [0;1],[0;1]
-			Pixels		///< Texture coordinates are in range [0;w],[0;h]
-		};
+		virtual fm::Uint32 getType() const;   ///< Internal function
 
 	public:
 		typedef Texture &reference;
@@ -113,6 +93,17 @@ namespace fg
 		explicit Texture(const Image &img);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Create a OpenGL texture from an image in a file
+		///
+		/// This function sends the client-side data (the image)
+		/// to OpenGL
+		///
+		/// @param filename The file's name
+		///
+		/////////////////////////////////////////////////////////////
+		explicit Texture(const std::string &filename);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
 		///
 		/// Automatically deletes the OpenGL id
@@ -153,7 +144,7 @@ namespace fg
 		/// @return True if no error occured
 		///
 		/////////////////////////////////////////////////////////////
-		bool create(fm::vec2s size);
+		bool create(const fm::vec2s &size);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create a OpenGL texture from image
@@ -376,37 +367,11 @@ namespace fg
 		void bind() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Bind the texture for usage
-		///
-		/// This function uses the GL_TXTURE_2D target
-		/// This function calls fg::Texture::m_setTexMat
-		/// (can be modifed by changeSetTexMat) to set the texture matrix
-		///
-		/// @param coordinateSystem The used texture coordinate system
-		///
-		/////////////////////////////////////////////////////////////
-		void bind(CoordinateSystem coordinateSystem) const;
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Bind a texture for usage
 		///
 		/// This function uses the GL_TXTURE_2D target
 		/// This function calls fg::Texture::m_setTexMat
 		/// (can be modifed by changeSetTexMat) to set the texture matrix
-		/// If @a texture is NULL the actually bound texture will be
-		/// unbound
-		///
-		/// @param texture The texture to be bound (or NULL)
-		/// @param coordinateSystem The used texture coordinate system
-		///
-		/////////////////////////////////////////////////////////////
-		static void bind(const Texture *texture, CoordinateSystem coordinateSystem);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Bind a texture for usage
-		///
-		/// This function uses the GL_TXTURE_2D target
-		/// This function does not modify the texture matrix
 		/// If @a texture is NULL the actually bound texture will be
 		/// unbound
 		///
@@ -419,25 +384,22 @@ namespace fg
 		/// @brief Bind a texture for usage
 		///
 		/// This function uses the GL_TXTURE_2D target
-		/// This function calls fg::Texture::m_setTexMat
-		/// (can be modifed by changeSetTexMat) to set the texture matrix
-		///
-		/// @param texture The texture to be bound (or NULL)
-		/// @param coordinateSystem The used texture coordinate system
-		///
-		/////////////////////////////////////////////////////////////
-		static void bind(const Texture &texture, CoordinateSystem coordinateSystem);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Bind a texture for usage
-		///
-		/// This function uses the GL_TXTURE_2D target
 		/// This function does not modify the texture matrix
 		///
 		/// @param texture The texture to be bound (or NULL)
 		///
 		/////////////////////////////////////////////////////////////
 		static void bind(const Texture &texture);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the pixel-to-unit transformation for the texture
+		///
+		/// The texture is always 1x1 unit in size and left-up is 0;0
+		///
+		/// @return The transformation matrix
+		///
+		/////////////////////////////////////////////////////////////
+		const fm::mat4 &getPixToUnitMatrix() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the maximum width (same as max height) of a texture
@@ -464,17 +426,6 @@ namespace fg
 		fm::vec2 getRealSize() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Change the function used to modify the texture matrix
-		///
-		/// If @a newFunc is NULL then the default function fill be used
-		/// (which uses the fixed pipeline)
-		///
-		/// @param newFunc The new function
-		///
-		/////////////////////////////////////////////////////////////
-		static void changeSetTexMat(void (*newFunc)(const fm::matrix<4,4,float> &));
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Find out if the texture is valid
 		///
 		/// @return true iff the texture is valid
@@ -484,7 +435,7 @@ namespace fg
 
 	private:
 		/////////////////////////////////////////////////////////////
-		/// @brief Convert size to real size
+		/// @brief Convert size to an acceptable size
 		///
 		/// This function is private and used internally
 		///

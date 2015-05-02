@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_LOG_HPP_INCLUDED
 #define FRONTIER_LOG_HPP_INCLUDED
+#include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
 #define FRONTIER_LOG
 namespace std
@@ -42,10 +43,23 @@ namespace std
 }
 namespace fm
 {
+	template<class>
+	class vector2;
+	
+	template<class>
+	class vector3;
+	
+	template<class>
+	class vector4;
+	
+	template<fm::Size,fm::Size,class>
+	class matrix;
+	
 	/////////////////////////////////////////////////////////////
+	/// @brief A wrapper class around std::ostream it is mainly used to 
+	///		   log errors and warnings redirectibly from flib
 	///
-	/// 	@brief A wrapper class around std::ostream it is mainly used to 
-	///			   log errors and warnings redirectibly from flib
+	/// @ingroup System
 	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Log
@@ -302,6 +316,62 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		reference operator<<(const void *address);
 		
+		/////////////////////////////////////////////////////////////
+		/// @brief Overload of the << binary operator for vector2 type
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param vec The output vector
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		reference operator<<(const fm::vector2<T> &vec);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Overload of the << binary operator for vector3 type
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param vec The output vector
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		reference operator<<(const fm::vector3<T> &vec);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Overload of the << binary operator for vector4 type
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param vec The output vector
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		reference operator<<(const fm::vector4<T> &vec);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Overload of the << binary operator for matrix type
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param vec The output vector
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class T,fm::Size W,fm::Size H>
+		reference operator<<(const fm::matrix<W,H,T> &mat);
+		
 		
 		
 		
@@ -438,3 +508,7 @@ namespace fm
 
 
 #endif // FRONTIER_LOG_HPP_INCLUDED
+
+#ifndef FRONTIER_DONT_INCLUDE_INL
+	#include <FRONTIER/System/Log.inl>
+#endif

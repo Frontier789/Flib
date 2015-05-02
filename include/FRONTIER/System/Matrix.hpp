@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -19,6 +19,7 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_begin>
 
+#include <FRONTIER/System/Collector.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector2.hpp>
@@ -92,6 +93,18 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		matrix(const matrix<W,H,T> &mat);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct from a Collector
+		/// 
+		/// If @a col has less elements than W*H 
+		/// the leftout cells are filled with T()
+		/// 
+		/// @param col The collector
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T2,class Container>
+		matrix(const fm::Collector<T2,Container> &col);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Element access with bound check

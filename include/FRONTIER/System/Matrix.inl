@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -17,6 +17,7 @@
 #ifndef FRONTIER_MATRIX_INL_INCLUDED
 #define FRONTIER_MATRIX_INL_INCLUDED
 #include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/Collector.hpp>
 #include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>
@@ -63,6 +64,21 @@ namespace fm
 	inline matrix<W,H,T>::matrix()
 	{
 		reset();
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<fm::Size W,fm::Size H,class T>
+	template<class T2,class Container>
+	inline matrix<W,H,T>::matrix(const fm::Collector<T2,Container> &col)
+	{
+		reset(T());
+
+		fm::Size count = col.size();
+		typename Container::const_iterator it = col.begin();
+
+		C(W*H < count ? W*H : count)
+			m_data[i/H][i%H] = *it,
+			++it;
 	}
 
 
@@ -449,7 +465,7 @@ namespace fm
 		{
 			// unused
 			(void)storeOrder;
-			
+
 			float ret[]={x,0,0,0,
 						 0,y,0,0,
 						 0,0,z,0,
@@ -667,7 +683,7 @@ inline std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_
 	Cx(W)
 	{
 		Cy(H)
-            if (y==H-1 && x<W-1)
+            if (y+1==H && x+1<W)
                 out<<mat[x][y]<<'\n';
 			else
                 out<<mat[x][y]<<' ';

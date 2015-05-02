@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -24,7 +24,9 @@ namespace fm
 	{
 		/////////////////////////////////////////////////////////////
 		/// @brief Enum that indicates the order the data is stored in matrices
-		///
+		/// 
+		/// @ingroup System
+		/// 
 		/////////////////////////////////////////////////////////////
 		enum StorageOrder{
 			RowMajor,	///< Indicates that the data is stored in <a href="http://en.wikipedia.org/wiki/Row-major_order#Row-major_order">row-major order</a>

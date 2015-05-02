@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -69,8 +69,8 @@ namespace fm
 	template<class T>
 	inline typename polar2<T>::reference polar2<T>::operator()(const T &Length,const Angle &Alpha)
 	{
-		length=Length;
-		angle =Alpha;
+		length = Length;
+		angle  = Alpha;
 		return *this;
 	}
 
@@ -81,8 +81,8 @@ namespace fm
 	inline typename polar2<T>::reference polar2<T>::operator()(const vector2<T2> &vec)
 	{
 		polar2<T> pol(vec);
-		length=pol.length;
-		angle =pol.angle;
+		length = pol.length;
+		angle  = pol.angle;
 		return *this;
 	}
 
@@ -182,9 +182,9 @@ namespace fm
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	bool polar2<T>::operator==(const polar2<T> &other) const 
+	bool polar2<T>::operator==(const polar2<T> &other) const
 	{
-		return (length==other.length	    && (angle-other.angle).asDegrees()%360==0) ||
+		return (length==other.length	   && (angle-other.angle).asDegrees()%360==0) ||
 			   (length==other.length*T(-1) && (angle-other.angle).asDegrees()%360==180);
 	}
 
@@ -192,7 +192,7 @@ namespace fm
 	template<class T>
 	bool polar2<T>::operator!=(const polar2<T> &other) const
 	{
-		return !(length==other.length	     && (angle-other.angle).asDegrees()%360==0) &&
+		return !(length==other.length	    && (angle-other.angle).asDegrees()%360==0) &&
 			   !(length==other.length*T(-1) && (angle-other.angle).asDegrees()%360==180);
 	}
 

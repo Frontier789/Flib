@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -95,6 +95,14 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		explicit Image(const fm::vec2s &size,const Color &color = Color::White);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct an image from a file
+		///
+		/// @param filename The name of the file
+		///
+		/////////////////////////////////////////////////////////////
+		explicit Image(const std::string &filename);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy a whole image

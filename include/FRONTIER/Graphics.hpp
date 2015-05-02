@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -39,13 +39,12 @@ namespace fg
 #include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/Graphics/Glyph.hpp>
-#include <FRONTIER/Graphics/Sprite.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
-#include <FRONTIER/Graphics/Drawable.hpp>
+#include <FRONTIER/Graphics/Primitive.hpp>
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
 #include <FRONTIER/Graphics/FontRenderer.hpp>
 #include <FRONTIER/Graphics/DepthTexture.hpp>

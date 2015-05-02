@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -28,8 +28,7 @@
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
-	///
-	/// 	@brief Templated class for holding the size and position of a rectangle
+	/// @brief Templated class for holding the size and position of a rectangle
 	///
 	/////////////////////////////////////////////////////////////
     template<class T>

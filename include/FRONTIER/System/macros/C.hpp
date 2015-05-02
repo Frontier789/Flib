@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -19,11 +19,11 @@
 #include <FRONTIER/System/macros/SIZE.hpp>
 #define FRONTIER_C
 
-	#define C(nnn)  for (fm::Size i=0;i<(nnn);i++)
-	#define Cx(nnn) for (fm::Size x=0;x<(nnn);x++)
-	#define Cy(nnn) for (fm::Size y=0;y<(nnn);y++)
-	#define Cz(nnn) for (fm::Size z=0;z<(nnn);z++)
-	#define Cf(nnn,ii) for (fm::Size ii=0;ii<(nnn);ii++)
-	#define Cxy(Xnnn,Ynnn) for (fm::Size x=0;x<(Xnnn);x++) for (fm::Size y=0;y<(Ynnn);y++)
+	#define C(nnn)  for (fm::Size i=0,FRONTIER_C_N=(nnn);i<FRONTIER_C_N;i++)
+	#define Cx(nnn) for (fm::Size x=0,FRONTIER_CX_N=(nnn);x<FRONTIER_CX_N;x++)
+	#define Cy(nnn) for (fm::Size y=0,FRONTIER_CY_N=(nnn);y<FRONTIER_CY_N;y++)
+	#define Cz(nnn) for (fm::Size z=0,FRONTIER_CZ_N=(nnn);z<FRONTIER_CZ_N;z++)
+	#define Cf(nnn,ii) for (fm::Size ii=0,FRONTIER_CF_N=(nnn);ii<FRONTIER_CF_N;ii++)
+	#define Cxy(Xnnn,Ynnn) Cx(Xnnn) Cy(Ynnn)
 
 #endif // FRONTIER_C_HPP_INCLUDED

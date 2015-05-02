@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -17,7 +17,7 @@
 
 // used to lock mutexes if protecting shared variables is enabled
 // mutex needn't exist if FRONTIER_PROTECT_SHARED_VARIABLES is not defined
-#ifndef FRONTIER_LOCK_MUTEX(mutex)
+#ifndef FRONTIER_LOCK_MUTEX
 	#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 		#define FRONTIER_LOCK_MUTEX(mutex) (mutex).lock()
 	#else
@@ -27,7 +27,7 @@
 
 // used to unlock mutexes if protecting shared variables is enabled
 // mutex needn't exist if FRONTIER_PROTECT_SHARED_VARIABLES is not defined
-#ifndef FRONTIER_UNLOCK_MUTEX(mutex)
+#ifndef FRONTIER_UNLOCK_MUTEX
 	#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 		#define FRONTIER_UNLOCK_MUTEX(mutex) (mutex).unLock()
 	#else

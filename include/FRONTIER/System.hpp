@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -20,11 +20,11 @@
 ////////////////////////////////////////////////////////////
 /// @defgroup System System module
 ///
-/// This module defines <a href="http://en.wikipedia.org/wiki/Euclidean_vector">euclidean vector</a>, 
-///						<a href="http://en.wikipedia.org/wiki/Matrix_%28mathematics%29">matrix</a>, 
-///						<a href="http://en.wikipedia.org/wiki/Quaternion">quaternion</a>, 
+/// This module defines <a href="http://en.wikipedia.org/wiki/Euclidean_vector">euclidean vector</a>,
+///						<a href="http://en.wikipedia.org/wiki/Matrix_%28mathematics%29">matrix</a>,
+///						<a href="http://en.wikipedia.org/wiki/Quaternion">quaternion</a>,
 ///						 angle, time, clock, log, rectangle, vertex, nonCopyable and other classes
-/// 
+///
 ////////////////////////////////////////////////////////////
 
 
@@ -34,7 +34,7 @@
 /////////////////////////////////////////////////////////////
 namespace fm
 {
-	
+
 }
 
 #include <FRONTIER/Config.hpp>
@@ -53,6 +53,7 @@ namespace fm
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
+#include <FRONTIER/System/Collector.hpp>
 #include <FRONTIER/System/Quaternion.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/Transformable.hpp>

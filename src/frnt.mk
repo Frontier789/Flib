@@ -37,6 +37,9 @@ include f_freetype.mk
 #include Window submake
 include f_graphics.mk
 
+#include Gui submake
+include f_gui.mk
+
 STATIC_TARGETS+=$(LIBPATH)/libf.a
 DYNAMIC_TARGETS+=$(LIBPATH)/f.dll $(LIBPATH)/libf-dll.a
 

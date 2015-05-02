@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -23,9 +23,8 @@ namespace fm
 {
 
 	/////////////////////////////////////////////////////////////
-	///
-	/// 	@brief Templated class for using
-	///			   2D <a href="http://en.wikipedia.org/wiki/Polar_coordinate_system">polar vectors</a>
+	/// @brief Templated class for using
+	///		   2D <a href="http://en.wikipedia.org/wiki/Polar_coordinate_system">polar vectors</a>
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
@@ -282,9 +281,10 @@ namespace fm
 	template<class T>
 	polar2<T> operator*(const T &left,const polar2<T> &right);
 
-	typedef polar2<float> pol2;
-	typedef polar2<float> pol2f;
-	typedef polar2<int>   pol2i;
+	typedef polar2<float>  pol2;
+	typedef polar2<float>  pol2f;
+	typedef polar2<double> pol2d;
+	typedef polar2<int>    pol2i;
 }
 #endif // FRONTIER_POLAR2_HPP_INCLUDED
 

@@ -35,7 +35,7 @@
 #include "stb_image/stb_image_resize.h"
 
 #include "ico/ico.hpp"
- 
+
 #include "jpge/jpge.cpp"
 #include <fstream>
 #include <cstring>
@@ -46,14 +46,14 @@ namespace fg
 	{
 		int dotPos = text.find_last_of(".");
 		std::string ret = text.substr(dotPos+1,text.size()-dotPos);
-		
+
 		// lowercase
 		C(ret.length())
 			ret[i] = (ret[i]>='A' && ret[i]<='Z') ? (ret[i]-'A'+'a') : ret[i];
-		
+
 		return ret;
 	}
-	
+
 	/// constructors /////////////////////////////////////////////////////////
 	Image::Image() : m_sizeW(0),
 					 m_sizeH(0)
@@ -61,13 +61,11 @@ namespace fg
 
 	}
 
-
 	////////////////////////////////////////////////////////////
 	Image::Image(fm::Size width,fm::Size height,const Color &color)
 	{
 		create(width,height,color);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	Image::Image(const fm::vec2s &size,const Color &color)
@@ -75,13 +73,11 @@ namespace fg
 		create(size.w,size.h,color);
 	}
 
-
 	////////////////////////////////////////////////////////////
 	Image::Image(const Image &copy)
 	{
 		create(copy);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	Image::Image(const Image &copy,const fm::rect2s &sourceRect)
@@ -89,7 +85,11 @@ namespace fg
 		create(copy,sourceRect);
 	}
 
-
+	////////////////////////////////////////////////////////////
+	Image::Image(const std::string &filename)
+	{
+		loadFromFile(filename);
+	}
 
 	/// functions /////////////////////////////////////////////////////////
 	Image::reference Image::create(fm::Size width,fm::Size height,const Color &color)
@@ -178,10 +178,10 @@ namespace fg
 		// only copy if the source is valid
 		if (!source.m_sizeW || !source.m_sizeH/* || !m_sizeW || !m_sizeH*/)
 			return *this;
-		
+
 		// copy the source rect so for adjusting
 		fm::rect2s sRect = sourceRect;
-		
+
 		// copy the whole image
 		if (!sRect.area())
 		{
@@ -194,11 +194,11 @@ namespace fg
 			if (sRect.size.w + sRect.pos.x > source.m_sizeW) sRect.size.w = source.m_sizeW - sRect.pos.x;
 			if (sRect.size.h + sRect.pos.y > source.m_sizeH) sRect.size.h = source.m_sizeH - sRect.pos.y;
 		}
-		
+
 		// do not be out of the destination
 		if (destX + sRect.size.w > m_sizeW) sRect.size.w = m_sizeW - destX;
 		if (destY + sRect.size.h > m_sizeH) sRect.size.h = m_sizeH - destY;
-		
+
 		// use alpha mixing
 		if (useAlpha)
 		{
@@ -208,13 +208,13 @@ namespace fg
 			{
 				// get the source pixell
 				fm::vec4 src = source.getPixel(sourceRect.pos+fm::vec2s(x,y));
-				
+
 				// get the destination pixell
 				fm::vec4 dst = getPixel(destX+x,destY+y);
-				
+
 				// compute result alpha
 				float alpha = src.a+dst.a*(1-src.a);
-				
+
 				// avoid division by 0
 				if (!alpha)
 					setPixel(destX+x,destY+y,fm::vec4(0,0,0,0));
@@ -225,7 +225,7 @@ namespace fg
 		else
 		{
 			fm::Size copyBytesPerRow = sRect.size.w*sizeof(Color);
-			
+
 			// use memcpy (a lot faster)
 			if (sRect.size.w == m_sizeW && sRect.size.w == source.m_sizeW)
 				std::memcpy(&getPixel(destX,destY),&source.getPixel(sourceRect.pos.x,sourceRect.pos.y), copyBytesPerRow*sRect.size.h);
@@ -281,7 +281,7 @@ namespace fg
 		// ask stbi to load the file
 		int width, height, channels;
 		unsigned char *ptr = stbi_load(filename.c_str(), &width, &height, &channels, STBI_rgb_alpha);
-		
+
 		// if he succeeded
 		if (ptr && width && height)
 		{
@@ -290,10 +290,10 @@ namespace fg
 			m_sizeH = height;
 			m_pixels.resize(width * height);
 			memcpy(&m_pixels[0], ptr, m_pixels.size()*sizeof(fg::Color));
-			
+
 			// let stbi free its used memory
 			stbi_image_free(ptr);
-			
+
 			return true;
 		}
 		else
@@ -302,7 +302,7 @@ namespace fg
 			return false;
 		}
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool Image::loadFromMemory(const void *buffer,fm::Size byteCount)
 	{
@@ -312,7 +312,7 @@ namespace fg
 		// ask stbi to load the file
 		int width, height, channels;
 		unsigned char *ptr = stbi_load_from_memory((const unsigned char*)buffer, byteCount, &width, &height, &channels, STBI_rgb_alpha);
-		
+
 		// if he succeeded
 		if (ptr && width && height)
 		{
@@ -321,10 +321,10 @@ namespace fg
 			m_sizeH = height;
 			m_pixels.resize(width * height);
 			memcpy(&m_pixels[0], ptr, m_pixels.size());
-			
+
 			// let stbi free its used memory
 			stbi_image_free(ptr);
-			
+
 			return true;
 		}
 		else
@@ -427,7 +427,7 @@ namespace fg
 		{
 			// get extension
 			std::string extension = getExtension(filename);
-			
+
 			if (extension == "bmp")
 			{
 				// BMP format
@@ -459,7 +459,7 @@ namespace fg
 			else
 			{
 				std::string pngfilename = filename+".png";
-				
+
 				// Unknown extension, output it as png
 				fg_log << "Unknown extension \"" << extension <<"\" changed output name to "<<pngfilename<<std::endl;
 
@@ -467,11 +467,11 @@ namespace fg
 					return true;
 			}
 		}
-		
+
 		fg_log << filename << " couldn't be saved because it's empty." << std::endl;
 		return false;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	unsigned char *Image::saveToMemory(fm::Size &byteCount,const std::string &ext) const
 	{
@@ -480,7 +480,7 @@ namespace fg
 		{
 			// get extension
 			std::string extension = getExtension(ext);
-			
+
 			if (extension == "bmp" || extension == "tga")
 			{
 				std::stringstream ss;
@@ -489,7 +489,7 @@ namespace fg
 					result = stbi_write_bmpMEM(ss,m_sizeW,m_sizeH,4,&m_pixels[0]);
 				else
 					result = stbi_write_tgaMEM(ss,m_sizeW,m_sizeH,4,&m_pixels[0]);
-				
+
 				if (result)
 				{
 					byteCount = ss.tellp();
@@ -544,15 +544,15 @@ namespace fg
 				delete[] buffer;
 				return ret;
 			}
-			
+
 			// Unknown extension
 			fg_log << "Unknown extension \"" << ext <<"\""<<std::endl;
 		}
-		
+
 		byteCount = 0;
 		return NULL;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Image Image::scale(fm::Size w,fm::Size h,bool linearFilter)
 	{
@@ -565,7 +565,7 @@ namespace fg
 			if (!stbir_resize_uint8((unsigned char*)&m_pixels[0],m_sizeW,m_sizeH,0,
 									(unsigned char*)&ret.m_pixels[0],w,h,0,
 									4))
-				return Image();		
+				return Image();
 		}
 		else
 		{
@@ -578,76 +578,76 @@ namespace fg
 					ret.setPixel(x,y,getPixel(x*rw,y*rh));
 		}
 
-		
+
 		return ret;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Image Image::scale(const fm::vec2s &size,bool linearFilter)
 	{
 		return scale(size.w,size.h,linearFilter);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	std::vector<Image> Image::loadMultipleImagesFromFile(const std::string &file)
 	{
 		std::ifstream in(file.c_str(),std::ios_base::binary);
-		
+
 		if (!in)
 		{
 			fg_log << "Error reading file " << file << std::endl;
 			return std::vector<Image>();
 		}
-		
+
 		std::string str;
 
-		in.seekg(0, std::ios::end);   
+		in.seekg(0, std::ios::end);
 		str.reserve(in.tellg());
 		in.seekg(0, std::ios::beg);
- 
+
 		str.assign((std::istreambuf_iterator<char>(in)),
 					std::istreambuf_iterator<char>());
-		
+
 		std::string error;
-		
+
 		std::vector<Image> ret = Ico::getImages((const fm::Uint8*)(fm::UintPtr)&str[0],str.length()*sizeof(str[0]),error);
 		if (error != std::string())
 			fg_log << "Error loading " << file << " : " << error << std::endl;
-		
+
 		return ret;
 	}
-		
-		
+
+
 	/////////////////////////////////////////////////////////////
 	std::vector<Image> Image::loadMultipleImagesFromMemory(const fm::Uint8 *data,fm::Size byteCount,const std::string &ext)
 	{
 		(void)ext;
-		
+
 		std::string error;
-		
+
 		std::vector<Image> ret = Ico::getImages(data,byteCount,error);
 		if (error != std::string())
 			fg_log << "Error loading icon : " << error << std::endl;
-		
+
 		return ret;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool Image::saveMultipleImagesToFile(Image const* const *images,fm::Size imageCount,const std::string &file)
 	{
 		if (!imageCount)
 			return false;
-		
+
 		std::ofstream ki(file.c_str(),std::ios_base::binary);
-		
+
 		if (!ki)
 		{
 			fg_log << "Error writing file " << file << std::endl;
 			return false;
 		}
-		
+
 		Ico::writeImages(ki,images,imageCount);
-		
+
 		return true;
 	}
 
@@ -656,21 +656,21 @@ namespace fg
 	fm::Size Image::saveMultipleImagesToMemory(Image const* const* images,fm::Size imageCount,fm::Uint8 *(&memory),const std::string &ext = "ico")
 	{
 		(void)ext;
-		
+
 		if (!imageCount)
 			return 0;
-		
+
 		// write to a stringstream
 		std::stringstream ss(std::ios_base::binary);
 		Ico::writeImages(ss,images,imageCount);
-		
+
 		// read back buffer
 		std::string data = ss.str();
-		
+
 		// allocate and fill memory
 		memory = new fm::Uint8[data.length()];
 		memcpy(memory,&data[0],data.length());
-		
+
 		return data.length();
 	}
 }
