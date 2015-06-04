@@ -108,9 +108,21 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
+	const fm::vector4<fm::Uint8> &Color::rgba() const
+	{
+		return *((fm::vector4<fm::Uint8>*)this);
+	}
+
+	/////////////////////////////////////////////////////////////
 	fm::vector3<fm::Uint8> &Color::rgb()
 	{
 		return *((fm::vector3<fm::Uint8>*)this);
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::vector4<fm::Uint8> &Color::rgba()
+	{
+		return *((fm::vector4<fm::Uint8>*)this);
 	}
 
 

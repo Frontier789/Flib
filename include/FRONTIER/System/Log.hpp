@@ -147,6 +147,19 @@ namespace fm
 		
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Overload of the << binary operator for bool
+		/// 
+		/// Please note that it is the caller's response to have the passed stream 
+		/// valid when calling the this operator
+		/// 
+		/// @param val The output boolean
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference operator<<(bool val);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Overload of the << binary operator for c string
 		/// 
 		/// Please note that it is the caller's response to have the passed stream 
@@ -158,7 +171,6 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		reference operator<<(const char *text);
-		
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of the << binary operator for std::string

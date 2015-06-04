@@ -26,8 +26,8 @@ $(LIBPATH)/dynamic/Window: | $(LIBPATH)/dynamic
 $(LIBPATH)/libf-window.a: $(STATIC_OBJ_FILES_WINDOW) | $(LIBPATH)
 	$(AR) rcs $@ $^
 
-$(LIBPATH)/f-window.dll $(LIBPATH)/libf-window-dll.a: $(LIBPATH)/libf-system-dll.a $(DYNAMIC_OBJ_FILES_WINDOW) | $(LIBPATH)
-	$(CXX) -shared -o $(LIBPATH)/f-window.dll $(DYNAMIC_OBJ_FILES_WINDOW) -L $(LIBPATH) -lf-system-dll -lOpenGL32 -lgdi32 -Wl,--out-implib,$(LIBPATH)/libf-window-dll.a
+$(LIBPATH)/f-window.dll $(LIBPATH)/libf-window-dll.a: $(LIBPATH)/libf-system-dll.a $(LIBPATH)/libf-gl-dll.a $(LIBPATH)/libf-graphics-dll.a $(DYNAMIC_OBJ_FILES_WINDOW) | $(LIBPATH)
+	$(CXX) -shared -o $(LIBPATH)/f-window.dll $(DYNAMIC_OBJ_FILES_WINDOW) -L $(LIBPATH) -lf-system-dll -lf-gl-dll -lf-graphics-dll -lOpenGL32 -lgdi32 -Wl,--out-implib,$(LIBPATH)/libf-window-dll.a
 
 ###
 # object targets

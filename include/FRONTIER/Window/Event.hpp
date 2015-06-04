@@ -33,8 +33,7 @@
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
-	/// 
-	/// 	@brief Simple class used to store button enumerations and state check function
+	/// @brief Simple class used to store button enumerations and state check function
 	///
 	/// @ingroup Window
 	///
@@ -154,8 +153,7 @@ namespace fw
 	};
 
 	/////////////////////////////////////////////////////////////
-	/// 
-	/// 	@brief Simple class used to store button enumerations and state check function
+	/// @brief Simple class used to store button enumerations and state check function
 	///
 	/// @ingroup Window
 	///
@@ -252,8 +250,7 @@ namespace fw
 	};
 
 	/////////////////////////////////////////////////////////////
-	/// 
-	/// 	@brief Simple class used to store data about ButtonPressed ButtonReleased events
+	/// @brief Simple class used to store data about ButtonPressed ButtonReleased events
 	///
 	/// @ingroup Window
 	///
@@ -267,8 +264,7 @@ namespace fw
 	};
 	
 	/////////////////////////////////////////////////////////////
-	/// 
-	/// 	@brief Simple class used to store data about MouseMoved events
+	/// @brief Simple class used to store data about MouseMoved events
 	///
 	/// @ingroup Window
 	///
@@ -281,8 +277,7 @@ namespace fw
 	};
 	
 	/////////////////////////////////////////////////////////////
-	/// 
-	/// 	@brief Simple class used to store data about a MouseWheelMoved event
+	/// @brief Simple class used to store data about a MouseWheelMoved event
 	///
 	/// @ingroup Window
 	///
@@ -299,8 +294,7 @@ namespace fw
 	};
 	
 	/////////////////////////////////////////////////////////////
-	/// 
-	/// 	@brief Simple class used to store data about a Resized event
+	/// @brief Simple class used to store data about a Resized event
 	///
 	/// @ingroup Window
 	///
@@ -313,8 +307,7 @@ namespace fw
 	};
 	
 	/////////////////////////////////////////////////////////////
-	/// 
-	/// 	@brief Simple class used to store data about a TextEntered event
+	/// @brief Simple class used to store data about a TextEntered event
 	///
 	/// @ingroup Window
 	///
@@ -327,8 +320,7 @@ namespace fw
 	};
 	
 	/////////////////////////////////////////////////////////////
-	/// 
-	/// 	@brief Simple class used to store data about a FileDrop event
+	/// @brief Simple class used to store data about a FileDrop event
 	///
 	/// @ingroup Window
 	///
@@ -342,8 +334,7 @@ namespace fw
 	};
 	
 	/////////////////////////////////////////////////////////////
-	/// 
-	/// 	@brief Class used to store properties of a window event
+	/// @brief Class used to store properties of a window event
 	///
 	/// @ingroup Window
 	///

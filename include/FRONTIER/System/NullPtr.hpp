@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////////
 #ifndef FRONTIER_NULLPTR_HPP_INCLUDED
 #define FRONTIER_NULLPTR_HPP_INCLUDED
+#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_NULLPTR
 
 namespace fm
@@ -50,7 +51,7 @@ namespace fm
 		};
 	}
 
-	extern const priv::NullPtr nullPtr;
+	FRONTIER_API extern const priv::NullPtr nullPtr;
 }
 
 #endif // FRONTIER_NULLPTR_HPP_INCLUDED

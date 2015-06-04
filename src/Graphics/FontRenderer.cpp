@@ -244,6 +244,15 @@ namespace fg
 		
 		return img;
 	}
+    
+	/////////////////////////////////////////////////////////////
+	bool FontRenderer::hasGlyph(const CodePoint &letter) const
+	{
+		if (!m_loaded)
+			return false;
+		
+		return FT_Get_Char_Index(*((FT_Face*)m_ftFaceData),letter.cp) != 0;
+	}
 
 	/////////////////////////////////////////////////////////////
 	const fg::Metrics &FontRenderer::getMetrics() const

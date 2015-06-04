@@ -49,6 +49,9 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	bool Button::handleEvent(const fw::Event &ev)
 	{
+		if (!getEnabled())
+			return false;
+		
 		if (ev.type == fw::Event::MouseMoved || 
 			ev.type == fw::Event::MouseLeft ||
 			ev.type == fw::Event::ButtonPressed ||

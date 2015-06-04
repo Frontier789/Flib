@@ -357,9 +357,9 @@ namespace fw
 					}
 					Event ev(Event::KeyPressed);
 					ev.key.code  = keyFromVK(wParam,lParam);
-					ev.key.ctrl  = GetKeyState(VK_CONTROL);
-					ev.key.alt   = GetKeyState(VK_MENU);
-					ev.key.shift = GetKeyState(VK_SHIFT);
+					ev.key.ctrl  = (GetKeyState(VK_CONTROL) & 0x8000);
+					ev.key.alt   = (GetKeyState(VK_MENU)    & 0x8000);
+					ev.key.shift = (GetKeyState(VK_SHIFT)   & 0x8000);
 					postEvent(ev);
 					return 0;
 				}
@@ -372,9 +372,9 @@ namespace fw
 					m_lastDown = 0;
 					Event ev(Event::KeyReleased);
 					ev.key.code  = keyFromVK(wParam,lParam);
-					ev.key.ctrl  = GetKeyState(VK_CONTROL);
-					ev.key.alt   = GetKeyState(VK_MENU);
-					ev.key.shift = GetKeyState(VK_SHIFT);
+					ev.key.ctrl  = (GetKeyState(VK_CONTROL) & 0x8000);
+					ev.key.alt   = (GetKeyState(VK_MENU)    & 0x8000);
+					ev.key.shift = (GetKeyState(VK_SHIFT)   & 0x8000);
 					postEvent(ev);
 					return 0;
 				}

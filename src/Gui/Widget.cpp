@@ -1,3 +1,4 @@
+#include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/Gui/Widget.hpp>
 
 namespace Fgui
@@ -12,7 +13,8 @@ namespace Fgui
 	Widget::Widget(const std::string &name,const Anchor &anchor,const fm::vec2 &size,Widget *parent) : m_name(name),
 																									   m_anchor(anchor),
 																									   m_size(size),
-																									   m_parent(parent)
+																									   m_parent(parent),
+																									   m_enabled(true)
 	{
 		allWidgets.push_back(this);
 	}
@@ -21,7 +23,8 @@ namespace Fgui
 	Widget::Widget(const Widget &copy) : m_name(copy.m_name),
 										 m_anchor(copy.m_anchor),
 										 m_size(copy.m_size),
-										 m_parent(copy.m_parent)
+										 m_parent(copy.m_parent),
+										 m_enabled(copy.m_enabled)
 	{
 		allWidgets.push_back(this);
 	}
@@ -83,6 +86,34 @@ namespace Fgui
 	std::string Widget::getName() const
 	{
 		return m_name;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void Widget::setEnabled(bool enabled)
+	{
+		m_enabled = enabled;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Widget::getEnabled() const
+	{
+		return m_enabled;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void Widget::setActive(Widget *active)
+	{
+		if (m_parent)
+			m_parent->setActive(active);
+	}
+	
+	////////////////////////////////////////////////////////
+	Widget *Widget::getActive()
+	{
+		if (m_parent)
+			return m_parent->getActive();
+		
+		return fm::nullPtr;
 	}
 	
 	/////////////////////////////////////////////////////////////

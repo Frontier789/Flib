@@ -47,6 +47,16 @@ namespace fm
 
 			return right;
 		}
+
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		inline T abs(const T &value)
+		{
+			if (value < (T)0)
+				return value*-1;
+
+			return value;
+		}
 	}
 }
 

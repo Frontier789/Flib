@@ -345,30 +345,45 @@ namespace fm
 	namespace MATRIX
 	{
 		////////////////////////////////////////////////////////////
-		template<fm::Size N>
-		inline float det(const matrix<N,N,float> &mat)
+		template<fm::Size N,class T>
+		inline T det(const matrix<N,N,T> &mat)
 		{
-			float ret = 0;
-			float wsgn = 1;
-			Cy(N)
-			{
-				matrix<N-1u,N-1u,float> mx;
-				int d=0;
-				for (fm::Size dx=1;dx<N;dx++)
-					for (fm::Size dy=0;dy<N;dy++)
-						if (dy!=y)
-							mx[d%(N-1)][int(d/(N-1))] = mat[dx][dy],d++;
-				ret += det<N-1u>(mx)*mat[0][y]*wsgn;
-				wsgn*=-1;
-			}
-			return ret;
-		}
+			T sum = T();
 
-		////////////////////////////////////////////////////////////
-		template<>
-		inline float det(const matrix<1,1,float> &mat)
-		{
-			return mat[0][0];
+			fm::matrix<N,N,T> U(T(1));
+			fm::matrix<N,N,T> L;
+
+			Cx(N)
+			{
+				for (fm::Size y = x;y<N;y++)
+				{
+					sum = T();
+					for (fm::Size k = 0;k<x;k++)
+						sum += L[y][k] * U[k][x];
+
+					L[y][x] = mat[y][x] - sum;
+				}
+
+
+				for (fm::Size y = x;y<N;y++)
+				{
+					sum = T();
+					for (fm::Size k = 0;k<x;k++)
+						sum += L[x][k] * U[k][y];
+
+					if (L[x][x] == T())
+						return T();
+
+					U[x][y] = (mat[x][y] - sum) / L[x][x];
+				}
+			}
+
+			T det = T(1);
+
+			Cx(N)
+				det *= U[x][x] * L[x][x];
+
+			return det;
 		}
 
 		////////////////////////////////////////////////////////////

@@ -125,6 +125,19 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		template<class T>
 		const T &max(const T &left,const T &right);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Absolute value functions
+		///
+		/// Requires operator<(T,T) and operator*(T,int)
+		///
+		/// @param value The value to find the absolute value of
+		///
+		/// @return The absolute value
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		T abs(const T &value);
 	}
 
 	using namespace math;

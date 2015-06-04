@@ -45,7 +45,7 @@ namespace fg
 	/// constructors /////////////////////////////////////////////////////////
     Font::Font() : m_refCount(fm::nullPtr),
                    m_renderer(fm::nullPtr),
-                   m_TexAtlases(fm::nullPtr)
+                   m_texAtlases(fm::nullPtr)
     {
 
     }
@@ -54,7 +54,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
     Font::Font(Font::const_reference copy) : m_refCount(copy.m_refCount),
                                              m_renderer(copy.m_renderer),
-                                             m_TexAtlases(copy.m_TexAtlases)
+                                             m_texAtlases(copy.m_texAtlases)
     {
 		if (m_refCount)
 		    (*m_refCount)++;
@@ -88,8 +88,8 @@ namespace fg
     Font::reference Font::setSmooth(bool smooth)
     {
 		// set for all the atlases
-		if (m_TexAtlases)
-			for (std::map<unsigned int,TextureAtlas<Identifier> >::iterator it = m_TexAtlases->begin();it!=m_TexAtlases->end();it++)
+		if (m_texAtlases)
+			for (std::map<unsigned int,TextureAtlas<Identifier> >::iterator it = m_texAtlases->begin();it!=m_texAtlases->end();it++)
 				it->second.getTexture().setSmooth(smooth);
 
 		return *this;
@@ -126,8 +126,7 @@ namespace fg
 			return Glyph();
 
 		// try finding it in the dictionary
-		const TextureAtlas<Identifier> &texAtlas = (*m_TexAtlases)[m_renderer->getCharacterSize()];
-		Glyph glyph = texAtlas.fetch(Identifier(letter,style));
+		Glyph glyph = (*m_texAtlases)[m_renderer->getCharacterSize()].fetch(Identifier(letter,style));
 		
 		if (glyph!=Glyph())
 			return glyph;
@@ -136,7 +135,7 @@ namespace fg
 		fm::vec2 leftdown;
 		fg::Image img = renderGlyph(letter,style,&leftdown);
 		
-		return (*m_TexAtlases)[m_renderer->getCharacterSize()].upload(img,Identifier(letter,style),leftdown);
+		return (*m_texAtlases)[m_renderer->getCharacterSize()].upload(img,Identifier(letter,style),leftdown);
     }
 
 
@@ -148,6 +147,19 @@ namespace fg
 
         return m_renderer->renderGlyph(letter,style,leftDown);
     }
+    
+	/////////////////////////////////////////////////////////////
+	bool Font::hasGlyph(const CodePoint &letter,unsigned int style) const
+	{
+		if (m_texAtlases)
+			if ((*m_texAtlases)[m_renderer->getCharacterSize()].isUploaded(Identifier(letter,style)))
+				return true;
+		
+		if (!m_renderer)
+			return false;
+		
+		return m_renderer->hasGlyph(letter);
+	}
 
 	////////////////////////////////////////////////////////////
 	void Font::cleanUp()
@@ -159,8 +171,8 @@ namespace fg
             (*m_refCount)--;
 			if (!(*m_refCount)) // if no more shares left free up resources
             {
-				if (m_TexAtlases)
-					delete m_TexAtlases;
+				if (m_texAtlases)
+					delete m_texAtlases;
                 if (m_renderer)
                     delete m_renderer;
                 if (m_refCount)
@@ -168,7 +180,7 @@ namespace fg
             }
         }
 
-		m_TexAtlases = fm::nullPtr;
+		m_texAtlases = fm::nullPtr;
 		m_renderer   = fm::nullPtr;
 		m_refCount   = fm::nullPtr;
 	}
@@ -181,7 +193,7 @@ namespace fg
         cleanUp();
 		m_renderer = new FontRenderer;
 		m_refCount = new fm::Size;
-		m_TexAtlases = new std::map<unsigned int,TextureAtlas<Identifier> >;
+		m_texAtlases = new std::map<unsigned int,TextureAtlas<Identifier> >;
         (*m_refCount) = 1;
 	}
 
@@ -207,12 +219,12 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	const Texture &Font::getTexture() const
 	{
-	    return (*m_TexAtlases)[m_renderer->getCharacterSize()].getTexture();
+	    return (*m_texAtlases)[m_renderer->getCharacterSize()].getTexture();
 	}
 	
 	/////////////////////////////////////////////////////////////
 	Glyph Font::upload(const fg::Image &img,const CodePoint &letter,unsigned int type,const fm::vec2s &leftdown,unsigned int characterSize)
 	{
-		return (*m_TexAtlases)[characterSize ? characterSize : m_renderer->getCharacterSize()].upload(img,Identifier(letter,type),leftdown);
+		return (*m_texAtlases)[characterSize ? characterSize : m_renderer->getCharacterSize()].upload(img,Identifier(letter,type),leftdown);
 	}
 }

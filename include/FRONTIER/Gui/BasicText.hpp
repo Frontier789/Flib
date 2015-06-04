@@ -14,12 +14,12 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_STATICTEXT_HPP_INCLUDED
-#define FRONTIER_STATICTEXT_HPP_INCLUDED
+#ifndef FRONTIER_BASICTEXT_HPP_INCLUDED
+#define FRONTIER_BASICTEXT_HPP_INCLUDED
 #include <FRONTIER/Graphics/Font.hpp>
-#include <FRONTIER/system/Matrix.hpp>
+#include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/Gui/Widget.hpp>
-#define FRONTIER_STATICTEXT
+#define FRONTIER_BASICTEXT
 
 namespace Fgui
 {
@@ -27,10 +27,10 @@ namespace Fgui
 	/// @brief The base class of noninteractive displayed text
 	///
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API StaticText : public Widget
+	class FRONTIER_API BasicText : public Widget
 	{
 	private:
-		static const std::string m_className; ///< The name of the class, equals to "StaticText"
+		static const std::string m_className; ///< The name of the class, equals to "BasicText"
 		
 	protected:
 		const fg::Texture *m_tex; ///< The texture in which  the font stores the glyphs
@@ -55,8 +55,8 @@ namespace Fgui
 		virtual void setupPosition(); ///< Internal function that updates the position
 		
 	public:
-		typedef StaticText &reference;
-		typedef const StaticText &const_reference;
+		typedef BasicText &reference;
+		typedef const BasicText &const_reference;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
@@ -74,7 +74,7 @@ namespace Fgui
 		/// @param wordWrap If true words won't be cut in half
 		///
 		/////////////////////////////////////////////////////////////
-		StaticText(const std::string &name = "NoName",
+		BasicText(const std::string &name = "NoName",
 				   const Anchor &anchor = Anchor(),
 				   const fm::vec2 &size = fm::vec2(),
 				   Widget *parent = fm::nullPtr,
@@ -90,7 +90,7 @@ namespace Fgui
 		/// @brief Default destructor
 		///
 		/////////////////////////////////////////////////////////////
-		virtual ~StaticText();
+		virtual ~BasicText();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the anchor of the widget
@@ -227,7 +227,7 @@ namespace Fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief Noop
 		///
-		/// Noop, because StaticText calculates its size internally
+		/// Noop, because BasicText calculates its size internally
 		///
 		/// @param size Unused
 		///
@@ -257,4 +257,4 @@ namespace Fgui
 	};
 }
 
-#endif // FRONTIER_STATICTEXT_HPP_INCLUDED
+#endif // FRONTIER_BasicText_HPP_INCLUDED

@@ -8,6 +8,8 @@ ifeq ($(PLATFORM),Windows)
 	DYNAMIC_TARGETS+=$(LIBPATH)/f-gui.dll $(LIBPATH)/libf-gui-dll.a
 endif
 STATIC_TARGETS+=$(LIBPATH)/libf-gui.a
+STATIC_OBJ_FILES+=$(STATIC_OBJ_FILES_GUI)
+DYNAMIC_OBJ_FILES+=$(DYNAMIC_OBJ_FILES_GUI)
 
 ###
 # directory targets

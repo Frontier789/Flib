@@ -106,7 +106,17 @@ namespace fg
 		/// @return The rendered image
 		///
 		/////////////////////////////////////////////////////////////
-		fg::Image renderGlyph(const fg::CodePoint &letter,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown=fm::nullPtr) const;
+		fg::Image renderGlyph(const fg::CodePoint &letter,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown = fm::nullPtr) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Find out if a given glyph is present in the font
+		///
+		/// @param letter The codepoint of the glyph
+		///
+		/// @return True iff the glyph is present
+		///
+		/////////////////////////////////////////////////////////////
+		bool hasGlyph(const CodePoint &letter) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get information about the font metrics

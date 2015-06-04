@@ -96,10 +96,10 @@ namespace fm
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct from a Collector
-		/// 
-		/// If @a col has less elements than W*H 
+		///
+		/// If @a col has less elements than W*H
 		/// the leftout cells are filled with T()
-		/// 
+		///
 		/// @param col The collector
 		///
 		/////////////////////////////////////////////////////////////
@@ -539,7 +539,7 @@ namespace fm
 
 
 
-	
+
 
 	/////////////////////////////////////////////////////////////
 	///
@@ -560,8 +560,8 @@ namespace fm
 		/// @return The determinant
 		///
 		/////////////////////////////////////////////////////////////
-		template<fm::Size N>
-		float det(const matrix<N,N,float> &mat);
+		template<fm::Size N,class T>
+		T det(const matrix<N,N,T> &mat);
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -943,7 +943,7 @@ namespace fm
 		///
 		/// This is a templated version of the original function.
 		/// It can be used to supply the store order as a template argument
-		/// 
+		///
 		/// @param left Value of the left side on the vertical clipping plane
 		/// @param bottom Value of the bottom side on the vertical clipping plane
 		/// @param right Value of the right side on the vertical clipping plane

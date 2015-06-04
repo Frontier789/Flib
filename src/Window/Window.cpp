@@ -281,18 +281,6 @@ namespace fw
 	{
 		return fw::GLContext::swapBuffers();
 	}
-/*
-	/////////////////////////////////////////////////////////////
-	const fw::GLContext &Window::getContext() const
-	{
-		return *this;
-	}
-
-	/////////////////////////////////////////////////////////////
-	fw::GLContext &Window::getContext()
-	{
-		return *this;
-	}*/
 
 	/////////////////////////////////////////////////////////////
 	const priv::Window &Window::getOSWindow() const

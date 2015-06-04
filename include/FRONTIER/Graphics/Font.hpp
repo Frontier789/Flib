@@ -28,6 +28,7 @@
 #include <FRONTIER/Graphics/CodePoint.hpp>
 #include <FRONTIER/Graphics/Metrics.hpp>
 #include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/Graphics/Glyph.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
 #define FRONTIER_FONT
@@ -74,7 +75,7 @@ namespace fg
 		
 		fm::Size *m_refCount;     ///< How many instances does reference this object
 		FontRenderer *m_renderer; ///< A pointer to a fg::Font::Renderer that does the rendering part
-		mutable std::map<unsigned int,TextureAtlas<Identifier> > *m_TexAtlases; ///< Maps characer sizes to different font atlases
+		mutable std::map<unsigned int,TextureAtlas<Identifier> > *m_texAtlases; ///< Maps characer sizes to different font atlases
 	public:
 		typedef Font &reference;
 		typedef const Font &const_reference;
@@ -161,13 +162,24 @@ namespace fg
 		/// This function does not access the glyphTable
 		///
 		/// @param letter The codepoint of the glyph
-		/// @param type The style of the glyph
+		/// @param style The style of the glyph
 		/// @param leftDown If not NULL it will be set to the offset of the glyph from the baseline
 		///
 		/// @return The rendered image
 		///
 		/////////////////////////////////////////////////////////////
-		Image renderGlyph(const CodePoint &letter,unsigned int type = Glyph::Regular,fm::vector2<float> *leftDown=NULL) const;
+		Image renderGlyph(const CodePoint &letter,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown = fm::nullPtr) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Find out if a given glyph is present in the font
+		///
+		/// @param letter The codepoint of the glyph
+		/// @param style The style of the glyph
+		///
+		/// @return True iff the glyph is present
+		///
+		/////////////////////////////////////////////////////////////
+		bool hasGlyph(const CodePoint &letter,unsigned int style = Glyph::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get information about the font metrics

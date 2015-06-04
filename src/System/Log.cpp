@@ -191,6 +191,13 @@ namespace fm
 	}
 	
 	/////////////////////////////////////////////////////////////
+	Log::reference Log::operator<<(bool val)
+	{
+		putToLog(*this,val,m_newLog,m_canRecallLog,(*m_lastLog));
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
 	Log::reference Log::operator<<(const char *text)
 	{
 		putToLog(*this,text,m_newLog,m_canRecallLog,(*m_lastLog));

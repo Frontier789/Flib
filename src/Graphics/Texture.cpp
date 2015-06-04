@@ -14,6 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Graphics/FrameBuffer.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
@@ -29,7 +30,7 @@
 namespace fg
 {
 	////////////////////////////////////////////////////////////
-	fm::Int32  Texture::getInternalFormat() const {return GL_RGBA8;}
+	fm::Int32  Texture::getInternalFormat() const {return /*GL_RGBA8*/GL_RGBA;}
 	fm::Uint32 Texture::getAttachement() const {return GL_COLOR_ATTACHMENT0;}
 	fm::Uint32 Texture::getFormat() const {return GL_RGBA;}
 	fm::Uint32 Texture::getType() const {return GL_UNSIGNED_BYTE;}
@@ -285,7 +286,7 @@ namespace fg
 		glGetIntegerv(GL_FRAMEBUFFER_BINDING,&framebuffer);
 
 		// error means framebuffers aren't supported
-		if (glGetError() == GL_NO_ERROR)
+		if (fg::FrameBuffer::isAvailable())
 		{
 			// build a new framebuffer
 			GLuint fb_id;

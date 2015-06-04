@@ -14,31 +14,24 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_GUI_MODULE_HPP_INCLUDED
-#define FRONTIER_GUI_MODULE_HPP_INCLUDED
+#ifndef FRONTIER_GL_SO_LOADER_HPP_INCLUDED
+#define FRONTIER_GL_SO_LOADER_HPP_INCLUDED
+#include <FRONTIER/System/macros/API.h>
+#include <string>
 
-////////////////////////////////////////////////////////////
-/// @defgroup Gui Gui ((simple) Graphical User Interface) module
-///
-/// This module defines GUI related classes
-///
-////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////
-/// @brief Namespace used to hold gui related classes
-///
-/////////////////////////////////////////////////////////////
-namespace Fgui
+namespace priv
 {
-
+	class FRONTIER_API SO_LOADER
+	{
+	public:
+		void *p1;
+		void *p2;
+		SO_LOADER();
+		~SO_LOADER();
+		void (*getProcAddr(const std::string &name))();
+	};
+	
+	FRONTIER_API extern SO_LOADER so_loader;
 }
 
-#include <FRONTIER/Gui/Div.hpp>
-#include <FRONTIER/Gui/Table.hpp>
-#include <FRONTIER/Gui/Anchor.hpp>
-#include <FRONTIER/Gui/Widget.hpp>
-#include <FRONTIER/Gui/Button.hpp>
-#include <FRONTIER/Gui/BasicText.hpp>
-
-#endif // FRONTIER_GUI_MODULE_HPP_INCLUDED
+#endif //FRONTIER_GL_SO_LOADER_HPP_INCLUDED

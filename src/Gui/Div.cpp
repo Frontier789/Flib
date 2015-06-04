@@ -115,6 +115,9 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	bool Div::handleEvent(const fw::Event &ev)
 	{
+		if (!getEnabled())
+			return false;
+		
 		if (m_content)
 			return m_content->handleEvent(ev);
 

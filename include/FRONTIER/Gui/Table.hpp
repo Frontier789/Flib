@@ -29,7 +29,7 @@ namespace Fgui
 	/// @brief A class used to organize widgets in a table
 	/// 
 	/////////////////////////////////////////////////////////////
-	class Table : public Widget
+	class FRONTIER_API Table : public Widget
 	{
 	private:
 		static const std::string m_className; ///< The name of the class, equals to "Table"
@@ -44,6 +44,8 @@ namespace Fgui
 		fm::vec2s m_cellCount;  ///< The number of cells in the table
 		fm::vec2  m_realSize;   ///< The final size of the table in pixels
 		fm::vec2  m_borderSize; ///< The border size of he table
+		
+		Widget *m_activeWidget; ///< The active widget
 
 	public:
 		typedef Table &reference;
@@ -165,6 +167,24 @@ namespace Fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual void setSize(const fm::vec2 &size);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the active widget
+		/// 
+		/// By default this function forwards to this widget's parent
+		/// 
+		/// @param active The new active widget
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setActive(Widget *active);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the active widget
+		/// 
+		/// @return active The active widget
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual Widget *getActive();
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Search the cells for a widget with a given name

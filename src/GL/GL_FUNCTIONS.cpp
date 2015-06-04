@@ -14,6 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/GL/GL_SO_LOADER.hpp>
 #include <FRONTIER/System/macros/OS.h>
 #include <FRONTIER/OpenGL.hpp>
 #include <iostream>
@@ -26,111 +27,102 @@ namespace fg
 		OpenGL_log << "Error: "<<funcName<<" is NULL"<<std::endl;
 	}
 }
-
-#include <cstdlib>
-#include <string>
-
+	
 #ifdef FRONTIER_OS_MACOS
 	#include <mach-o/dyld.h>
-
-	static void *AppleGLGetProcAddress (const GLubyte *name)
+	
+	priv::SO_LOADER::SO_LOADER()
 	{
-		static const struct mach_header *image = NULL;
+		p1 = NSAddImage("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", NSADDIMAGE_OPTION_RETURN_ON_ERROR);
+	}
+	
+	priv::SO_LOADER::~SO_LOADER()
+	{
+		
+	}
+	
+	void (*priv::SO_LOADER::getProcAddr(const std::string &name))()
+	{
 		NSSymbol symbol;
 		char *symbolName;
-		if (NULL == image)
-			image = NSAddImage("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", NSADDIMAGE_OPTION_RETURN_ON_ERROR);
 		
 		// prepend a '_' for the Unix C symbol mangling convention
-		symbolName = malloc(strlen((const char*)name) + 2);
-		strcpy(symbolName+1, (const char*)name);
-		symbolName[0] = '_';
-		symbol = image ? NSLookupSymbolInImage(image, symbolName, NSLOOKUPSYMBOLINIMAGE_OPTION_BIND | NSLOOKUPSYMBOLINIMAGE_OPTION_RETURN_ON_ERROR) : NULL;
-		free(symbolName);
-		return symbol ? NSAddressOfSymbol(symbol) : NULL;
+		std::string name2 = '_'+name;
+		symbol = image ? NSLookupSymbolInImage((const mach_header *)image, 
+											   name2.c_str(), 
+											   NSLOOKUPSYMBOLINIMAGE_OPTION_BIND | NSLOOKUPSYMBOLINIMAGE_OPTION_RETURN_ON_ERROR) : fm::nullPtr;
+		
+		return symbol ? NSAddressOfSymbol(symbol) : fm::nullPtr;
 	}
-	#define retrieveProcAddress(name) AppleGLGetProcAddress(name)
+	
+	#define FRONTIER_HAS_SO_LOADER 1
 #endif // macOS
 
 #if defined(FRONTIER_OS_SOLARIS) || defined(FRONTIER_OS_IRIX)
 	#include <dlfcn.h>
 	#include <stdio.h>
 	
-	static void *SunGetProcAddress (const GLubyte *name)
+	priv::SO_LOADER::SO_LOADER()
 	{
-	  static void *h = NULL;
-	  static void *gpa;
-
-	  if (h == NULL)
-	  {
-		if ((h = dlopen(NULL, RTLD_LAZY | RTLD_LOCAL)) == NULL) return NULL;
-		gpa = dlsym(h, "glXGetProcAddress");
-	  }
-
-	  if (gpa != NULL)
-		return ((void*(API_ENTRY*)(const GLubyte*))gpa)(name);
-	  else
-		return dlsym(h, (const char*)name);
+		p1 = dlopen(fm::nullPtr, RTLD_LAZY | RTLD_LOCAL);
+		
+		if (p1)
+			p2 = dlsym(p1, "glXGetProcAddress");
 	}
-	#define retrieveProcAddress(name) SunGetProcAddress(name)
+	
+	priv::SO_LOADER::~SO_LOADER()
+	{
+		
+	}
+	
+	void (*priv::SO_LOADER::getProcAddr(const std::string &name))()
+	{
+		if (p2)
+			return ((void*(API_ENTRY*)(const GLubyte*))p2)(name.c_str());
+		
+		return dlsym(p1,name.c_str());
+	}
+	
+	#define FRONTIER_HAS_SO_LOADER 1
 #endif //Irix and Solaris
 
 #ifdef FRONTIER_OS_ANDROID
 	#include <dlfcn.h>
 	
-	class SharedObject
+	priv::SO_LOADER::SO_LOADER()
 	{
-	public:
-		void *m_handle;
-		SharedObject() : m_handle(NULL) {}
-		~SharedObject()
-		{
-			if (m_handle)
-				dlclose(m_handle);
-		}
-		bool load(const char *name)
-		{
-			m_handle = dlopen(name, RTLD_NOW|RTLD_LOCAL);
-			return m_handle  != NULL;
-		}
-	};
-
-	static void *AndroidGetProcAddress(const char *name)
-	{
-		static SharedObject so;
-		if (!so.load("libGLESv2.so"))
-			if (!so.load("libGLES_CM.so"))
-				if (!so.load("libGLESv1_CM.so"))
-				{
-					fg::OpenGL_log << "Error: No GLES shared object found" << std::endl;
-					return NULL;
-				}
+		p1 = dlopen("libGLESv2.so", RTLD_NOW|RTLD_LOCAL);
 		
-		void *symbol = dlsym(so.m_handle, name);
+		if (!p1) p1 = dlopen("libGLES_CM.so", RTLD_NOW|RTLD_LOCAL);
+		
+		if (!p1) p1 = dlopen("libGLESv1_CM.so", RTLD_NOW|RTLD_LOCAL);
+		
+		if (!p1) fg::OpenGL_log << "Error: No GLES shared object found" << std::endl;
+	}
+	
+	priv::SO_LOADER::~SO_LOADER()
+	{
+		if (p1) dlclose(p1);
+	}
+	
+	void (*priv::SO_LOADER::getProcAddr(const std::string &name))()
+	{
+		void *symbol = dlsym(p1, name.c_str());
 		if (!symbol) 
 		{
 			// append an underscore for platforms that need that.
-			unsigned int length=0;
-			for (;name[length]!='\0';length++);
-			length--;
+			std::string name2 = '_'+name;
 			
-			char *_name = new char[length+1];
-			
-			for (unsigned int i=0;name[i]!='\0';i++)
-				_name[i+1]=name[i];
-			_name[0] = '_';
-			
-			symbol = dlsym(so.m_handle, _name);
-			
-			delete[] _name;
+			symbol = dlsym(p1, name2.c_str());
 			
 			if (!symbol)
 				fg::OpenGL_log << "Error: Couldn't find symbol " << name 
 						   << " (" << (const char *)dlerror() << ")" <<std::endl;
 		}
-		return (symbol);
+		return (void(*)())symbol;
 	}
-	#define retrieveProcAddress(name) AndroidGetProcAddress(name)
+	
+	#define FRONTIER_HAS_SO_LOADER 1
 #endif //Android
 
 #ifdef FRONTIER_OS_WINDOWS
@@ -141,41 +133,93 @@ namespace fg
 	#pragma warning(disable: 4054)
 	#endif
 
-	static int TestPointer(const PROC pTest)
+	
+	priv::SO_LOADER::SO_LOADER()
 	{
-		ptrdiff_t iTest;
-		if(!pTest) 
-			return 0;
-		iTest = (ptrdiff_t)pTest;
 		
-		if(iTest == 1 || iTest == 2 || iTest == 3 || iTest == -1) return 0;
-		
-		return 1;
 	}
-
-	static PROC WinGetProcAddress(const char *name)
+	
+	priv::SO_LOADER::~SO_LOADER()
+	{
+		
+	}
+	
+	bool TestPointer(const PROC pTest)
+	{
+		if(!pTest)
+			return false;
+		
+		ptrdiff_t iTest = (ptrdiff_t)pTest;
+		
+		if(iTest == 1 || 
+		   iTest == 2 || 
+		   iTest == 3 || 
+		   iTest == -1) 
+		   return false;
+		
+		return true;
+	}
+	
+	void (*priv::SO_LOADER::getProcAddr(const std::string &name))()
 	{
 		HMODULE glMod = NULL;
-		PROC pFunc = wglGetProcAddress((LPCSTR)name);
+		PROC pFunc = wglGetProcAddress((LPCSTR)name.c_str());
 		if(TestPointer(pFunc))
-			return pFunc;
+			return (void(*)())pFunc;
 		
 		glMod = GetModuleHandleA("OpenGL32.dll");
-		return (PROC)GetProcAddress(glMod, (LPCSTR)name);
+		return (void(*)())GetProcAddress(glMod, (LPCSTR)name.c_str());
 	}
-	#define retrieveProcAddress(name) WinGetProcAddress(name)
+	
+	#define FRONTIER_HAS_SO_LOADER 1
 #endif
 
 #if defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
 	#include <GL/glx.h>
-	#define retrieveProcAddress(name) glXGetProcAddressARB((const GLubyte*)name)
+	
+	priv::SO_LOADER::SO_LOADER()
+	{
+		
+	}
+	
+	priv::SO_LOADER::~SO_LOADER()
+	{
+		
+	}
+	
+	void (*priv::SO_LOADER::getProcAddr(const std::string &name))()
+	{
+		return glXGetProcAddressARB((const GLubyte*)name.c_str());
+	}
+	
+	#define FRONTIER_HAS_SO_LOADER 1
 #endif // A linux that is not android
 
-#ifndef retrieveProcAddress
-	#warning No retrieveProcAddress!
-	#define retrieveProcAddress(name) NULL
+#ifndef FRONTIER_HAS_SO_LOADER 
+	#warning No retrieveProcAddress implementation!
+	
+	priv::SO_LOADER::SO_LOADER()
+	{
+		
+	}
+	
+	priv::SO_LOADER::~SO_LOADER()
+	{
+		
+	}
+	
+	void (*priv::SO_LOADER::getProcAddr(const std::string &name))()
+	{
+		return fm::nullPtr;
+	}
 #endif // Unsupported
 
+#define retrieveProcAddress(name) priv::so_loader.getProcAddr(name)
+
+namespace priv
+{
+	SO_LOADER so_loader;
+}
 
 
 static void API_ENTRY _choose_glAccum(GLenum op,GLfloat value)

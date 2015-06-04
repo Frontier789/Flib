@@ -17,13 +17,14 @@ namespace Fgui
     			 const fm::vec2 &borderSize,
     			 const fm::Collector<Widget *> &cells) : Widget(name,anchor,size,parent),
 														 m_cellCount(fm::vec2s()),
-														 m_borderSize(borderSize)
+														 m_borderSize(borderSize),
+														 m_activeWidget(fm::nullPtr)
 	{
 		setCellCount(cellCount);
 
 		C(cells.size())
 			setCell(fm::vec2s(i%cellCount.w,i/cellCount.w),cells[i],false);
-		
+
 		recalc();
 	}
 
@@ -115,19 +116,31 @@ namespace Fgui
 		Cxy(m_cellCount.w,m_cellCount.h)
 			m_cells[x][y].onParentChange();
 	}
-		
+
+	/////////////////////////////////////////////////////////////
+	void Table::setActive(Widget *active)
+	{
+		m_activeWidget = active;
+	}
+
+	/////////////////////////////////////////////////////////////
+	Widget *Table::getActive()
+	{
+		return m_activeWidget;
+	}
+
 	/////////////////////////////////////////////////////////////
 	Widget *Table::findNamed(const std::string &name)
 	{
 		Widget *w = fm::nullPtr;
-		
+
 		Cxy(m_cellCount.w,m_cellCount.h)
 		{
 			w = m_cells[x][y].findNamed(name);
 			if (w)
 				return w;
 		}
-		
+
 		return w;
 	}
 
@@ -151,12 +164,19 @@ namespace Fgui
 		Cxy(m_cellCount.w,m_cellCount.h)
 			m_cells[x][y].onParentChange();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool Table::handleEvent(const fw::Event &ev)
 	{
+		if (!getEnabled())
+			return false;
+
+		if (m_activeWidget)
+			if (m_activeWidget->handleEvent(ev))
+				return true;
+
 		Cxy(m_cellCount.w,m_cellCount.h)
-			if (m_cells[x][y].handleEvent(ev))
+			if (m_cells[x][y].getContent() != m_activeWidget && m_cells[x][y].handleEvent(ev))
 				return true;
 
 		return false;
@@ -181,7 +201,7 @@ namespace Fgui
 		{
 			if (m_cellSizes[x][y].x)
 				fixedWidths[x]  = true;
-				
+
 			if (m_cellSizes[x][y].y)
 				fixedHeights[y] = true;
 		}
@@ -253,7 +273,7 @@ namespace Fgui
 			ch  = 0;
 			cw += m_cellWidths[x];
 		}
-		
+
 		/*
 		if (m_parent)
 			m_parent->onChildChange(this);

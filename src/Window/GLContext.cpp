@@ -20,6 +20,7 @@
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/System/Angle.hpp>
+#include <FRONTIER/System/Mutex.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
 #ifndef FRONTIER_NO_CONTEXT
@@ -38,17 +39,57 @@ namespace fw
 {
 	namespace priv
 	{
+		class ContextHolder
+		{
+		public:
+			fw::GLContext *cont;
+			ContextHolder() : cont(0)
+			{
+				
+			}
+			~ContextHolder()
+			{
+				if (cont)
+					delete cont;
+			}
+		};
+		
+		ContextHolder ch;
+		
+		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+		fm::Mutex theSharedContextMutex;
+		#endif
+		
+		const fw::GLContext &getSharedContext()
+		{
+			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+			theSharedContextMutex.lock();
+			#endif
+			
+			if (!ch.cont)
+				ch.cont = new fw::GLContext,
+				ch.cont->getOSContext().create(NULL,128,128,fw::GLContext::Settings());
+			
+			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+			theSharedContextMutex.unLock();
+			#endif
+			
+			return *ch.cont;
+		}
+		
+		/*
 		fw::GLContext theSharedContext;
 		class theSharedContextInitializer
 		{
 		public:
 			theSharedContextInitializer(fw::GLContext *ptr)
 			{
-				ptr->m_context->create(NULL,100,100,fw::GLContext::Settings());
+				ptr->getOSContext().create(NULL,100,100,fw::GLContext::Settings());
 			}
 		};
-		theSharedContextInitializer initit(&theSharedContext);
+		theSharedContextInitializer initit(&theSharedContext);*/
 	}
+	
 	/////////////////////////////////////////////////////////////
 	GLContext::Settings::Settings(unsigned char majorVersion,
 								  unsigned char minorVersion,
@@ -131,7 +172,7 @@ namespace fw
 	{
 		// forward the call to the implementation
 		return m_context->create((priv::Window::Handle)windowHandle,
-								 (priv::GLContext::Handle)priv::theSharedContext.getHandle(),
+								 (priv::GLContext::Handle)priv::getSharedContext().getHandle(),
 								  settings);
 	}
 
@@ -139,7 +180,7 @@ namespace fw
 	bool GLContext::create(const fm::vec2s &size,fw::GLContext::Settings settings)
 	{
 		// forward the call to the implementation
-		return m_context->create((priv::GLContext::Handle)priv::theSharedContext.getHandle(),
+		return m_context->create((priv::GLContext::Handle)priv::getSharedContext().getHandle(),
 								  size.w,size.h,
 								  settings);
 	}

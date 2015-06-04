@@ -44,6 +44,7 @@ namespace Fgui
 		Anchor m_anchor;    ///< The anchor of the widget
 		fm::vec2 m_size;    ///< The size of the widget
 		Widget *m_parent;   ///< The parent of the widget
+		bool m_enabled;     ///< True when the widget is enabled
 		
 	public:
 		typedef Widget &reference;
@@ -139,6 +140,42 @@ namespace Fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual std::string getName() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Enable or disable widget
+		/// 
+		/// Disabled widgets shouldn't process any events
+		/// 
+		/// @param enabled True to enable false to disable
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setEnabled(bool enabled);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Find out if the widget is enabled or disabled
+		/// 
+		/// @return true if enabled false if disabled
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual bool getEnabled() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the active widget
+		/// 
+		/// By default this function forwards to this widget's parent
+		/// 
+		/// @param active The new active widget
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setActive(Widget *active);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the active widget
+		/// 
+		/// @return active The active widget
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual Widget *getActive();
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the size of the parent of the widget

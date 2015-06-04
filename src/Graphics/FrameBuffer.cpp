@@ -18,8 +18,10 @@
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
+#include <FRONTIER/GL/GL_SO_LOADER.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/System/Log.hpp>
 #include <FRONTIER/OpenGL.hpp>
 class ObjectBinder
@@ -208,9 +210,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	bool FrameBuffer::isAvailable()
 	{
-		GLint testBound;
-		glGetIntegerv(GL_FRAMEBUFFER_BINDING,&testBound);
-		return glGetError()==GL_NO_ERROR;
+		return ::priv::so_loader.getProcAddr("glGenFramebuffers") != fm::nullPtr;
 	}
 
 	////////////////////////////////////////////////////////////
