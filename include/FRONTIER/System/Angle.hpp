@@ -33,7 +33,7 @@ namespace fm
 		typedef Angle &reference;
 		typedef const Angle &const_reference;
 		enum {
-			components = 1u ///< Public value indicating the amount of component_type's in the class
+			components = 1u ///< Public value indicating the amount of component_types in the class
 		};
 		/////////////////////////////////////////////////////////////
 		/// @brief Enumerated type used to decide if a float value

@@ -41,7 +41,7 @@ namespace fm
 		typedef vector2<T> &reference;
 		typedef const vector2<T> &const_reference;
 		enum {
-			components = 2u ///< Public value indicating the amount of component_type's in the class
+			components = 2u ///< Public value indicating the amount of component_types in the class
 		};
 
 		/////////////////////////////////////////////////////////////

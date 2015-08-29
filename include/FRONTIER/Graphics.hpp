@@ -46,6 +46,7 @@ namespace fg
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Primitive.hpp>
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
+#include <FRONTIER/Graphics/VertexState.hpp>
 #include <FRONTIER/Graphics/FontRenderer.hpp>
 #include <FRONTIER/Graphics/DepthTexture.hpp>
 #include <FRONTIER/Graphics/TextureAtlas.hpp>

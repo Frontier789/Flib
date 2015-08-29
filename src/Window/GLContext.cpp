@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -45,7 +45,7 @@ namespace fw
 			fw::GLContext *cont;
 			ContextHolder() : cont(0)
 			{
-				
+
 			}
 			~ContextHolder()
 			{
@@ -53,30 +53,30 @@ namespace fw
 					delete cont;
 			}
 		};
-		
+
 		ContextHolder ch;
-		
+
 		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 		fm::Mutex theSharedContextMutex;
 		#endif
-		
-		const fw::GLContext &getSharedContext()
+
+		fw::GLContext &getSharedContext()
 		{
 			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 			theSharedContextMutex.lock();
 			#endif
-			
+
 			if (!ch.cont)
 				ch.cont = new fw::GLContext,
 				ch.cont->getOSContext().create(NULL,128,128,fw::GLContext::Settings());
-			
+
 			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 			theSharedContextMutex.unLock();
 			#endif
-			
+
 			return *ch.cont;
 		}
-		
+
 		/*
 		fw::GLContext theSharedContext;
 		class theSharedContextInitializer
@@ -89,7 +89,7 @@ namespace fw
 		};
 		theSharedContextInitializer initit(&theSharedContext);*/
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	GLContext::Settings::Settings(unsigned char majorVersion,
 								  unsigned char minorVersion,
@@ -232,26 +232,26 @@ namespace fw
 	{
 		return m_context->getSettings();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void GLContext::setClearColor(const fm::vec4 &color)
 	{
 		glClearColor(color.r,color.g,color.b,color.a);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void GLContext::setClearDepth(float depth)
 	{
 		glClearDepth(depth);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void GLContext::clear(bool colorBuffer,bool depthBuffer,bool stencilBuffer)
 	{
 		if (colorBuffer || depthBuffer || stencilBuffer)
 			glClear((colorBuffer ? GL_COLOR_BUFFER_BIT : 0)|(depthBuffer ? GL_DEPTH_BUFFER_BIT : 0)|(stencilBuffer ? GL_STENCIL_BUFFER_BIT : 0));
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void GLContext::setBlend(BlendMode mode)
 	{
@@ -264,7 +264,7 @@ namespace fw
 			glEnable(GL_BLEND),
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void GLContext::setDepthTest(DepthTestMode mode)
 	{
@@ -272,7 +272,7 @@ namespace fw
 			glEnable(GL_DEPTH_TEST);
 		else
 			glDisable(GL_DEPTH_TEST);
-			
+
 		if (mode == Less)    glDepthFunc(GL_LESS);
 		if (mode == LEqual)  glDepthFunc(GL_LEQUAL);
 		if (mode == GEqual)  glDepthFunc(GL_GEQUAL);

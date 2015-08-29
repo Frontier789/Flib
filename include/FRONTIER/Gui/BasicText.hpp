@@ -16,10 +16,17 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_BASICTEXT_HPP_INCLUDED
 #define FRONTIER_BASICTEXT_HPP_INCLUDED
-#include <FRONTIER/Graphics/Font.hpp>
+#include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/System/String.hpp>
 #include <FRONTIER/Gui/Widget.hpp>
 #define FRONTIER_BASICTEXT
+
+namespace fg
+{
+	class Font;
+	class Texture;
+}
 
 namespace Fgui
 {
@@ -31,33 +38,31 @@ namespace Fgui
 	{
 	private:
 		static const std::string m_className; ///< The name of the class, equals to "BasicText"
-		
+
 	protected:
 		const fg::Texture *m_tex; ///< The texture in which  the font stores the glyphs
 		unsigned int m_charSize;  ///< The current character size
 		fm::mat4 m_transform; ///< The current transform matrix
-		std::string m_text;   ///< The current string
+		fm::String m_text;    ///< The current string
 		fg::Font *m_font; ///< The current font
 		fm::vec4 m_clr;   ///< The current color
-		
-		fm::vec2 *m_pts;  ///< The positions of vertices (contains m_quadCount*4 elements)
-		fm::vec2 *m_tpts; ///< The texture coordinates of vertices (contains m_quadCount*4 elements)
-		fm::vec4 *m_clrs; ///< The colors of vertices (contains m_quadCount*4 elements)
-		fm::Uint16 *m_inds;   ///< The indices of vertices (contains m_quadCount*6 elements)
+
+		fg::Buffer m_vbo; ///< Holds the positions, colors and texture coordinates (m_quadCount*4 elements)
+		fg::Buffer m_ibo; ///< Holds int indices (m_quadCount*6 elements)
 		fm::Size m_quadCount; ///< The number of quads to be drawn
-		
+
 		bool m_monoSpace; ///< The current state of monospacing
 		float m_maxWidth; ///< The current maximum width
 		bool  m_wordWrap; ///< The current state of word wrap
-		
+
 		virtual void buildVertices(); ///< Internal function that calculates the vertices to be drawn
-		
+
 		virtual void setupPosition(); ///< Internal function that updates the position
-		
+
 	public:
 		typedef BasicText &reference;
 		typedef const BasicText &const_reference;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		///
@@ -78,7 +83,7 @@ namespace Fgui
 				   const Anchor &anchor = Anchor(),
 				   const fm::vec2 &size = fm::vec2(),
 				   Widget *parent = fm::nullPtr,
-				   const std::string &text = std::string(),
+				   const fm::String &text = fm::String(),
 				   fg::Font *font = fm::nullPtr,
 				   const fm::vec4 &clr = fm::vec4::White,
 				   unsigned int charSize = 42,
@@ -115,7 +120,7 @@ namespace Fgui
 		/// @param text The new string
 		///
 		/////////////////////////////////////////////////////////////
-		virtual void setText(const std::string &text);
+		virtual void setText(const fm::String &text);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the current string of the static text
@@ -123,7 +128,7 @@ namespace Fgui
 		/// @return The current string
 		///
 		/////////////////////////////////////////////////////////////
-		virtual const std::string &getText() const;
+		virtual const fm::String &getText() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the font of the static text
@@ -207,10 +212,10 @@ namespace Fgui
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the word wrap
-		/// 
-		/// If the word wrap is enabled no word will be 
+		///
+		/// If the word wrap is enabled no word will be
 		/// cut in half when adapting to maxWidth
-		/// 
+		///
 		/// @param wordWrap The new state of word wrap
 		///
 		/////////////////////////////////////////////////////////////

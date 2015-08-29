@@ -23,26 +23,26 @@ namespace Fgui
 {
 	/////////////////////////////////////////////////////////////
 	/// @brief A simple container class that holds one widget
-	/// 
+	///
 	/// The final size of the div is max(contentSize+margin*2 , minSize)
-	/// 
+	///
 	/// The content must be allocated with new (not new[])
 	/// And will be deallocated automaitcally using delete
-	/// 
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Div : public Widget
 	{
 	private:
 		static const std::string m_className; ///< The name of the class, equals to "Div"
-		
+
 	protected:
 		fm::vec2 m_margin; ///< The margin
 		Widget *m_content; ///< The contained widget
-		
+
 	public:
 		typedef Div &reference;
 		typedef const Div &const_reference;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		///
@@ -52,7 +52,7 @@ namespace Fgui
 		/// @param parent The parent of the widget
 		/// @param margin The margin of the div
 		/// @param content The contained widget
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		Div(const std::string &name = "NoName",
 			const Anchor &anchor = Anchor(),
@@ -61,104 +61,104 @@ namespace Fgui
 			const fm::vec2 &margin = fm::vec2(),
 			Widget *content = fm::nullPtr);
 
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
-		~Div();
+		virtual ~Div();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the minimal size of the div
-		/// 
+		///
 		/// @return The minimal size
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
-		fm::vec2 getSize() const;
-		
+		virtual fm::vec2 getSize() const;
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the minimal size of the div
-		/// 
+		///
 		/// @param size The new minimal size
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
-		void setMinSize(const fm::vec2 &size);
-		
+		virtual void setMinSize(const fm::vec2 &size);
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the margin of the div
-		/// 
+		///
 		/// @param margin The new margin
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
-		void setMargin(const fm::vec2 &margin);
-		
+		virtual void setMargin(const fm::vec2 &margin);
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the parent of the div
-		/// 
+		///
 		/// @param parent The new parent
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
-		void setParent(Widget *parent);
-		
+		virtual void setParent(Widget *parent);
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the minimal size of the div
-		/// 
+		///
 		/// @param size The new minimal size
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
-		void setSize(const fm::vec2 &size);
+		virtual void setSize(const fm::vec2 &size);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the anchor
-		/// 
+		///
 		/// @param anchor The new anchor
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
-		void setAnchor(const Anchor &anchor);
-		
+		virtual void setAnchor(const Anchor &anchor);
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Search the content for a widget with a given name
-		/// 
+		///
 		/// @param name The name to search for
-		/// 
+		///
 		/// @return The found widget (NULL if not found)
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		Widget *findNamed(const std::string &name);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Draw the div
-		/// 
+		///
 		/// Passed through to the contained widget
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
-		void onDraw();
-		
+		virtual void onDraw();
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Handle the fixed update
-		/// 
+		///
 		/// Passed through to the contained widget
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
-		void onUpdate();
-		
+		virtual void onUpdate();
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Handle the change of parent
-		/// 
+		///
 		/// Passed through to the contained widget
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
-		void onParentChange();
-		
+		virtual void onParentChange();
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Pass through the event to the contained widget
-		/// 
+		///
 		/// @param ev The event
-		/// 
+		///
 		/// @return True if the event is handled
 		///
 		/////////////////////////////////////////////////////////////
-		bool handleEvent(const fw::Event &ev);
+		virtual bool handleEvent(const fw::Event &ev);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the contained widget
@@ -166,7 +166,7 @@ namespace Fgui
 		/// @return The contained widget
 		///
 		/////////////////////////////////////////////////////////////
-		Widget *getContent();
+		virtual Widget *getContent();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the contained widget
@@ -174,7 +174,7 @@ namespace Fgui
 		/// @param content The new contained widget
 		///
 		/////////////////////////////////////////////////////////////
-		void setContent(Widget *content);
+		virtual void setContent(Widget *content);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the real type of the class

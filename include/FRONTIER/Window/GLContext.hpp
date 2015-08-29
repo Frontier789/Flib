@@ -34,27 +34,26 @@ namespace fw
 	class GLContext;
 	namespace priv
 	{
-		extern fw::GLContext theSharedContext;
-		class theSharedContextInitializer;
+		fw::GLContext &getSharedContext();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Encodes types of blending
-	/// 
+	///
 	/// By default blending is not used (same as Overwrite)
-	/// 
+	///
 	/////////////////////////////////////////////////////////////
 	enum BlendMode {
 		Overwrite, ///< Destination = Input
 		Additive,  ///< Destination = Destination + Input
 		Alpha      ///< Destination = Destination*(1-Input.a) + Input*Input.a
 	};
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Encodes types of depth testing
-	/// 
+	///
 	/// By default depth test is not used
-	/// 
+	///
 	/////////////////////////////////////////////////////////////
 	enum DepthTestMode {
 		Less,    ///< Writes the fragment iff it's distance is smaller than the current in the depth buffer
@@ -290,72 +289,70 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		const fw::GLContext::Settings &getSettings() const;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of the clearing color used by the currently active context
-		/// 
+		///
 		/// @param color The new clear-color
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		static void setClearColor(const fm::vector4<float> &color);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the clearing depth used by the currently active context
-		/// 
+		///
 		/// @param depth The new clearing depth
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		static void setClearDepth(float depth);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Clears the specified buffers of the currently active context
-		/// 
+		///
 		/// @param colorBuffer If true the color buffer will be cleared with the set clear-color
 		/// @param depthBuffer If true the depth buffer will be cleared with the specified value
 		/// @param stencilBuffer If true the stencil buffer will be cleared with the specified value
-		/// 
+		///
 		/// @see setClearColor
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		static void clear(bool colorBuffer = true,bool depthBuffer = false,bool stencilBuffer = false);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the blending mode of the current context
-		/// 
+		///
 		/// @param mode The new blending mode
-		/// 
+		///
 		/// @see BlendMode
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		static void setBlend(BlendMode mode);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the depthtest mode of the current context
-		/// 
+		///
 		/// @param mode The new depth-test mode
-		/// 
+		///
 		/// @see DepthTestMode
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		static void setDepthTest(DepthTestMode mode);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy the content of the currently bound render target to the cpu
-		/// 
+		///
 		/// OpenGL uses a coordinate system with origin at the lower-left corner
 		/// so flipping the image is desireable if a coordinate system with origin at
 		/// the upper left corner is used
-		/// 
+		///
 		/// @param pos The coordinates of the rectangle to be read
 		/// @param size The size of the rectangle to be read
 		/// @param flip If true the image will be flipped vertically
-		/// 
+		///
 		/// @return The read Image
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		static fg::Image capture(const fm::vec2s &pos,const fm::vec2s &size,bool flip = true);
-
-		friend class priv::theSharedContextInitializer;
 	};
 }
 

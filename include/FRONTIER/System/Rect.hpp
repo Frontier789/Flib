@@ -39,7 +39,7 @@ namespace fm
         typedef rect<T> &reference;
         typedef const rect<T> &const_reference;
 		enum {
-			components = 4u ///< Public value indicating the amount of component_type's in the class
+			components = 4u ///< Public value indicating the amount of component_types in the class
 		};
 		vector2<T> pos;  ///< The position of the rectangle
 		vector2<T> size; ///< The size of the rectangle

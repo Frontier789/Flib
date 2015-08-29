@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -46,7 +46,7 @@ public:
 	unsigned long state;
 };
 
-std::string getProperty(Display *disp,Window win,Atom property,Atom rtype,bool del=false)
+std::string getProperty(Display *disp,Window win,Atom property,Atom rtype,bool del = false)
 {
 	std::string ret;
 	int format;
@@ -75,6 +75,7 @@ std::string getProperty(Display *disp,Window win,Atom property,Atom rtype,bool d
 	}
 	return ret;
 }
+
 std::vector<int> getPropertyInts(Display *disp,Window win,Atom property,Atom rtype,bool del=false)
 {
 	std::vector<int> ret;
@@ -563,23 +564,23 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Xlib::Window *parent,::Window container) : m_opened(false),
-																																					    m_enableRepeat(true),
-																																					    m_lastDown(XK_VoidSymbol),
-																																					    m_disp(NULL),
-																																					    m_delAtom(0),
-																																					    m_stateAtom(0),
-																																					    m_resizeable(true),
-																																					    m_prevW(0),
-																																					    m_prevH(0),
-																																					    m_stateHiddenAtom(0),
-																																					    m_maxHorAtom(0),
-																																					    m_maxVertAtom(0),
-																																					    m_uri_listAtom(0),
-																																					    m_supportUriList(false),
-																																					    m_emptyCursor(None),
-																																					    m_parent(NULL),
-																																					    m_eventCallback(NULL)
+		Window::Window(int x,int y,unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Xlib::Window *parent,::Window container) : m_opened(false),
+																																					   m_enableRepeat(true),
+																																					   m_lastDown(XK_VoidSymbol),
+																																					   m_disp(NULL),
+																																					   m_delAtom(0),
+																																					   m_stateAtom(0),
+																																					   m_resizeable(true),
+																																					   m_prevW(0),
+																																					   m_prevH(0),
+																																					   m_stateHiddenAtom(0),
+																																					   m_maxHorAtom(0),
+																																					   m_maxVertAtom(0),
+																																					   m_uri_listAtom(0),
+																																					   m_supportUriList(false),
+																																					   m_emptyCursor(None),
+																																					   m_parent(NULL),
+																																					   m_eventCallback(NULL)
 		{
 			open(x,y,w,h,title,style,parent,container);
 		}
@@ -594,7 +595,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Xlib::Window *parent,::Window container)
+		bool Window::open(int x,int y,unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Xlib::Window *parent,::Window container)
 		{
 			if (!checkDisplay())
 				return false;
@@ -941,34 +942,48 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::setTitle(const std::string &title)
+		bool Window::setTitle(const fm::String &title)
 		{
 			if (!isOpen())
 				return false;
 			
-			std::string s = title;
+			std::basic_string<fm::Uint8> s = title.toUtf8();
+			
+			XChangeProperty(m_disp,m_win,
+							XInternAtom(m_disp, "_NET_WM_NAME", False),
+							XInternAtom(m_disp, "UTF8_STRING", False),
+							8, PropModeReplace, s.c_str(), s.size());
+			/*
+			std::string s = title.toAnsi();
 			char *c = &s[0];
 			
 			XStoreName(m_disp,m_win,c); 
-
+			*/
+			
 			XFlush(m_disp);
 
 			return true;
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::getTitle(std::string &title) const
+		bool Window::getTitle(fm::String &title) const
 		{
 			if (!isOpen())
 				return false;
 			
+			std::string s = getProperty(m_disp,m_win,XInternAtom(m_disp, "_NET_WM_NAME", False),XInternAtom(m_disp, "UTF8_STRING", False));
+			
+			title = fm::String::fromUtf8(s.begin(),s.end());
+			
+			/*
 			char *c;
 			
 			XFetchName(m_disp,m_win,&c);
 			title = c;
 			
 			XFree(c); 
-
+			*/
+			
 			XFlush(m_disp);
 
 			return true;

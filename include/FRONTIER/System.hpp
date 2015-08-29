@@ -46,6 +46,7 @@ namespace fm
 #include <FRONTIER/System/FmLog.hpp>
 #include <FRONTIER/System/Angle.hpp>
 #include <FRONTIER/System/Sleep.hpp>
+#include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Polar2.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Vertex.hpp>

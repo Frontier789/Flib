@@ -73,6 +73,12 @@ namespace Fgui
 	}
 
 	/////////////////////////////////////////////////////////////
+	fm::vec2s Table::getCellCount()
+	{
+		return m_cellCount;
+	}
+
+	/////////////////////////////////////////////////////////////
 	Widget *Table::getCell(const fm::vec2s &pos)
 	{
 		return m_cells[pos.x][pos.y].getContent();
@@ -120,13 +126,19 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	void Table::setActive(Widget *active)
 	{
-		m_activeWidget = active;
+		if (m_parent)
+			m_parent->setActive(active);
+		else
+			m_activeWidget = active;
 	}
 
 	/////////////////////////////////////////////////////////////
 	Widget *Table::getActive()
 	{
-		return m_activeWidget;
+		if (m_parent)
+			return m_parent->getActive();
+		else
+			return m_activeWidget;
 	}
 
 	/////////////////////////////////////////////////////////////

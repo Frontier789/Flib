@@ -39,7 +39,7 @@ namespace fm
 		public:
 			typedef int component_type;
 			enum {
-				components = 0u ///< Public value indicating the amount of component_type's in the class
+				components = 0u ///< Public value indicating the amount of component_types in the class
 			};
 
 			/////////////////////////////////////////////////////////////

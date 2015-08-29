@@ -21,8 +21,8 @@ namespace fm
 {
 	namespace priv
 	{
-		template <unsigned num> 
-		class bits_per_byte_helper 
+		template <unsigned num>
+		class bits_per_byte_helper
 		{
 		public:
 			/// shift the value to the right (divide by two and floor it) by one and recursively call itself
@@ -31,7 +31,7 @@ namespace fm
 			};
 		};
 
-		template <> 
+		template <>
 		class bits_per_byte_helper<0>
 		{
 		public:
@@ -48,7 +48,7 @@ namespace fm
 				value = bits_per_byte_helper<(unsigned char)(-1)>::value
 			};
 		};
-		
+
 		#define FRONTIER_BITS_PER_BYTE fm::priv::bits_per_byte::value
 
 
@@ -71,16 +71,16 @@ namespace fm
 		public:
 			/// The separated the first type
 			typedef T0 First;
-			
+
 			/// The rest, shifted left
 			typedef TypeList<T1,T2,T3,T4,T5,T6,T7,T8,T9,NoType> WithoutFirst;
 		};
-		
+
 		/// End the recursion upon having only NoType-s
 		template<>
 		class TypeList<NoType,NoType,NoType,NoType,NoType,NoType,NoType,NoType,NoType>
 		{
-			
+
 		};
 	}
 }
@@ -89,23 +89,23 @@ namespace fm
 {
 	namespace priv
 	{
-		
 
-		/// TypeList containing the fundamental signed integer types 
+
+		/// TypeList containing the fundamental signed integer types
 		typedef TypeList<signed char,
 						 signed short,
 						 signed int,
 						 signed long,
 						 signed long long> Intlist;
-						 
-		/// TypeList containing the fundamental unsigned integer types 
+
+		/// TypeList containing the fundamental unsigned integer types
 		typedef TypeList<unsigned char,
 						 unsigned short,
 						 unsigned int,
 						 unsigned long,
 						 unsigned long long> Uintlist;
-						 
-		/// TypeList containing the fundamental floating point types 
+
+		/// TypeList containing the fundamental floating point types
 		typedef TypeList<float,
 						 double,
 						 long double> Floatlist;

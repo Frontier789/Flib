@@ -88,7 +88,7 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	fg::Image FontRenderer::renderGlyph(const fg::CodePoint &letter,unsigned int style,fm::vector2<float> *leftDown) const
+	fg::Image FontRenderer::renderGlyph(const fm::Uint32 &letter,unsigned int style,fm::vector2<float> *leftDown) const
 	{
 		if (!m_loaded)
 			return fg::Image();
@@ -99,7 +99,7 @@ namespace fg
 			setCharacterSize(m_currentSize*.7);
 
 		// get glyph index
-		FT_UInt glyphIndex = FT_Get_Char_Index(*((FT_Face*)m_ftFaceData),letter.cp);
+		FT_UInt glyphIndex = FT_Get_Char_Index(*((FT_Face*)m_ftFaceData),letter);
 
 		// load glyph data
 		int error = FT_Load_Glyph(*((FT_Face*)m_ftFaceData),glyphIndex,FT_LOAD_FORCE_AUTOHINT | FT_LOAD_DEFAULT);
@@ -246,12 +246,12 @@ namespace fg
 	}
     
 	/////////////////////////////////////////////////////////////
-	bool FontRenderer::hasGlyph(const CodePoint &letter) const
+	bool FontRenderer::hasGlyph(const fm::Uint32 &letter) const
 	{
 		if (!m_loaded)
 			return false;
 		
-		return FT_Get_Char_Index(*((FT_Face*)m_ftFaceData),letter.cp) != 0;
+		return FT_Get_Char_Index(*((FT_Face*)m_ftFaceData),letter) != 0;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -261,14 +261,14 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	int FontRenderer::getKerning(const fg::CodePoint &leftCodePoint,const fg::CodePoint &rightCodePoint) const
+	int FontRenderer::getKerning(const fm::Uint32 &leftCodePoint,const fm::Uint32 &rightCodePoint) const
 	{
 		if (!m_loaded)
 			return 0;
 
 		// get glyph indices
-		FT_UInt leftGlyphIndex  = FT_Get_Char_Index(*((FT_Face*)m_ftFaceData),leftCodePoint.cp);
-		FT_UInt rightGlyphIndex = FT_Get_Char_Index(*((FT_Face*)m_ftFaceData),rightCodePoint.cp);
+		FT_UInt leftGlyphIndex  = FT_Get_Char_Index(*((FT_Face*)m_ftFaceData),leftCodePoint);
+		FT_UInt rightGlyphIndex = FT_Get_Char_Index(*((FT_Face*)m_ftFaceData),rightCodePoint);
 
 		// retrieve kerning offset
 		if (leftGlyphIndex && rightGlyphIndex)

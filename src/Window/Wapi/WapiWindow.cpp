@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -21,7 +21,6 @@
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/FwLog.hpp>
 #include <algorithm>
-#include <string>
 /*
 BOOL destroyAndPromptW(HWND h)
 {
@@ -758,22 +757,22 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		Window::Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Wapi::Window *parent,HWND container) : m_hwnd(NULL),
-																																					m_showCursor(true),
-																																					m_resizeable(true),
-																																					m_enableRepeat(false),
-																																					m_cursorInside(false),
-																																					m_acceptDrop(false),
-																																					m_lastDown(0),
-																																					m_icon(NULL),
-																																					m_isOpened(false),
-																																					m_eventCallback(NULL),
-																																					m_ownedParent(NULL),
-																																					m_parent(NULL),
-																																					m_decorActive(false),
-																																					m_inSizeMoveMode(false),
-																																					m_windowMoved(false),
-																																					m_cursorHitTest(NULL)
+		Window::Window(int x,int y,unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Wapi::Window *parent,HWND container) : m_hwnd(NULL),
+																																				   m_showCursor(true),
+																																				   m_resizeable(true),
+																																				   m_enableRepeat(false),
+																																				   m_cursorInside(false),
+																																				   m_acceptDrop(false),
+																																				   m_lastDown(0),
+																																				   m_icon(NULL),
+																																				   m_isOpened(false),
+																																				   m_eventCallback(NULL),
+																																				   m_ownedParent(NULL),
+																																				   m_parent(NULL),
+																																				   m_decorActive(false),
+																																				   m_inSizeMoveMode(false),
+																																				   m_windowMoved(false),
+																																				   m_cursorHitTest(NULL)
 		{
 			open(x,y,w,h,title,style,parent,container);
 		}
@@ -875,7 +874,7 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Wapi::Window *parent,HWND container)
+		bool Window::open(int x,int y,unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Wapi::Window *parent,HWND container)
 		{
 			// clean our resources before (re)creating
 			cleanUp();
@@ -908,9 +907,9 @@ namespace fw
 
 
 			// initialize the window
-			m_hwnd = CreateWindowExA(((style & fw::Window::Toolbar) ? WS_EX_TOOLWINDOW : 0),
-									 FRONTIER_WINDOWS_CLASS_NAME,
-									 title.c_str(),
+			m_hwnd = CreateWindowExW(((style & fw::Window::Toolbar) ? WS_EX_TOOLWINDOW : 0),
+									 FRONTIER_WINDOWS_WCLASS_NAME,
+									 &title.wstr()[0],
 									 createStyle,
 									 x,y,10,10,
 									 m_parent ? m_parent->getHandle() : m_ownedParent,
@@ -1194,10 +1193,10 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::setTitle(const std::string &title)
+		bool Window::setTitle(const fm::String &title)
 		{
 			if (m_hwnd)
-				if (!SetWindowTextA(m_hwnd,title.c_str()))
+				if (!SetWindowTextW(m_hwnd,&title.wstr()[0]))
 				{
 					fw::WapiPrintLastError(fw_log,SetWindowText);
 					return false;
@@ -1206,52 +1205,26 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::setTitle(const std::wstring &title)
-		{
-			if (m_hwnd)
-				if (!SetWindowTextW(m_hwnd,title.c_str()))
-				{
-					fw::WapiPrintLastError(fw_log,SetWindowText);
-					return false;
-				}
-			return true;
-		}
-
-		////////////////////////////////////////////////////////////
-		bool Window::getTitle(std::string &title) const
-		{
-			if (m_hwnd)
-			{
-				unsigned int bufsize = GetWindowTextLength(m_hwnd) + 1;
-				char *ret = new char[bufsize];
-				if (!GetWindowTextA(m_hwnd, ret, bufsize))
-				{
-					 // delete allocated memory!
-					delete ret;
-					fw::WapiPrintLastError(fw_log,GetWindowText);
-					return false;
-				}
-				title = std::string(ret);
-				delete ret;
-			}
-			return true;
-		}
-
-		////////////////////////////////////////////////////////////
-		bool Window::getTitle(std::wstring &title) const
+		bool Window::getTitle(fm::String &title) const
 		{
 			if (m_hwnd)
 			{
 				unsigned int bufsize = GetWindowTextLength(m_hwnd) + 1;
 				wchar_t *ret = new wchar_t[bufsize];
-				if (!GetWindowTextW(m_hwnd, ret, bufsize))
+				
+				int written = GetWindowTextW(m_hwnd, ret, bufsize);
+				
+				ret[written] = 0;
+				
+				if (!written)
 				{
 					 // delete allocated memory!
 					delete ret;
 					fw::WapiPrintLastError(fw_log,GetWindowText);
 					return false;
 				}
-				title = std::wstring(ret);
+				title = fm::String(ret);
+				
 				delete ret;
 			}
 			return true;

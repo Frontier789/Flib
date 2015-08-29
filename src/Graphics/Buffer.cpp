@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -17,6 +17,7 @@
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
+#include <FRONTIER/SYstem/NullPtr.hpp>
 #include <FRONTIER/OpenGL.hpp>
 namespace fg
 {
@@ -38,7 +39,7 @@ namespace fg
 	Buffer::Buffer(Buffer::Usage usage,BufferType type) : m_type(type),
 														  m_usage(usage)
 	{
-		
+
 	}
 
 	////////////////////////////////////////////////////////////
@@ -58,13 +59,13 @@ namespace fg
 	{
 		if (getGlId() && glIsBufferARB(getGlId()))
 			glCheck(glDeleteBuffersARB(1,&getGlId()));
-		
+
 	}
 
 	/// functions /////////////////////////////////////////////////////////
 	void Buffer::init()
 	{
-		if (!glIsBufferARB(getGlId()))
+		if (!getGlId() || !glIsBufferARB(getGlId()))
 			glCheck(glGenBuffersARB(1,&getGlId()));
 	}
 
@@ -89,7 +90,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	unsigned int typeToGetBinding(BufferType type)
 	{
-		return type == IndexBuffer ? GL_ELEMENT_ARRAY_BUFFER_BINDING_ARB : 
+		return type == IndexBuffer ? GL_ELEMENT_ARRAY_BUFFER_BINDING_ARB :
 									 GL_ARRAY_BUFFER_BINDING_ARB;
 	}
 
@@ -98,15 +99,15 @@ namespace fg
 	{
 		if (usage==GL_STATIC_READ_ARB) return GL_STATIC_DRAW_ARB;
 		if (usage==GL_STATIC_COPY_ARB) return GL_STATIC_DRAW_ARB;
-		           
+
 		if (usage==GL_DYNAMIC_DRAW_ARB) return GL_STATIC_DRAW_ARB;
 		if (usage==GL_DYNAMIC_READ_ARB) return GL_STATIC_READ_ARB;
 		if (usage==GL_DYNAMIC_COPY_ARB) return GL_STATIC_COPY_ARB;
-		           
+
 		if (usage==GL_STREAM_DRAW_ARB) return GL_STATIC_DRAW_ARB;
 		if (usage==GL_STREAM_READ_ARB) return GL_STATIC_READ_ARB;
 		if (usage==GL_STREAM_COPY_ARB) return GL_STATIC_COPY_ARB;
-		
+
 		return 0;
 	}
 
@@ -118,14 +119,14 @@ namespace fg
 		init();
 		if (!getGlId())
 			return *this;
-		
+
 		int boundBuffer=0;
-		
+
 		glCheck(glGetIntegerv(typeToGetBinding(m_type),&boundBuffer));
 		glCheck(glBindBufferARB(m_type,getGlId()));
-		
+
 		glBufferDataARB(m_type,bytesToCopy,data,m_usage);
-		
+
 		unsigned int errCode = glGetError();
 		if (errCode)
 		{
@@ -134,7 +135,7 @@ namespace fg
 			if (errCode == GL_INVALID_ENUM)
 				glCheck(glBufferDataARB(m_type,bytesToCopy,data,getFallBackUsage(m_usage)));
 		}
-		
+
 
 		glCheck(glBindBufferARB(m_type,boundBuffer));
 		return *this;
@@ -147,15 +148,41 @@ namespace fg
 		if (!getGlId())
 			return *this;
 		int boundBuffer=0;
-		
+
 		glCheck(glGetIntegerv(typeToGetBinding(m_type),&boundBuffer));
-		
+
 		glCheck(glBindBufferARB(m_type,getGlId()));
 		glCheck(glBufferSubDataARB(m_type,byteOffset,bytesToCopy,data));
-		
+
 		glCheck(glBindBufferARB(m_type,boundBuffer));
-		
+
 		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	void *Buffer::map(bool read,bool write)
+	{
+		if (!read && !write)
+			return fm::nullPtr;
+
+		bind();
+
+		return glMapBufferARB(m_type,read ? (write ? GL_READ_WRITE_ARB : GL_READ_ONLY_ARB) : (write ? GL_WRITE_ONLY_ARB : GL_NONE));
+	}
+
+	/////////////////////////////////////////////////////////////
+	void Buffer::unMap()
+	{
+		bind();
+
+		glUnmapBufferARB(m_type);
+	}
+
+
+	/////////////////////////////////////////////////////////////
+	BufferType Buffer::getType() const
+	{
+		return m_type;
 	}
 
 	////////////////////////////////////////////////////////////

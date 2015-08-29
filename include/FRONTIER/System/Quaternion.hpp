@@ -45,7 +45,7 @@ namespace fm
 		typedef Quat &reference;
 		typedef const Quat &const_reference;
 		enum {
-			components = 4u ///< Public value indicating the amount of component_type's in the class
+			components = 4u ///< Public value indicating the amount of component_types in the class
 		};
 
 

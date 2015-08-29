@@ -5,7 +5,7 @@ namespace Fgui
 {
 	/////////////////////////////////////////////////////////////
 	const std::string Div::m_className = "Div";
-	
+
 	/////////////////////////////////////////////////////////////
 	Div::Div(const std::string &name,
 			 const Anchor &anchor,
@@ -78,16 +78,16 @@ namespace Fgui
 		if (m_content)
 			m_content->onParentChange();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Widget *Div::findNamed(const std::string &name)
 	{
 		if (m_name == name)
 			return this;
-		
+
 		if (m_content)
 			return m_content->findNamed(name);
-		
+
 		return fm::nullPtr;
 	}
 
@@ -117,7 +117,7 @@ namespace Fgui
 	{
 		if (!getEnabled())
 			return false;
-		
+
 		if (m_content)
 			return m_content->handleEvent(ev);
 

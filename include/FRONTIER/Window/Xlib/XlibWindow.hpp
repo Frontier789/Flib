@@ -138,7 +138,7 @@ namespace fw
 			/// @param container The window which will contain the new window
 			///
 			/////////////////////////////////////////////////////////////
-			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Xlib::Window *parent = NULL,::Window container = 0);
+			Window(int x,int y,unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Xlib::Window *parent = NULL,::Window container = 0);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Default destructor
@@ -171,7 +171,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Xlib::Window *parent = NULL,::Window container = 0);
+			bool open(int x,int y,unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Xlib::Window *parent = NULL,::Window container = 0);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Check if the window is opened
@@ -322,7 +322,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool setTitle(const std::string &title);
+			bool setTitle(const fm::String &title);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Retrieve the title of the window
@@ -332,7 +332,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool getTitle(std::string &title) const;
+			bool getTitle(fm::String &title) const;
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Show or hide the window

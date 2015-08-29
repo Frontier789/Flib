@@ -18,6 +18,7 @@
 #define FRONTIER_WAPI_WINDOW_INCLUDED
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/System/String.hpp>
 #include <FRONTIER/Window/Event.hpp>
 
 #ifdef FRONTIER_PROTECT_SHARED_VARIABLES
@@ -34,7 +35,6 @@
 #endif
 
 #include <windows.h>
-#include <string>
 #include <deque>
 
 /** The name of the WINDCLASS */
@@ -138,7 +138,7 @@ namespace fw
 			/// @param container The window that contains this (0 for nobody)
 			///
 			/////////////////////////////////////////////////////////////
-			Window(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Wapi::Window *parent = NULL,HWND container = 0);
+			Window(int x,int y,unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Wapi::Window *parent = NULL,HWND container = 0);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Default destructor
@@ -171,7 +171,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool open(int x,int y,unsigned int w,unsigned int h,const std::string &title,unsigned int style,Wapi::Window *parent = NULL,HWND container = 0);
+			bool open(int x,int y,unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Wapi::Window *parent = NULL,HWND container = 0);
 			
 
 			/////////////////////////////////////////////////////////////
@@ -333,7 +333,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool setTitle(const std::string &title);
+			bool setTitle(const fm::String &title);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Retrieve the title of the window
@@ -343,27 +343,7 @@ namespace fw
 			/// @return True iff everything went right
 			///
 			/////////////////////////////////////////////////////////////
-			bool getTitle(std::string &title) const;
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Set the title of the window
-			///
-			/// @param title The new title
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool setTitle(const std::wstring &title);
-
-			/////////////////////////////////////////////////////////////
-			/// @brief Retrieve the title of the window
-			///
-			/// @param title Set to the title
-			///
-			/// @return True iff everything went right
-			///
-			/////////////////////////////////////////////////////////////
-			bool getTitle(std::wstring &title) const;
+			bool getTitle(fm::String &title) const;
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Show or hide the window

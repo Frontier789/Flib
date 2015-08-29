@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Copyright (C) 2014 Frontier (fr0nt13r789@github.c/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014 Frontier (fr0nt13r789@github.c/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -59,7 +59,7 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
-	Window::Window(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings) : m_window(new priv::Window)
+	Window::Window(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings) : m_window(new priv::Window)
 	{
 		open(pos,size,title,style,parent,container,settings);
 	}
@@ -78,7 +78,7 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool Window::open(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings)
+	bool Window::open(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings)
 	{
 		bool ok1 = m_window->open(pos.x,pos.y,size.w,size.h,title,style,(parent ? &parent->getOSWindow() : NULL),(priv::Window::Handle)container);
 		bool ok2 = this->create((priv::Window::Handle)m_window->getHandle(),settings);
@@ -191,15 +191,15 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool Window::setTitle(const std::string &title)
+	bool Window::setTitle(const fm::String &title)
 	{
 		return m_window->setTitle(title);
 	}
 
 	/////////////////////////////////////////////////////////////
-	std::string Window::getTitle() const
+	fm::String Window::getTitle() const
 	{
-		std::string ret;
+		fm::String ret;
 		m_window->getTitle(ret);
 		return ret;
 	}

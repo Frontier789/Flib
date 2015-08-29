@@ -23,9 +23,9 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
+#include <FRONTIER/System/macros/TYPES.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
-#include <FRONTIER/Graphics/CodePoint.hpp>
 #include <FRONTIER/Graphics/Metrics.hpp>
 #include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/System/NullPtr.hpp>
@@ -59,14 +59,14 @@ namespace fg
 		class FRONTIER_API Identifier
 		{
 		public:
-			CodePoint codePoint; ///< The codepoint of the character
+			fm::Uint32 codePoint; ///< The codepoint of the character
 			unsigned int style;  ///< The style of the character (e.g. Underlined)
 
 			/////////////////////////////////////////////////////////////
 			Identifier();
 
 			/////////////////////////////////////////////////////////////
-			Identifier(const CodePoint &codePoint,unsigned int style);
+			Identifier(const fm::Uint32 &codePoint,unsigned int style);
 
 			/////////////////////////////////////////////////////////////
 			bool operator<(const Identifier &other) const;
@@ -115,7 +115,7 @@ namespace fg
 		/// @return True if everything went right false otherwise
 		///
 		/////////////////////////////////////////////////////////////
-		bool loadFromFile(const std::string &fileName,unsigned int size=64);
+		bool loadFromFile(const std::string &fileName,unsigned int size = 64);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the Font from a ttf file that loaded in memory
@@ -154,7 +154,7 @@ namespace fg
 		/// @return The glyph
 		///
 		/////////////////////////////////////////////////////////////
-		Glyph getGlyph(const CodePoint &letter,unsigned int type = Glyph::Regular) const;
+		Glyph getGlyph(const fm::Uint32 &letter,unsigned int type = Glyph::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Render a glyph's image with the current size
@@ -168,7 +168,7 @@ namespace fg
 		/// @return The rendered image
 		///
 		/////////////////////////////////////////////////////////////
-		Image renderGlyph(const CodePoint &letter,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown = fm::nullPtr) const;
+		Image renderGlyph(const fm::Uint32 &letter,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown = fm::nullPtr) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if a given glyph is present in the font
@@ -179,7 +179,7 @@ namespace fg
 		/// @return True iff the glyph is present
 		///
 		/////////////////////////////////////////////////////////////
-		bool hasGlyph(const CodePoint &letter,unsigned int style = Glyph::Regular) const;
+		bool hasGlyph(const fm::Uint32 &letter,unsigned int style = Glyph::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get information about the font metrics
@@ -198,7 +198,7 @@ namespace fg
 		/// @return The kerning offset
 		///
 		/////////////////////////////////////////////////////////////
-		int getKerning(const CodePoint &leftCodePoint,const CodePoint &rightCodePoint) const;
+		int getKerning(const fm::Uint32 &leftCodePoint,const fm::Uint32 &rightCodePoint) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the currently used size
@@ -244,7 +244,7 @@ namespace fg
 		/// @return The glyph of the uploaded image
 		///
 		/////////////////////////////////////////////////////////////
-		Glyph upload(const fg::Image &img,const CodePoint &letter,unsigned int type = Glyph::Regular,const fm::vec2s &leftdown=fm::vec2s(),unsigned int characterSize=0);
+		Glyph upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type = Glyph::Regular,const fm::vec2s &leftdown = fm::vec2s(),unsigned int characterSize = 0);
 		
 	private:
 

@@ -43,11 +43,17 @@
 #include <FRONTIER/System/macros/API.h>
 
 //////////////////////////////////
-/// commun types and
-/// values
+/// commun types
 //////////////////////////////////
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/TYPES.hpp>
+
+//////////////////////////////////
+/// useful macro(s)
+//////////////////////////////////
+#include <FRONTIER/System/macros/OFFSETOF.hpp>
+
+
 namespace fm
 {
 	const float PI = 3.14159265358979f;

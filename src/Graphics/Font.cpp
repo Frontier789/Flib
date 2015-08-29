@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014 Frontier (fr0nt13r789@gmail.com)                ///
+/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -29,8 +29,8 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	Font::Identifier::Identifier(const CodePoint &codePoint,unsigned int style) : codePoint(codePoint),
-																				  style    (style)
+	Font::Identifier::Identifier(const fm::Uint32 &codePoint,unsigned int style) : codePoint(codePoint),
+																				   style    (style)
 	{
 
 	}
@@ -39,7 +39,7 @@ namespace fg
 	bool Font::Identifier::operator<(const Identifier &other) const
 	{
 		// used for sorting
-		return (codePoint.cp==other.codePoint.cp ? style < other.style : codePoint.cp < other.codePoint.cp);
+		return (codePoint==other.codePoint ? style < other.style : codePoint < other.codePoint);
 	}
 
 	/// constructors /////////////////////////////////////////////////////////
@@ -120,7 +120,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-    Glyph Font::getGlyph(const CodePoint &letter,unsigned int style) const
+    Glyph Font::getGlyph(const fm::Uint32 &letter,unsigned int style) const
     {
     	if (!m_renderer)
 			return Glyph();
@@ -140,7 +140,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-    Image Font::renderGlyph(const CodePoint &letter,unsigned int style,fm::vec2 *leftDown) const
+    Image Font::renderGlyph(const fm::Uint32 &letter,unsigned int style,fm::vec2 *leftDown) const
     {
         if (!m_renderer)
             return Image();
@@ -149,7 +149,7 @@ namespace fg
     }
     
 	/////////////////////////////////////////////////////////////
-	bool Font::hasGlyph(const CodePoint &letter,unsigned int style) const
+	bool Font::hasGlyph(const fm::Uint32 &letter,unsigned int style) const
 	{
 		if (m_texAtlases)
 			if ((*m_texAtlases)[m_renderer->getCharacterSize()].isUploaded(Identifier(letter,style)))
@@ -208,7 +208,7 @@ namespace fg
     }
     
 	/////////////////////////////////////////////////////////////
-	int Font::getKerning(const CodePoint &leftCodePoint,const CodePoint &rightCodePoint) const
+	int Font::getKerning(const fm::Uint32 &leftCodePoint,const fm::Uint32 &rightCodePoint) const
 	{
 		if (!m_renderer)
 			return 0;
@@ -223,7 +223,7 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Glyph Font::upload(const fg::Image &img,const CodePoint &letter,unsigned int type,const fm::vec2s &leftdown,unsigned int characterSize)
+	Glyph Font::upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type,const fm::vec2s &leftdown,unsigned int characterSize)
 	{
 		return (*m_texAtlases)[characterSize ? characterSize : m_renderer->getCharacterSize()].upload(img,Identifier(letter,type),leftdown);
 	}

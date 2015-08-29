@@ -22,8 +22,8 @@
 #include <FRONTIER/Window/GLContext.hpp>
 #include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/String.hpp>
 #define FRONTIER_WINDOW
-#include <string>
 
 namespace fg
 {
@@ -132,7 +132,7 @@ namespace fw
 		/// @param settings The settings (hints) for the OpenGL context
 		///
 		/////////////////////////////////////////////////////////////
-		Window(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Window *parent = NULL,Handle container = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
+		Window(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title = " ",fw::Window::WindowStyle style = fw::Window::Default,Window *parent = NULL,Handle container = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -162,7 +162,7 @@ namespace fw
 		/// @return True iff everything went right
 		///
 		/////////////////////////////////////////////////////////////
-		bool open(const fm::vec2i &pos,const fm::vec2u &size,const std::string &title = std::string(),fw::Window::WindowStyle style = fw::Window::Default,Window *parent = NULL,Handle container = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
+		bool open(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title = " ",fw::Window::WindowStyle style = fw::Window::Default,Window *parent = NULL,Handle container = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Destroy the GL context
@@ -326,7 +326,7 @@ namespace fw
 		/// @return True iff everything went right
 		///
 		/////////////////////////////////////////////////////////////
-		bool setTitle(const std::string &title);
+		bool setTitle(const fm::String &title);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Retrieve the title of the window
@@ -334,7 +334,7 @@ namespace fw
 		/// @return The title of the window
 		///
 		/////////////////////////////////////////////////////////////
-		std::string getTitle() const;
+		fm::String getTitle() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Show or hide the window

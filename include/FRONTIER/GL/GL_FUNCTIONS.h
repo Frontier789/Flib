@@ -17,7 +17,7 @@
 #ifndef FRONTIER_GL_FUNCTIONS_H_INCLUDED
 #define FRONTIER_GL_FUNCTIONS_H_INCLUDED
 #include <FRONTIER/System/macros/API.h>
-
+	
 	#ifndef APIENTRY
 		#if defined(__MINGW32__)
 			#ifndef WIN32_LEAN_AND_MEAN
@@ -39,7 +39,7 @@
 			#define APIENTRY
 		#endif
 	#endif //APIENTRY
-
+	
 	#ifndef API_ENTRY
 		#if defined(_WIN32)
 			#define API_ENTRY APIENTRY
@@ -47,8 +47,8 @@
 			#define API_ENTRY
 		#endif
 	#endif //API_ENTRY
-
-
+	
+	
 	#ifdef __cplusplus
 	extern "C"
 	{
@@ -282,7 +282,7 @@
 	#define glCompressedTexSubImage2D _ptr_to_glCompressedTexSubImage2D
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glCompressedTexSubImage3D)(GLenum target,GLint level,GLint xoffset,GLint yoffset,GLint zoffset,GLsizei width,GLsizei height,GLsizei depth,GLenum format,GLsizei imageSize,const GLvoid* data);
 	#define glCompressedTexSubImage3D _ptr_to_glCompressedTexSubImage3D
-	FRONTIER_API extern void (API_ENTRY *_ptr_to_glCopyBufferSubData)(GLenum readTarget,GLenum writeTarget,GLintptr readOffset,GLintptr writeOffset,GLsizeiptr size);
+	FRONTIER_API extern void * (API_ENTRY *_ptr_to_glCopyBufferSubData)(GLenum readTarget,GLenum writeTarget,GLintptr readOffset,GLintptr writeOffset,GLsizeiptr size);
 	#define glCopyBufferSubData _ptr_to_glCopyBufferSubData
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glCopyPixels)(GLint x,GLint y,GLsizei width,GLsizei height,GLenum type);
 	#define glCopyPixels _ptr_to_glCopyPixels
@@ -916,11 +916,11 @@
 	#define glMap2d _ptr_to_glMap2d
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glMap2f)(GLenum target,GLfloat u1,GLfloat u2,GLint ustride,GLint uorder,GLfloat v1,GLfloat v2,GLint vstride,GLint vorder,const GLfloat* points);
 	#define glMap2f _ptr_to_glMap2f
-	FRONTIER_API extern void (API_ENTRY *_ptr_to_glMapBuffer)(GLenum target,GLenum access);
+	FRONTIER_API extern void * (API_ENTRY *_ptr_to_glMapBuffer)(GLenum target,GLenum access);
 	#define glMapBuffer _ptr_to_glMapBuffer
-	FRONTIER_API extern void (API_ENTRY *_ptr_to_glMapBufferARB)(GLenum target,GLenum access);
+	FRONTIER_API extern void * (API_ENTRY *_ptr_to_glMapBufferARB)(GLenum target,GLenum access);
 	#define glMapBufferARB _ptr_to_glMapBufferARB
-	FRONTIER_API extern void (API_ENTRY *_ptr_to_glMapBufferRange)(GLenum target,GLintptr offset,GLsizeiptr length,GLbitfield access);
+	FRONTIER_API extern void * (API_ENTRY *_ptr_to_glMapBufferRange)(GLenum target,GLintptr offset,GLsizeiptr length,GLbitfield access);
 	#define glMapBufferRange _ptr_to_glMapBufferRange
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glMapGrid1d)(GLint un,GLdouble u1,GLdouble u2);
 	#define glMapGrid1d _ptr_to_glMapGrid1d
@@ -2056,9 +2056,9 @@
 	#define glWindowPos3iv _ptr_to_glWindowPos3iv
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glWindowPos3s)(GLshort x,GLshort y,GLshort z);
 	#define glWindowPos3s _ptr_to_glWindowPos3s
-
+	
 	#ifdef __cplusplus
 	}
 	#endif //__cplusplus
-
+	
 #endif //FRONTIER_GL_FUNCTIONS_H_INCLUDED

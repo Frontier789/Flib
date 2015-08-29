@@ -77,28 +77,28 @@ namespace fg
 	template<class T>
 	inline typename Shader::reference Shader::setAttribPointer(const std::string &name,const T *pointer,unsigned int stride)
 	{
-		return setAttribPointer(name,1,fg::is_GLDataType<T>::enumVal,0,pointer,stride);
+		return setAttribPointer(name,1,fg::Is_GLDataType<T>::enumVal,0,pointer,stride);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline typename Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vector2<T> *pointer,unsigned int stride)
 	{
-		return setAttribPointer(name,2,fg::is_GLDataType<T>::enumVal,0,pointer,stride);
+		return setAttribPointer(name,2,fg::Is_GLDataType<T>::enumVal,0,pointer,stride);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline typename Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vector3<T> *pointer,unsigned int stride)
 	{
-		return setAttribPointer(name,3,fg::is_GLDataType<T>::enumVal,0,pointer,stride);
+		return setAttribPointer(name,3,fg::Is_GLDataType<T>::enumVal,0,pointer,stride);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline typename Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride)
 	{
-		return setAttribPointer(name,4,fg::is_GLDataType<T>::enumVal,0,pointer,stride);
+		return setAttribPointer(name,4,fg::Is_GLDataType<T>::enumVal,0,pointer,stride);
 	}
 
 	/////////////////////////////////////////////////////////////

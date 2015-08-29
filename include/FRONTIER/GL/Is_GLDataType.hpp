@@ -14,29 +14,29 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_IS_GLDATATYPE_INCLUDED
-#define FRONTIER_IS_GLDATATYPE_INCLUDED
+#ifndef FRONTIER_Is_GLDataType_INCLUDED
+#define FRONTIER_Is_GLDataType_INCLUDED
 #include <FRONTIER/GL/GL_TYPES.hpp>
 
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	/// @brief Has a member enum 'value' that is true if the template parameter is a OpenGL Data Type 
-	/// 
+	/// @brief Has a member enum 'value' that is true if the template parameter is a OpenGL Data Type
+	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	class is_GLDataType
+	class Is_GLDataType
 	{
 	public:
 		enum {
-			value   /** @cond DOXYGEN_HIDE */ = false /** @endcond */ ,///< True if T is a OpenGL Data Type 
+			value   /** @cond DOXYGEN_HIDE */ = false /** @endcond */ ,///< True if T is a OpenGL Data Type
 			enumVal /** @cond DOXYGEN_HIDE */ = 0x0 /* GL_NONE */ /** @endcond */ ///< The corresponding OpenGL value
 		};
 	};
 
 	/// @cond DOXYGEN_HIDE
 	template<>
-	class is_GLDataType<GLbyte>
+	class Is_GLDataType<GLbyte>
 	{
 	public:
 		enum {
@@ -46,7 +46,7 @@ namespace fg
 	};
 
 	template<>
-	class is_GLDataType<GLubyte>
+	class Is_GLDataType<GLubyte>
 	{
 	public:
 		enum {
@@ -56,7 +56,7 @@ namespace fg
 	};
 
 	template<>
-	class is_GLDataType<GLshort>
+	class Is_GLDataType<GLshort>
 	{
 	public:
 		enum {
@@ -66,7 +66,7 @@ namespace fg
 	};
 
 	template<>
-	class is_GLDataType<GLushort>
+	class Is_GLDataType<GLushort>
 	{
 	public:
 		enum {
@@ -76,7 +76,7 @@ namespace fg
 	};
 
 	template<>
-	class is_GLDataType<GLint>
+	class Is_GLDataType<GLint>
 	{
 	public:
 		enum {
@@ -86,7 +86,7 @@ namespace fg
 	};
 
 	template<>
-	class is_GLDataType<GLuint>
+	class Is_GLDataType<GLuint>
 	{
 	public:
 		enum {
@@ -96,7 +96,7 @@ namespace fg
 	};
 
 	template<>
-	class is_GLDataType<GLfloat>
+	class Is_GLDataType<GLfloat>
 	{
 	public:
 		enum {
@@ -106,7 +106,7 @@ namespace fg
 	};
 
 	template<>
-	class is_GLDataType<GLdouble>
+	class Is_GLDataType<GLdouble>
 	{
 	public:
 		enum {
@@ -117,4 +117,4 @@ namespace fg
 	/// @endcond
 }
 
-#endif // FRONTIER_IS_GLDATATYPE_INCLUDED
+#endif // FRONTIER_Is_GLDataType_INCLUDED

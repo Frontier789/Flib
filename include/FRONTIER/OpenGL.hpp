@@ -98,11 +98,14 @@ namespace fg
 	#define GL_ARB_vertex_program 1
 #endif
 
+#ifndef GL_ARB_vertex_array_object
+	#define GL_ARB_vertex_array_object 1
+#endif
+
 
 #include <FRONTIER/GL/GL_VALUES.h>
 #include <FRONTIER/GL/GL_TYPES.hpp>
 #include <FRONTIER/GL/GL_FUNCTIONS.h>
-
 
 
 #endif

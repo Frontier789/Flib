@@ -5,7 +5,7 @@ CD=cd
 RM=rm
 
 override CXXFLAGS+=-Wno-long-long -Wfatal-errors -Wall -Wextra -Os -pedantic 
-#override CXXFLAGS+= -pg -g -fno-inline-functions -Werror
+override CXXFLAGS+= -pg -g -fno-inline-functions -Werror
 override CXXFLAGS+=-DFRONTIER_LIBBUILD -DFRONTIER_PROTECT_SHARED_VARIABLES
 
 ifeq ($(LIBNAME),)
@@ -36,6 +36,9 @@ include f_freetype.mk
 
 #include Window submake
 include f_graphics.mk
+
+#include Util submake
+include f_util.mk
 
 #include Gui submake
 include f_gui.mk

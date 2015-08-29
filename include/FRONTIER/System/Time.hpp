@@ -32,7 +32,7 @@ namespace fm
 		typedef Time &reference;
 		typedef const Time &const_reference;
 		enum {
-			components = 1u ///< Public value indicating the amount of component_type's in the class
+			components = 1u ///< Public value indicating the amount of component_types in the class
 		};
 		enum MeasureType {
 			Microseconds=1,   ///< Indicates that the passed value means microseconds
@@ -60,7 +60,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy constructor
 		///
-		/// Simply copies the value of @a copy 
+		/// Simply copies the value of @a copy
 		///
 		/////////////////////////////////////////////////////////////
 		Time(const Time &copy);
@@ -88,7 +88,7 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		double asSeconds() const;
-		
+
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get time value as microseconds
@@ -359,7 +359,7 @@ namespace fm
 /// fm::Time t(5,fm::Time::Seconds);
 /// std::cout<<(t<fm::microseconds(5000))<<std::endl;
 /// std::cout<<(t+fm::Time(4000,fm::Time::Milliseconds)).asSeconds()<<"s"<<std::endl;
-/// 
+///
 /// @endcode
 /// @see fm::Clock
 ////////////////////////////////////////////////////////////

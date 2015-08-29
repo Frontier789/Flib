@@ -1,6 +1,9 @@
+#include <FRONTIER/System/macros/OFFSETOF.hpp>
 #include <FRONTIER/Graphics/Primitive.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
+#include <FRONTIER/Graphics/Font.hpp>
+#include <FRONTIER/System/Vertex.hpp>
 #include <FRONTIER/Gui/BasicText.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
@@ -10,11 +13,12 @@ namespace Fgui
 	const std::string BasicText::m_className = "BasicText";
 
 	/////////////////////////////////////////////////////////////
-	bool printable(char c)
+	bool printable(const fm::Uint32 &c)
 	{
-		return std::string("\n\r\t\b ").find(c) == std::string::npos;
+		return fm::String("\n\r\t\b ").find(c) == fm::String::npos;
 	}
 
+	/////////////////////////////////////////////////////////////
 	void extendSize(fm::vec2 &size,fm::vec2 p)
 	{
 		if (p.x > size.w)
@@ -27,17 +31,11 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	void BasicText::buildVertices()
 	{
-		/** clear vertices **/
-		delete[] m_pts;  m_pts  = fm::nullPtr;
-		delete[] m_tpts; m_tpts = fm::nullPtr;
-		delete[] m_clrs; m_clrs = fm::nullPtr;
-		delete[] m_inds; m_inds = fm::nullPtr;
-
 		m_tex = fm::nullPtr;
 		m_quadCount = 0;
 
 		/** check if text is empty **/
-		fm::Size textLength = m_text.length();
+		fm::Size textLength = m_text.size();
 
 		if (!m_font || !textLength)
 			return;
@@ -47,10 +45,8 @@ namespace Fgui
 			m_quadCount += printable(m_text[i]);
 
 		/** alloc vertices **/
-		m_pts  = new fm::vec2[m_quadCount*4];
-		m_tpts = new fm::vec2[m_quadCount*4];
-		m_clrs = new fm::vec4[m_quadCount*4];
-		m_inds = new fm::Uint16[m_quadCount*6];
+		fm::vertex2f *m_vrts = new fm::vertex2f[m_quadCount*4];
+		fm::Uint16 *m_inds = new fm::Uint16[m_quadCount*6];
 
 		/** setup vertices **/
 		m_font->setCharacterSize(m_charSize);
@@ -87,11 +83,11 @@ namespace Fgui
 					p.x += 1;
 
 				Cxy(2,2)
-					m_pts[index*4+x*2+y] = p+glyph.size*fm::vec2(x,y-1.0),
-					m_tpts[index*4+x*2+y] = glyph.pos+glyph.size*fm::vec2(x,y),
-					m_clrs[index*4+x*2+y] = m_clr;
+					m_vrts[index*4+x*2+y].pos = p+glyph.size*fm::vec2(x,y-1.0),
+					m_vrts[index*4+x*2+y].texPos = glyph.pos+glyph.size*fm::vec2(x,y),
+					m_vrts[index*4+x*2+y].clr = m_clr;
 
-				extendSize(m_size,m_pts[index*4+3]);
+				extendSize(m_size,m_vrts[index*4+3].pos);
 				extendSize(m_size,cursor+fm::vec2(0,metrics.lineGap-metrics.maxH));
 
 				Cx(3)
@@ -141,6 +137,12 @@ namespace Fgui
 			extendSize(m_size,cursor);
 		}
 
+		m_vbo.setData(m_vrts,sizeof(*m_vrts)*m_quadCount*4);
+		m_ibo.setData(m_inds,sizeof(*m_inds)*m_quadCount*6);
+
+		delete[] m_vrts;
+		delete[] m_inds;
+
 		setupPosition();
 	}
 
@@ -155,7 +157,7 @@ namespace Fgui
 						   const Anchor &anchor,
 						   const fm::vec2 &size,
 						   Widget *parent,
-						   const std::string &text,
+						   const fm::String &text,
 						   fg::Font *font,
 						   const fm::vec4 &clr,
 						   unsigned int charSize,
@@ -167,10 +169,8 @@ namespace Fgui
 											m_text(text),
 											m_font(font),
 											m_clr(clr),
-											m_pts(fm::nullPtr),
-											m_tpts(fm::nullPtr),
-											m_clrs(fm::nullPtr),
-											m_inds(fm::nullPtr),
+											m_vbo(fg::ArrayBuffer),
+											m_ibo(fg::IndexBuffer),
 											m_quadCount(0),
 											m_monoSpace(monoSpacing),
 											m_maxWidth(maxWidth),
@@ -182,10 +182,7 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	BasicText::~BasicText()
 	{
-		delete[] m_pts;
-		delete[] m_tpts;
-		delete[] m_clrs;
-		delete[] m_inds;
+
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -202,16 +199,15 @@ namespace Fgui
 		setupPosition();
 	}
 
-
 	/////////////////////////////////////////////////////////////
-	void BasicText::setText(const std::string &text)
+	void BasicText::setText(const fm::String &text)
 	{
 		m_text = text;
 		buildVertices();
 	}
 
 	/////////////////////////////////////////////////////////////
-	const std::string &BasicText::getText() const
+	const fm::String &BasicText::getText() const
 	{
 		return m_text;
 	}
@@ -233,8 +229,7 @@ namespace Fgui
 	void BasicText::setColor(const fm::vec4 &clr)
 	{
 		m_clr = clr;
-		C(m_quadCount*4)
-			m_clrs[i] = m_clr;
+		buildVertices();
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -246,8 +241,11 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	void BasicText::setCharSize(unsigned int charSize)
 	{
-		m_charSize = charSize;
-		buildVertices();
+		if (m_charSize != charSize)
+		{
+			m_charSize = charSize;
+			buildVertices();
+		}
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -259,8 +257,11 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	void BasicText::setMonoSpacing(bool monoSpacing)
 	{
-		m_monoSpace = monoSpacing;
-		buildVertices();
+		if (m_monoSpace != monoSpacing)
+		{
+			m_monoSpace = monoSpacing;
+			buildVertices();
+		}
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -272,8 +273,11 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	void BasicText::setMaxWidth(float maxWidth)
 	{
-		m_maxWidth = maxWidth;
-		buildVertices();
+		if (m_maxWidth < maxWidth || m_maxWidth > maxWidth)
+		{
+			m_maxWidth = maxWidth;
+			buildVertices();
+		}
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -285,8 +289,11 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	void BasicText::setWordWrap(bool wordWrap)
 	{
-		m_wordWrap = wordWrap;
-		buildVertices();
+		if (m_wordWrap != wordWrap)
+		{
+			m_wordWrap = wordWrap;
+			buildVertices();
+		}
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -307,7 +314,7 @@ namespace Fgui
 		if (!m_tex)
 			return;
 
-		/** setup transformations **/
+		/// setup transformations
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf(&m_transform.transpose()[0][0]);
 
@@ -315,38 +322,41 @@ namespace Fgui
 		glLoadMatrixf(&m_tex->getPixToUnitMatrix().transpose()[0][0]);
 
 
-		/** enable states **/
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_COLOR_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
+		/// enable states
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 		glEnable(GL_TEXTURE_2D);
 
-		/** specify draw data **/
-		glVertexPointer(2,GL_FLOAT,0,m_pts);
-		glColorPointer(4,GL_FLOAT,0,m_clrs);
-		glTexCoordPointer(2,GL_FLOAT,0,m_tpts);
 
 		m_tex->bind();
 
-		/** issue draw **/
-		glDrawElements(fg::Triangles,m_quadCount*6,GL_UNSIGNED_SHORT,m_inds);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_COLOR_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		m_vbo.bind();
+		glVertexPointer(2,GL_FLOAT,sizeof(fm::vertex2f),(void*)fm::offsetOf(fm::vertex2f,pos));
+		glTexCoordPointer(2,GL_FLOAT,sizeof(fm::vertex2f),(void*)fm::offsetOf(fm::vertex2f,texPos));
+		glColorPointer(4,GL_FLOAT,sizeof(fm::vertex2f),(void*)fm::offsetOf(fm::vertex2f,clr));
+
+		m_ibo.bind();
+		glDrawElements(fg::Triangles,m_quadCount*6,GL_UNSIGNED_SHORT,fm::nullPtr);
+
+		fg::Buffer::bind(fm::nullPtr,fg::ArrayBuffer);
+		fg::Buffer::bind(fm::nullPtr,fg::IndexBuffer);
+
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_COLOR_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 
-		/** disable states **/
+		/// disable states
 		glDisable(GL_TEXTURE_2D);
 
 		glDisable(GL_BLEND);
 
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
-		glDisableClientState(GL_VERTEX_ARRAY);
-
-
-		/** reset transformations **/
+		/// reset transformations
 		glMatrixMode(GL_TEXTURE);
 		glLoadMatrixf(&fm::mat4()[0][0]);
 

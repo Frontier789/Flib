@@ -16,15 +16,21 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_FONTRENDERER_HPP_INCLUDED
 #define FRONTIER_FONTRENDERER_HPP_INCLUDED
+#include <FRONTIER/System/macros/TYPES.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
-#include <FRONTIER/Graphics/CodePoint.hpp>
 #include <FRONTIER/Graphics/Metrics.hpp>
 #include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Graphics/Glyph.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
 #define FRONTIER_FONTRENDERER
+#include <string>
+
+namespace fm
+{
+	class String;
+}
 
 namespace fg
 {
@@ -99,14 +105,14 @@ namespace fg
 		/// The rendered image is pale white and the alpha channel indicates whether is
 		/// a pixel inside of the character
 		///
-		/// @param letter The fg::CodePoint of the glyph
+		/// @param letter The codepoint of the glyph
 		/// @param type The style of the glyph (defaults to Regular)
 		/// @param leftDown If not 0 it will be set to the offset of the glyph from the baseline
 		///
 		/// @return The rendered image
 		///
 		/////////////////////////////////////////////////////////////
-		fg::Image renderGlyph(const fg::CodePoint &letter,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown = fm::nullPtr) const;
+		fg::Image renderGlyph(const fm::Uint32 &letter,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown = fm::nullPtr) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if a given glyph is present in the font
@@ -116,7 +122,7 @@ namespace fg
 		/// @return True iff the glyph is present
 		///
 		/////////////////////////////////////////////////////////////
-		bool hasGlyph(const CodePoint &letter) const;
+		bool hasGlyph(const fm::Uint32 &letter) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get information about the font metrics
@@ -135,7 +141,7 @@ namespace fg
 		/// @return The kerning offset
 		///
 		/////////////////////////////////////////////////////////////
-		int getKerning(const fg::CodePoint &leftCodePoint,const fg::CodePoint &rightCodePoint) const;
+		int getKerning(const fm::Uint32 &leftCodePoint,const fm::Uint32 &rightCodePoint) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the currently used character size
