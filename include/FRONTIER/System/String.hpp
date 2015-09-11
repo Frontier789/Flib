@@ -325,6 +325,46 @@ namespace fm
 		reference resize(fm::Size size,fm::Uint32 paddingChar = 'a');
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Append the string's back
+		///
+		/// @param str The string to insert at the end
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference push_back(const fm::String &str);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Append the string's front
+		///
+		/// @param str The string to insert at the beginning
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference push_front(const fm::String &str);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Pop the string's back
+		///
+		/// @param str The string to erase at the end
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference pop_back();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Pop the string's front
+		///
+		/// @param str The string to erase at the beginning
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference pop_front();
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Perform a linear search in the string
 		///
 		/// @param str The string to be found
@@ -337,13 +377,25 @@ namespace fm
 		fm::Size find(const String &str,fm::Size pos = 0,fm::Size len = String::npos) const;
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Perform a linear search in the string in reverse order
+		///
+		/// @param str The string to be found
+		/// @param pos The position of the first character to be examined
+		/// @param len The maximum number of characters to be examined
+		///
+		/// @return The beginning of the first match (String::npos on no match)
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Size find_last_of(const String &str,fm::Size pos = 0,fm::Size len = String::npos) const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Count the occurences of a string in the text
 		///
 		/// @param str The string to count
 		/// @param pos The position of the first character to be examined
 		/// @param len The maximum number of characters to be examined
 		/// @param canOverlap Iff true the occurences are allowed to overlap
-		/// 
+		///
 		/// @return The number of matches
 		///
 		/////////////////////////////////////////////////////////////
@@ -444,7 +496,7 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Uint32 &operator[](fm::Size pos);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Swap the content of the string with another string
 		///
@@ -455,7 +507,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		fm::String &swap(fm::String &s);
 	};
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Check if two strings are equal
 	///

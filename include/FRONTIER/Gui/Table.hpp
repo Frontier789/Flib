@@ -47,6 +47,8 @@ namespace Fgui
 
 		Widget *m_activeWidget; ///< The active widget
 
+		bool m_needRecalc; ///< Indicates whether recalculation is needed
+
 	public:
 		typedef Table &reference;
 		typedef const Table &const_reference;
@@ -88,20 +90,18 @@ namespace Fgui
 		///
 		/// @param pos The index of the cell
 		/// @param newWidget The new content
-		/// @param doReclac If true the cell sizes and positions will be recalculated
 		///
 		/////////////////////////////////////////////////////////////
-		virtual void setCell(const fm::vec2s &pos,Widget *newWidget,bool doReclac = true);
+		virtual void setCell(const fm::vec2s &pos,Widget *newWidget);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the fixed size of a given cell of the table
 		///
 		/// @param pos The index of the cell
 		/// @param size The new size
-		/// @param doReclac If true the cell sizes and positions will be recalculated
 		///
 		/////////////////////////////////////////////////////////////
-		virtual void setCellSize(const fm::vec2s &pos,const fm::vec2 &size,bool doReclac = true);
+		virtual void setCellSize(const fm::vec2s &pos,const fm::vec2 &size);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Resize the table
@@ -175,6 +175,22 @@ namespace Fgui
 		///
 		/////////////////////////////////////////////////////////////
 		virtual void setSize(const fm::vec2 &size);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the size of the border between cells
+		///
+		/// @param size The new size in pixels
+		///
+		/////////////////////////////////////////////////////////////
+		virtual void setBorderSize(const fm::vec2 &size);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the size of the border between cells
+		///
+		/// @return The size of the border between cells
+		///
+		/////////////////////////////////////////////////////////////
+		virtual fm::vec2 getBorderSize();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the active widget

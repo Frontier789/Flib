@@ -402,7 +402,19 @@ namespace fw
 					{
 						fw::Event ev(fw::Event::TextEntered);
 						ev.text.character  = (char)buf[0];
-						ev.text.wcharacter = (wchar_t)buf[0];
+						
+						char buf[20];
+						Status status = 0;
+						Xutf8LookupString(m_xic, (XKeyPressedEvent*)&xev, buf, 19, NULL, &status);
+
+						if (status == XLookupKeySym || status == XLookupBoth || status == XLookupChars)
+							ev.text.utf8character = fm::String::fromUtf8(buf)[0];
+						else
+						{
+							fw::fw_log<<"oh god "<<status<<std::endl;
+							ev.text.utf8character = (fm::Uint32)buf[0];
+						}
+						
 						postEvent(ev);
 					}
 				}
@@ -558,7 +570,8 @@ namespace fw
 						   m_supportUriList(false),
 						   m_emptyCursor(None),
 						   m_parent(NULL),
-						   m_eventCallback(NULL)
+						   m_eventCallback(NULL),
+						   m_xic(XIC())
 		{
 
 		}
@@ -580,7 +593,8 @@ namespace fw
 																																					   m_supportUriList(false),
 																																					   m_emptyCursor(None),
 																																					   m_parent(NULL),
-																																					   m_eventCallback(NULL)
+																																					   m_eventCallback(NULL),
+																																					   m_xic(XIC())
 		{
 			open(x,y,w,h,title,style,parent,container);
 		}
@@ -700,10 +714,26 @@ namespace fw
 				if (pmap != None)
 					XFreePixmap(m_disp,pmap);
 				XFreeColors(m_disp,cmap,&cblack.pixel,1,0);
-
-
+				
 				// tell X to complete operations now
 				XFlush(m_disp);
+				
+				XIM xim = XOpenIM(m_disp, NULL, NULL, NULL);
+				if (!xim)
+				{
+					fw::fw_log << "XOpenIM failed"<<std::endl;
+				    return false;
+				}
+
+				m_xic = XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, m_win, NULL);
+				if (!m_xic)
+				{
+					fw::fw_log << "XCreateIC failed"<<std::endl;
+				    return false;
+				}
+
+				XSetICFocus(m_xic);
+				
 				
 				return true;
 			}

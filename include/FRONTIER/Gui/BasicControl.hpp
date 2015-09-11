@@ -97,6 +97,10 @@ namespace Fgui
 		std::deque<std::deque<CharColor> > m_charColors;
 		std::deque<fm::String> m_lines;
 		std::deque<Caret> m_carets;
+		fm::vec4 m_textColor;
+		fm::vec4 m_selectColor;
+		fm::vec4 m_bckColor;
+		fm::vec4 m_caretColor;
 
 		unsigned int m_charSize;
 		const fg::Texture *m_tex;
@@ -124,6 +128,7 @@ namespace Fgui
 		bool m_needSetupPosition;
 		bool m_needSetViewCaret;
 		bool m_insertMode;
+		bool m_monoSpace;
 		bool m_editable;
 
 		fm::Size m_dragCaret;
@@ -131,6 +136,7 @@ namespace Fgui
 		TextPos m_wordEnd;
 		int m_dragMode;
 
+		fm::Clock m_caretClk;
 		fm::Clock m_clickClk;
 		TextPos m_lastClick;
 
@@ -156,6 +162,9 @@ namespace Fgui
 
 		/////////////////////////////////////////////////////////////
 		virtual int getCharType(fm::Uint32 cp);
+
+		/////////////////////////////////////////////////////////////
+		virtual void onCaretColorUpdate();
 
 	public:
 
@@ -265,7 +274,15 @@ namespace Fgui
 					 const fm::String &defText = "0",
 					 fg::Font *font = fm::nullPtr,
 					 fm::Size characterSize = 20,
-					 bool editable = true);
+					 bool editable = true,
+					 bool monoSpace = true,
+					 fm::vec4 textColor = fm::vec4::Black,
+					 fm::vec4 selectColor = fm::vec4(.75,.75,.75),
+					 fm::vec4 caretColor = fm::vec4(0,0,0),
+					 fm::vec4 bckColor = fm::vec4(0,0,0,0));
+
+		/////////////////////////////////////////////////////////////
+		virtual ~BasicControl();
 
 		/////////////////////////////////////////////////////////////
 		virtual void setAnchor(const Anchor &anchor);
@@ -293,6 +310,22 @@ namespace Fgui
 
 		/////////////////////////////////////////////////////////////
 		virtual bool getEditable() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the character size of the static text
+		///
+		/// @param charSize The new character size
+		///
+		/////////////////////////////////////////////////////////////
+		virtual void setCharSize(unsigned int charSize);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the current character size of the static text
+		///
+		/// @return The current character size
+		///
+		/////////////////////////////////////////////////////////////
+		virtual unsigned int getCharSize() const;
 
 		/////////////////////////////////////////////////////////////
 		virtual bool handleEvent(const fw::Event &ev);

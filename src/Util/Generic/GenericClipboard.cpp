@@ -39,7 +39,7 @@ namespace fm
 			/////////////////////////////////////////////////////////////
 			void setData(const fm::String &data)
 			{
-				
+				(void)data;
 			}
 		}
 	}

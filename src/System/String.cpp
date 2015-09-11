@@ -71,18 +71,18 @@ namespace fm
 	{
 
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	String::String(String::const_iterator begIt,String::const_iterator endIt)
 	{
 		while (begIt != endIt)
 			m_str += *begIt++;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	String::String(fm::Size charCount,fm::Uint32 character) : m_str(charCount,character)
 	{
-		
+
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -349,11 +349,42 @@ namespace fm
 
 		return *this;
 	}
-	
+
+	/////////////////////////////////////////////////////////////
 	String::reference String::resize(fm::Size size,fm::Uint32 paddingChar)
 	{
 		m_str.resize(size,paddingChar);
-		
+
+		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	String::reference String::push_back(const fm::String &str)
+	{
+		return insert(size(),str);
+	}
+
+	/////////////////////////////////////////////////////////////
+	String::reference String::push_front(const fm::String &str)
+	{
+		return insert(0,str);
+	}
+
+	/////////////////////////////////////////////////////////////
+	String::reference String::pop_back()
+	{
+		if (size())
+			erase(size()-1,1);
+
+		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	String::reference String::pop_front()
+	{
+		if (size())
+			erase(0,1);
+
 		return *this;
 	}
 
@@ -363,58 +394,82 @@ namespace fm
 		fm::Size s = size();
 		fm::Size s2 = str.size();
 
-		if (len > s)
-			len = s;
+		if (len > s+1-pos-s2)
+			len = s+1-pos-s2;
 
 		Cx(len)
 		{
-			if (x+s2 > s)
-				break;
-
 			bool ok = true;
 
 			Cy(s2)
-				if (m_str[pos+x] != str[y])
+				if (m_str[pos+x+y] != str[y])
 				{
 					ok = false;
 					break;
 				}
 
 			if (ok)
-				return x;
+				return pos+x;
 		}
 
 		return fm::String::npos;
 	}
-	
+
+	/////////////////////////////////////////////////////////////
+	fm::Size String::find_last_of(const String &str,fm::Size pos,fm::Size len) const
+	{
+		fm::Size s = size();
+		fm::Size s2 = str.size();
+
+		if (len > s+1-pos-s2)
+			len = s+1-pos-s2;
+
+		Cx(len)
+		{
+			bool ok = true;
+
+			Cy(s2)
+				if (m_str[pos+len-1-x+y] != str[y])
+				{
+					ok = false;
+					break;
+				}
+
+			if (ok)
+				return pos+len-1-x;
+		}
+
+		return fm::String::npos;
+	}
+
 	/////////////////////////////////////////////////////////////
 	fm::Size String::count(const String &str,fm::Size pos,fm::Size len,bool canOverlap) const
 	{
 		if (!str.size())
 			return fm::String::npos;
-		
+
 		fm::Size ret = 0;
-		
+
 		for (fm::Size i=pos;i<size() && i<pos+len;i++)
 		{
 			bool k = true;
 			Cx(str.size())
 			{
-				if (i+x>=size() || i+x>=pos+len) 
+				if (i+x>=size() || i+x>=pos+len)
 					i = size(),
 					x = str.size(),
 					k = false;
 				else if (m_str[i+x] != str[x])
 					k = false;
 			}
-			
+
 			if (k)
 				ret++;
-			
+
 			if (!canOverlap)
 				i += str.size()-1;
 		}
-		
+
 		return ret;
 	}
 
@@ -482,12 +537,12 @@ namespace fm
 	{
 		return m_str[pos];
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	fm::String &String::swap(fm::String &s)
 	{
 		m_str.swap(s.m_str);
-		
+
 		return *this;
 	}
 

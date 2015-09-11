@@ -108,7 +108,8 @@ namespace fw
 			EventCallback m_eventCallback; ///< Holds the handle of the event callback
 			void getStateProperties(Atom *&atoms,unsigned long *count) const;  ///< Internal function used to get properties of the window
 			std::deque<Xlib::Window *> m_children; ///< Holds the window's children
-
+			XIC m_xic; ///< X inout context
+			
 		public:
 			typedef Window &reference;
 			typedef const Window &const_reference;

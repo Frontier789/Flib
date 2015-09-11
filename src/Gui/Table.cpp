@@ -18,12 +18,13 @@ namespace Fgui
     			 const fm::Collector<Widget *> &cells) : Widget(name,anchor,size,parent),
 														 m_cellCount(fm::vec2s()),
 														 m_borderSize(borderSize),
-														 m_activeWidget(fm::nullPtr)
+														 m_activeWidget(fm::nullPtr),
+														 m_needRecalc(false)
 	{
 		setCellCount(cellCount);
 
 		C(cells.size())
-			setCell(fm::vec2s(i%cellCount.w,i/cellCount.w),cells[i],false);
+			setCell(fm::vec2s(i%cellCount.w,i/cellCount.w),cells[i]);
 
 		recalc();
 	}
@@ -35,22 +36,20 @@ namespace Fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	void Table::setCell(const fm::vec2s &pos,Widget *newWidget,bool dorecalc)
+	void Table::setCell(const fm::vec2s &pos,Widget *newWidget)
 	{
 		setCellCount( fm::vec2s(fm::math::max(m_cellCount.w,pos.x+1),fm::math::max(m_cellCount.h,pos.y+1)) );
 		m_cells[pos.x][pos.y].setContent(newWidget);
 
-		if (dorecalc)
-			recalc();
+		m_needRecalc = true;
 	}
 
 	/////////////////////////////////////////////////////////////
-	void Table::setCellSize(const fm::vec2s &pos,const fm::vec2 &size,bool dorecalc)
+	void Table::setCellSize(const fm::vec2s &pos,const fm::vec2 &size)
 	{
 		m_cellSizes[pos.x][pos.y] = size;
 
-		if (dorecalc)
-			recalc();
+		m_needRecalc = true;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -124,6 +123,20 @@ namespace Fgui
 	}
 
 	/////////////////////////////////////////////////////////////
+	void Table::setBorderSize(const fm::vec2 &size)
+	{
+		m_borderSize = size;
+
+		m_needRecalc = true;
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::vec2 Table::getBorderSize()
+	{
+		return m_borderSize;
+	}
+
+	/////////////////////////////////////////////////////////////
 	void Table::setActive(Widget *active)
 	{
 		if (m_parent)
@@ -166,6 +179,10 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	void Table::onUpdate()
 	{
+		if (m_needRecalc)
+			m_needRecalc = false,
+			recalc();
+
 		Cxy(m_cellCount.w,m_cellCount.h)
 			m_cells[x][y].onUpdate();
 	}

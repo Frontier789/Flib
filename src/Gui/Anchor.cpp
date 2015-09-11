@@ -15,14 +15,19 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	fm::vec2 Anchor::getPosInParent(const Widget &owner) const
 	{
-		return pix - owner.getSize()*chl + owner.getParentSize()*par;
+		Widget *parent = owner.getParent();
+
+		fm::vec2 parSize  = parent ? parent->getInternalSize() : fm::vec2();
+		fm::vec2 parInPos = parent ? parent->getInternalPos()  : fm::vec2();
+
+		return pix - owner.getSize()*chl + parSize*par + parInPos;
 	}
 
 	/////////////////////////////////////////////////////////////
 	fm::vec2 Anchor::getPosInRoot(const Widget &owner) const
 	{
 		const Widget *parent = owner.getParent();
-		
+
 		return (parent ? parent->getPosInRoot() : fm::vec2()) + getPosInParent(owner);
 	}
 

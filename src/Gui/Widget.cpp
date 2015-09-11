@@ -5,7 +5,7 @@ namespace Fgui
 {
 	/////////////////////////////////////////////////////////////
 	const std::string Widget::m_className = "Widget";
-	
+
 	/////////////////////////////////////////////////////////////
 	std::deque<Widget *> Widget::allWidgets;
 
@@ -18,7 +18,7 @@ namespace Fgui
 	{
 		allWidgets.push_back(this);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Widget::Widget(const Widget &copy) : m_name(copy.m_name),
 										 m_anchor(copy.m_anchor),
@@ -45,7 +45,7 @@ namespace Fgui
 	{
 		m_anchor = anchor;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	const Anchor &Widget::getAnchor() const
 	{
@@ -57,7 +57,7 @@ namespace Fgui
 	{
 		m_parent = parent;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Widget *Widget::getParent() const
 	{
@@ -69,13 +69,25 @@ namespace Fgui
 	{
 		m_size = size;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	fm::vec2 Widget::getSize() const
 	{
 		return m_size;
 	}
-	
+
+	/////////////////////////////////////////////////////////////
+	fm::vec2 Widget::getInternalSize() const
+	{
+		return getSize();
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::vec2 Widget::getInternalPos() const
+	{
+		return fm::vec2();
+	}
+
 	/////////////////////////////////////////////////////////////
 	void Widget::setName(const std::string &name)
 	{
@@ -87,50 +99,50 @@ namespace Fgui
 	{
 		return m_name;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void Widget::setEnabled(bool enabled)
 	{
 		m_enabled = enabled;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool Widget::getEnabled() const
 	{
 		return m_enabled;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void Widget::setActive(Widget *active)
 	{
 		if (m_parent)
 			m_parent->setActive(active);
 	}
-	
+
 	////////////////////////////////////////////////////////
 	Widget *Widget::getActive()
 	{
 		if (m_parent)
 			return m_parent->getActive();
-		
+
 		return fm::nullPtr;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	fm::vec2 Widget::getParentSize() const
 	{
 		if (m_parent)
 			return m_parent->getSize();
-		
+
 		return fm::vec2();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	fm::vec2 Widget::getRootSize() const
 	{
 		if (m_parent)
 			return m_parent->getRootSize();
-		
+
 		return getSize();
 	}
 
@@ -139,51 +151,51 @@ namespace Fgui
 	{
 		return m_anchor.getPosInParent(*this);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	fm::vec2 Widget::getPosInRoot() const
 	{
 		return m_anchor.getPosInRoot(*this);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Widget *Widget::getRoot()
 	{
 		return m_parent ? m_parent->getRoot() : this;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Widget *Widget::findNamed(const std::string &name)
 	{
 		if (getName() == name)
 			return this;
-		
+
 		return fm::nullPtr;
 	}
 
 	/////////////////////////////////////////////////////////////
 	void Widget::onDraw()
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void Widget::onUpdate()
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void Widget::onParentChange()
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool Widget::handleEvent(const fw::Event &ev)
 	{
 		(void)ev;
-		
+
 		return false;
 	}
 

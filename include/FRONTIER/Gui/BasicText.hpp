@@ -85,7 +85,7 @@ namespace Fgui
 				   Widget *parent = fm::nullPtr,
 				   const fm::String &text = fm::String(),
 				   fg::Font *font = fm::nullPtr,
-				   const fm::vec4 &clr = fm::vec4::White,
+				   const fm::vec4 &clr = fm::vec4::Black,
 				   unsigned int charSize = 42,
 				   bool monoSpace = false,
 				   float maxWidth = 0,

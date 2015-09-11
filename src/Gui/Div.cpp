@@ -29,9 +29,21 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	fm::vec2 Div::getSize() const
 	{
-		fm::vec2 contentSize = (m_content ? m_content->getSize() : fm::vec2())+m_margin*2;
+		fm::vec2 contentSize = (m_content ? m_content->getSize() : fm::vec2());
 
-		return fm::vec2(fm::math::max(contentSize.w,m_size.w),fm::math::max(contentSize.h,m_size.h));
+		return fm::vec2(fm::math::max(contentSize.w,m_size.w),fm::math::max(contentSize.h,m_size.h))+m_margin*2;
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::vec2 Div::getInternalSize() const
+	{
+		return getSize()-m_margin*2;
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::vec2 Div::getInternalPos() const
+	{
+		return m_margin;
 	}
 
 	/////////////////////////////////////////////////////////////

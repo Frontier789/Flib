@@ -39,6 +39,11 @@ namespace Fgui
 #include <FRONTIER/Gui/Anchor.hpp>
 #include <FRONTIER/Gui/Widget.hpp>
 #include <FRONTIER/Gui/Button.hpp>
+#include <FRONTIER/Gui/Housing.hpp>
 #include <FRONTIER/Gui/BasicText.hpp>
+#include <FRONTIER/Gui/BasicControl.hpp>
+#include <FRONTIER/Gui/StringControl.hpp>
+#include <FRONTIER/Gui/NumericControl.hpp>
+#include <FRONTIER/Gui/ValueControlBase.hpp>
 
 #endif // FRONTIER_GUI_MODULE_HPP_INCLUDED

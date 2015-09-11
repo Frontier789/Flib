@@ -77,6 +77,22 @@ namespace Fgui
 		virtual fm::vec2 getSize() const;
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the size of the available space in the widget
+		///
+		/// @return The size
+		///
+		/////////////////////////////////////////////////////////////
+		virtual fm::vec2 getInternalSize() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the offset of the available space in the widget
+		///
+		/// @return The offset
+		///
+		/////////////////////////////////////////////////////////////
+		virtual fm::vec2 getInternalPos() const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Set the minimal size of the div
 		///
 		/// @param size The new minimal size
@@ -183,7 +199,7 @@ namespace Fgui
 		/// function to provide a unique name as return value
 		///
 		/////////////////////////////////////////////////////////////
-		const std::string &getRealType() const;
+		virtual const std::string &getRealType() const;
 	};
 }
 

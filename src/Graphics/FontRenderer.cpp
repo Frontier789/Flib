@@ -52,7 +52,7 @@ namespace fg
 		// check error
 		if (error)
 			FRONTIER_FT_PRINT_ERROR(FT_New_Face,error);
-		
+
 		m_loaded = (error==0);
 
 		// set character size
@@ -78,7 +78,7 @@ namespace fg
 		// check error
 		if (error)
 			FRONTIER_FT_PRINT_ERROR(FT_New_Memory_Face,error);
-		
+
 		m_loaded = (error==0);
 
 		// set character size
@@ -231,6 +231,12 @@ namespace fg
 			width+=2,height+=2;offsetx--,offsety--;
 		}
 
+		Cxy(width,height)
+		{
+			float f = bitmap[y*width + x] / 255.0;
+			bitmap[y*width + x] = fm::math::sqrt3(f) * 255.0;
+		}
+
 		if (leftDown)
 			leftDown->x = offsetx,
 			leftDown->y = offsety;
@@ -241,16 +247,16 @@ namespace fg
 
 		Cxy(width,height)
 			img.setPixel(x,y,fg::Color(255,255,255,bitmap[y*width + x]));
-		
+
 		return img;
 	}
-    
+
 	/////////////////////////////////////////////////////////////
 	bool FontRenderer::hasGlyph(const fm::Uint32 &letter) const
 	{
 		if (!m_loaded)
 			return false;
-		
+
 		return FT_Get_Char_Index(*((FT_Face*)m_ftFaceData),letter) != 0;
 	}
 
@@ -279,7 +285,7 @@ namespace fg
 			int error = FT_Get_Kerning(*((FT_Face*)m_ftFaceData),
 						   			   leftGlyphIndex,
 						   			   rightGlyphIndex,
-						   			   FT_KERNING_DEFAULT, 
+						   			   FT_KERNING_DEFAULT,
 						   			   &delta);
 			if (error)
 				FRONTIER_FT_PRINT_ERROR(FT_Get_Kerning,error);
@@ -302,7 +308,7 @@ namespace fg
 
 		m_currentSize = size;
 
-		// tell FreeType to switch size 
+		// tell FreeType to switch size
 		int error = FT_Set_Pixel_Sizes(*((FT_Face*)m_ftFaceData),m_currentSize,0);
 
 		// check error

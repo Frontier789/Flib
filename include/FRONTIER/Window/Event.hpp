@@ -23,6 +23,7 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
+#include <FRONTIER/System/macros/TYPES.hpp>
 #include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Window/Window.hpp>
 
@@ -316,7 +317,7 @@ namespace fw
 	{
 	public:
 		char character;     ///< The entered character
-		wchar_t wcharacter; ///< The entered character (wide)
+		fm::Uint32 utf8character; ///< The entered character (utf8)
 	};
 	
 	/////////////////////////////////////////////////////////////

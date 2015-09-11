@@ -325,20 +325,20 @@ namespace fw
 						tme.dwHoverTime = HOVER_DEFAULT;
 						tme.hwndTrack = m_hwnd;
 						TrackMouseEvent(&tme);
-						
+
 						// the mouse came inside
 						m_cursorInside = true;
 
 						Event ev(Event::MouseEntered);
 						postEvent(ev);
 					}
-				
+
 					// post move event
 					Event ev(Event::MouseMoved);
 					ev.motion.x = ((int)(short)LOWORD(lParam));
 					ev.motion.y = ((int)(short)HIWORD(lParam));
 					postEvent(ev);
-					
+
 					return 0;
 				}
 
@@ -505,13 +505,13 @@ namespace fw
 					// let windows do his business
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
-				
+
 				// resize event
 				case WM_SIZE:
 				{
 					// window is resized not moved
 					m_windowMoved = false;
-					
+
 					// if the user is not sizing by hand
 					if (!m_inSizeMoveMode && wParam != SIZE_MINIMIZED)
 					{
@@ -521,19 +521,19 @@ namespace fw
 						postEvent(ev);
 						break;
 					}
-					
+
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
-				
+
 				// the window is being moved
 				case WM_MOVE:
 				{
 					// window is moved not resized
 					m_windowMoved = true;
-					
+
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
-				
+
 				// the user started to resize the window
 				case WM_ENTERSIZEMOVE:
 				{
@@ -545,7 +545,7 @@ namespace fw
 				case WM_EXITSIZEMOVE:
 				{
 					m_inSizeMoveMode  = false;
-					
+
 					if (!m_windowMoved)
 					{
 						unsigned int w,h;
@@ -556,9 +556,9 @@ namespace fw
 						postEvent(ev);
 						break;
 					}
-					
+
 					m_windowMoved = false;
-					
+
 					return DefWindowProc(hwnd, msg, wParam, lParam);
 				}
 
@@ -566,9 +566,10 @@ namespace fw
 				case WM_CHAR:
 				{
 					Event ev(Event::TextEntered);
-					ev.text.character  = (char)wParam;
-					ev.text.wcharacter = (wchar_t)wParam;
+					ev.text.character = (char)wParam;
+					ev.text.utf8character = (wchar_t)wParam;
 					postEvent(ev);
+
 					return 0;
 				}
 
@@ -1211,11 +1212,11 @@ namespace fw
 			{
 				unsigned int bufsize = GetWindowTextLength(m_hwnd) + 1;
 				wchar_t *ret = new wchar_t[bufsize];
-				
+
 				int written = GetWindowTextW(m_hwnd, ret, bufsize);
-				
+
 				ret[written] = 0;
-				
+
 				if (!written)
 				{
 					 // delete allocated memory!
@@ -1224,7 +1225,7 @@ namespace fw
 					return false;
 				}
 				title = fm::String(ret);
-				
+
 				delete ret;
 			}
 			return true;

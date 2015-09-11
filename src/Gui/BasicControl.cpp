@@ -15,6 +15,8 @@
 #include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
+#include <cmath>
+
 namespace Fgui
 {
 	/////////////////////////////////////////////////////////////
@@ -299,13 +301,13 @@ namespace Fgui
 					pixPosT.x += getCharWidth(' ');
 
 				vertsBkg[offset + 0].pos = pixPosF;
-				vertsBkg[offset + 0].clr = fm::vec4(.4,.4,.4,1);
+				vertsBkg[offset + 0].clr = m_selectColor;
 				vertsBkg[offset + 1].pos = fm::vec2(pixPosT.x,pixPosF.y);
-				vertsBkg[offset + 1].clr = fm::vec4(.4,.4,.4,1);
+				vertsBkg[offset + 1].clr = m_selectColor;
 				vertsBkg[offset + 2].pos = pixPosT;
-				vertsBkg[offset + 2].clr = fm::vec4(.4,.4,.4,1);
-				vertsBkg[offset + 3].pos =  fm::vec2(pixPosF.x,pixPosT.y);
-				vertsBkg[offset + 3].clr = fm::vec4(.4,.4,.4,1);
+				vertsBkg[offset + 2].clr = m_selectColor;
+				vertsBkg[offset + 3].pos = fm::vec2(pixPosF.x,pixPosT.y);
+				vertsBkg[offset + 3].clr = m_selectColor;
 
 				C(3)
 					indsBkg[offset/4*6 + i] = offset+i+m_vertexCountCaret;
@@ -323,6 +325,24 @@ namespace Fgui
 
 		delete[] verts;
 		delete[] inds;
+	}
+
+	/////////////////////////////////////////////////////////////
+	void BasicControl::onCaretColorUpdate()
+	{
+		fm::vert2f *ptr = (fm::vert2f *)m_caretVbo.map();
+
+		fm::Time t = m_caretClk.getTime();
+		fm::Uint64 ms = t.asMilliseconds();
+
+		ms %= 1600;
+
+		fm::vec4 c(fm::vec3(m_caretColor),/* ms<700 ? ms/700.0 : (1600.0-ms)/900.0 */ std::sin(ms/1600.0*3.14159265358979));
+
+		C(m_carets.size()*2)
+			ptr[i].clr = c;
+
+		m_caretVbo.unMap();
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -373,14 +393,14 @@ namespace Fgui
 			return m_font->getGlyph('w').size.w+1;
 
 		if (cp=='\t')
-			return m_font->getGlyph('w').size.w*4+4;
+			return m_font->getGlyph('w').size.w*4+1;
 
 		fg::Glyph glyph = m_font->getGlyph(cp);
 
 		if (retGlyph)
 			*retGlyph = glyph;
 
-		return /*glyph.size.w+2 */ m_font->getGlyph('w').size.w+1;
+		return m_monoSpace ? m_font->getGlyph('w').size.w+1 : glyph.size.w+2;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -424,7 +444,7 @@ namespace Fgui
 			/// if (!m_font->hasGlyph(str[i])) fg::fg_log << "unknown codepoint "<<str[i]<<std::endl;
 
 			line->insert(caret.tp.pos+i,str[i]);
-			colorLine->insert(colorLine->begin()+caret.tp.pos+i,CharColor(fm::vec4(1,1,1),fm::vec4(0,0,0,0)));
+			colorLine->insert(colorLine->begin()+caret.tp.pos+i,CharColor(m_textColor,m_bckColor));
 		}
 
 		// advance cursors
@@ -1162,12 +1182,17 @@ namespace Fgui
 			if (key.ctrl)
 			{
 				m_carets.resize(1);
+
+				TextPos selP = m_carets[0].sel;
 				setCaret(m_carets[0],m_lines.size()-1,m_lines.back().size());
+
+				if (key.shift)
+					m_carets[0].sel = selP;
 			}
 			else
 			{
 				C(m_carets.size())
-					moveCaretPos(m_carets[i],-((int)m_carets[i].tp.pos)+(int)m_lines[m_carets[i].tp.line].size());
+					moveCaretPos(m_carets[i],-((int)m_carets[i].tp.pos)+(int)m_lines[m_carets[i].tp.line].size(),!key.shift);
 
 				uniquifyCarets();
 			}
@@ -1181,16 +1206,21 @@ namespace Fgui
 			if (key.ctrl)
 			{
 				m_carets.resize(1);
+
+				TextPos selP = m_carets[0].sel;
 				setCaret(m_carets[0],0,0);
+
+				if (key.shift)
+					m_carets[0].sel = selP;
 			}
 			else
 			{
 				C(m_carets.size())
 				{
 					if (m_carets[i].tp.pos)
-						moveCaretPos(m_carets[i],-((int)m_carets[i].tp.pos));
+						moveCaretPos(m_carets[i],-((int)m_carets[i].tp.pos),!key.shift);
 					else
-						moveCaretPos(m_carets[i],-((int)m_carets[i].tp.pos)+(int)getLeadingWhiteSpaces(m_carets[i].tp.line).size());
+						moveCaretPos(m_carets[i],-((int)m_carets[i].tp.pos)+(int)getLeadingWhiteSpaces(m_carets[i].tp.line).size(),!key.shift);
 				}
 
 				uniquifyCarets();
@@ -1404,27 +1434,43 @@ namespace Fgui
 							   const fm::String &defText,
 							   fg::Font *font,
 							   fm::Size characterSize,
-							   bool editable) : Widget(name,anchor,size,parent),
-												m_charSize(characterSize),
-												m_ibo(fg::IndexBuffer),
-												m_iboBkg(fg::IndexBuffer),
-												m_caretIbo(fg::IndexBuffer),
-												m_vertexCount(0),
-												m_vertexCountBkg(0),
-												m_vertexCountCaret(0),
-												m_vertexCountCaretBkg(0),
-												m_font(font),
-												m_needRecalcCarets(false),
-												m_needBuildVertices(false),
-												m_needSetupPosition(false),
-												m_needSetViewCaret(false),
-												m_insertMode(false),
-												m_editable(editable),
-												m_dragCaret(0),
-												m_dragMode(DragMode::NoDrag),
-												m_rightDown(false)
+							   bool editable,
+							   bool monoSpace,
+							   fm::vec4 textColor,
+							   fm::vec4 selectColor,
+							   fm::vec4 caretColor,
+							   fm::vec4 bckColor) : Widget(name,anchor,size,parent),
+													  m_textColor(textColor),
+													  m_selectColor(selectColor),
+													  m_bckColor(bckColor),
+													  m_caretColor(caretColor),
+													  m_charSize(characterSize),
+													  m_ibo(fg::IndexBuffer),
+													  m_iboBkg(fg::IndexBuffer),
+													  m_caretIbo(fg::IndexBuffer),
+													  m_vertexCount(0),
+													  m_vertexCountBkg(0),
+													  m_vertexCountCaret(0),
+													  m_vertexCountCaretBkg(0),
+													  m_font(font),
+													  m_needRecalcCarets(false),
+													  m_needBuildVertices(false),
+													  m_needSetupPosition(false),
+													  m_needSetViewCaret(false),
+													  m_insertMode(false),
+													  m_monoSpace(monoSpace),
+													  m_editable(editable),
+													  m_dragCaret(0),
+													  m_dragMode(DragMode::NoDrag),
+													  m_rightDown(false)
 	{
 		setContent(defText);
+	}
+
+	/////////////////////////////////////////////////////////////
+	BasicControl::~BasicControl()
+	{
+
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -1514,7 +1560,6 @@ namespace Fgui
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-		glLineWidth(2);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
@@ -1532,7 +1577,6 @@ namespace Fgui
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
 
-		glLineWidth(1);
 		glDisable(GL_BLEND);
 	}
 
@@ -1629,7 +1673,7 @@ namespace Fgui
 				m_charColors.push_back(std::deque<CharColor>());
 			else
 				m_lines.back() += str[i],
-				m_charColors.back().push_back(CharColor(fm::vec4::White,fm::vec4(0,0,0,0)));
+				m_charColors.back().push_back(CharColor(m_textColor,m_bckColor));
 		}
 
 		m_needBuildVertices = true;
@@ -1650,6 +1694,23 @@ namespace Fgui
 	}
 
 	/////////////////////////////////////////////////////////////
+	void BasicControl::setCharSize(unsigned int charSize)
+	{
+		if (m_charSize != charSize)
+		{
+			m_charSize = charSize;
+			m_needBuildVertices = true;
+			m_needRecalcCarets  = true;
+		}
+	}
+
+	/////////////////////////////////////////////////////////////
+	unsigned int BasicControl::getCharSize() const
+	{
+		return m_charSize;
+	}
+
+	/////////////////////////////////////////////////////////////
 	bool BasicControl::handleEvent(const fw::Event &ev)
 	{
 		if (!getEnabled())
@@ -1664,7 +1725,7 @@ namespace Fgui
 
 			bool printed = true;
 			C(sizeof(notPrinted)/sizeof(*notPrinted))
-				if (notPrinted[i] == (fm::Uint32)ev.text.wcharacter)
+				if (notPrinted[i] == ev.text.utf8character)
 				{
 					printed = false;
 					break;
@@ -1673,7 +1734,7 @@ namespace Fgui
 			if (!printed)
 				return true;
 
-			fm::String s(ev.text.wcharacter);
+			fm::String s(ev.text.utf8character);
 
 			C(m_carets.size())
 			{
@@ -1763,10 +1824,21 @@ namespace Fgui
 
 							if (caret.tp == targetCaret.tp && caret.sel == m_carets[m_dragCaret].sel)
 							{
-								caret.tp.line = clickTp.line+1;
-								caret.sel.line = clickTp.line;
-								caret.sel.pos = 0;
-								caret.tp.pos = 0;
+								if (caret.tp.line != m_lines.size()-1)
+								{
+									caret.tp.line = clickTp.line+1;
+									caret.sel.line = clickTp.line;
+									caret.sel.pos = 0;
+									caret.tp.pos = 0;
+								}
+								else
+								{
+									caret.tp.line = clickTp.line;
+									caret.sel.line = clickTp.line;
+									caret.sel.pos = 0;
+									caret.tp.pos = m_lines.back().size();
+								}
+
 							}
 							else if (targetCaret.sel.pos == 0 && targetCaret.tp.pos == 0 && targetCaret.sel.line+1 == targetCaret.tp.line)
 							{
@@ -1915,6 +1987,8 @@ namespace Fgui
 		if (m_needSetupPosition)
 			setupPosition(),
 			m_needSetupPosition = false;
+
+		onCaretColorUpdate();
 	}
 
 	/////////////////////////////////////////////////////////////
