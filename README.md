@@ -2,7 +2,7 @@
 <p align="center"><b>====:o:====</b></p>
 <h2>Description</h2>
 
-Classes for managing windows and creating OpenGL contexts (currently only for Windows)
+Classes for managing windows and creating OpenGL contexts (for Windows and Linux)
 Automatic OpenGL functions loading
 Wrapper classes for OpenGL objects (Texture, FrameBuffer, Shader etc)
 Templated math classes (Vector, Matrix)
@@ -20,13 +20,12 @@ cd to /src
 
 <p align="center"><b>====:o:====</b></p>
 <h2>Citation</h2>
-The source uses two public domain libraries:
+The source uses two public domain libraries and a GPLv2 library:
 <ol>
 	<li>
 		<p>stb (http://github.com/nothings/stb and http://nothings.org)</p>
 		<ul type="*">
 			<li>stb_image.h</li>
-			<li>stb_truetype.h</li>
 		</ul>
 	</li>
 	<li>
@@ -34,6 +33,12 @@ The source uses two public domain libraries:
 		<ul type="*">
 			<li>jpge.h</li>
 			<li>jpge.cpp</li>
+		</ul>
+	</li>
+	<li>
+		<p>slightly modified version of freetype (http://www.freetype.org/)</p>
+		<ul type="*">
+			<li>src/Graphics/FreeType/*</li>
 		</ul>
 	</li>
 </ol>
