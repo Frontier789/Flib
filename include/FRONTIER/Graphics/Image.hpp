@@ -561,7 +561,7 @@ namespace fg
 		/// @return A vector of images
 		///
 		/////////////////////////////////////////////////////////////
-		static bool saveMultipleImagesToFile(Image const* const *images,fm::Size imageCount,const std::string &file);
+		static bool saveMultipleImagesToFile(Image const* const* images,fm::Size imageCount,const std::string &file);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Save image(s) to a file in memory

@@ -157,6 +157,9 @@ namespace Fgui
 	/////////////////////////////////////////////////////////////
 	Widget *Table::findNamed(const std::string &name)
 	{
+		if (getName() == name)
+			return this;
+		
 		Widget *w = fm::nullPtr;
 
 		Cxy(m_cellCount.w,m_cellCount.h)

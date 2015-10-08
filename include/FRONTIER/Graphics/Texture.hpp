@@ -41,13 +41,18 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Texture : public GlObject
 	{
+	protected:
 		fm::vec2s m_realSize; ///< The actul size of the texture
 		fm::vec2s m_size;	  ///< The requested size of the texture
 		bool m_isRepeated;	  ///< True if the texture is repeated after its bounds
 		bool m_isSmooth;	  ///< If true then linear interpolation is used on magnifying
-		fm::mat4 m_pixToUnit; ///< The transformation used to convert pixels to units
+
+	public:
 		virtual fm::Int32  getInternalFormat() const; ///< Internal function
+		virtual fm::Uint32 getTexRebinding() const;   ///< Internal function
 		virtual fm::Uint32 getAttachement() const;    ///< Internal function
+		virtual fm::Uint32 getTexBinding() const;     ///< Internal function
+		virtual fm::Uint32 getTexTarget() const;      ///< Internal function
 		virtual fm::Uint32 getFormat() const; ///< Internal function
 		virtual fm::Uint32 getType() const;   ///< Internal function
 
@@ -127,7 +132,7 @@ namespace fg
 		/// @return True if no error occured
 		///
 		/////////////////////////////////////////////////////////////
-		bool create(fm::Size width,fm::Size height);
+		virtual bool create(fm::Size width,fm::Size height);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief (re)create the texture with given size
@@ -161,7 +166,7 @@ namespace fg
 		/// @return True if no error occured
 		///
 		/////////////////////////////////////////////////////////////
-		bool loadFromImage(const Image &img);
+		virtual bool loadFromImage(const Image &img);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load a OpenGL texture from a file
@@ -194,7 +199,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference setRepeated(bool repeat);
+		virtual reference setRepeated(bool repeat);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the smoothness flag
@@ -207,7 +212,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference setSmooth(bool smooth);
+		virtual reference setSmooth(bool smooth);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the state of the repeate flag
@@ -240,7 +245,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Color *pixels,fm::Size x,fm::Size y,fm::Size w,fm::Size h);
+		virtual reference update(const Color *pixels,fm::Size x,fm::Size y,fm::Size w,fm::Size h);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the content of the texture
@@ -399,7 +404,7 @@ namespace fg
 		/// @return The transformation matrix
 		///
 		/////////////////////////////////////////////////////////////
-		const fm::mat4 &getPixToUnitMatrix() const;
+		fm::mat4 getPixToUnitMatrix() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the maximum width (same as max height) of a texture

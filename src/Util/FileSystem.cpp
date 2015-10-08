@@ -14,34 +14,39 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include "TextureSaver.hpp"
-#include <FRONTIER/Graphics/GLCheck.hpp>
-#include <FRONTIER/OpenGL.hpp>
-namespace fg
-{
-	namespace priv
-	{
-		/// constructor /////////////////////////////////////////////////////////
-		TextureSaver::TextureSaver(bool save)
-		{
-			if (save)
-			{
-				GLint textureId;
-				glCheck(glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureId));
-				m_textureId = textureId;
-			}
-			else
-				m_textureId = -1;
-		}
+#include <FRONTIER/Util/FileSystem.hpp>
+#include <FRONTIER/System/macros/C.hpp>
+#include <FRONTIER/System/macros/OS.h>
 
-		/// destructor /////////////////////////////////////////////////////////
-		TextureSaver::~TextureSaver()
+namespace fm
+{
+	namespace util
+	{
+		namespace fileSys
 		{
-			if (m_textureId != -1)
+			Entry::Entry(const fm::String &fullName,bool dir) : dir(dir)
 			{
-				GLint textureId = m_textureId;
-				glCheck(glBindTexture(GL_TEXTURE_2D, textureId));
+				fm::String cpy = fullName;
+				C(cpy.size())
+					cpy[i] = (cpy[i] == '/' ? '\\' : cpy[i]);
+				
+				path = cpy.substr(0,cpy.find_last_of("\\"));
+				name = cpy.substr(cpy.find_last_of("\\")+1);
+			}
+			
+			Entry::Entry(const fm::String &path, const fm::String &name,bool dir) : path(path),
+																					name(name),
+																					dir(dir)
+			{
+				
 			}
 		}
 	}
 }
+
+#ifdef FRONTIER_OS_WINDOWS
+	#include "Wapi/WapiFileSystem.cpp"
+#else //
+	#warning Implementation does not support clipboard
+	#include "Generic/GenericFileSystem.cpp"
+#endif

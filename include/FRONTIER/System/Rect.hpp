@@ -55,23 +55,13 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		///
-		/// Initializes the rectangle with (@a pos,(0,0))
-		///
-		/// @param pos The position of the rectangle
-		///
-		/////////////////////////////////////////////////////////////
-		rect(const vector2<T> &pos);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Default constructor
-		///
 		/// Initializes the rectangle with (@a pos,@a size)
 		///
 		/// @param pos The position of the rectangle
 		/// @param size The size of the rectangle
 		///
 		/////////////////////////////////////////////////////////////
-		rect(const vector2<T> &pos,const vector2<T> &size);
+		explicit rect(const vector2<T> &pos,const vector2<T> &size = vector2<T>());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
@@ -83,7 +73,7 @@ namespace fm
 		/// @param size The size of the rectangle
 		///
 		/////////////////////////////////////////////////////////////
-		rect(const T &x,const T &y,const vector2<T> &size);
+		rect(const T &x,const T &y,const vector2<T> &size = vector2<T>());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor

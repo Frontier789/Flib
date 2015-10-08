@@ -25,13 +25,6 @@ namespace fm
 	{
 
 	}
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline rect<T>::rect(const vector2<T> &pos) : pos(pos),
-												  size(vector2<T>())
-	{
-
-	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>

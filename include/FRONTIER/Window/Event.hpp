@@ -118,15 +118,15 @@ namespace fw
 			F10,         ///< The F10 key
 			F11,         ///< The F11 key
 			F12,         ///< The F12 key
-			Num0,        ///< The '0' key 
-			Num1,        ///< The '1' key 
-			Num2,        ///< The '2' key 
-			Num3,        ///< The '3' key 
-			Num4,        ///< The '4' key 
-			Num5,        ///< The '5' key 
-			Num6,        ///< The '6' key 
-			Num7,        ///< The '7' key 
-			Num8,        ///< The '8' key 
+			Num0,        ///< The '0' key
+			Num1,        ///< The '1' key
+			Num2,        ///< The '2' key
+			Num3,        ///< The '3' key
+			Num4,        ///< The '4' key
+			Num5,        ///< The '5' key
+			Num6,        ///< The '6' key
+			Num7,        ///< The '7' key
+			Num8,        ///< The '8' key
 			Num9,        ///< The '9' key
 			Numpad0,     ///< The '0' key on the numpad
 			Numpad1,     ///< The '1' key on the numpad
@@ -141,7 +141,7 @@ namespace fw
 			KeyCount,    ///< The number of keys
 			Unknown      ///< The key is not known
 		};
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Check key status
 		///
@@ -173,17 +173,17 @@ namespace fw
 			ButtonCount, ///< The number of mouse buttons
 			Unknown      ///< The mouse button is not known
 		};
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Check button status
-		/// 
+		///
 		/// @param button The button
 		///
 		/// @return True if the button is held
 		///
 		/////////////////////////////////////////////////////////////
 		static bool isButtonHeld(Button button);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the cursor's distance from the upper left corner
 		///
@@ -191,51 +191,62 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		static fm::vec2i getPosition();
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the cursor's distance from the upper left corner of a specific window
-		/// 
+		///
 		/// @param window The target window
-		/// 
+		///
 		/// @return Position of the cursor
 		///
 		/////////////////////////////////////////////////////////////
 		static fm::vec2i getPosition(const fw::priv::Window &window);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the cursor's distance from the upper left corner of a specific window
-		/// 
+		///
 		/// @param window The target window
-		/// 
+		///
 		/// @return Position of the cursor
 		///
 		/////////////////////////////////////////////////////////////
 		static fm::vec2i getPosition(const fw::Window &window);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the cursor's position
-		/// 
+		///
 		/// The position is relative to the upper left corner
-		/// 
+		///
 		/// @param pos The new position of the cursor
 		///
 		/////////////////////////////////////////////////////////////
 		static void setPosition(const fm::vec2i &pos);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the cursor's position relative to a specific window
-		/// 
+		///
 		/// The position is relative to the upper left corner
-		/// 
+		///
 		/// @param pos The new position of the cursor
 		/// @param window The target window
 		///
 		/////////////////////////////////////////////////////////////
 		static void setPosition(const fm::vec2i &pos,const fw::priv::Window &window);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the cursor's position relative to a specific window
+		///
+		/// The position is relative to the upper left corner
+		///
+		/// @param pos The new position of the cursor
+		/// @param window The target window
+		///
+		/////////////////////////////////////////////////////////////
+		static void setPosition(const fm::vec2i &pos,const fw::Window &window);
 	};
 
 	/////////////////////////////////////////////////////////////
-	/// 
+	///
 	/// 	@brief Simple class used to store data about KeyPressed KeyReleased events
 	///
 	/// @ingroup Window
@@ -263,7 +274,7 @@ namespace fw
 		int y; ///< Y coordinate of the cursor
 		Mouse::Button button; ///< Identifies the mouse button
 	};
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Simple class used to store data about MouseMoved events
 	///
@@ -276,7 +287,7 @@ namespace fw
 		int x;  ///< X coordinate of the cursor
 		int y;  ///< Y coordinate of the cursor
 	};
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Simple class used to store data about a MouseWheelMoved event
 	///
@@ -293,7 +304,7 @@ namespace fw
 		bool alt;   ///< Indicates that alt was held when the event occured
 		int delta;  ///< The amount the wheel moved (+1 means it was rotated once, forward, away from the user)
 	};
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Simple class used to store data about a Resized event
 	///
@@ -306,7 +317,7 @@ namespace fw
 		unsigned int w; ///< The new width
 		unsigned int h; ///< The new height
 	};
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Simple class used to store data about a TextEntered event
 	///
@@ -319,7 +330,7 @@ namespace fw
 		char character;     ///< The entered character
 		fm::Uint32 utf8character; ///< The entered character (utf8)
 	};
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Simple class used to store data about a FileDrop event
 	///
@@ -333,7 +344,7 @@ namespace fw
 		int y; ///< Y coordinate of the cursor
 		std::vector<std::string> files; ///< The name(s) of file(s)
 	};
-	
+
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to store properties of a window event
 	///
@@ -345,7 +356,7 @@ namespace fw
 	public:
 		typedef Event &reference;
 		typedef const Event &const_reference;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Indicates what field of the event is present
 		///
@@ -367,9 +378,9 @@ namespace fw
 			MouseLeft,       ///< The mouse left the window (the motion field can be used to track further information)
 			MouseEntered     ///< The mouse entered the window (the motion field can be used to track further information)
 		};
-		
+
 		EventType type; ///< The type of the event
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Holds the fileds of the event
 		///
@@ -384,14 +395,14 @@ namespace fw
 			TextEvent       text;   ///< used with TextEntered event
 			MouseWheelEvent wheel;  ///< used with MouseWheelMoved event
 		};
-		
+
 		DropEvent drop;  ///< used with FileDrop event
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Capable of holding data related to a event
 		///
 		/////////////////////////////////////////////////////////////
-		class EventData 
+		class EventData
 		{
 		public:
 			union {
@@ -402,7 +413,7 @@ namespace fw
 				TextEvent       text;   ///< used with TextEntered
 				MouseWheelEvent wheel;  ///< used with MouseWheelMoved event
 			};
-			
+
 			DropEvent drop; ///< used with FileDrop event
 
 			EventData(KeyboardEvent key);     ///< Set up the union to hold data for KeyPressed KeyReleased events
@@ -413,13 +424,13 @@ namespace fw
 			EventData(MouseWheelEvent wheel); ///< Set up the union to hold data for MouseWheelMoved event
 			EventData(DropEvent drop);        ///< Set up the union to hold data for FileDrop event
 		};
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		///
 		/////////////////////////////////////////////////////////////
 		Event();
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Initialize event with a type
 		///
@@ -427,21 +438,21 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		Event(EventType type);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Initialize event with a type
 		///
 		/// @param type The initial type
 		/// @param data The initial data of the event
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		Event(EventType type,EventData data);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Use the event as a bool
-		/// 
+		///
 		/// @return True if the event is not empty
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		operator bool() const;
 	};

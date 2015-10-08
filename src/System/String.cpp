@@ -211,6 +211,12 @@ namespace fm
 	{
 		return fromUtf8<const char *>(bytes,bytes+byteCount+1,invalidSign);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	String String::fromUtf8(const std::string &str,fm::Uint32 invalidSign)
+	{
+		return fromUtf8<std::string::const_iterator>(str.begin(),str.end(),invalidSign);
+	}
 
 
 	/////////////////////////////////////////////////////////////

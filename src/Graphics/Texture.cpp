@@ -24,14 +24,44 @@
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/OpenGL.hpp>
-#include "TextureSaver.hpp"
 #include <cstring>
 
 namespace fg
 {
+	namespace priv
+	{
+		//////////////////////////////////
+		/// TextureSaver
+		//////////////////////////////////
+		class TextureSaver
+		{
+			GLint m_textureId;
+			GLenum m_target;
+		public:
+
+			//////////////////////////////////
+			TextureSaver(GLenum binding,GLenum texTarget) : m_target(texTarget)
+			{
+				GLint textureId;
+				glCheck(glGetIntegerv(binding, &textureId));
+				m_textureId = textureId;
+			}
+
+			//////////////////////////////////
+			~TextureSaver()
+			{
+				GLint textureId = m_textureId;
+				glCheck(glBindTexture(m_target, textureId));
+			}
+		};
+	}
+
 	////////////////////////////////////////////////////////////
 	fm::Int32  Texture::getInternalFormat() const {return /*GL_RGBA8*/GL_RGBA;}
+	fm::Uint32 Texture::getTexRebinding() const {return GL_TEXTURE_2D;}
 	fm::Uint32 Texture::getAttachement() const {return GL_COLOR_ATTACHMENT0;}
+	fm::Uint32 Texture::getTexBinding() const {return GL_TEXTURE_BINDING_2D;}
+	fm::Uint32 Texture::getTexTarget() const {return GL_TEXTURE_2D;}
 	fm::Uint32 Texture::getFormat() const {return GL_RGBA;}
 	fm::Uint32 Texture::getType() const {return GL_UNSIGNED_BYTE;}
 
@@ -48,8 +78,8 @@ namespace fg
 	{
 		if (copy.getGlId() && copy.getSize().w && copy.getSize().h)
 		{
-			m_isRepeated = copy.m_isRepeated,
-			m_isSmooth = copy.m_isSmooth;
+			setRepeated(copy.m_isRepeated),
+			setSmooth(copy.m_isSmooth);
 			loadFromImage(copy.copyToImage());
 		}
 	}
@@ -98,7 +128,6 @@ namespace fg
 		// setup internal data
 		m_realSize = realSize;
 		m_size(width,height);
-		m_pixToUnit = fm::MATRIX::scaling(fm::vec2(m_realSize).inv());
 
 		if (glIsTexture(getGlId()) == GL_FALSE)
 		{
@@ -108,26 +137,26 @@ namespace fg
 		}
 
 		// bind the texture for uplading
-		priv::TextureSaver save;
+		priv::TextureSaver save(getTexBinding(),getTexRebinding());
 
-		glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
+		bind();
 
 		// set TEXTURE_WRAP
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+		glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+		glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 		if (glGetError() != GL_NO_ERROR)
 		{
 			m_isRepeated = !m_isRepeated;
-			glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
-			glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
+			glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
+			glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
 		}
 
 		// set TEXTURE_FILTER
-		glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
-		glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
+		glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
+		glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
 
 		// upload data
-		glCheck(glTexImage2D(GL_TEXTURE_2D,0,getInternalFormat(),m_realSize.w,m_realSize.h,0,getFormat(),getType(),fm::nullPtr));
+		glCheck(glTexImage2D(getTexTarget(),0,getInternalFormat(),m_realSize.w,m_realSize.h,0,getFormat(),getType(),fm::nullPtr));
 
 		return true;
 	}
@@ -145,9 +174,10 @@ namespace fg
 		if (create(img.getSize()))
 		{
 			// upload data
-			priv::TextureSaver save;
-			glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
-			glCheck(glTexSubImage2D(GL_TEXTURE_2D,0,0,0,img.getSize().w,img.getSize().h,getFormat(),getType(), img.getPixelsPtr()));
+			priv::TextureSaver save(getTexBinding(),getTexRebinding());
+			bind();
+
+			glCheck(glTexSubImage2D(getTexTarget(),0,0,0,img.getSize().w,img.getSize().h,getFormat(),getType(), img.getPixelsPtr()));
 		}
 		else
 			return false;
@@ -172,16 +202,16 @@ namespace fg
 
 			if (getGlId())
 			{
-				priv::TextureSaver save;
+				priv::TextureSaver save(getTexBinding(),getTexRebinding());
 
-				glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
+				bind();
 
-				glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+				glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+				glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 				if (glGetError() != GL_NO_ERROR)
 				{
-					glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,m_isRepeated ? GL_CLAMP_TO_EDGE : GL_REPEAT));
-					glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,m_isRepeated ? GL_CLAMP_TO_EDGE : GL_REPEAT));
+					glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_CLAMP_TO_EDGE : GL_REPEAT));
+					glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_CLAMP_TO_EDGE : GL_REPEAT));
 				}
 			}
 		}
@@ -198,11 +228,11 @@ namespace fg
 
 			if (getGlId())
 			{
-				priv::TextureSaver save;
+				priv::TextureSaver save(getTexBinding(),getTexRebinding());
 
-				glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
-				glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
-				glCheck(glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
+				bind();
+				glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
+				glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
 			}
 		}
 		return *this;
@@ -225,10 +255,10 @@ namespace fg
 	{
 		if (pixels && getGlId())
 		{
-			priv::TextureSaver save;
+			priv::TextureSaver save(getTexBinding(),getTexRebinding());
 
-			glCheck(glBindTexture(GL_TEXTURE_2D, getGlId()));
-			glCheck(glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, getFormat(), getType(), pixels));
+			bind();
+			glCheck(glTexSubImage2D(getTexTarget(), 0, x, y, w, h, getFormat(), getType(), pixels));
 		}
 		return *this;
 	}
@@ -292,7 +322,7 @@ namespace fg
 			GLuint fb_id;
 			glCheck(glGenFramebuffers(1,&fb_id));
 			glCheck(glBindFramebuffer(GL_FRAMEBUFFER,fb_id));
-			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER,getAttachement(),GL_TEXTURE_2D,getGlId(),0));
+			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER,getAttachement(),getTexTarget(),getGlId(),0));
 
 			// Tell GL no draw and read buffers will be needed
 			if (getAttachement() == GL_DEPTH_ATTACHMENT)
@@ -311,7 +341,7 @@ namespace fg
 		}
 
 		// prepare image
-		priv::TextureSaver save;
+		priv::TextureSaver save(getTexBinding(),getTexRebinding());
 		Image ret;
 		ret.create(m_size);
 
@@ -319,15 +349,15 @@ namespace fg
 		if (m_size == m_realSize)
 		{
 			// simply copy back texture
-			glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
-			glCheck(glGetTexImage(GL_TEXTURE_2D,0,getFormat(),getType(),ret.getPixelsPtr()));
+			bind();
+			glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),ret.getPixelsPtr()));
 		}
 		else
 		{
 			// copy the whole texture
 			std::vector<Color> allPixels(m_realSize.w * m_realSize.h);
-			glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
-			glCheck(glGetTexImage(GL_TEXTURE_2D,0,getFormat(),getType(),&allPixels[0]));
+			bind();
+			glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),&allPixels[0]));
 
 			// cut the useful part
 			const Color *src = &allPixels[0];
@@ -348,7 +378,7 @@ namespace fg
 	void Texture::bind() const
 	{
 		if (getGlId())
-			glCheck(glBindTexture(GL_TEXTURE_2D,getGlId()));
+			glCheck(glBindTexture(getTexRebinding(),getGlId()));
 	}
 
 	////////////////////////////////////////////////////////////
@@ -367,9 +397,9 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	const fm::mat4 &Texture::getPixToUnitMatrix() const
+	fm::mat4 Texture::getPixToUnitMatrix() const
 	{
-		return m_pixToUnit;
+		return fm::MATRIX::scaling(getRealSize().inv());
 	}
 
 	////////////////////////////////////////////////////////////

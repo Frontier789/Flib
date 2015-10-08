@@ -147,13 +147,14 @@ namespace fm
 	}
 
 
+	////////////////////////////////////////////////////////////
 	template<class T>
-	inline typename vector4<T>::reference vector4<T>::unsign()
+	inline vector4<T> vector4<T>::unsign()
 	{
-		x = (x < T(0) ? x*T(-1) : x);
-		y = (y < T(0) ? y*T(-1) : y);
-		z = (z < T(0) ? z*T(-1) : z);
-		w = (w < T(0) ? w*T(-1) : w);
+		return vector4<T>(x < T(0) ? x*T(-1) : x,
+						  y < T(0) ? y*T(-1) : y,
+						  z < T(0) ? z*T(-1) : z,
+						  w < T(0) ? w*T(-1) : w);
 		return *this;
 	}
 

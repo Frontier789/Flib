@@ -24,6 +24,7 @@
 #include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/System/Log.hpp>
 #include <FRONTIER/OpenGL.hpp>
+
 class ObjectBinder
 {
 public:
@@ -53,6 +54,11 @@ bool checkFramebufferStatus()
 	if (status == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
 	{
 		fg::fg_log << "Error: the framebuffer object has a incomplete attachment (invalid size?)" << std::endl;
+		return 0;
+	}
+	if (status == GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
+	{
+		fg::fg_log << "Error: the framebuffer object has a missing attachment (no color attachment?)" << std::endl;
 		return 0;
 	}
 	if (status == GL_FRAMEBUFFER_UNSUPPORTED)
@@ -150,10 +156,10 @@ namespace fg
 		ObjectBinder binder(getGlId());
 		C(count)
 		{
-			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, (colorAttachments+i)->getGlId(), 0));
-			
+			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, (colorAttachments+i)->getTexTarget(), (colorAttachments+i)->getGlId(), 0));
+
 			fm::vec2s size = (colorAttachments+i)->getRealSize();
-			
+
 			if (!i || size.w < m_width ) m_width  = size.w;
 			if (!i || size.h < m_height) m_height = size.h;
 		}
@@ -171,10 +177,12 @@ namespace fg
 
 	bool FrameBuffer::setDepthBuffer(const DepthBuffer &depthBuf)
 	{
+		init();
+
 		if (depthBuf.dtex)
 		{
 			ObjectBinder binder(getGlId());
-			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuf.dtex->getGlId(), 0));
+			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthBuf.dtex->getTexTarget(), depthBuf.dtex->getGlId(), 0));
 		}
 		else if (depthBuf.width && depthBuf.height)
 		{

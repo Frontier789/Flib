@@ -41,7 +41,7 @@ namespace Fgui
 
 	void Housing::setupPosition()
 	{
-		m_transform = fm::MATRIX::translation(getPosInRoot());
+		m_transform = fm::MATRIX::translation(fm::vec2i(getPosInRoot()));
 	}
 
 	/////////////////////////////////////////////////////////////

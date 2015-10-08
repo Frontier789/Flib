@@ -14,30 +14,39 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_TEXTURE_SAVER_HPP_INCLUDED
-#define FRONTIER_TEXTURE_SAVER_HPP_INCLUDED
-#define FRONTIER_TEXTURE_SAVER
-namespace fg
+#ifndef FRONTIER_FILESYSTEM_HPP_INCLUDED
+#define FRONTIER_FILESYSTEM_HPP_INCLUDED
+#include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/System/NullPtr.hpp>
+#include <FRONTIER/System/String.hpp>
+#define FRONTIER_FILESYSTEM
+#include <deque>
+
+namespace fm
 {
-	namespace priv
+	/////////////////////////////////////////////////////////////
+	namespace util
 	{
-		//////////////////////////////////
-		/// TextureSaver
-		////////////////////////////////// 
-		class TextureSaver
+		/////////////////////////////////////////////////////////////
+		namespace fileSys
 		{
-			int m_textureId;
-		public:
-			//////////////////////////////////
-			/// constructor
-			////////////////////////////////// 
-			TextureSaver(bool save = true);
+			class FRONTIER_API Entry
+			{
+			public:
+				fm::String path;
+				fm::String name;
+				bool dir;
+				
+				Entry(const fm::String &fullName,bool dir);
+				Entry(const fm::String &path, const fm::String &name,bool dir);
+			};
 			
-			//////////////////////////////////
-			/// destructor
-			////////////////////////////////// 
-			~TextureSaver();
-		};
+			/////////////////////////////////////////////////////////////
+			std::deque<Entry> FRONTIER_API ls(const fm::String &pattern,bool recursive = false,bool (*filter)(const Entry &) = fm::nullPtr);
+		}
 	}
 }
-#endif
+
+#endif // FRONTIER_FILESYSTEM_HPP_INCLUDED
+
+

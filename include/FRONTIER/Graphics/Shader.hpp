@@ -94,6 +94,7 @@ namespace fg
 			/////////////////////////////////////////////////////////////
 			TexUniformData(int location=0,int slot=0,int act_id=0);
 	    };
+
 		std::vector<unsigned int> m_subShaders;  ///< The id of the shaders that builds up the shader program
 		std::map<std::string, int> m_uniforms;   ///< The "id" of the uniforms and their name
 		std::map<std::string, int> m_attribs;    ///< The "id" of the attributes and their name
@@ -226,14 +227,14 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
         int hasUniform(const std::string &name);
-        
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Enable/disable a given attribute pointer
-		/// 
+		///
 		/// @param name The name of the attribute
 		/// @param enable True to enable false to disable
-		/// 
-		/// 
+		///
+		///
 		/////////////////////////////////////////////////////////////
 		void enableAttribPointer(const std::string &name,bool enable = true);
 

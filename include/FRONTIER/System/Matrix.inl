@@ -573,8 +573,8 @@ namespace fm
 		{
 			mat4 t = translation(-cam_pos,storeOrder);
 			vec3 f = (target_pos - cam_pos).sgn();
-			vec3 r = f.cross(up_dir.sgn());
-			vec3 u = r.cross(f);
+			vec3 r = f.cross(up_dir).sgn();
+			vec3 u = r.cross(f).sgn();
 			if (storeOrder==RowMajor)
 			{
 				float ret[]={ r.x,  r.y,  r.z,  0,

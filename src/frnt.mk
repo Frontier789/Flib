@@ -5,7 +5,7 @@ CD=cd
 RM=rm
 
 override CXXFLAGS+=-Wno-long-long -Wfatal-errors -Wall -Wextra -Os -pedantic 
-override CXXFLAGS+= -pg -g -fno-inline-functions # -Werror
+# override CXXFLAGS+= -pg -g -fno-inline-functions -Werror
 override CXXFLAGS+=-DFRONTIER_LIBBUILD -DFRONTIER_PROTECT_SHARED_VARIABLES
 
 ifeq ($(LIBNAME),)

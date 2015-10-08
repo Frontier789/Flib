@@ -294,10 +294,10 @@ namespace fm
 		///
 		/// x=|x|, y=|y|, z=|z|, w=|w|
 		///
-		/// @return Reference to itself
+		/// @return The unsigned vector
 		///
 		/////////////////////////////////////////////////////////////
-		reference unsign();
+		vector4<T> unsign();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the length of the 4D vector

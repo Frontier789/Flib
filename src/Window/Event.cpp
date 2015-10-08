@@ -33,7 +33,7 @@ namespace fw
 	{
 		return getPosition(window.getOSWindow());
 	}
-	
+
 	////////////////////////////////////////////////////////////
 	Event::EventData::EventData(KeyboardEvent key)     : key(key)       {}
 	Event::EventData::EventData(ButtonEvent mouse)     : mouse(mouse)   {}
@@ -42,19 +42,19 @@ namespace fw
 	Event::EventData::EventData(TextEvent text)        : text(text)     {}
 	Event::EventData::EventData(MouseWheelEvent wheel) : wheel(wheel)   {}
 	Event::EventData::EventData(DropEvent drop)        : drop(drop)     {}
-	
+
 	////////////////////////////////////////////////////////////
 	Event::Event() : type(Empty)
 	{
-		
+
 	}
-	
+
 	////////////////////////////////////////////////////////////
 	Event::Event(Event::EventType type) : type(type)
 	{
-		
+
 	}
-	
+
 	////////////////////////////////////////////////////////////
 	Event::Event(Event::EventType type,EventData data) : type(type)
 	{
@@ -66,11 +66,16 @@ namespace fw
 		wheel  = data.wheel;
 		drop   = data.drop;
 	}
-	
+
 	////////////////////////////////////////////////////////////
 	Event::operator bool() const
 	{
 		return type != Empty;
 	}
+
+	/////////////////////////////////////////////////////////////
+	void Mouse::setPosition(const fm::vec2i &pos,const fw::Window &window)
+	{
+		setPosition(pos,window.getOSWindow());
+	}
 }
-		 

@@ -27,9 +27,7 @@ namespace fm
 
 
 	/////////////////////////////////////////////////////////////
-	///
-	/// 	@brief Templated class for using
-	///			   3D <a href="http://en.wikipedia.org/wiki/Euclidean_vector">euclidean vectors</a>
+	/// @brief Templated class for using 3D <a href="http://en.wikipedia.org/wiki/Euclidean_vector">euclidean vectors</a>
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
@@ -200,10 +198,10 @@ namespace fm
 		///
 		/// x=|x|, y=|y|, z=|z|
 		///
-		/// @return Reference to itself
+		/// @return The unsigned vector
 		///
 		/////////////////////////////////////////////////////////////
-		reference unsign();
+		vector3<T> unsign();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the length of the 3D vector

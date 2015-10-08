@@ -179,7 +179,18 @@ namespace fm
 		/// @return The loaded string
 		///
 		/////////////////////////////////////////////////////////////
-		static String fromUtf8(const char *bytes,fm::Size byteCount,fm::Uint32 invalidSign = 0xFFFD);
+		static String fromUtf8(const char *bytes,fm::Size byteCount,fm::Uint32 invalidSign);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the content of the string from a utf8 text
+		///
+		/// @param str The uft8 encoded string
+		/// @param invalidSign The codepoint to insert if the character is invalid (0 means omit)
+		///
+		/// @return The loaded string
+		///
+		/////////////////////////////////////////////////////////////
+		static String fromUtf8(const std::string &str,fm::Uint32 invalidSign = 0xFFFD);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the content of the string from a utf16 text
