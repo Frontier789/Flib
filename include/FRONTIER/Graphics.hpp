@@ -35,6 +35,7 @@ namespace fg
 }
 
 #include <FRONTIER/Graphics/Font.hpp>
+#include <FRONTIER/Graphics/Mesh.hpp>
 #include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
@@ -52,5 +53,6 @@ namespace fg
 #include <FRONTIER/Graphics/DepthTexture.hpp>
 #include <FRONTIER/Graphics/TextureAtlas.hpp>
 #include <FRONTIER/Graphics/RenderStates.hpp>
+#include <FRONTIER/Graphics/ShaderManager.hpp>
 
 #endif // FRONTIER_GRAPICS_MODULE_HPP_INCLUDED

@@ -17,10 +17,16 @@
 #ifndef FRONTIER_CAMERA_HPP_INCLUDED
 #define FRONTIER_CAMERA_HPP_INCLUDED
 
+#include <FRONTIER/System/macros/dont_include_inl_begin>
+
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Angle.hpp>
 #include <FRONTIER/System/Rect.hpp>
+
+#include <FRONTIER/System/macros/dont_include_inl_end>
+
+#define FRONTIER_CAMERA
 
 namespace fm
 {
@@ -28,7 +34,7 @@ namespace fm
 	/// @brief Class used to handle a 3D or Orthographic Camera
 	///
 	/////////////////////////////////////////////////////////////
-	class Camera
+	class FRONTIER_API Camera
 	{
 		vec2  m_screenSize; ///< The size of the "canvas" of the camera in pixels
 		vec3  m_pos;        ///< The position of the camera in world-space

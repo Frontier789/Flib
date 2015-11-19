@@ -14,7 +14,10 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#ifndef FRONTIER_SHADER_INL_INCLUDED
+#define FRONTIER_SHADER_INL_INCLUDED
 #include <FRONTIER/GL/Is_GLDataType.hpp>
+
 namespace fg
 {
 	namespace priv
@@ -115,3 +118,7 @@ namespace fg
 		return setUniform(name,m,storeOrder);
 	}
 }
+
+#endif // FRONTIER_SHADER_INL_INCLUDED
+
+

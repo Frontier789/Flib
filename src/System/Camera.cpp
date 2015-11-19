@@ -1,7 +1,11 @@
 #include <FRONTIER/System/macros/TYPES.hpp>
 #include <FRONTIER/System/Quaternion.hpp>
+#include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Polar2.hpp>
 #include <FRONTIER/System/Camera.hpp>
+#include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/System/Angle.hpp>
+#include <FRONTIER/System/Rect.hpp>
 
 namespace fm
 {
@@ -222,7 +226,7 @@ namespace fm
 
 		return *this;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Camera::reference Camera::setViewMat(const mat4 &viewMat)
 	{
