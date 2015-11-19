@@ -18,68 +18,64 @@
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/System/Angle.hpp>
 #include <FRONTIER/Config.hpp>
 #include <cmath>
 namespace fm
 {
-    
+
 	/// Constructors /////////////////////////////////////////////////////////
 	Quat::Quat() : x(0),
 				   y(0),
 				   z(0),
 				   w(1)
 	{
-		
+
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat::Quat(const Quat &copy) : x(copy.x),
 								   y(copy.y),
 								   z(copy.z),
 								   w(copy.w)
 	{
-		
+
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat::Quat(const vec3 &axis,const Angle &angle)
 	{
-		float halfAngle = (*((float*)&angle))*.5f;
-		float sinA = std::sin(halfAngle);
+		float sinA = std::sin(angle*.5f);
 		x = sinA*axis.x;
 		y = sinA*axis.y;
 		z = sinA*axis.z;
-		w = std::cos(halfAngle);
+		w = std::cos(angle*.5f);
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat::Quat(float X,float Y,float Z,float W) : x(X),
 												  y(Y),
 												  z(Z),
 												  w(W)
 	{
-		
+
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat::Quat(const Angle &around_x,const Angle &around_y,const Angle &around_z)
 	{
-		float x = *((float*)&around_x);
-		float y = *((float*)&around_y);
-		float z = *((float*)&around_z);
-		
-		double sx = sin(x*.5);
-		double cx = cos(x*.5);
-		double sy = sin(y*.5);
-		double cy = cos(y*.5);
-		double sz = sin(z*.5);
-		double cz = cos(z*.5);
-		
+		double sx = std::sin(around_x*.5);
+		double cx = std::cos(around_x*.5);
+		double sy = std::sin(around_y*.5);
+		double cy = std::cos(around_y*.5);
+		double sz = std::sin(around_z*.5);
+		double cz = std::cos(around_z*.5);
+
 		float cycz = cy * cz;
 		float sycz = sy * cz;
 		float cysz = cy * sz;
 		float sysz = sy * sz;
-        
+
 		x = sx * cycz - cx * sysz;
 		y = cx * sycz + sx * cysz;
 		z = cx * cysz - sx * sycz;
@@ -87,52 +83,66 @@ namespace fm
 
 		normalize();
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	float Quat::dot(const Quat &other) const
 	{
 		return (x * other.x) + (y * other.y) + (z * other.z) + (w * other.w);
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat &Quat::normalize()
 	{
 		(*this) = norm();
 		return *this;
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat Quat::norm() const
 	{
 		float l = LENGTH();
 		return (l==1 || l==0) ? *this : (*this)/std::sqrt(l);
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat Quat::sgn() const
 	{
 		float l = LENGTH();
 		return (l==1 || l==0) ? *this : (*this)/std::sqrt(l);
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat Quat::inverse() const
 	{
 		return Quat(-x,-y,-z,w);
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	float Quat::length() const
 	{
 		return std::sqrt(x*x+y*y+z*z+w*w);
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	float Quat::LENGTH() const
 	{
 		return x*x+y*y+z*z+w*w;
 	}
-    
+
+	////////////////////////////////////////////////////////////
+	vec3 Quat::getAxis() const
+	{
+		float sinA = std::sin(fm::rad(std::acos(w))*.5f);
+
+		return vec3(x,y,z)/sinA;
+	}
+
+	////////////////////////////////////////////////////////////
+	Angle Quat::getAngle() const
+	{
+		return fm::rad(std::acos(w));
+	}
+
 	////////////////////////////////////////////////////////////
 	mat4 Quat::getMatrix(MATRIX::StorageOrder storeOrder) const
 	{
@@ -142,15 +152,15 @@ namespace fm
 							  2*x*y-2*w*z, 1-2*x*x-2*z*z,   2*y*z+2*w*x, 0,
 							  2*x*z+2*w*y,   2*y*z-2*w*x, 1-2*x*x-2*y*y, 0,
 										0,             0,             0, 1};
-			return fm::mat4(ret);			
+			return fm::mat4(ret);
 		}
 		float ret[4*4]={1-2*y*y-2*z*z,   2*x*y-2*w*z,   2*x*z+2*w*y, 0,
 						  2*x*y+2*w*z, 1-2*x*x-2*z*z,   2*y*z-2*w*x, 0,
 						  2*x*z-2*w*y,   2*y*z+2*w*x, 1-2*x*x-2*y*y, 0,
 						            0,             0,             0, 1};
-		return fm::mat4(ret);	
+		return fm::mat4(ret);
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat Quat::fromTo(const vec3 &from,const vec3 &to)
 	{
@@ -159,25 +169,25 @@ namespace fm
 
 		if (from == -to)
 			return Quat(0,0,0,1);
-		
+
         float szog = std::acos(from.dot(to));
         szog = szog < 0 ? fm::PI+szog : szog;
-		
+
 		vec3 axis = from.cross(to).sgn();
 		float sinA = std::sin(szog*.5f);
-		
+
 		return Quat (sinA*axis.x,
 					 sinA*axis.y,
 					 sinA*axis.z,
 					 std::cos(szog*.5f));
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat Quat::lerp(const Quat &quatAt0,const Quat &quatAt1,float deltaTime)
 	{
 		return quatAt0*(1.f-deltaTime)+quatAt1*deltaTime;
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat Quat::slerp(Quat quatAt0,const Quat &quatAt1,float deltaTime,float useLerpAfter)
 	{
@@ -191,13 +201,13 @@ namespace fm
 		{
 			float theta = std::acos(dot);
 			float invsintheta = 1.f/std::sin(theta);
-			return quatAt0*(std::sin(theta * (1.0f-deltaTime)) * invsintheta) + 
+			return quatAt0*(std::sin(theta * (1.0f-deltaTime)) * invsintheta) +
 				   quatAt1*(std::sin(theta * deltaTime) * invsintheta);
 		}
-		
+
 		return lerp(quatAt0,quatAt1,deltaTime);
 	}
-    
+
 	////////////////////////////////////////////////////////////
 	Quat Quat::identity = Quat();
 
@@ -280,7 +290,7 @@ namespace fm
 					left.z/right,
 					left.w/right);
 	}
-	
+
 	////////////////////////////////////////////////////////////
 	Quat &operator*=(Quat &left,const Quat &right)
 	{

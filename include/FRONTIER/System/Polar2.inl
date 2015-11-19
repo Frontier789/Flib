@@ -14,29 +14,12 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_POLAR_INL_INCLUDED
-#define FRONTIER_POLAR_INL_INCLUDED
+#ifndef FRONTIER_POLAR2_INL_INCLUDED
+#define FRONTIER_POLAR2_INL_INCLUDED
 #include <cmath>
+
 namespace fm
 {
-	/// constructors /////////////////////////////////////////////////////////
-	template<class T>
-	inline polar2<T>::polar2() : length(0),
-								 angle(Angle())
-	{
-
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline polar2<T>::polar2(const T &length) : length(length),
-												angle(Angle())
-	{
-
-	}
-
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline polar2<T>::polar2(const T &length,const Angle &angle) : length(length),
@@ -59,7 +42,7 @@ namespace fm
 	template<class T>
 	template<class T2>
 	inline polar2<T>::polar2(const vector2<T2> &vec) : length(vec.length()),
-													   angle(rad(std::atan2(vec.y,vec.x)))
+													   angle(fm::rad(std::atan2(vec.y,vec.x)))
 	{
 
 	}
@@ -124,7 +107,8 @@ namespace fm
 	template<class T>
 	polar2<T> &polar2<T>::operator+=(const polar2<T> &other)
 	{
-		*this = polar2<T>(vector2<T>(*this)+vector2<T>(other));
+		length += other.length;
+		angle  += other.angle;
 		return *this;
 	}
 
@@ -132,7 +116,8 @@ namespace fm
 	template<class T>
 	polar2<T> &polar2<T>::operator-=(const polar2<T> &other)
 	{
-		*this = polar2<T>(vector2<T>(*this)-vector2<T>(other));
+		length -= other.length;
+		angle  -= other.angle;
 		return *this;
 	}
 
@@ -140,7 +125,7 @@ namespace fm
 	template<class T>
 	polar2<T> &polar2<T>::operator*=(const T &other)
 	{
-		length*=other;
+		length *= other;
 		return *this;
 	}
 
@@ -148,7 +133,7 @@ namespace fm
 	template<class T>
 	polar2<T> &polar2<T>::operator/=(const T &other)
 	{
-		length/=other;
+		length /= other;
 		return *this;
 	}
 
@@ -156,58 +141,60 @@ namespace fm
 	template<class T>
 	polar2<T> polar2<T>::operator+(const polar2<T> &other) const
 	{
-		return polar2<T>(vector2<T>(*this)+vector2<T>(other));
+		return polar2<T>(length + other.length,
+						 angle  + other.angle);
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T>
 	polar2<T> polar2<T>::operator-(const polar2<T> &other) const
 	{
-		return polar2<T>(vector2<T>(*this)-vector2<T>(other));
+		return polar2<T>(length - other.length,
+						 angle  - other.angle);
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T>
 	polar2<T> polar2<T>::operator*(const T &scalar) const
 	{
-		return polar2<T>(length*scalar,angle);
+		return polar2<T>(length * scalar,angle);
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T>
 	polar2<T> polar2<T>::operator/(const T &scalar) const
 	{
-		return polar2<T>(length/scalar,angle);
+		return polar2<T>(length / scalar,angle);
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T>
 	bool polar2<T>::operator==(const polar2<T> &other) const
 	{
-		return (length==other.length	   && (angle-other.angle).asDegrees()%360==0) ||
-			   (length==other.length*T(-1) && (angle-other.angle).asDegrees()%360==180);
+		return (length == other.length       && fmod(fmod((angle-other.angle).asDegrees(),360.f)+360.f,360.f) == 0) ||
+			   (length == other.length*T(-1) && fmod(fmod((angle-other.angle).asDegrees(),360.f)+360.f,360.f) == 180);
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T>
 	bool polar2<T>::operator!=(const polar2<T> &other) const
 	{
-		return !(length==other.length	    && (angle-other.angle).asDegrees()%360==0) &&
-			   !(length==other.length*T(-1) && (angle-other.angle).asDegrees()%360==180);
+		return !(length == other.length       && fmod(fmod((angle-other.angle).asDegrees(),360.f)+360.f,360.f)  == 0) &&
+			   !(length == other.length*T(-1) && fmod(fmod((angle-other.angle).asDegrees(),360.f)+360.f,360.f)  == 180);
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T>
 	polar2<T> operator-(const polar2<T> &pol)
 	{
-		return polar2<T>(pol.length*T(-1),pol.angle);
+		return polar2<T>(pol.length * T(-1),pol.angle);
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T>
 	polar2<T> operator*(const T &left,const polar2<T> &right)
 	{
-		return polar2<T>(right.length*left,right.angle);
+		return polar2<T>(right.length * left,right.angle);
 	}
 }
 #endif

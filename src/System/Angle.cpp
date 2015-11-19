@@ -21,34 +21,34 @@
 namespace fm
 {
     Angle::MeasureType Angle::globalMeasureType = Angle::Degrees;
-    
-    
+
+
     ////////////////////////////////////////////////////////////
 	Angle::Angle() : m_amount(0)
     {
-    	
+
     }
-    
+
     ////////////////////////////////////////////////////////////
 	Angle::Angle(float angle) : m_amount(globalMeasureType ? angle : angle/180.f*fm::PI)
     {
-    	
+
     }
-    
+
     ////////////////////////////////////////////////////////////
 	Angle::Angle(const Angle &copy) : m_amount(copy.asRadians())
     {
-        
+
     }
-    
+
     ////////////////////////////////////////////////////////////
 	Angle::Angle(float angle,MeasureType type) : m_amount(type ? angle : angle/180.f*fm::PI)
     {
-        
+
     }
 
 
-    float Angle::asDergrees() const
+    float Angle::asDegrees() const
     {
         return m_amount * 180.f / fm::PI;
     }
@@ -64,7 +64,7 @@ namespace fm
     ////////////////////////////////////////////////////////////
     float Angle::asDegs() const
     {
-        return asDergrees();
+        return asDegrees();
     }
 
 
@@ -78,7 +78,7 @@ namespace fm
     ////////////////////////////////////////////////////////////
     float Angle::asDeg() const
     {
-        return asDergrees();
+        return asDegrees();
     }
 
 
@@ -94,95 +94,95 @@ namespace fm
 	{
 		return radians(left.asRadians()+right.asRadians());
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Angle operator-(const Angle &left,const Angle &right)
 	{
 		return radians(left.asRadians()-right.asRadians());
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Angle operator*(const Angle &left,const float &right)
 	{
 		return radians(left.asRadians()*right);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
     Angle operator*(const float &left,const Angle &right)
 	{
 		return radians(left*right.asRadians());
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Angle operator/(const Angle &left,const float &right)
 	{
 		return radians(left.asRadians()/right);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Angle &operator+=(Angle &left,const Angle &right)
 	{
 		*((float*)&left) += right.asRadians();
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Angle &operator-=(Angle &left,const Angle &right)
 	{
 		*((float*)&left) -= right.asRadians();
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Angle &operator*=(Angle &left,const float &right)
 	{
 		*((float*)&left) *= right;
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Angle &operator/=(Angle &left,const float &right)
 	{
 		*((float*)&left) /= right;
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator==(const Angle &left,const Angle &right)
 	{
 		return left.asRadians() == right.asRadians();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator!=(const Angle &left,const Angle &right)
 	{
 		return left.asRadians() != right.asRadians();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator< (const Angle &left,const Angle &right)
 	{
 		return left.asRadians() < right.asRadians();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator<=(const Angle &left,const Angle &right)
 	{
 		return left.asRadians() <= right.asRadians();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator> (const Angle &left,const Angle &right)
 	{
 		return left.asRadians() > right.asRadians();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator>=(const Angle &left,const Angle &right)
 	{
 		return left.asRadians() >= right.asRadians();
 	}
-    
+
     Angle degrees(float amount)
     {
     	Angle ret;

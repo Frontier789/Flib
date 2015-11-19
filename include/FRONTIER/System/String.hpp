@@ -147,7 +147,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the content of the string from a utf8 text
 		///
-		/// @param begin The first used character
+		/// @param first The first used character
 		/// @param last The first character that is not used
 		/// @param invalidSign The codepoint to insert if the character is invalid (0 means omit)
 		///
@@ -195,7 +195,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the content of the string from a utf16 text
 		///
-		/// @param begin The first used character
+		/// @param first The first used character
 		/// @param last The first character that is not used
 		/// @param invalidSign The codepoint to insert if the character is invalid (0 means omit)
 		///
@@ -208,7 +208,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the content of the string from a utf32 text
 		///
-		/// @param begin The first used character
+		/// @param first The first used character
 		/// @param last The first character that is not used
 		/// @param invalidSign The codepoint to insert if the character is invalid (0 means omit)
 		///
@@ -358,8 +358,6 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Pop the string's back
 		///
-		/// @param str The string to erase at the end
-		///
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
@@ -367,8 +365,6 @@ namespace fm
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Pop the string's front
-		///
-		/// @param str The string to erase at the beginning
 		///
 		/// @return Reference to itself
 		///

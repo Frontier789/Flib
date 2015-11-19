@@ -48,6 +48,7 @@ namespace fm
 #include <FRONTIER/System/Sleep.hpp>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Polar2.hpp>
+#include <FRONTIER/System/Polar3.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Vertex.hpp>
 #include <FRONTIER/System/Camera.hpp>

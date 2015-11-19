@@ -16,13 +16,20 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_WINDOW_HPP_INCLUDED
 #define FRONTIER_WINDOW_HPP_INCLUDED
+
+#include <FRONTIER/System/macros/dont_include_inl_begin>
+
+#include <FRONTIER/System/Vector2.hpp>
+
+#include <FRONTIER/System/macros/dont_include_inl_end>
+
 #include <FRONTIER/Window/WindowPredef.hpp>
 #include <FRONTIER/System/macros/TYPES.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Window/GLContext.hpp>
 #include <FRONTIER/System/macros/API.h>
-#include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/String.hpp>
+
 #define FRONTIER_WINDOW
 
 namespace fg

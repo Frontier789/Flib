@@ -56,6 +56,7 @@ namespace fm
 
 namespace fg
 {
+	class CubeTexture;
 	class Texture;
 	class Color;
 
@@ -66,6 +67,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Shader : public fm::NonCopyable, public GlObject
 	{
+	protected:
 		/////////////////////////////////////////////////////////////
 		/// @brief Class used to store data about uniform textures
 		///
@@ -103,6 +105,8 @@ namespace fg
 		bool link(); ///< Internal function used to link the compiled shaders to the shader program
 		void init(); ///< Internal function used at setup
 		void freeSubShaders(); ///< Internal function used at clean-up
+		virtual void clearData(); ///< clear uniforms, attributes, textures etc
+
     public:
         typedef Shader &reference;
         typedef const Shader &const_reference;
@@ -121,7 +125,7 @@ namespace fg
 		/// Automatically frees OpenGL id
 		///
 		/////////////////////////////////////////////////////////////
-        ~Shader();
+        virtual ~Shader();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the shader program from files
@@ -273,7 +277,7 @@ namespace fg
 		/// if either of @a posName or @a clrName does not
 		/// correspond to an active attribute in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -300,7 +304,7 @@ namespace fg
 		/// if either of @a posName or @a clrName or @a texPosName does not
 		/// correspond to an active attribute in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -329,7 +333,7 @@ namespace fg
 		/// if either of @a posName or @a clrName or @a texPosName or @a normName does not
 		/// correspond to an active attribute in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -360,7 +364,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active attribute in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -390,7 +394,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active attribute in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -416,7 +420,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active attribute in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -442,7 +446,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active attribute in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -468,7 +472,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active attribute in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -494,7 +498,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active attribute in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -519,7 +523,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The value of the uniform
@@ -538,7 +542,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -558,7 +562,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -579,7 +583,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -601,7 +605,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The value of the uniform
@@ -620,7 +624,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -640,7 +644,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -661,7 +665,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -683,7 +687,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param v The value of the uniform
@@ -702,7 +706,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param v The value of the uniform
@@ -721,7 +725,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param v The value of the uniform
@@ -740,7 +744,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param m The value of the uniform
@@ -760,7 +764,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param m The value of the uniform
@@ -780,7 +784,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param m The value of the uniform
@@ -800,7 +804,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param m The value of the uniform
@@ -820,7 +824,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param c The value of the uniform
@@ -831,7 +835,7 @@ namespace fg
 		reference setUniform(const std::string &name,const Color &c);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the value of an sampler2D uniform
+		/// @brief Set the value of a sampler2D uniform
 		///
 		/// If the shader program is invalid no error will be prompted
 		/// and the shader program will not be modified
@@ -839,7 +843,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform
@@ -850,7 +854,7 @@ namespace fg
 		reference setUniform(const std::string &name,const Texture &tex);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the value of an sampler2D uniform
+		/// @brief Set the value of a sampler2D uniform
 		///
 		/// If the shader program is invalid no error will be prompted
 		/// and the shader program will not be modified
@@ -858,7 +862,7 @@ namespace fg
 		/// if @a name does not
 		/// correspond to an active uniform in
 		/// the shader program an error is prompted to
-		/// fg_log and -1 is returned
+		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform (NULL means unbound)
@@ -867,6 +871,44 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		reference setUniform(const std::string &name,const Texture *tex);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of a samplerCube uniform
+		///
+		/// If the shader program is invalid no error will be prompted
+		/// and the shader program will not be modified
+		///
+		/// if @a name does not
+		/// correspond to an active uniform in
+		/// the shader program an error is prompted to
+		/// fg_log
+		///
+		/// @param name The name of the uniform
+		/// @param tex The value of the uniform
+		///
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference setUniform(const std::string &name,const CubeTexture &tex);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of a samplerCube uniform
+		///
+		/// If the shader program is invalid no error will be prompted
+		/// and the shader program will not be modified
+		///
+		/// if @a name does not
+		/// correspond to an active uniform in
+		/// the shader program an error is prompted to
+		/// fg_log
+		///
+		/// @param name The name of the uniform
+		/// @param tex The value of the uniform (NULL means unbound)
+		///
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference setUniform(const std::string &name,const CubeTexture *tex);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a shader program for usage

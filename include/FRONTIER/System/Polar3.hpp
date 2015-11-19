@@ -14,43 +14,52 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_POLAR2_HPP_INCLUDED
-#define FRONTIER_POLAR2_HPP_INCLUDED
-#include <FRONTIER/System/Vector2.hpp>
+#ifndef FRONTIER_POLAR3_HPP_INCLUDED
+#define FRONTIER_POLAR3_HPP_INCLUDED
+#include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Angle.hpp>
-#define FRONTIER_POLAR2
+#define FRONTIER_POLAR3
+
+/*
+pol3(1, 0, 0) == vec3(1,0,0)
+pol3(1,90, 0) == vec3(0,1,0)
+pol3(1, 0,90) == vec3(0,0,1)
+*/
+
 namespace fm
 {
-
 	/////////////////////////////////////////////////////////////
 	/// @brief Templated class for using
-	///		   2D <a href="http://en.wikipedia.org/wiki/Polar_coordinate_system">polar vectors</a>
+	///		   3D <a href="https://en.wikipedia.org/wiki/Spherical_coordinate_system">spherical vectors</a>
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	class polar2
+	class polar3
 	{
 	public:
-	    typedef polar2 &reference;
-	    typedef const polar2 &const_reference;
-		union {
-			T r;      ///< Access the length with the naming convension r (radius)
-			T l;      ///< Access the length with the naming convension l (length)
-			T length; ///< Access the length with the naming convension length
-		}; ///< Anonymous union holding the length
+	    typedef polar3 &reference;
+	    typedef const polar3 &const_reference;
 
-		Angle angle; ///< The angle of the polar vector
+		union {
+			T l;      ///< Access the length with the naming convension r (radius)
+			T r;      ///< Access the length with the naming convension l (length)
+			T length; ///< Access the length with the naming convension length
+		};
+
+		Angle theta; /// Theta (angle on x,y plane)
+		Angle phi;   /// Phi   (angle on pol2(1,theta),z plane)
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct a polar vector from length and angle
+		/// @brief Construct a polar vector from length
 		///
-		/// Initializes 2D polar vector with (length,angle)
+		/// Initializes 3D polar vector with (length,theta,phi)
 		///
 		/// @param length Length
-		/// @param angle  Angle
+		/// @param theta  Theta (angle on x,y plane)
+		/// @param phi    Phi   (angle on pol2(1,theta),z plane)
 		///
 		/////////////////////////////////////////////////////////////
-		explicit polar2(const T &length = T(),const Angle &angle = fm::deg(0));
+		explicit polar3(const T &length = T(),const Angle &theta = fm::deg(0),const Angle &phi = fm::deg(0));
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy a polar vector
@@ -58,27 +67,28 @@ namespace fm
 		/// @param copy The vector to be copied
 		///
 		/////////////////////////////////////////////////////////////
-		polar2(const_reference copy);
+		polar3(const_reference copy);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Convert 2D <a href="http://en.wikipedia.org/wiki/Euclidean_vector">euclidean vectors</a> to 2D polar vector
+		/// @brief Convert 3D <a href="http://en.wikipedia.org/wiki/Euclidean_vector">euclidean vectors</a> to 3D polar vector
 		///
 		/// @param vec The vector to be converted
 		///
 		/////////////////////////////////////////////////////////////
 		template<class T2>
-		polar2(const vector2<T2> &vec);
+		polar3(const vector3<T2> &vec);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator ()
 		///
 		/// @param Length The new length
-		/// @param Alpha The new angle
+		/// @param Theta  The new theta (angle on x,y plane)
+		/// @param Phi    The new phi   (angle on pol2(1,theta),z plane)
 		///
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference operator()(const T &Length,const Angle &Alpha);
+		reference operator()(const T &Length,const Angle &Theta,const Angle &Phi);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator ()
@@ -89,7 +99,7 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		template<class T2>
-		reference operator()(const vector2<T2> &vec);
+		reference operator()(const vector3<T2> &vec);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator +=
@@ -99,7 +109,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		polar2<T> &operator+=(const polar2<T> &other);
+		reference operator+=(const polar3<T> &other);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator -=
@@ -109,7 +119,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		polar2<T> &operator-=(const polar2<T> &other);
+		reference operator-=(const polar3<T> &other);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator *=
@@ -119,7 +129,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		polar2<T> &operator*=(const T &scalar);
+		reference operator*=(const T &scalar);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator /=
@@ -129,7 +139,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		polar2<T> &operator/=(const T &scalar);
+		reference operator/=(const T &scalar);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator +
@@ -139,7 +149,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		polar2<T> operator+(const polar2<T> &other) const;
+		polar3<T> operator+(const polar3<T> &other) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator -
@@ -149,7 +159,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		polar2<T> operator-(const polar2<T> &other) const;
+		polar3<T> operator-(const polar3<T> &other) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator *
@@ -159,7 +169,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		polar2<T> operator*(const T &scalar) const;
+		polar3<T> operator*(const T &scalar) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator /
@@ -169,7 +179,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		polar2<T> operator/(const T &scalar) const;
+		polar3<T> operator/(const T &scalar) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator ==
@@ -179,7 +189,7 @@ namespace fm
 		/// @return True if the vector and @a other are equal
 		///
 		/////////////////////////////////////////////////////////////
-		bool operator==(const polar2<T> &other) const;
+		bool operator==(const polar3<T> &other) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator ==
@@ -189,7 +199,20 @@ namespace fm
 		/// @return True if the vector and @a other are not equal
 		///
 		/////////////////////////////////////////////////////////////
-		bool operator!=(const polar2<T> &other) const;
+		bool operator!=(const polar3<T> &other) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Compute cross product
+		///
+		/// the result is perpendicular to the original vector and
+		/// to @a other
+		///
+		/// @param other The right opreand (vector)
+		///
+		/// @return The result vector
+		///
+		/////////////////////////////////////////////////////////////
+		polar3<T> cross(const polar3<T> &other) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Project the polar vector to @a target
@@ -199,7 +222,17 @@ namespace fm
 		/// @return The projected vector
 		///
 		/////////////////////////////////////////////////////////////
-		polar2<T> projTo(const_reference target) const;
+		polar3<T> projTo(const polar3<T> &target) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Project the vector to a plane
+		///
+		/// @param normal the normal vector of the plane
+		///
+		/// @return The projected vector
+		///
+		/////////////////////////////////////////////////////////////
+		polar3<T> projToPlane(const polar3<T> &normal) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Reflect the polar vector on @a pol
@@ -209,7 +242,7 @@ namespace fm
 		/// @return The reflected vector
 		///
 		/////////////////////////////////////////////////////////////
-		polar2<T> reflectOn(const_reference pol) const;
+		polar3<T> reflectOn(const polar3<T> &pol) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculate the dot product of two polar vectors
@@ -219,17 +252,17 @@ namespace fm
 		/// @return The dot product
 		///
 		/////////////////////////////////////////////////////////////
-		T dot(const_reference pol) const;
+		T dot(const polar3<T> &pol) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Convert the polar vector to euclidean vector
 		///
 		/////////////////////////////////////////////////////////////
-		operator vector2<T>() const;
+		operator vector3<T>() const;
 	};
 
 	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
+	/// @relates fm::polar3
 	/// @brief Overload of unary operator -
 	///
 	/// @param pol The polar vector to negate
@@ -238,10 +271,10 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	polar2<T> operator-(const polar2<T> &pol);
+	polar3<T> operator-(const polar3<T> &pol);
 
 	/////////////////////////////////////////////////////////////
-	/// @relates fm::polar2
+	/// @relates fm::polar3
 	/// @brief Overload of binary operator *
 	///
 	/// @param left Left operand (scalar)
@@ -251,46 +284,15 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	polar2<T> operator*(const T &left,const polar2<T> &right);
+	polar3<T> operator*(const T &left,const polar3<T> &right);
 
-	typedef polar2<float>  pol2;
-	typedef polar2<float>  pol2f;
-	typedef polar2<double> pol2d;
-	typedef polar2<int>    pol2i;
+	typedef polar3<float>  pol3;
+	typedef polar3<float>  pol3f;
+	typedef polar3<double> pol3d;
+	typedef polar3<int>    pol3i;
 }
-#endif // FRONTIER_POLAR2_HPP_INCLUDED
+#endif // FRONTIER_POLAR3_HPP_INCLUDED
 
 #ifndef FRONTIER_DONT_INCLUDE_INL
-	#include <FRONTIER/System/Polar2.inl>
+	#include <FRONTIER/System/Polar3.inl>
 #endif
-
-////////////////////////////////////////////////////////////
-/// @class fm::polar2
-/// @ingroup System
-///
-/// fm::polar2 is a templated class for manipulating 2D polar
-/// vectors.
-///
-/// The template parameter T is the type of the length. It
-/// can be any type that supports arithmetic operations (+, -, /, *)
-/// and comparisons (==, !=), for example int or float.
-///
-/// The most common specializations are typedefed:
-/// @li fm::polar2<float> is fm::pol2
-/// @li fm::polar2<float> is fm::pol2f
-/// @li fm::polar2<int> is fm::poli
-///
-/// Usage example:
-/// @code
-///
-/// const int N=10;
-/// fm::vec2 circlePts[N];
-/// for (int i=0;i<N;i++) // filling an array with the points of a circle
-/// 	circlePts[i] = fm::pol2(1,fm::deg(i/float(N-1)*360.f));
-///
-/// @endcode
-///
-/// @see fm::vector3
-/// @see fm::vector4
-///
-////////////////////////////////////////////////////////////

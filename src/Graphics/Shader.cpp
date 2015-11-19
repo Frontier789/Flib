@@ -14,6 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Graphics/CubeTexture.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
@@ -112,10 +113,9 @@ namespace fg
 			return false;
 
 		// reset containers
-		m_texCounter = 0;
-		m_textures.clear();
-	    m_attribs.clear();
-		m_uniforms.clear();
+		clearData();
+
+		// attach subshaders
 		C(m_subShaders.size())
 			glCheck(glAttachShader(getGlId(),m_subShaders[i]));
 
@@ -151,6 +151,15 @@ namespace fg
 		}
 
 		return true;
+	}
+
+	////////////////////////////////////////////////////////////
+	void Shader::clearData()
+	{
+		m_texCounter = 0;
+		m_textures.clear();
+	    m_attribs.clear();
+		m_uniforms.clear();
 	}
 
 	/// constructor /////////////////////////////////////////////////////////
@@ -460,7 +469,6 @@ namespace fg
 		return setUniform(name,&tex);
 	}
 
-
 	////////////////////////////////////////////////////////////
 	Shader::reference Shader::setUniform(const std::string &name,const Texture *tex)
 	{
@@ -495,6 +503,61 @@ namespace fg
 					// activate slot
 					glCheck(glActiveTexture(GL_TEXTURE0+m_texCounter));
 					glCheck(glBindTexture(GL_TEXTURE_2D,tex ? tex->getGlId() : 0));
+					m_texCounter++;
+				}
+				else
+					fg_log << "Couldn't find texture "<<name<<" in shader."<<std::endl;
+
+				glCheck(glActiveTexture(GL_TEXTURE0));
+				glCheck(glUseProgram(program));
+
+			}
+		}
+		return *this;
+	}
+
+
+	////////////////////////////////////////////////////////////
+	Shader::reference Shader::setUniform(const std::string &name,const CubeTexture &tex)
+	{
+		return setUniform(name,&tex);
+	}
+
+
+	////////////////////////////////////////////////////////////
+	Shader::reference Shader::setUniform(const std::string &name,const CubeTexture *tex)
+	{
+		if (getGlId())
+		{
+			int program;
+			glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
+			glCheck(glUseProgram(getGlId()));
+
+			// check if the uniform is in the dictionary
+			std::map<std::string, TexUniformData >::iterator it = m_textures.find(name);
+			if (it != m_textures.end())
+			{
+				// activate slot
+				glCheck(glActiveTexture(GL_TEXTURE0+it->second.slot));
+				glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,tex ? tex->getGlId() : 0));
+				it->second.act_id = tex ? tex->getGlId() : 0;
+			}
+			else
+			{
+				// get uniform location
+				int location = glGetUniformLocation(getGlId(),name.c_str());
+
+				if (location != -1)
+				{
+					// add to dictionary
+					m_textures.insert(std::make_pair(name, TexUniformData(location,m_texCounter,tex ? tex->getGlId() : 0)));
+
+					// assign id to texture slot
+					glCheck(glUniform1i(location, m_texCounter));
+
+					// activate slot
+					glCheck(glActiveTexture(GL_TEXTURE0+m_texCounter));
+					glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,tex ? tex->getGlId() : 0));
 					m_texCounter++;
 				}
 				else

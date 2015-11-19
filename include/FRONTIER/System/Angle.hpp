@@ -112,7 +112,7 @@ namespace fm
 		/// @return The angle in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
 		///
 		/////////////////////////////////////////////////////////////
-		float asDergrees() const;
+		float asDegrees() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the angle as <a href="http://en.wikipedia.org/wiki/Radian">radians</a>

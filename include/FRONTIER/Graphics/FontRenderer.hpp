@@ -106,7 +106,7 @@ namespace fg
 		/// a pixel inside of the character
 		///
 		/// @param letter The codepoint of the glyph
-		/// @param type The style of the glyph (defaults to Regular)
+		/// @param style The style of the glyph (defaults to Regular)
 		/// @param leftDown If not 0 it will be set to the offset of the glyph from the baseline
 		///
 		/// @return The rendered image

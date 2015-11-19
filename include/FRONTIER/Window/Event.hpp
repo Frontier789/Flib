@@ -273,6 +273,8 @@ namespace fw
 		int x; ///< X coordinate of the cursor
 		int y; ///< Y coordinate of the cursor
 		Mouse::Button button; ///< Identifies the mouse button
+
+		operator fm::vec2i() const; ///< convert to vec2i
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -286,6 +288,8 @@ namespace fw
 	public:
 		int x;  ///< X coordinate of the cursor
 		int y;  ///< Y coordinate of the cursor
+
+		operator fm::vec2i() const; ///< convert to vec2i
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -303,6 +307,8 @@ namespace fw
 		bool ctrl;  ///< Indicates that control was held when the event occured
 		bool alt;   ///< Indicates that alt was held when the event occured
 		int delta;  ///< The amount the wheel moved (+1 means it was rotated once, forward, away from the user)
+
+		operator fm::vec2i() const; ///< convert to vec2i
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -316,6 +322,8 @@ namespace fw
 	public:
 		unsigned int w; ///< The new width
 		unsigned int h; ///< The new height
+
+		operator fm::vec2u() const; ///< convert to vec2u
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -343,6 +351,8 @@ namespace fw
 		int x; ///< X coordinate of the cursor
 		int y; ///< Y coordinate of the cursor
 		std::vector<std::string> files; ///< The name(s) of file(s)
+
+		operator fm::vec2i() const; ///< convert to vec2i
 	};
 
 	/////////////////////////////////////////////////////////////
