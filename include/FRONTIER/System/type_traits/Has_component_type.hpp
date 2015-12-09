@@ -27,8 +27,8 @@ namespace fm
 	/// @ingroup System
 	/// 
 	/////////////////////////////////////////////////////////////
-	template<typename T>
-	class HasComponentsHelper
+	template<class T>
+	class Has_ComponentsType
 	{
 		/// @cond DOXYGEN_HIDE
 		class charX2
@@ -39,14 +39,14 @@ namespace fm
 		typedef charX2 NO;
 		typedef char   YES;
 		
-		template<class T>
+		template<class Type>
 		class SFINAE
 		{
 			
 		};
 		
 		template<class U> 
-		static YES Test(SFINAE<U::component_type>*);
+		static YES Test(SFINAE<typename U::component_type>*);
 		
 		template<class U> 
 		static NO  Test(...);

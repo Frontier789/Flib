@@ -21,12 +21,18 @@
 
 namespace fg
 {
+	/////////////////////////////////////////////////////////////
     template<class T>
-    Mesh::Attribute::Attribute(Mesh::AssociationPoint type,T *pointer,fm::Size N, bool genBuf) : type(type),
-                                                                                                 components(T::components),
-                                                                                                 stride(0),
-                                                                                                 componentType(fg::Is_GLDataType<typename T::component_type>::enumVal),
-                                                                                                 ownBuffer(genBuf)
+    Mesh::Attribute::Attribute(AssociationPoint type,
+                               T *pointer,
+                               fm::Size N,
+                               bool genBuf,
+                               typename fm::Enable_if<fg::Is_GLDataType<T>::value >::type*) : type(type),
+                                                                                              components(1),
+                                                                                              stride(0),
+                                                                                              count(N),
+                                                                                              componentType(fg::Is_GLDataType<T>::enumVal),
+                                                                                              ownBuffer(genBuf)
     {
         if (genBuf)
             buf = new fg::Buffer,
@@ -37,8 +43,89 @@ namespace fg
             buf = fm::nullPtr;
     }
 
+	/////////////////////////////////////////////////////////////
+    template<class T,fm::Size N>
+    Mesh::Attribute::Attribute(AssociationPoint type,
+                               const T (&pointer)[N],
+                               bool genBuf,
+                               typename fm::Enable_if<fg::Is_GLDataType<T>::value >::type*) : type(type),
+                                                                                              components(T::components),
+                                                                                              stride(0),
+                                                                                              count(N),
+                                                                                              componentType(fg::Is_GLDataType<T>::enumVal),
+                                                                                              ownBuffer(genBuf)
+    {
+        if (genBuf)
+            buf = new fg::Buffer,
+            ptr = fm::nullPtr,
+            buf->setData(pointer,N*sizeof(T));
+        else
+            ptr = pointer,
+            buf = fm::nullPtr;
+    }
+
+	/////////////////////////////////////////////////////////////
+    template<class T>
+    Mesh::Attribute::Attribute(AssociationPoint type,
+                               T *pointer,
+                               fm::Size N,
+                               bool genBuf,
+                               typename fm::Enable_if<!fg::Is_GLDataType<T>::value >::type*) : type(type),
+                                                                                               components(T::components),
+                                                                                               stride(0),
+                                                                                               count(N),
+                                                                                               componentType(fg::Is_GLDataType<typename T::component_type>::enumVal),
+                                                                                               ownBuffer(genBuf)
+    {
+        if (genBuf)
+            buf = new fg::Buffer,
+            ptr = fm::nullPtr,
+            buf->setData(pointer,N*sizeof(T));
+        else
+            ptr = pointer,
+            buf = fm::nullPtr;
+    }
+
+	/////////////////////////////////////////////////////////////
+    template<class T,fm::Size N>
+    Mesh::Attribute::Attribute(AssociationPoint type,
+                               const T (&pointer)[N],
+                               bool genBuf,
+                               typename fm::Enable_if<!fg::Is_GLDataType<T>::value >::type*) : type(type),
+                                                                                               components(1),
+                                                                                               stride(0),
+                                                                                               count(N),
+                                                                                               componentType(fg::Is_GLDataType<typename T::component_type>::enumVal),
+                                                                                               ownBuffer(genBuf)
+    {
+        if (genBuf)
+            buf = new fg::Buffer,
+            ptr = fm::nullPtr,
+            buf->setData(pointer,N*sizeof(T));
+        else
+            ptr = pointer,
+            buf = fm::nullPtr;
+    }
+
+	/////////////////////////////////////////////////////////////
     template<class T>
     Mesh::IndexData::IndexData(T *pointer,fm::Size N,bool genBuf,fg::Primitive primitive) : indexCount(N),
+                                                                                            componentType(fg::Is_GLDataType<T>::enumVal),
+                                                                                            ownBuffer(genBuf),
+                                                                                            primitive(primitive)
+    {
+        if (genBuf)
+            buf = new fg::Buffer(fg::IndexBuffer),
+            ptr = fm::nullPtr,
+            buf->setData(pointer,N*sizeof(T));
+        else
+            ptr = pointer,
+            buf = fm::nullPtr;
+    }
+
+	/////////////////////////////////////////////////////////////
+    template<class T,fm::Size N>
+    Mesh::IndexData::IndexData(const T (&pointer)[N],bool genBuf,fg::Primitive primitive) : indexCount(N),
                                                                                             componentType(fg::Is_GLDataType<T>::enumVal),
                                                                                             ownBuffer(genBuf),
                                                                                             primitive(primitive)

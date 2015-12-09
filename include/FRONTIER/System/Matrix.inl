@@ -348,6 +348,25 @@ namespace fm
 		template<fm::Size N,class T>
 		inline T det(const matrix<N,N,T> &mat)
 		{
+			{
+				fm::Size mxp = 0;
+
+				C(N)
+					if (fm::math::abs(mat[i][0]) > fm::math::abs(mat[mxp][0]))
+						mxp = i;
+
+				if (mxp)
+				{
+					matrix<N,N,T> cpy;
+					Cx(N)Cy(N)
+						cpy[ (x==0 ? mxp : (x==mxp ? 0 : x))  ][y] = mat[x][y];
+
+					return -det<N,T>(cpy);
+				}
+
+				return T();
+			}
+
 			T sum = T();
 
 			fm::matrix<N,N,T> U(T(1));

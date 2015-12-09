@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////// <!--
+//////////////////////////////////////////////////////////////////////////
 /// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
@@ -13,20 +13,12 @@
 ///                                                                    ///
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
-////////////////////////////////////////////////////////////////////////// -->
-namespace fm
-{
-	/////////////////////////////////////////////////////////////
-	namespace util
-	{
-		/////////////////////////////////////////////////////////////
-		namespace fileSys
-		{
-			/////////////////////////////////////////////////////////////
-			std::deque<Entry> ls(const fm::String &pattern,bool recursive,bool (*filter)(const Entry &))
-			{
-				return std::deque<Entry>();
-			}
-		}
-	}
-}
+//////////////////////////////////////////////////////////////////////////
+#ifndef FRONTIER_ARRAYSIZE_HPP_INCLUDED
+#define FRONTIER_ARRAYSIZE_HPP_INCLUDED
+#include <FRONTIER/System/macros/SIZE.hpp>
+#define FRONTIER_ARRAYSIZE
+
+#define arraySize(array) Size( sizeof(array)/sizeof(*(array)) )
+
+#endif // FRONTIER_ARRAYSIZE_HPP_INCLUDED

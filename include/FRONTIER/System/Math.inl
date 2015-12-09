@@ -52,8 +52,8 @@ namespace fm
 		template<class T>
 		inline T abs(const T &value)
 		{
-			if (value < (T)0)
-				return value*-1;
+			if (value < T(0))
+				return value * T(-1);
 
 			return value;
 		}

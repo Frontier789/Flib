@@ -52,6 +52,7 @@
 /// useful macro(s)
 //////////////////////////////////
 #include <FRONTIER/System/macros/OFFSETOF.hpp>
+#include <FRONTIER/System/macros/ARRAYSIZE.hpp>
 
 
 namespace fm
