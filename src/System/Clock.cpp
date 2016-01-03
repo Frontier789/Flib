@@ -99,7 +99,14 @@ namespace fm
     {
     	return setTime(Time::Zero);
     }
-    
+		
+	/////////////////////////////////////////////////////////////
+	Time Clock::restartGetTime()
+	{
+		Time ret = getTime();
+		restart();
+		return ret;
+	}
     
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::setTime(const Time &elapsed)

@@ -49,7 +49,7 @@ namespace fg
                                const T (&pointer)[N],
                                bool genBuf,
                                typename fm::Enable_if<fg::Is_GLDataType<T>::value >::type*) : type(type),
-                                                                                              components(T::components),
+                                                                                              components(1),
                                                                                               stride(0),
                                                                                               count(N),
                                                                                               componentType(fg::Is_GLDataType<T>::enumVal),
@@ -92,7 +92,7 @@ namespace fg
                                const T (&pointer)[N],
                                bool genBuf,
                                typename fm::Enable_if<!fg::Is_GLDataType<T>::value >::type*) : type(type),
-                                                                                               components(1),
+                                                                                               components(T::components),
                                                                                                stride(0),
                                                                                                count(N),
                                                                                                componentType(fg::Is_GLDataType<typename T::component_type>::enumVal),
@@ -109,7 +109,7 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
     template<class T>
-    Mesh::IndexData::IndexData(T *pointer,fm::Size N,bool genBuf,fg::Primitive primitive) : indexCount(N),
+    Mesh::IndexData::IndexData(T *pointer,fm::Size N,fg::Primitive primitive,bool genBuf) : indexCount(N),
                                                                                             componentType(fg::Is_GLDataType<T>::enumVal),
                                                                                             ownBuffer(genBuf),
                                                                                             primitive(primitive)
@@ -125,7 +125,7 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
     template<class T,fm::Size N>
-    Mesh::IndexData::IndexData(const T (&pointer)[N],bool genBuf,fg::Primitive primitive) : indexCount(N),
+    Mesh::IndexData::IndexData(const T (&pointer)[N],fg::Primitive primitive,bool genBuf) : indexCount(N),
                                                                                             componentType(fg::Is_GLDataType<T>::enumVal),
                                                                                             ownBuffer(genBuf),
                                                                                             primitive(primitive)

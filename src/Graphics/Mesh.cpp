@@ -88,6 +88,23 @@ namespace fg
     }
 
 	/////////////////////////////////////////////////////////////
+	Mesh::IndexData::IndexData(const IndexArrayHolder &indices,fg::Primitive primitive,bool genBuf) : indexCount(indices.N),
+																									  componentType(indices.use16bits ? (unsigned int)Is_GLDataType<fm::Uint16>::enumVal : (unsigned int)Is_GLDataType<fm::Uint32>::enumVal),
+																									  ptr(fm::nullPtr),
+																									  buf(fm::nullPtr),
+																									  ownBuffer(genBuf),
+																									  primitive(primitive)
+	{
+		if (genBuf)
+            buf = new fg::Buffer(fg::IndexBuffer),
+            ptr = fm::nullPtr,
+			buf->setData(indices.ptr,indices.N * (indices.use16bits ? sizeof(fm::Uint16) : sizeof(fm::Uint32)));
+        else
+            ptr = indices.ptr,
+            buf = fm::nullPtr;
+	}
+
+	/////////////////////////////////////////////////////////////
     Mesh::IndexData::~IndexData()
     {
         if (ownBuffer)
@@ -104,47 +121,55 @@ namespace fg
         return fm::nullPtr;
     }
 
-	/////////////////////////////////////////////////////////////
-	class IndexArrayHolder
+	Mesh::IndexArrayHolder::IndexArrayHolder(fm::Size N,bool use16bits) : use16bits(use16bits),
+																		  N(N)
 	{
-	public:
-		void *ptr;
-		bool use16bits;
-		fm::Size N;
+		if (use16bits)
+			ptr = new fm::Uint16[N];
+		else
+			ptr = new fm::Uint32[N];
+	}
+	
+	Mesh::IndexArrayHolder::IndexArrayHolder(fm::Size N,fm::Size maxIndex) : use16bits(maxIndex <= 65536),
+																			 N(N)
+	{
+		if (use16bits)
+			ptr = new fm::Uint16[N];
+		else
+			ptr = new fm::Uint32[N];
+	}
 
-		IndexArrayHolder(bool use16bits,fm::Size N) : use16bits(use16bits),
-													  N(N)
-		{
-			if (use16bits)
-				ptr = new fm::Uint16[N];
-			else
-				ptr = new fm::Uint32[N];
-		}
+	Mesh::IndexArrayHolder::~IndexArrayHolder()
+	{
+		if (use16bits)
+			delete[] (fm::Uint16*)ptr;
+		else
+			delete[] (fm::Uint32*)ptr;
+	}
 
-		~IndexArrayHolder()
-		{
-			if (use16bits)
-				delete[] (fm::Uint16*)ptr;
-			else
-				delete[] (fm::Uint32*)ptr;
-		}
+	void Mesh::IndexArrayHolder::set(fm::Size i,fm::Uint32 val)
+	{
+		if (use16bits)
+			((fm::Uint16*)ptr)[i] = val;
+		else
+			((fm::Uint32*)ptr)[i] = val;
+	}
 
-		void set(fm::Size i,fm::Uint32 val)
-		{
-			if (use16bits)
-				((fm::Uint16*)ptr)[i] = val;
-			else
-				((fm::Uint32*)ptr)[i] = val;
-		}
-	};
+	fm::Uint32 Mesh::IndexArrayHolder::get(fm::Size i)
+	{
+		if (use16bits)
+			return ((fm::Uint16*)ptr)[i];
+		else
+			return ((fm::Uint32*)ptr)[i];
+	}
 
 	/////////////////////////////////////////////////////////////
-    Mesh &Mesh::getSphere(Mesh &output,float radius,fm::Size W,fm::Size H,float (*radiusModifier)(float,float))
+    Mesh &Mesh::getSphere(Mesh &output,float radius,fm::Size W,fm::Size H,float (*radiusModifier)(float &,float &))
     {
         fm::vec3 *pts = new fm::vec3[(W+1)*H];
         fm::vec2 *tpts = new fm::vec2[(W+1)*H];
 
-		IndexArrayHolder inds((W+1)*H <= 65536, W*(2*H-2)*3);
+		IndexArrayHolder inds(W*(2*H-2)*3, (W+1)*H);
 
         fm::Size ptsi = 0;
         fm::Size tpti = 0;
@@ -152,16 +177,18 @@ namespace fg
 
         Cx(W+1)
         {
-        	float xp = float(x)/(W);
 			Cy(H)
 			{
-				float yp = float(y)/(H-1);
+				float xpO = float(x)/(W);
+				float ypO = float(y)/(H-1);
+				float xp = xpO;
+				float yp = ypO;
 				float r = (radiusModifier ? radiusModifier(xp,yp) : 1.f);
 
 				fm::vec3 p = fm::pol3(radius*r,fm::deg(xp*360),fm::deg(90-yp*180));
 
 				pts[ptsi++]  = p;
-				tpts[tpti++] = fm::vec2(xp,yp);
+				tpts[tpti++] = fm::vec2(xpO,ypO);
 
                 if (x<W && y>0)
                     inds.set(indi++, (x+0)*H+y-1),
@@ -179,9 +206,9 @@ namespace fg
         output.attrs.push_back(new Mesh::Attribute(Mesh::TextureUV,tpts,(W+1)*H,true));
 
         if (inds.use16bits)
-            output.indices.push_back(new Mesh::IndexData((fm::Uint16*)inds.ptr,inds.N,true,fg::Triangles));
+            output.indices.push_back(new Mesh::IndexData((fm::Uint16*)inds.ptr,inds.N,fg::Triangles,true));
         else
-            output.indices.push_back(new Mesh::IndexData((fm::Uint32*)inds.ptr,inds.N,true,fg::Triangles));
+            output.indices.push_back(new Mesh::IndexData((fm::Uint32*)inds.ptr,inds.N,fg::Triangles,true));
 
 		delete[] pts;
 		delete[] tpts;
@@ -190,12 +217,12 @@ namespace fg
     }
 
 	/////////////////////////////////////////////////////////////
-    Mesh &Mesh::getTorus(Mesh &output,float majorR,float minorR,fm::Size W,fm::Size H,float (*radiusModifier)(float,float))
+    Mesh &Mesh::getTorus(Mesh &output,float majorR,float minorR,fm::Size W,fm::Size H,float (*radiusModifier)(float &,float &))
     {
 		fm::vec3 *pts = new fm::vec3[(W+1)*(H+1)];
         fm::vec2 *tpts = new fm::vec2[(W+1)*(H+1)];
 
-		IndexArrayHolder inds((W+1)*(H+1) <= 65536, W*(H+1)*2*3);
+		IndexArrayHolder inds(W*(H+1)*2*3, (W+1)*(H+1));
 
         fm::Size ptsi = 0;
         fm::Size tpti = 0;
@@ -205,22 +232,23 @@ namespace fg
 
         Cx(W+1)
         {
-        	float xp = float(x)/(W);
-			fm::vec3 majorP = fm::pol3(majorR,fm::deg(0),fm::deg(xp*360));
-
-			fm::vec3 f = majorP.sgn();
-
 			Cy(H+1)
 			{
-				float yp = float(y)/(H);
+                float xpO = float(x)/(W);
+				float ypO = float(y)/(H);
+                float xp = xpO;
+				float yp = ypO;
 				float r = (radiusModifier ? radiusModifier(xp,yp) : 1.f);
+
+                fm::vec3 majorP = fm::pol3(majorR,fm::deg(0),fm::deg(xp*360));
+                fm::vec3 f = majorP.sgn();
 
 				fm::vec2 minorP = fm::pol2(minorR*r,fm::deg(yp*360));
 
 				fm::vec3 p = majorP + f*minorP.x + u*minorP.y;
 
 				pts[ptsi++]  = p;
-				tpts[tpti++] = fm::vec2(xp,yp);
+				tpts[tpti++] = fm::vec2(xpO,ypO);
 
 				fm::vec2i offsets[] = {fm::vec2i(0,0),fm::vec2i(1,0),fm::vec2i(1,1),
 									   fm::vec2i(0,0),fm::vec2i(1,1),fm::vec2i(0,1)};
@@ -235,9 +263,9 @@ namespace fg
         output.attrs.push_back(new Mesh::Attribute(Mesh::TextureUV,tpts,(W+1)*(H+1),true));
 
         if (inds.use16bits)
-            output.indices.push_back(new Mesh::IndexData((fm::Uint16*)inds.ptr,inds.N,true,fg::Triangles));
+            output.indices.push_back(new Mesh::IndexData((fm::Uint16*)inds.ptr,inds.N,fg::Triangles,true));
         else
-            output.indices.push_back(new Mesh::IndexData((fm::Uint32*)inds.ptr,inds.N,true,fg::Triangles));
+            output.indices.push_back(new Mesh::IndexData((fm::Uint32*)inds.ptr,inds.N,fg::Triangles,true));
 
 		delete[] pts;
 		delete[] tpts;

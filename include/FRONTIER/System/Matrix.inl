@@ -82,6 +82,66 @@ namespace fm
 	}
 
 
+	/////////////////////////////////////////////////////////////
+	template<fm::Size W,fm::Size H,class T>
+	template<class Th>
+	inline matrix<W,H,T>::matrix(const typename fm::Enable_if<W == H && W == 2,typename fm::Type_if<W == H && W == 2,T,Th>::type >::type
+								  	     &a00,const Th &a01,
+								 const T &a10,const T  &a11)
+	{
+		m_data[0][0] = a00;
+		m_data[0][1] = a01;
+		m_data[1][0] = a10;
+		m_data[1][1] = a11;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<fm::Size W,fm::Size H,class T>
+	template<class Th>
+	inline matrix<W,H,T>::matrix(const typename fm::Enable_if<W == H && W == 3,typename fm::Type_if<W == H && W == 3,T,Th>::type >::type
+								  	     &a00,const Th &a01,const T &a02,
+								 const T &a10,const T  &a11,const T &a12,
+								 const T &a20,const T  &a21,const T &a22)
+	{
+		m_data[0][0] = a00;
+		m_data[0][1] = a01;
+		m_data[0][2] = a02;
+		m_data[1][0] = a10;
+		m_data[1][1] = a11;
+		m_data[1][2] = a12;
+		m_data[2][0] = a20;
+		m_data[2][1] = a21;
+		m_data[2][2] = a22;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<fm::Size W,fm::Size H,class T>
+	template<class Th>
+	inline matrix<W,H,T>::matrix(const typename fm::Enable_if<W == H && W == 4,typename fm::Type_if<W == H && W == 4,T,Th>::type >::type
+								  	     &a00,const Th &a01,const T &a02,const T &a03,
+								 const T &a10,const T  &a11,const T &a12,const T &a13,
+								 const T &a20,const T  &a21,const T &a22,const T &a23,
+								 const T &a30,const T  &a31,const T &a32,const T &a33)
+	{
+		m_data[0][0] = a00;
+		m_data[0][1] = a01;
+		m_data[0][2] = a02;
+		m_data[0][3] = a03;
+		m_data[1][0] = a10;
+		m_data[1][1] = a11;
+		m_data[1][2] = a12;
+		m_data[1][3] = a13;
+		m_data[2][0] = a20;
+		m_data[2][1] = a21;
+		m_data[2][2] = a22;
+		m_data[2][3] = a23;
+		m_data[3][0] = a30;
+		m_data[3][1] = a31;
+		m_data[3][2] = a32;
+		m_data[3][3] = a33;
+	}
+
+
 	/// functions /////////////////////////////////////////////////////////
 	template<fm::Size W,fm::Size H,class T>
 	inline T matrix<W,H,T>::at(fm::Size x,fm::Size y) const
@@ -348,6 +408,7 @@ namespace fm
 		template<fm::Size N,class T>
 		inline T det(const matrix<N,N,T> &mat)
 		{
+		    if (mat[0][0] == T(0))
 			{
 				fm::Size mxp = 0;
 

@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_SHADERMANAGER_HPP_INCLUDED
 #define FRONTIER_SHADERMANAGER_HPP_INCLUDED
+#include <FRONTIER/System/MatrixStack.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/System/Camera.hpp>
@@ -33,22 +34,32 @@ namespace fg
 
     class ShaderManager : public fg::Shader
     {
+    protected:
+        std::vector<fm::MatrixStack<4,4,float> > m_stacks;
         void clearData();
-    public:
-        fm::Camera *cam;
-        std::vector<std::string> matNames;
-        std::vector<int> matIds;
+        void prepareDraw(const fg::Mesh &m);
 
-        std::map<int,std::string> assocPoints; /// e.g.  Mesh::Pos -> "in_pos"
+        fm::Camera *m_cam;
+        std::vector<std::string> m_matNames;
+        std::vector<int> m_matIds;
+
+        std::map<int,std::string> m_assocPoints; /// e.g.  Mesh::Pos -> "in_pos"
+    public:
 
         ShaderManager();
 
         void setCamera(fm::Camera *cam,const std::string &projMat = "",const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
         void associate(const std::string &attrName,int point,bool overWrite = true);
-        void setMatrices(const std::string &modelMat,const std::string &normalMat = std::string());
+        void setMatrices(const std::string &modelMat,const std::string &normalMat = std::string(),const std::string &colorMat = std::string(),const std::string &texUVMat = std::string());
         void clearAssociations();
         void update();
-        void draw(const fg::Mesh &m,const fm::mat4 &modelM = fm::mat4());
+        void draw(const fg::Mesh &m);
+        void draw(const fg::Mesh &m,fm::Size indexSet);
+        void draw(const fg::Mesh &m,fm::Size *indexSets,fm::Size indexSetCount);
+
+        fm::MatrixStack<4,4,float> &getModelStack();
+        fm::MatrixStack<4,4,float> &getColorStack();
+        fm::MatrixStack<4,4,float> &getTexUVStack();
     };
 }
 

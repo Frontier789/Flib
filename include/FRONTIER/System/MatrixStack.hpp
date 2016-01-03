@@ -14,158 +14,124 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_CLOCK_HPP_INCLUDED
-#define FRONTIER_CLOCK_HPP_INCLUDED
-#include <FRONTIER/System/macros/API.h>
-#include <FRONTIER/System/Time.hpp>
-#define FRONTIER_CLOCK
+#ifndef FRONTIER_MATRIXSTACK_HPP_INCLUDED
+#define FRONTIER_MATRIXSTACK_HPP_INCLUDED
+#include <FRONTIER/System/MAtrix.hpp>
+#define FRONTIER_MATRIXSTACK
+#include <deque>
+
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
-	/// @brief A class that functions as a stop-watch
-	///
+	/// @brief A simple class used to manage a matrix stack
+	/// 
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API Clock
+	template<fm::Size W = 4, fm::Size H = 4, class T = float, class Container = std::deque<fm::matrix<W,H,T> > >
+	class MatrixStack
 	{
-		Time m_startTime; ///< The time since we check the elapsed time
-		Time m_pauseTime; ///< The time when we stopped
+		Container m_container; ///< The underlying container
 	public:
-		typedef Time component_type;
-		typedef Clock &reference;
-		typedef const Clock &const_reference;
-		enum {
-			components = 2u ///< Public value indicating the amount of component_types in the class
-		};
-		
+		typedef MatrixStack<W,H,T,Container> &reference;
+		typedef const MatrixStack<W,H,T,Container> &const_reference;
+			
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
-		///
-		/// Initializes Clock with zero elapsed time and not paused
-		///
-		/////////////////////////////////////////////////////////////
-		Clock();
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct clock paused or unpaused
-		///
-		/// Initializes Clock with zero elapsed time and paused if @a paused is true
-		/// 
-		/// @param paused If true then the Clock is paused by default
 		/// 
 		/////////////////////////////////////////////////////////////
-		explicit Clock(bool paused);
-		
+		MatrixStack();
+			
+		/////////////////////////////////////////////////////////////
+		/// @brief Initialize with one matrix
+		/// 
+		/////////////////////////////////////////////////////////////
+		MatrixStack(const fm::matrix<W,H,T> &mat);
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy constructor
-		///
-		/// Initializes Clock from an other Clock
-		/// 
-		/// @param copy Instance to copy
 		/// 
 		/////////////////////////////////////////////////////////////
-		Clock(const_reference copy);
-		
+		template<class Container2>
+		MatrixStack(const MatrixStack<W,H,T,Container2> &copy);
+
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct from elapsed time, paused or unpaused
-		///
-		/// Initializes Clock with @a startTime elapsed time and if @a paused is true paused
+		/// @brief Push a new matrix to the stack
 		/// 
-		/// @param startTime Elapsed time to initialize with
-		/// @param paused If true then the Clock is paused by default
+		/// @param mat The matrix to push
 		/// 
-		/////////////////////////////////////////////////////////////
-		Clock(const Time &startTime,bool paused = false);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Get time since started
-		///
-		/// If the Clock paused then this function will return the difference between
-		/// the startTime and pauseTime
-		/// 
-		/// @return Elapsed time
+		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		Time getTime() const;
-		
+		MatrixStack<W,H,T,Container> &push(const fm::matrix<W,H,T> &mat);
+
 		/////////////////////////////////////////////////////////////
-		/// @brief Pause the clock
+		/// @brief Push the last matrix to the stack
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		MatrixStack<W,H,T,Container> &push();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Multiply the top matrix
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		MatrixStack<W,H,T,Container> &mul(const fm::matrix<W,H,T> &mat);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Multiply the top matrix from the right side
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		MatrixStack<W,H,T,Container> &preMul(const fm::matrix<W,H,T> &mat);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Pop the top matrix in the stack (or identity matrix is empty)
+		/// 
+		/// @return The matrix
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::matrix<W,H,T> pop();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the top matrix
+		/// 
+		/// @return The matrix
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::matrix<W,H,T> top() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the top matrix
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference pause();
+		MatrixStack<W,H,T,Container> &top(const fm::matrix<W,H,T> &mat);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the size of the stack
+		/// 
+		/// @return The size
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Size size() const;
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Resumes the clock
+		/// @brief Test if empty
 		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-		reference unPause();
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Resumes the clock
-		/// 
-		/// @return Reference to itself
+		/// @return True iff empty
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference resume();
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Restart the clock
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-		reference restart();
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Restart the clock and get the time
-		/// 
-		/// @return Elapsed time
-		/// 
-		/////////////////////////////////////////////////////////////
-		Time restartGetTime();
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the elapsed time
-		/// 
-		/// @param elapsed The elapsed time to use
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-		reference setTime(const Time &elapsed);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Find out if the Clock is paused
-		/// 
-		/// @return True if paused
-		/// 
-		/////////////////////////////////////////////////////////////
-		bool isPaused() const;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief static const Clock that is started when the object is created
-		/// 
-		/////////////////////////////////////////////////////////////
-		static const Clock now;
+		bool empty()const ;
 	};
 }
-#endif //FRONTIER_CLOCK_HPP_INCLUDED
 
-////////////////////////////////////////////////////////////
-/// @class fm::Clock
-/// @ingroup System
-///
-/// Usage example:
-/// @code
-///
-/// fm::Clock clk;
-/// unsigned long k=1;
-/// for (int i=0;i<50000000;i++) //do some work
-/// 	k*=(i%5)*(i%5);
-/// std::cout<<clk.getTime().asMilliseconds()<<"ms elapsed"<<std::endl;
-/// 
-/// @endcode
-////////////////////////////////////////////////////////////
+
+#endif // FRONTIER_MATRIXSTACK_HPP_INCLUDED
+
+#ifndef FRONTIER_DONT_INCLUDE_INL
+	#include <FRONTIER/System/MatrixStack.inl>
+#endif

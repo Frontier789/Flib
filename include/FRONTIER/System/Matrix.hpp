@@ -28,6 +28,9 @@
 
 #include <FRONTIER/System/StorageOrder.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/type_traits/Enable_if.hpp>
+#include <FRONTIER/System/type_traits/Type_if.hpp>
+
 #define FRONTIER_MATRIX
 namespace fm
 {
@@ -105,6 +108,68 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		template<class T2,class Container>
 		matrix(const fm::Collector<T2,Container> &col);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct a matrix<2,2> from 4 values
+		///
+		/// @param a00 The element at 0,0
+		/// @param a01 The element at 0,1
+		/// @param a10 The element at 1,0
+		/// @param a11 The element at 1,1
+		///
+		/////////////////////////////////////////////////////////////
+		template<class Th>
+		matrix(const typename fm::Enable_if<W == H && W == 2,typename fm::Type_if<W == H && W == 2,T,Th>::type >::type
+					   &a00,const Th &a01,
+			   const T &a10,const T  &a11);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct a matrix<3,3> from 9 values
+		///
+		/// @param a00 The element at 0,0
+		/// @param a01 The element at 0,1
+		/// @param a02 The element at 0,2
+		/// @param a10 The element at 1,0
+		/// @param a11 The element at 1,1
+		/// @param a12 The element at 1,2
+		/// @param a20 The element at 2,0
+		/// @param a21 The element at 2,1
+		/// @param a22 The element at 2,2
+		///
+		/////////////////////////////////////////////////////////////
+		template<class Th>
+		matrix(const typename fm::Enable_if<W == H && W == 3,typename fm::Type_if<W == H && W == 3,T,Th>::type >::type
+					   &a00,const Th &a01,const T &a02,
+			   const T &a10,const T  &a11,const T &a12,
+			   const T &a20,const T  &a21,const T &a22);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct a matrix<4,4> from 16 values
+		///
+		/// @param a00 The element at 0,0
+		/// @param a01 The element at 0,1
+		/// @param a02 The element at 0,2
+		/// @param a03 The element at 0,3
+		/// @param a10 The element at 1,0
+		/// @param a11 The element at 1,1
+		/// @param a12 The element at 1,2
+		/// @param a13 The element at 1,3
+		/// @param a20 The element at 2,0
+		/// @param a21 The element at 2,1
+		/// @param a22 The element at 2,2
+		/// @param a23 The element at 2,3
+		/// @param a30 The element at 3,0
+		/// @param a31 The element at 3,1
+		/// @param a32 The element at 3,2
+		/// @param a33 The element at 3,3
+		///
+		/////////////////////////////////////////////////////////////
+		template<class Th>
+		matrix(const typename fm::Enable_if<W == H && W == 4,typename fm::Type_if<W == H && W == 4,T,Th>::type >::type
+					   &a00,const Th &a01,const T &a02,const T &a03,
+			   const T &a10,const T  &a11,const T &a12,const T &a13,
+			   const T &a20,const T  &a21,const T &a22,const T &a23,
+			   const T &a30,const T  &a31,const T &a32,const T &a33);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Element access with bound check

@@ -33,6 +33,24 @@ namespace fg
     class FRONTIER_API Mesh : public fm::NonCopyable
     {
     public:
+    	
+		/////////////////////////////////////////////////////////////
+		class IndexArrayHolder
+		{
+		public:
+			void *ptr;
+			bool use16bits;
+			fm::Size N;
+
+			IndexArrayHolder(fm::Size N,bool use16bits);
+			IndexArrayHolder(fm::Size N,fm::Size maxIndex);
+
+			~IndexArrayHolder();
+
+			void set(fm::Size i,fm::Uint32 val);
+
+			fm::Uint32 get(fm::Size i);
+		};
 
         enum AssociationPoint {
             Unused = 0,
@@ -93,10 +111,12 @@ namespace fg
             fg::Primitive primitive;
 
             template<class T>
-            IndexData(T *pointer,fm::Size N,bool genBuf,fg::Primitive primitive);
+			IndexData(T *pointer,fm::Size N,fg::Primitive primitive,bool genBuf = true);
 
             template<class T,fm::Size N>
-            IndexData(const T (&pointer)[N],bool genBuf,fg::Primitive primitive);
+            IndexData(const T (&pointer)[N],fg::Primitive primitive,bool genBuf = true);
+
+			IndexData(const IndexArrayHolder &indices,fg::Primitive primitive,bool genBuf = true);
 
             ~IndexData();
         };
@@ -110,11 +130,11 @@ namespace fg
 
         Attribute *operator[](AssociationPoint type);
 
-        static Mesh &getSphere(Mesh &output,float radius = 1,fm::Size W = 20,fm::Size H = 20,float (*radiusModifier)(float,float) = fm::nullPtr);
-        static Mesh &getTorus(Mesh &output,float majorR = 1,float minorR = .5,fm::Size W = 30,fm::Size H = 15,float (*radiusModifier)(float,float) = fm::nullPtr);
-        static Mesh &getCube(Mesh &output,float size = 1,fm::Size N = 2,float (*radiusModifier)(float,float) = fm::nullPtr);
-        static Mesh &getCylinder(Mesh &output,float radius = 1,float height = 1,fm::Size W = 20,fm::Size H = 2,float (*radiusModifier)(float,float) = fm::nullPtr);
-        static Mesh &getCone(Mesh &output,float radius = 1,float height = 1,fm::Size N = 20,float (*radiusModifier)(float,float) = fm::nullPtr);
+        static Mesh &getSphere(Mesh &output,float radius = 1,fm::Size W = 20,fm::Size H = 20,float (*radiusModifier)(float &,float &) = fm::nullPtr);
+        static Mesh &getTorus(Mesh &output,float majorR = 1,float minorR = .5,fm::Size W = 30,fm::Size H = 15,float (*radiusModifier)(float &,float &) = fm::nullPtr);
+        static Mesh &getCube(Mesh &output,float size = 1,fm::Size N = 2,float (*radiusModifier)(float &,float &) = fm::nullPtr);
+        static Mesh &getCylinder(Mesh &output,float radius = 1,float height = 1,fm::Size W = 20,fm::Size H = 2,float (*radiusModifier)(float &,float &) = fm::nullPtr);
+        static Mesh &getCone(Mesh &output,float radius = 1,float height = 1,fm::Size N = 20,float (*radiusModifier)(float &,float &) = fm::nullPtr);
 
         static Mesh &calcNormals( Mesh &mesh,bool joinSamePts = true);
         static Mesh &calcTangents(Mesh &mesh,bool joinSamePts = true);
