@@ -12,7 +12,12 @@
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	#define FRONTIER_FT_PRINT_ERROR(func,error) fg::fg_log << "Internal FreeType function failed in " __FILE__ ": " << __LINE__ << " FT_errorCode = " << error << std::endl
+	#define FRONTIER_FT_PRINT_ERROR(func,error) fg::fg_log << "Internal FreeType function failed in " __FILE__ ": " << __LINE__ << " FT_errorCode = " << error << " (" << fg::priv::ftErrorToString(error) << ")" << std::endl
+
+    namespace priv
+    {
+        std::string ftErrorToString(int error);
+    }
 
 	/////////////////////////////////////////////////////////////
 	FontRenderer::FontRenderer() : m_ftLibrary(new FT_Library),
@@ -327,5 +332,23 @@ namespace fg
 	unsigned int FontRenderer::getCharacterSize() const
 	{
 		return m_currentSize;
+	}
+
+
+
+	namespace priv
+	{
+	    std::string ftErrorToString(int error)
+	    {
+            #define FT_NOERRORDEF_(e,c,s)
+
+	        #define FT_ERRORDEF_(e,c,s) if ( c == error) return s;
+			
+			#include <freetype/fterrdef.h>
+			
+			#undef FT_ERRORDEF_
+			
+			return "Unknown error";
+	    }
 	}
 }

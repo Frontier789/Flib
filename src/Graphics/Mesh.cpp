@@ -121,6 +121,27 @@ namespace fg
         return fm::nullPtr;
     }
 
+	/////////////////////////////////////////////////////////////
+    Mesh &Mesh::setAttribute(Mesh::Attribute *ptr)
+    {
+        if (!ptr)
+            return *this;
+
+        C(attrs.size())
+            if (attrs[i]->type == ptr->type)
+            {
+                delete attrs[i];
+                attrs[i] = ptr;
+
+                return *this;
+            }
+
+        attrs.push_back(ptr);
+
+        return *this;
+    }
+
+	/////////////////////////////////////////////////////////////
 	Mesh::IndexArrayHolder::IndexArrayHolder(fm::Size N,bool use16bits) : use16bits(use16bits),
 																		  N(N)
 	{
@@ -129,7 +150,8 @@ namespace fg
 		else
 			ptr = new fm::Uint32[N];
 	}
-	
+
+	/////////////////////////////////////////////////////////////
 	Mesh::IndexArrayHolder::IndexArrayHolder(fm::Size N,fm::Size maxIndex) : use16bits(maxIndex <= 65536),
 																			 N(N)
 	{
@@ -139,6 +161,7 @@ namespace fg
 			ptr = new fm::Uint32[N];
 	}
 
+	/////////////////////////////////////////////////////////////
 	Mesh::IndexArrayHolder::~IndexArrayHolder()
 	{
 		if (use16bits)
@@ -147,6 +170,7 @@ namespace fg
 			delete[] (fm::Uint32*)ptr;
 	}
 
+	/////////////////////////////////////////////////////////////
 	void Mesh::IndexArrayHolder::set(fm::Size i,fm::Uint32 val)
 	{
 		if (use16bits)
@@ -155,6 +179,7 @@ namespace fg
 			((fm::Uint32*)ptr)[i] = val;
 	}
 
+	/////////////////////////////////////////////////////////////
 	fm::Uint32 Mesh::IndexArrayHolder::get(fm::Size i)
 	{
 		if (use16bits)

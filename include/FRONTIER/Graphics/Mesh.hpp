@@ -33,7 +33,7 @@ namespace fg
     class FRONTIER_API Mesh : public fm::NonCopyable
     {
     public:
-    	
+
 		/////////////////////////////////////////////////////////////
 		class IndexArrayHolder
 		{
@@ -129,6 +129,7 @@ namespace fg
         void reset();
 
         Attribute *operator[](AssociationPoint type);
+        Mesh &setAttribute(Attribute *ptr);
 
         static Mesh &getSphere(Mesh &output,float radius = 1,fm::Size W = 20,fm::Size H = 20,float (*radiusModifier)(float &,float &) = fm::nullPtr);
         static Mesh &getTorus(Mesh &output,float majorR = 1,float minorR = .5,fm::Size W = 30,fm::Size H = 15,float (*radiusModifier)(float &,float &) = fm::nullPtr);

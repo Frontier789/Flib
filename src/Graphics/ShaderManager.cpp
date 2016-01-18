@@ -26,7 +26,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
     ShaderManager::ShaderManager() : m_stacks(3,fm::MatrixStack<4,4,float>(fm::mat4())),
                                      m_matNames(8,std::string()),
-                                     m_matIds(6,0)
+                                     m_matIds(8,0)
     {
 
     }
