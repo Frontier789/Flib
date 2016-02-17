@@ -14,7 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/GL/Is_GLDataType.hpp>
+#include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/System/Vector3.hpp>
@@ -29,175 +29,50 @@
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-    Mesh::AssociationPoint operator+(const Mesh::AssociationPoint &pt,int delta)
-    {
-        return (Mesh::AssociationPoint)((int)pt + delta);
-    }
-
-	/////////////////////////////////////////////////////////////
-    Mesh::AssociationPoint operator-(const Mesh::AssociationPoint &pt,int delta)
-    {
-        return (Mesh::AssociationPoint)((int)pt - delta);
-    }
-
-	/////////////////////////////////////////////////////////////
-    Mesh::~Mesh()
-    {
-        reset();
-    }
-
-	/////////////////////////////////////////////////////////////
-    void Mesh::reset()
-    {
-        C(attrs.size())
-            delete attrs[i];
-
-        C(indices.size())
-            delete indices[i];
-
-        attrs.clear();
-        indices.clear();
-    }
-
-
-	/////////////////////////////////////////////////////////////
-    Mesh::Attribute::Attribute(AssociationPoint type,
-                               fm::Size components,
-                               fm::Size stride,
-                               fm::Size count,
-                               unsigned long componentType,
-                               const void *ptr,
-                               fg::Buffer *buf,
-                               bool ownBuffer) : type(type),
-                                                 components(components),
-                                                 stride(stride),
-                                                 count(count),
-                                                 componentType(componentType),
-                                                 ptr(ptr),
-                                                 buf(buf),
-                                                 ownBuffer(ownBuffer)
-    {
-
-    }
-
-	/////////////////////////////////////////////////////////////
-    Mesh::Attribute::~Attribute()
-    {
-        if (ownBuffer)
-            delete buf;
-    }
-
-	/////////////////////////////////////////////////////////////
-	Mesh::IndexData::IndexData(const IndexArrayHolder &indices,fg::Primitive primitive,bool genBuf) : indexCount(indices.N),
-																									  componentType(indices.use16bits ? (unsigned int)Is_GLDataType<fm::Uint16>::enumVal : (unsigned int)Is_GLDataType<fm::Uint32>::enumVal),
-																									  ptr(fm::nullPtr),
-																									  buf(fm::nullPtr),
-																									  ownBuffer(genBuf),
-																									  primitive(primitive)
+	Mesh::Mesh() : primitive(fg::Triangles)
 	{
-		if (genBuf)
-            buf = new fg::Buffer(fg::IndexBuffer),
-            ptr = fm::nullPtr,
-			buf->setData(indices.ptr,indices.N * (indices.use16bits ? sizeof(fm::Uint16) : sizeof(fm::Uint32)));
-        else
-            ptr = indices.ptr,
-            buf = fm::nullPtr;
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Mesh Mesh::copy()
+	{
+	    Mesh ret;
+	    ret.pts.assign(pts.begin(),pts.end());
+	    ret.uvs.assign(uvs.begin(),uvs.end());
+	    ret.norms.assign(norms.begin(),norms.end());
+	    ret.tans.assign(tans.begin(),tans.end());
+	    ret.bitans.assign(bitans.begin(),bitans.end());
+	    ret.indices.assign(indices.begin(),indices.end());
+		ret.primitive = primitive;
+
+	    return ret;
 	}
 
 	/////////////////////////////////////////////////////////////
-    Mesh::IndexData::~IndexData()
+    void Mesh::swap(Mesh &target)
     {
-        if (ownBuffer)
-            delete buf;
+        target.pts.swap(pts);
+	    target.uvs.swap(uvs);
+	    target.norms.swap(norms);
+	    target.tans.swap(tans);
+	    target.bitans.swap(bitans);
+	    target.indices.swap(indices);
+	    std::swap(primitive,target.primitive);
     }
 
 	/////////////////////////////////////////////////////////////
-    Mesh::Attribute *Mesh::operator[](Mesh::AssociationPoint type)
+    Mesh Mesh::getSphere(float radius,fm::Size W,fm::Size H,const fm::Delegate<float,float &,float &> &rfunc)
     {
-        C(attrs.size())
-            if (attrs[i]->type == type)
-                return attrs[i];
-
-        return fm::nullPtr;
-    }
-
-	/////////////////////////////////////////////////////////////
-    Mesh &Mesh::setAttribute(Mesh::Attribute *ptr)
-    {
-        if (!ptr)
-            return *this;
-
-        C(attrs.size())
-            if (attrs[i]->type == ptr->type)
-            {
-                delete attrs[i];
-                attrs[i] = ptr;
-
-                return *this;
-            }
-
-        attrs.push_back(ptr);
-
-        return *this;
-    }
-
-	/////////////////////////////////////////////////////////////
-	Mesh::IndexArrayHolder::IndexArrayHolder(fm::Size N,bool use16bits) : use16bits(use16bits),
-																		  N(N)
-	{
-		if (use16bits)
-			ptr = new fm::Uint16[N];
-		else
-			ptr = new fm::Uint32[N];
-	}
-
-	/////////////////////////////////////////////////////////////
-	Mesh::IndexArrayHolder::IndexArrayHolder(fm::Size N,fm::Size maxIndex) : use16bits(maxIndex <= 65536),
-																			 N(N)
-	{
-		if (use16bits)
-			ptr = new fm::Uint16[N];
-		else
-			ptr = new fm::Uint32[N];
-	}
-
-	/////////////////////////////////////////////////////////////
-	Mesh::IndexArrayHolder::~IndexArrayHolder()
-	{
-		if (use16bits)
-			delete[] (fm::Uint16*)ptr;
-		else
-			delete[] (fm::Uint32*)ptr;
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Mesh::IndexArrayHolder::set(fm::Size i,fm::Uint32 val)
-	{
-		if (use16bits)
-			((fm::Uint16*)ptr)[i] = val;
-		else
-			((fm::Uint32*)ptr)[i] = val;
-	}
-
-	/////////////////////////////////////////////////////////////
-	fm::Uint32 Mesh::IndexArrayHolder::get(fm::Size i)
-	{
-		if (use16bits)
-			return ((fm::Uint16*)ptr)[i];
-		else
-			return ((fm::Uint32*)ptr)[i];
-	}
-
-	/////////////////////////////////////////////////////////////
-    Mesh &Mesh::getSphere(Mesh &output,float radius,fm::Size W,fm::Size H,float (*radiusModifier)(float &,float &))
-    {
-        fm::vec3 *pts = new fm::vec3[(W+1)*H];
-        fm::vec2 *tpts = new fm::vec2[(W+1)*H];
-
-		IndexArrayHolder inds(W*(2*H-2)*3, (W+1)*H);
+        Mesh ret;
+        ret.pts.resize((W+1)*H);
+        ret.uvs.resize((W+1)*H);
+        ret.primitive = fg::Triangles;
+        ret.indices.resize(W*(2*H-2)*3);
+        std::vector<fm::Uint32> &inds = ret.indices;
 
         fm::Size ptsi = 0;
-        fm::Size tpti = 0;
+        fm::Size uvsi = 0;
         fm::Size indi = 0;
 
         Cx(W+1)
@@ -208,49 +83,39 @@ namespace fg
 				float ypO = float(y)/(H-1);
 				float xp = xpO;
 				float yp = ypO;
-				float r = (radiusModifier ? radiusModifier(xp,yp) : 1.f);
+				float r = (rfunc ? rfunc(xp,yp) : 1.f);
 
 				fm::vec3 p = fm::pol3(radius*r,fm::deg(xp*360),fm::deg(90-yp*180));
 
-				pts[ptsi++]  = p;
-				tpts[tpti++] = fm::vec2(xpO,ypO);
+				ret.pts[ptsi++]  = p;
+				ret.uvs[uvsi++] = fm::vec2(xpO,ypO);
 
                 if (x<W && y>0)
-                    inds.set(indi++, (x+0)*H+y-1),
-                    inds.set(indi++, (x+0)*H+y+0),
-                    inds.set(indi++, (x+1)*H+y+0);
+                    inds[indi++] = (x+0)*H+y-1,
+                    inds[indi++] = (x+0)*H+y+0,
+                    inds[indi++] = (x+1)*H+y+0;
 
                 if (x<W && y<H-1)
-                    inds.set(indi++, (x+1)*H+y+0),
-                    inds.set(indi++, (x+0)*H+y+0),
-                    inds.set(indi++, (x+1)*H+y+1);
+                    inds[indi++] = (x+1)*H+y+0,
+                    inds[indi++] = (x+0)*H+y+0,
+                    inds[indi++] = (x+1)*H+y+1;
 			}
 		}
 
-        output.attrs.push_back(new Mesh::Attribute(Mesh::Position,pts,(W+1)*H,true));
-        output.attrs.push_back(new Mesh::Attribute(Mesh::TextureUV,tpts,(W+1)*H,true));
-
-        if (inds.use16bits)
-            output.indices.push_back(new Mesh::IndexData((fm::Uint16*)inds.ptr,inds.N,fg::Triangles,true));
-        else
-            output.indices.push_back(new Mesh::IndexData((fm::Uint32*)inds.ptr,inds.N,fg::Triangles,true));
-
-		delete[] pts;
-		delete[] tpts;
-
-        return output;
+        return ret;
     }
 
 	/////////////////////////////////////////////////////////////
-    Mesh &Mesh::getTorus(Mesh &output,float majorR,float minorR,fm::Size W,fm::Size H,float (*radiusModifier)(float &,float &))
+    Mesh Mesh::getTorus(float majorR,float minorR,fm::Size W,fm::Size H,const fm::Delegate<float,float &,float &> &rfunc)
     {
-		fm::vec3 *pts = new fm::vec3[(W+1)*(H+1)];
-        fm::vec2 *tpts = new fm::vec2[(W+1)*(H+1)];
-
-		IndexArrayHolder inds(W*(H+1)*2*3, (W+1)*(H+1));
+        Mesh ret;
+        ret.pts.resize((W+1)*(H+1));
+        ret.uvs.resize((W+1)*(H+1));
+        ret.primitive = fg::Triangles;
+        ret.indices.resize(W*(H+1)*2*3);
 
         fm::Size ptsi = 0;
-        fm::Size tpti = 0;
+        fm::Size uvsi = 0;
         fm::Size indi = 0;
 
 		fm::vec3 u = fm::vec3(fm::pol3(1,fm::deg(0),fm::deg(0))).cross(fm::vec3(fm::pol3(1,fm::deg(0),fm::deg(90))));
@@ -263,7 +128,7 @@ namespace fg
 				float ypO = float(y)/(H);
                 float xp = xpO;
 				float yp = ypO;
-				float r = (radiusModifier ? radiusModifier(xp,yp) : 1.f);
+				float r = (rfunc ? rfunc(xp,yp) : 1.f);
 
                 fm::vec3 majorP = fm::pol3(majorR,fm::deg(0),fm::deg(xp*360));
                 fm::vec3 f = majorP.sgn();
@@ -272,278 +137,122 @@ namespace fg
 
 				fm::vec3 p = majorP + f*minorP.x + u*minorP.y;
 
-				pts[ptsi++]  = p;
-				tpts[tpti++] = fm::vec2(xpO,ypO);
+				ret.pts[ptsi++] = p;
+				ret.uvs[uvsi++] = fm::vec2(xpO,ypO);
 
 				fm::vec2i offsets[] = {fm::vec2i(0,0),fm::vec2i(1,0),fm::vec2i(1,1),
 									   fm::vec2i(0,0),fm::vec2i(1,1),fm::vec2i(0,1)};
 
 				if (x < W)
 					C(6)
-						inds.set(indi++,  (x+offsets[i].x)*(H+1) + (y+offsets[i].y)%(H+1)  );
+						ret.indices[indi++] = (x+offsets[i].x)*(H+1) + (y+offsets[i].y)%(H+1);
 			}
 		}
 
-        output.attrs.push_back(new Mesh::Attribute(Mesh::Position,pts,(W+1)*(H+1),true));
-        output.attrs.push_back(new Mesh::Attribute(Mesh::TextureUV,tpts,(W+1)*(H+1),true));
-
-        if (inds.use16bits)
-            output.indices.push_back(new Mesh::IndexData((fm::Uint16*)inds.ptr,inds.N,fg::Triangles,true));
-        else
-            output.indices.push_back(new Mesh::IndexData((fm::Uint32*)inds.ptr,inds.N,fg::Triangles,true));
-
-		delete[] pts;
-		delete[] tpts;
-
-        return output;
-    }
-/*
-	/////////////////////////////////////////////////////////////
-    Mesh &Mesh::getCube(Mesh &output,float size,fm::Size N,float (*radiusModifier)(float,float))
-    Mesh &Mesh::getCylinder(Mesh &output,float radius,float height,fm::Size W,fm::Size H,float (*radiusModifier)(float,float))
-    Mesh &Mesh::getCone(Mesh &output,float radius,float height,fm::Size N,float (*radiusModifier)(float,float))*/
-
-	/////////////////////////////////////////////////////////////
-	fm::Uint32 getIndex(const void *ptr,fm::Size index,bool use16bits)
-	{
-		if (use16bits) return ((const fm::Uint16*)ptr)[index];
-		return ((const fm::Uint32*)ptr)[index];
-	}
-
-    class Comparator
-    {
-        bool almostEqual(float a,float b,float epsilon = .000001)
-        {
-            return fm::math::abs(a-b) < epsilon;
-        }
-
-    public:
-        bool operator()(const fm::vec3 &l,const fm::vec3 &r)
-        {
-            if (!almostEqual(l.x,r.x)) return l.x < r.x;
-            if (!almostEqual(l.y,r.y)) return l.y < r.y;
-            if (!almostEqual(l.z,r.z)) return l.z < r.z;
-
-			return false;
-        }
-    };
-
-	/////////////////////////////////////////////////////////////
-    Mesh &Mesh::calcNormals(Mesh &mesh,bool joinSamePts)
-    {
-    	Mesh::Attribute *attrp = mesh[Mesh::Position];
-
-		if (attrp && attrp->components == 3 && attrp->componentType == Is_GLDataType<float>::enumVal)
-		{
-			const fm::vec3 *datap = (const fm::vec3 *)attrp->buf->map(true,false);
-			fm::Size N = attrp->count;
-
-			fm::vec3 *norms = new fm::vec3[N];
-
-			C(mesh.indices.size())
-			{
-				fg::Buffer *bufi = mesh.indices[i]->buf;
-				const void *datai = (const void *)bufi->map(true,false);
-				bool use16bits = (mesh.indices[i]->componentType == Is_GLDataType<fm::Uint16>::enumVal);
-
-				fm::Uint32 ind0;
-				fm::Uint32 ind1;
-				fm::Uint32 ind2;
-
-				Cx(mesh.indices[i]->indexCount-2)
-				{
-					if (mesh.indices[i]->primitive == fg::Triangles)
-					{
-						ind0 = getIndex(datai,x,use16bits),
-						ind1 = getIndex(datai,x+1,use16bits),
-						ind2 = getIndex(datai,x+2,use16bits),
-						x += 2;
-					}
-					else if (mesh.indices[i]->primitive == fg::TriangleStrip)
-					{
-						ind0 = getIndex(datai,x,use16bits),
-						ind1 = getIndex(datai,x+1,use16bits),
-						ind2 = getIndex(datai,x+2,use16bits);
-					}
-					else if (mesh.indices[i]->primitive == fg::TriangleFan)
-					{
-						ind0 = getIndex(datai,0,use16bits),
-						ind1 = getIndex(datai,x+1,use16bits),
-						ind2 = getIndex(datai,x+2,use16bits);
-					}
-					else break;
-
-					fm::vec3 p0 = datap[ind0];
-
-					fm::vec3 v1 = datap[ind1]-p0;
-					fm::vec3 v2 = datap[ind2]-p0;
-
-					fm::vec3 n = v1.cross(v2); /// don't normalize (magnitude = 2*area)
-
-					norms[ind0] += n;
-					norms[ind1] += n;
-					norms[ind2] += n;
-				}
-
-				bufi->unMap();
-			}
-
-            if (joinSamePts)
-            {
-                std::map<fm::vec3,std::set<fm::Size>,Comparator > pToInds;
-
-                C(N)
-                    pToInds[datap[i]].insert(i);
-
-                for (std::map<fm::vec3,std::set<fm::Size>,Comparator >::const_iterator it = pToInds.begin();it != pToInds.end();++it)
-                {
-                    fm::vec3 n;
-                    float db = 0;
-                    for (std::set<fm::Size>::const_iterator pit = it->second.begin();pit != it->second.end();++pit)
-                        n += norms[*pit],
-                        ++db;
-
-                    n /= db;
-
-                    for (std::set<fm::Size>::const_iterator pit = it->second.begin();pit != it->second.end();++pit)
-                        norms[*pit] = n;
-                }
-            }
-
-            C(N)
-                norms[i] = norms[i].sgn();
-
-			mesh.attrs.push_back(new Mesh::Attribute(Mesh::Normal,norms,N,true));
-
-			delete[] norms;
-
-			attrp->buf->unMap();
-		}
-
-		return mesh;
+        return ret;
     }
 
 	/////////////////////////////////////////////////////////////
-    Mesh &Mesh::calcTangents(Mesh &mesh,bool joinSamePts)
+    void Mesh::calcNormals()
     {
-    	Mesh::Attribute *attrp = mesh[Mesh::Position];
-    	Mesh::Attribute *attrt = mesh[Mesh::TextureUV];
-
-		if (attrp && attrp->components == 3 && attrp->componentType == Is_GLDataType<float>::enumVal &&
-            attrt && attrt->components == 2 && attrt->componentType == Is_GLDataType<float>::enumVal)
+		if (pts.size() < 3)
+            return;
+           
+		if (primitive != fg::Triangles && 
+			primitive != fg::TriangleStrip && 
+			primitive != fg::TriangleFan)
+			return;
+		
+		bool useInds = (indices.size()!=0);
+		
+		norms.resize(pts.size(),fm::vec3());
+		
+		C((useInds ? indices.size() : pts.size()) - 2)
 		{
-			const fm::vec3 *datap = (const fm::vec3 *)attrp->buf->map(true,false);
-			const fm::vec2 *datat = (const fm::vec2 *)attrt->buf->map(true,false);
-			fm::Size N = attrp->count;
+			fm::Uint32 ind0 = useInds ? indices[i+0] : i+0;
+			fm::Uint32 ind1 = useInds ? indices[i+1] : i+1;
+			fm::Uint32 ind2 = useInds ? indices[i+2] : i+2;
 
-			fm::vec3 *tans = new fm::vec3[N];
-			fm::vec3 *bitans = new fm::vec3[N];
-
-			C(mesh.indices.size())
+			if (primitive == fg::Triangles)
 			{
-                fg::Buffer *bufi = mesh.indices[i]->buf;
-				const void *datai = (const void *)bufi->map(true,false);
-				bool use16bits = (mesh.indices[i]->componentType == Is_GLDataType<fm::Uint16>::enumVal);
+				i += 2;
+			}
+			else if (primitive == fg::TriangleFan)
+			{
+				ind0 = 0;
+			}
+			
+			fm::vec3 N = (pts[ind1]-pts[ind0]).cross(pts[ind2]-pts[ind0]);
+			norms[ind0] += N;
+			norms[ind1] += N;
+			norms[ind2] += N;
+        }
+        
+        C(norms.size())
+			norms[i] = norms[i].sgn();
+    }
 
-				fm::Uint32 ind0;
-				fm::Uint32 ind1;
-				fm::Uint32 ind2;
+	/////////////////////////////////////////////////////////////
+	void Mesh::calcTangents()
+    {
+		if (pts.size() < 3 || uvs.size() < 3)
+            return;
+           
+		if (primitive != fg::Triangles && 
+			primitive != fg::TriangleStrip && 
+			primitive != fg::TriangleFan)
+			return;
+		
+		bool useInds = (indices.size()!=0);
+		
+		tans.resize(pts.size(),fm::vec3());
+		bitans.resize(pts.size(),fm::vec3());
+		
+		C((useInds ? indices.size() : pts.size()) - 2)
+		{
+			fm::Uint32 ind0 = useInds ? indices[i+0] : i+0;
+			fm::Uint32 ind1 = useInds ? indices[i+1] : i+1;
+			fm::Uint32 ind2 = useInds ? indices[i+2] : i+2;
 
-				Cx(mesh.indices[i]->indexCount-2)
-				{
-					if (mesh.indices[i]->primitive == fg::Triangles)
-					{
-						ind0 = getIndex(datai,x,use16bits),
-						ind1 = getIndex(datai,x+1,use16bits),
-						ind2 = getIndex(datai,x+2,use16bits),
-						x += 2;
-					}
-					else if (mesh.indices[i]->primitive == fg::TriangleStrip)
-					{
-						ind0 = getIndex(datai,x,use16bits),
-						ind1 = getIndex(datai,x+1,use16bits),
-						ind2 = getIndex(datai,x+2,use16bits);
-					}
-					else if (mesh.indices[i]->primitive == fg::TriangleFan)
-					{
-						ind0 = getIndex(datai,0,use16bits),
-						ind1 = getIndex(datai,x+1,use16bits),
-						ind2 = getIndex(datai,x+2,use16bits);
-					}
-					else break;
-
-					fm::vec3 p0 = datap[ind0];
-
-					fm::vec3 v1 = datap[ind1]-p0;
-					fm::vec3 v2 = datap[ind2]-p0;
-
-					fm::vec2 t0 = datat[ind0];
-
-					fm::vec2 s1 = datat[ind1]-t0;
-					fm::vec2 s2 = datat[ind2]-t0;
-
-                    float tmat[] = {s1.x,s1.y,
-                                    s2.x,s2.y};
-
-                    float vmat[] = {v1.x,v1.y,v1.z,
-                                    v2.x,v2.y,v2.z};
-
-                    fm::matrix<2,3> btmat = fm::MATRIX::inverse(fm::mat2(tmat))*fm::matrix<2,3>(vmat);
-
-                    fm::vec3 T = -fm::vec3(btmat[0][0],btmat[0][1],btmat[0][2]);
-                    fm::vec3 B = -fm::vec3(btmat[1][0],btmat[1][1],btmat[1][2]);
-
-					tans[ind0] += T;
-					tans[ind1] += T;
-					tans[ind2] += T;
-
-					bitans[ind0] += B;
-					bitans[ind1] += B;
-					bitans[ind2] += B;
-				}
-
-				bufi->unMap();
+			if (primitive == fg::Triangles)
+			{
+				i += 2;
+			}
+			else if (primitive == fg::TriangleFan)
+			{
+				ind0 = 0;
 			}
 
-            if (joinSamePts)
-            {
-                std::map<fm::vec3,std::set<fm::Size>,Comparator > pToInds;
+			fm::vec3 v1 = pts[ind1] - pts[ind0];
+			fm::vec3 v2 = pts[ind2] - pts[ind0];
 
-                C(N)
-                    pToInds[datap[i]].insert(i);
+			fm::vec2 s1 = uvs[ind1] - uvs[ind0];
+			fm::vec2 s2 = uvs[ind2] - uvs[ind0];
 
-                for (std::map<fm::vec3,std::set<fm::Size>,Comparator >::const_iterator it = pToInds.begin();it != pToInds.end();++it)
-                {
-                    fm::vec3 ta,bita;
-                    float db = 0;
-                    for (std::set<fm::Size>::const_iterator pit = it->second.begin();pit != it->second.end();++pit)
-                        ta += tans[*pit],
-                        bita += bitans[*pit],
-                        ++db;
+			float tmat[] = {s1.x,s1.y,
+							s2.x,s2.y};
 
-                    ta /= db;
-                    bita /= db;
+			float vmat[] = {v1.x,v1.y,v1.z,
+							v2.x,v2.y,v2.z};
 
-                    for (std::set<fm::Size>::const_iterator pit = it->second.begin();pit != it->second.end();++pit)
-                        tans[*pit] = ta,
-                        bitans[*pit] = bita;
-                }
-            }
+			fm::matrix<2,3> btmat = fm::MATRIX::inverse(fm::mat2(tmat))*fm::matrix<2,3>(vmat);
 
-			C(N)
-                tans[i] = tans[i].sgn(),
-                bitans[i] = bitans[i].sgn();
+			fm::vec3 T = -fm::vec3(btmat[0][0],btmat[0][1],btmat[0][2]);
+			fm::vec3 B = -fm::vec3(btmat[1][0],btmat[1][1],btmat[1][2]);
 
-			mesh.attrs.push_back(new Mesh::Attribute(Mesh::Tangent,tans,N,true));
-			mesh.attrs.push_back(new Mesh::Attribute(Mesh::Bitangent,bitans,N,true));
+			tans[ind0] += T;
+			tans[ind1] += T;
+			tans[ind2] += T;
 
-			delete[] tans;
-			delete[] bitans;
-
-			attrp->buf->unMap();
-			attrt->buf->unMap();
-		}
-
-		return mesh;
+			bitans[ind0] += B;
+			bitans[ind1] += B;
+			bitans[ind2] += B;
+        }
+        
+        C(tans.size())
+			tans[i] = tans[i].sgn();
+			
+        C(bitans.size())
+			bitans[i] = bitans[i].sgn();
     }
 }

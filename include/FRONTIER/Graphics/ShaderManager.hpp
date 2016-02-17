@@ -30,20 +30,20 @@ namespace fm
 
 namespace fg
 {
-    class Mesh;
+    class DrawData;
 
     class ShaderManager : public fg::Shader
     {
     protected:
         std::vector<fm::MatrixStack<4,4,float> > m_stacks;
         void clearData();
-        void prepareDraw(const fg::Mesh &m);
+        void prepareDraw(const fg::DrawData &data);
 
         fm::Camera *m_cam;
         std::vector<std::string> m_matNames;
         std::vector<int> m_matIds;
 
-        std::map<int,std::string> m_assocPoints; /// e.g.  Mesh::Pos -> "in_pos"
+        std::map<int,std::string> m_assocPoints; /// e.g.  DrawData::Pos -> "in_pos"
     public:
 
         ShaderManager();
@@ -53,9 +53,9 @@ namespace fg
         void setMatrices(const std::string &modelMat,const std::string &normalMat = std::string(),const std::string &colorMat = std::string(),const std::string &texUVMat = std::string());
         void clearAssociations();
         void update();
-        void draw(const fg::Mesh &m);
-        void draw(const fg::Mesh &m,fm::Size indexSet);
-        void draw(const fg::Mesh &m,fm::Size *indexSets,fm::Size indexSetCount);
+        void draw(const fg::DrawData &data);
+        void draw(const fg::DrawData &data,fm::Size indexSet);
+        void draw(const fg::DrawData &data,fm::Size *indexSets,fm::Size indexSetCount);
 
         fm::MatrixStack<4,4,float> &getModelStack();
         fm::MatrixStack<4,4,float> &getColorStack();

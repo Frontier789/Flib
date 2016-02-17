@@ -29,6 +29,8 @@ namespace fm
         inline R operator()(FRONTIER_DELEGATE_CALL_PARAMS);
 
         inline virtual DelegateImpl<R FRONTIER_DELEGATE_TEMPLATE_LIST> *makeNewCopy() const;
+        
+		inline virtual int getTypeID() const;
     };
 
     /// //////////////////////////////////////////////////////////
@@ -61,9 +63,11 @@ namespace fm
     template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS>
     class Delegate FRONTIER_DELEGATE_TEMPLATE_SPEC
     {
-        DelegateImpl<R FRONTIER_DELEGATE_TEMPLATE_LIST> *m_impl;
+		mutable DelegateImpl<R FRONTIER_DELEGATE_TEMPLATE_LIST> *m_impl;
     public:
         inline Delegate();
+
+        inline Delegate(fm::priv::NullPtr theNullPtr);
 
         inline Delegate(const Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> &d);
 
@@ -79,11 +83,15 @@ namespace fm
 
         inline ~Delegate();
 
-        inline R call(FRONTIER_DELEGATE_CALL_PARAMS);
+		inline R call(FRONTIER_DELEGATE_CALL_PARAMS) const;
 
-        inline R operator()(FRONTIER_DELEGATE_CALL_PARAMS);
+		inline R operator()(FRONTIER_DELEGATE_CALL_PARAMS) const;
 
         inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> &operator=(const Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> &d);
+
+		inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> &operator=(fm::priv::NullPtr theNullPtr);
+		
+		inline operator bool() const;
     };
 }
 

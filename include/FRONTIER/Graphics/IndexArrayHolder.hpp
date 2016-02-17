@@ -14,16 +14,42 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#undef FRONTIER_DELEGATE_TEMPLATE_PARAMS
-#undef FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL
-#undef FRONTIER_DELEGATE_TEMPLATE_SPEC
-#undef FRONTIER_DELEGATE_TEMPLATE_SPEC_OBJ
-#undef FRONTIER_DELEGATE_TEMPLATE_LIST
-#undef FRONTIER_DELEGATE_TEMPLATE_CALL_CONV
-#undef FRONTIER_DELEGATE_UNUSED_PARAMS
-#undef FRONTIER_DELEGATE_CALL_PARAMS
-#undef FRONTIER_DELEGATE_CALL_LIST
+#ifndef FRONTIER_INDEXARRAYHOLDER_HPP_INCLUDED
+#define FRONTIER_INDEXARRAYHOLDER_HPP_INCLUDED
 
-#undef FRONTIER_DELEGATE_TEMPLATE_PARAMSc
-#undef FRONTIER_DELEGATE_TEMPLATE_SPECc
-#undef FRONTIER_DELEGATE_TEMPLATE_CALL_CONVc
+#include <FRONTIER/System/macros/TYPES.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/API.h>
+
+#define FRONTIER_INDEXARRAYHOLDER
+
+namespace fg
+{
+	/////////////////////////////////////////////////////////////
+	class FRONTIER_API IndexArrayHolder
+	{
+		void *m_ptr;
+		bool m_use16bits;
+		fm::Size m_size;
+	public:
+
+		explicit IndexArrayHolder(fm::Size N,bool use16bits = true);
+
+		IndexArrayHolder(const fm::Uint32 *arrayToCopy,fm::Size indexCount);
+
+		IndexArrayHolder(const IndexArrayHolder &other);
+
+		~IndexArrayHolder();
+
+		void set(fm::Size index,fm::Uint32 val);
+
+		fm::Uint32 get(fm::Size index) const;
+
+		fm::Size getSize() const;
+		bool doUse16bits() const;
+		const void *getPtr() const;
+		void *getPtr();
+	};
+}
+
+#endif // FRONTIER_INDEXARRAYHOLDER_HPP_INCLUDED

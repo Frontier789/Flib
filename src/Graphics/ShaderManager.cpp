@@ -15,6 +15,9 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/ShaderManager.hpp>
+#include <FRONTIER/Graphics/DrawData.hpp>
+#include <FRONTIER/GL/Is_GLDataType.hpp>
+#include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/Graphics/Mesh.hpp>
@@ -114,7 +117,7 @@ namespace fg
     }
 
 	////////////////////////////////////////////////////////////
-    void ShaderManager::prepareDraw(const fg::Mesh &m)
+    void ShaderManager::prepareDraw(const fg::DrawData &data)
     {
         bind();
 
@@ -131,42 +134,73 @@ namespace fg
             setUniform(m_matNames[7],m_stacks[2].top());
 
         for (std::map<int,std::string>::const_iterator it = m_assocPoints.begin();it != m_assocPoints.end();++it)
-            C(m.attrs.size())
-                if (m.attrs[i] && m.attrs[i]->type == it->first && hasAttribute(it->second))
-                    fg::Buffer::bind(m.attrs[i]->buf,fg::ArrayBuffer),
-                    setAttribPointer(it->second,m.attrs[i]->components,m.attrs[i]->componentType,false,m.attrs[i]->ptr,m.attrs[i]->stride);
+            C(data.attrs.size())
+                if (data.attrs[i] && data.attrs[i]->type == it->first && hasAttribute(it->second))
+                    fg::Buffer::bind(data.attrs[i]->buf,fg::ArrayBuffer),
+                    setAttribPointer(it->second,data.attrs[i]->components,data.attrs[i]->componentType,false,fm::nullPtr,data.attrs[i]->stride);
     }
 
 	////////////////////////////////////////////////////////////
-    void ShaderManager::draw(const Mesh &m)
+    void ShaderManager::draw(const fg::DrawData &data)
     {
-        prepareDraw(m);
+        prepareDraw(data);
 
-        C(m.indices.size())
-            if(m.indices[i])
-                fg::Buffer::bind(m.indices[i]->buf,fg::IndexBuffer),
-                glDrawElements(m.indices[i]->primitive,m.indices[i]->indexCount,m.indices[i]->componentType,m.indices[i]->ptr);
+        C(data.drawCalls.size())
+        {
+			fg::DrawData::DrawCall *draw = data.drawCalls[i];
+			
+			if (draw)
+            {
+            	fg::Buffer::bind(draw->buf,fg::IndexBuffer);
+            	
+				if (draw->buf)
+					glCheck(glDrawElements(draw->primitive,draw->indexCount,draw->componentType,fm::nullPtr));
+				else
+					glCheck(glDrawArrays(draw->primitive,draw->drawBeg,draw->drawLen));
+            }
+        }
     }
 
 	////////////////////////////////////////////////////////////
-    void ShaderManager::draw(const Mesh &m,fm::Size indexSet)
+    void ShaderManager::draw(const fg::DrawData &data,fm::Size indexSet)
     {
-        prepareDraw(m);
+        prepareDraw(data);
 
-        if(indexSet < m.indices.size() && m.indices[indexSet])
-            fg::Buffer::bind(m.indices[indexSet]->buf,fg::IndexBuffer),
-            glDrawElements(m.indices[indexSet]->primitive,m.indices[indexSet]->indexCount,m.indices[indexSet]->componentType,m.indices[indexSet]->ptr);
+        if(indexSet < data.drawCalls.size())
+        {
+        	fg::DrawData::DrawCall *draw = data.drawCalls[indexSet];
+			
+			if (draw)
+            {
+            	fg::Buffer::bind(draw->buf,fg::IndexBuffer);
+            	
+				if (draw->buf)
+					glDrawElements(draw->primitive,draw->indexCount,draw->componentType,fm::nullPtr);
+				else
+					glDrawArrays(draw->primitive,draw->drawBeg,draw->drawLen);
+            }
+        }
     }
 
 	////////////////////////////////////////////////////////////
-    void ShaderManager::draw(const Mesh &m,fm::Size *indexSets,fm::Size indexSetCount)
+    void ShaderManager::draw(const fg::DrawData &data,fm::Size *indexSets,fm::Size indexSetCount)
     {
-        prepareDraw(m);
+        prepareDraw(data);
 
         C(indexSetCount)
-            if(indexSets[i] < m.indices.size() && m.indices[indexSets[i]])
-                fg::Buffer::bind(m.indices[indexSets[i]]->buf,fg::IndexBuffer),
-                glDrawElements(m.indices[indexSets[i]]->primitive,m.indices[indexSets[i]]->indexCount,m.indices[indexSets[i]]->componentType,m.indices[indexSets[i]]->ptr);
+        {
+			fg::DrawData::DrawCall *draw = data.drawCalls[indexSets[i]];
+			
+			if (draw)
+            {
+            	fg::Buffer::bind(draw->buf,fg::IndexBuffer);
+            	
+				if (draw->buf)
+					glDrawElements(draw->primitive,draw->indexCount,draw->componentType,fm::nullPtr);
+				else
+					glDrawArrays(draw->primitive,draw->drawBeg,draw->drawLen);
+            }
+        }
     }
 
 	////////////////////////////////////////////////////////////

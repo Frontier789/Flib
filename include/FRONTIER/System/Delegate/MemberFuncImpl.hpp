@@ -30,4 +30,9 @@ public:
 
         return ptr;
 	}
+
+	inline int getTypeID() const
+    {
+        return 2;
+    }
 };

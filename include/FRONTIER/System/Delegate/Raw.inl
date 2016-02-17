@@ -30,6 +30,7 @@ namespace fm
     template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
     R FRONTIER_DELEGATE_IMPL::call(FRONTIER_DELEGATE_CALL_PARAMS)
     {
+    	FRONTIER_DELEGATE_UNUSED_PARAMS;
         return R();
     }
 
@@ -47,12 +48,27 @@ namespace fm
         return new FRONTIER_DELEGATE_IMPL ();
     }
 
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
+	int FRONTIER_DELEGATE_IMPL::getTypeID() const
+    {
+        return 0;
+    }
+
     #define FRONTIER_DELEGATE Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>
+
     /////////////////////////////////////////////////////////////
     template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
     FRONTIER_DELEGATE::Delegate() : m_impl(new FRONTIER_DELEGATE_IMPL())
     {
 
+    }
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
+    FRONTIER_DELEGATE::Delegate(fm::priv::NullPtr theNullPtr) : m_impl(new FRONTIER_DELEGATE_IMPL())
+    {
+		(void)theNullPtr;
     }
 
     /////////////////////////////////////////////////////////////
@@ -107,14 +123,14 @@ namespace fm
 
     /////////////////////////////////////////////////////////////
     template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
-    R FRONTIER_DELEGATE::call(FRONTIER_DELEGATE_CALL_PARAMS)
+	R FRONTIER_DELEGATE::call(FRONTIER_DELEGATE_CALL_PARAMS) const
     {
         return m_impl->call(FRONTIER_DELEGATE_CALL_LIST);
     }
 
     /////////////////////////////////////////////////////////////
     template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
-    R FRONTIER_DELEGATE::operator()(FRONTIER_DELEGATE_CALL_PARAMS)
+	R FRONTIER_DELEGATE::operator()(FRONTIER_DELEGATE_CALL_PARAMS) const
     {
         return this->call(FRONTIER_DELEGATE_CALL_LIST);
     }
@@ -128,6 +144,25 @@ namespace fm
 
 		return *this;
     }
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
+    FRONTIER_DELEGATE &FRONTIER_DELEGATE::operator=(fm::priv::NullPtr theNullPtr)
+    {
+    	(void)theNullPtr;
+
+        delete m_impl;
+		m_impl = new FRONTIER_DELEGATE_IMPL();
+
+		return *this;
+    }
+		
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
+	FRONTIER_DELEGATE::operator bool() const
+	{
+		return m_impl->getTypeID() != 0;
+	}
 }
 
 #include <FRONTIER/System/Delegate/Undef.hpp>

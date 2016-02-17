@@ -44,6 +44,7 @@ namespace fg
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/GLCheck.hpp>
+#include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Primitive.hpp>
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
@@ -54,5 +55,6 @@ namespace fg
 #include <FRONTIER/Graphics/TextureAtlas.hpp>
 #include <FRONTIER/Graphics/RenderStates.hpp>
 #include <FRONTIER/Graphics/ShaderManager.hpp>
+#include <FRONTIER/Graphics/IndexArrayHolder.hpp>
 
 #endif // FRONTIER_GRAPICS_MODULE_HPP_INCLUDED
