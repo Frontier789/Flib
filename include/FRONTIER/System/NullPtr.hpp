@@ -30,26 +30,28 @@ namespace fm
 		class NullPtr
 		{
 		public:
-			
+
 			/////////////////////////////////////////////////////////////
 			/// @brief The result of the conversion is always 0 with the given type
 			///
 			/////////////////////////////////////////////////////////////
 			template<class T>
 			operator T*() const;
-			
+
 			/////////////////////////////////////////////////////////////
 			/// @brief Compare to pointer
-			/// 
+			///
 			/// @param ptr The pointer
-			/// 
+			///
 			/// @return True iff ptr is null
-			/// 
+			///
 			/////////////////////////////////////////////////////////////
 			template<class T>
 			bool operator==(const T *ptr) const;
 		};
 	}
+
+	typedef priv::NullPtr NullPtr;
 
 	FRONTIER_API extern const priv::NullPtr nullPtr;
 }

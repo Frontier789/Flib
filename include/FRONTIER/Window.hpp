@@ -39,6 +39,5 @@ namespace fw
 #include <FRONTIER/Window/GLContext.hpp>
 #include <FRONTIER/Window/Window.hpp>
 #include <FRONTIER/Window/Event.hpp>
-#include <FRONTIER/Window/FwLog.hpp>
 
 #endif // FRONTIER_WINDOW_MODULE_HPP_INCLUDED

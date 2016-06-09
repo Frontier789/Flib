@@ -14,12 +14,10 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Window/Wapi/fwWapiPrintLastError.hpp>
 #include <FRONTIER/Window/Wapi/WapiWindow.hpp>
 #include <FRONTIER/System/macros/LOCK_MUTEX.h>
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/Window/Window.hpp>
-#include <FRONTIER/Window/FwLog.hpp>
 #include <algorithm>
 /*
 BOOL destroyAndPromptW(HWND h)
@@ -129,10 +127,7 @@ namespace fw
 
 		// convert window-rect to client-rect
 		if (!AdjustWindowRectEx(&Rct,style,FALSE,exStyle))
-		{
-			fw::WapiPrintLastError(fw_log,AdjustWindowRect);
 			return false;
-		}
 
 		w = (Rct.right  - Rct.left)-50+w;
 		h = (Rct.bottom - Rct.top)-50+h;
@@ -329,6 +324,8 @@ namespace fw
 						// the mouse came inside
 						m_cursorInside = true;
 
+						SetCursor(LoadCursor(NULL,IDC_ARROW));
+
 						Event ev(Event::MouseEntered);
 						postEvent(ev);
 					}
@@ -456,18 +453,12 @@ namespace fw
 						// get window's bounding rectangle
 						RECT windowRect;
 						if (!GetWindowRect(hwnd,&windowRect))
-						{
-							fw::WapiPrintLastError(fw_log,GetWindowRect);
 							return defResult;
-						}
 
 						// get window's client area's bounding rectangle
 						RECT clientRect;
 						if (!GetClientRect(hwnd,&clientRect))
-						{
-							fw::WapiPrintLastError(fw_log,GetClientRect);
 							return defResult;
-						}
 
 						// and call the user defined function
 						return m_cursorHitTest(mousePos,windowRect,clientRect,m_resizeable,defResult);
@@ -509,11 +500,11 @@ namespace fw
 				// resize event
 				case WM_SIZE:
 				{
-					// window is resized not moved
+				    // window is resized not moved
 					m_windowMoved = false;
 
 					// if the user is not sizing by hand
-					if (!m_inSizeMoveMode && wParam != SIZE_MINIMIZED)
+					if (wParam != SIZE_MINIMIZED)
 					{
 						Event ev(Event::Resized);
 						ev.size.w = LOWORD(lParam);
@@ -537,15 +528,6 @@ namespace fw
 				// the user started to resize the window
 				case WM_ENTERSIZEMOVE:
 				{
-					m_inSizeMoveMode = true;
-					return DefWindowProc(hwnd, msg, wParam, lParam);
-				}
-
-				// the user finished resizing the window
-				case WM_EXITSIZEMOVE:
-				{
-					m_inSizeMoveMode  = false;
-
 					if (!m_windowMoved)
 					{
 						unsigned int w,h;
@@ -557,6 +539,12 @@ namespace fw
 						break;
 					}
 
+					return DefWindowProc(hwnd, msg, wParam, lParam);
+				}
+
+				// the user finished resizing the window
+				case WM_EXITSIZEMOVE:
+				{
 					m_windowMoved = false;
 
 					return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -615,10 +603,7 @@ namespace fw
 
 						// get the decoration size
 						if (!AdjustWindowRect(&Rct,m_style,FALSE))
-						{
-							fw::WapiPrintLastError(fw_log,AdjustWindowRect);
 							return false;
-						}
 
 						w += (Rct.right  - Rct.left)-50;
 						h += (Rct.bottom - Rct.top)-50;
@@ -688,14 +673,6 @@ namespace fw
 
 					bool inTree = recFind(parent,(HWND)lParam);
 
-					/*
-					std::string s1,s2;
-					getTitle(s1);
-					parent->getTitle(s2);
-
-					fw_log << "WM_NCACTIVATE wParam="<<wParam<<" lParam="<<lParam<<" name="<<s1<<" parent="<<s2<<" inTree="<<inTree<<std::endl;
-					*/
-
 					if (inTree)
 						wParam = 1;
 					else
@@ -750,7 +727,6 @@ namespace fw
 						   m_ownedParent(NULL),
 						   m_parent(NULL),
 						   m_decorActive(false),
-						   m_inSizeMoveMode(false),
 						   m_windowMoved(false),
 						   m_cursorHitTest(NULL)
 		{
@@ -771,7 +747,6 @@ namespace fw
 																																				   m_ownedParent(NULL),
 																																				   m_parent(NULL),
 																																				   m_decorActive(false),
-																																				   m_inSizeMoveMode(false),
 																																				   m_windowMoved(false),
 																																				   m_cursorHitTest(NULL)
 		{
@@ -798,8 +773,7 @@ namespace fw
 			// delete window
 			if (m_hwnd)
 			{
-				if (!DestroyWindow(m_hwnd))
-					fw::WapiPrintLastError(fw_log,DestroyWindow);
+				DestroyWindow(m_hwnd);
 
 				m_hwnd = NULL;
 			}
@@ -811,8 +785,8 @@ namespace fw
 				FRONTIER_LOCK_MUTEX(m_windowCountMutex);
 				m_windowCount--;
 				if (!m_windowCount) // unregister class if no more windows
-					if (!UnregisterClassA(FRONTIER_WINDOWS_CLASS_NAME, GetModuleHandle(NULL)))
-						fw::WapiPrintLastError(fw_log,UnregisterClassA);
+					UnregisterClassA(FRONTIER_WINDOWS_CLASS_NAME, GetModuleHandle(NULL));
+
 				FRONTIER_UNLOCK_MUTEX(m_windowCountMutex);
 
 				m_isOpened = false;
@@ -821,8 +795,7 @@ namespace fw
 			// delete owned parent
 			if (m_ownedParent)
 			{
-				if (!DestroyWindow(m_ownedParent))
-					fw::WapiPrintLastError(fw_log,DestroyWindow);
+				DestroyWindow(m_ownedParent);
 
 				m_ownedParent = NULL;
 			}
@@ -861,7 +834,7 @@ namespace fw
 			winClass.cbWndExtra    = 0;
 			winClass.hInstance     = GetModuleHandle(NULL);
 			winClass.hIcon         = NULL;
-			winClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+			winClass.hCursor       = NULL;
 			winClass.hbrBackground = NULL;
 			winClass.lpszMenuName  = NULL;
 			winClass.lpszClassName = FRONTIER_WINDOWS_CLASS_NAME; // The name of the class
@@ -870,7 +843,6 @@ namespace fw
 			if (RegisterClassA(&winClass))
 				return true;
 
-			fw::WapiPrintLastError(fw_log,RegisterClassA);
 			return false;
 		}
 
@@ -930,8 +902,6 @@ namespace fw
 			if(!m_hwnd)
 			{
 				// upon fail...
-				fw::WapiPrintLastError(fw_log,CreateWindow);
-
 				m_isOpened = false;
 
 				return false;
@@ -991,10 +961,7 @@ namespace fw
 			windowProp.length = sizeof(WINDOWPLACEMENT);
 
 			if (!GetWindowPlacement(m_hwnd,&windowProp))
-			{
-				fw::WapiPrintLastError(fw_log,GetWindowPlacement);
 				return false;
-			}
 
 			return windowProp.showCmd == SW_SHOWMINIMIZED;
 		}
@@ -1023,10 +990,7 @@ namespace fw
 			windowProp.length = sizeof(WINDOWPLACEMENT);
 
 			if (!GetWindowPlacement(m_hwnd,&windowProp))
-			{
-				fw::WapiPrintLastError(fw_log,GetWindowPlacement);
 				return false;
-			}
 
 			return windowProp.showCmd == SW_SHOWMAXIMIZED;
 		}
@@ -1038,17 +1002,11 @@ namespace fw
 			{
 				// bring the window to front
 				if (!SetActiveWindow(m_hwnd))
-				{
-					fw::WapiPrintLastError(fw_log,SetActiveWindow);
 					return false;
-				}
 
 				// set keyboard focus
 				if (!SetFocus(m_hwnd))
-				{
-					fw::WapiPrintLastError(fw_log,SetFocus);
 					return false;
-				}
 			}
 			return true;
 		}
@@ -1076,10 +1034,7 @@ namespace fw
 								  x,y,    // new position
 								  w,h,    // new size
 								  SWP_NOREPOSITION|SWP_NOZORDER|SWP_NOACTIVATE))
-					{
-						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
-					}
 			}
 
 			return true;
@@ -1092,17 +1047,11 @@ namespace fw
 			{
 				RECT client_rect;
 				if (!GetClientRect(m_hwnd,&client_rect)) // retrieve client rect
-				{
-					fw::WapiPrintLastError(fw_log,GetClientRect);
 					return false;
-				}
 
 				// transform it to screen coordinates
 				if (!ClientToScreen(m_hwnd,(POINT*)&client_rect.left) || !ClientToScreen(m_hwnd,(POINT*)&client_rect.right))
-				{
-					fw::WapiPrintLastError(fw_log,ClientToScreen);
 					return false;
-				}
 
 				w = client_rect.right -client_rect.left;
 				h = client_rect.bottom-client_rect.top;
@@ -1121,10 +1070,8 @@ namespace fw
 								  x,y,    // new position
 								  0,0,    // new size                  (ignored because of SWP_NOSIZE)
 								  SWP_NOREPOSITION|SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE))
-					{
-						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
-					}
+
 			return true;
 		}
 
@@ -1135,17 +1082,11 @@ namespace fw
 			{
 				RECT client_rect;
 				if (!GetClientRect(m_hwnd,&client_rect)) // retrieve client rect
-				{
-					fw::WapiPrintLastError(fw_log,GetClientRect);
 					return false;
-				}
 
 				// transform it to screen coordinates
 				if (!ClientToScreen(m_hwnd,(POINT*)&client_rect.left) || !ClientToScreen(m_hwnd,(POINT*)&client_rect.right))
-				{
-					fw::WapiPrintLastError(fw_log,ClientToScreen);
 					return false;
-				}
 
 				x = client_rect.left;
 				y = client_rect.top;
@@ -1166,10 +1107,8 @@ namespace fw
 								  0,0,    // new position (ignored because of SWP_NOMOVE)
 								  w,h,    // new size
 								  SWP_NOREPOSITION|SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE))
-					{
-						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
-					}
+
 			}
 
 			return true;
@@ -1182,10 +1121,7 @@ namespace fw
 			{
 				RECT client_rect;
 				if (!GetClientRect(m_hwnd,&client_rect)) // retrieve client rect
-				{
-					fw::WapiPrintLastError(fw_log,GetClientRect);
 					return false;
-				}
 
 				w = client_rect.right;
 				h = client_rect.bottom;
@@ -1198,10 +1134,8 @@ namespace fw
 		{
 			if (m_hwnd)
 				if (!SetWindowTextW(m_hwnd,&title.wstr()[0]))
-				{
-					fw::WapiPrintLastError(fw_log,SetWindowText);
 					return false;
-				}
+
 			return true;
 		}
 
@@ -1221,7 +1155,6 @@ namespace fw
 				{
 					 // delete allocated memory!
 					delete ret;
-					fw::WapiPrintLastError(fw_log,GetWindowText);
 					return false;
 				}
 				title = fm::String(ret);
@@ -1284,11 +1217,9 @@ namespace fw
 				MSG msg;
 				// GetMessage suspends the thread until an event occures
 				// (this event may not be a window event but a thread event that is the while loop for)
-				if (GetMessage(&msg, NULL, 0, 0)==-1)
-				{
-					fw::WapiPrintLastError(fw_log,GetMessage);
+				if (GetMessage(&msg, NULL, 0, 0) == -1)
 					return false;
-				}
+
 				TranslateMessage(&msg);
 				DispatchMessage (&msg);
 			}
@@ -1301,6 +1232,11 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		void Window::postEvent(const Event &ev)
 		{
+		    if (m_eventQueue.size() && m_eventQueue.back().type == fw::Event::Resized && ev.type == fw::Event::Resized)
+            {
+                m_eventQueue.pop_back();
+            }
+
 			m_eventQueue.resize(m_eventQueue.size()+1,ev);
 			//m_eventQueue.push_back(ev);
 		}
@@ -1360,16 +1296,10 @@ namespace fw
 						monInfo.cbSize = sizeof(monInfo);
 
 						if (!hMonitor)
-						{
-							fw_log << "Couldn't find the corresponding monitor (Wapi,fullscreen)" << std::endl;
 							return false;
-						}
 
 						if (!GetMonitorInfo(hMonitor,&monInfo))
-						{
-							fw::WapiPrintLastError(fw_log,GetWindowPlacement);
 							return false;
-						}
 
 						// set width and height to match the monitor's
 						width  = monInfo.rcMonitor.right  - monInfo.rcMonitor.left;
@@ -1381,10 +1311,7 @@ namespace fw
 
 					// set topmost
 					if (!SetWindowPos(m_hwnd, HWND_TOPMOST, 0,0,width,height,SWP_FRAMECHANGED | SWP_NOMOVE))
-					{
-						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
-					}
 				}
 				else
 				{
@@ -1397,10 +1324,7 @@ namespace fw
 
 					// set notopmost
 					if (!SetWindowPos(m_hwnd, HWND_NOTOPMOST,0,0,width,height,SWP_NOMOVE))
-					{
-						fw::WapiPrintLastError(fw_log,SetWindowPos);
 						return false;
-					}
 				}
 
 				return true;

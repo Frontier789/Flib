@@ -15,8 +15,6 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/Posix/PosixMutex.hpp>
-#include <FRONTIER/System/FmLog.hpp>
-#include "fmPosixPrintErrno.hpp"
 #include <pthread.h>
 #include <errno.h>
 
@@ -27,56 +25,41 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		Mutex::Mutex()
 		{
-			if (pthread_mutex_init(&m_pmutex,NULL) != 0)
-				fm::PosixPrintErrno(fm::fm_log,pthread_mutex_init);
+			pthread_mutex_init(&m_pmutex,NULL);
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		Mutex::~Mutex()
 		{
-			if (pthread_mutex_destroy(&m_pmutex) != 0)
-				fm::PosixPrintErrno(fm::fm_log,pthread_mutex_destroy);
+			pthread_mutex_destroy(&m_pmutex);
 		}
-		
+
 		/////////////////////////////////////////////////////////////
-		bool Mutex::lock()
+		void Mutex::lock()
 		{
-			if (pthread_mutex_lock(&m_pmutex) != 0)
-			{
-				fm::PosixPrintErrno(fm::fm_log,pthread_mutex_lock);
-				return false;
-			}
-			return true;
+			pthread_mutex_lock(&m_pmutex);
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		bool Mutex::attemptLock()
 		{
-			int result = pthread_mutex_trylock(&m_pmutex);
-			
-			if (result != 0)
+		    int result = pthread_mutex_trylock(&m_pmutex);
+
+			if (result)
 			{
-				if (result != EBUSY)
-					fm::PosixPrintErrno(fm::fm_log,pthread_mutex_trylock);
-					
 				if (result == EDEADLK)
 					return true;
-					
-				return false;
+
+                return false;
 			}
-			
+
 			return true;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
-		bool Mutex::unLock()
+		void Mutex::unLock()
 		{
-			if (pthread_mutex_unlock(&m_pmutex) != 0)
-			{
-				fm::PosixPrintErrno(fm::fm_log,pthread_mutex_unlock);
-				return false;
-			}
-			return true;
+			pthread_mutex_unlock(&m_pmutex);
 		}
 	}
 }

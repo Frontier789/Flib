@@ -15,7 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Xlib/XlibGLContext.hpp>
-#include <FRONTIER/Window/FwLog.hpp>
+#include <X11/cursorfont.h>
 #include <string>
 
 #define GLX_CONTEXT_MAJOR_VERSION_ARB 			  0x2091
@@ -26,51 +26,183 @@
 
 namespace fw
 {
-	namespace Xlib
+	namespace priv
 	{
-		GLXFBConfig GLContext::createConfig()
+		Display *globDisp = 0;
+		unsigned int globDispN = 0;
+		
+		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+		fm::Mutex globDispMutex;
+		#endif
+
+		Display *getGlobDisp()
 		{
-			int attributes[] = {GLX_DOUBLEBUFFER,  True, //< need double buffer
-								GLX_RED_SIZE,      m_settings.bitsPerPixel/4,
-								GLX_GREEN_SIZE,    m_settings.bitsPerPixel/4,
-								GLX_BLUE_SIZE,     m_settings.bitsPerPixel/4,
-								GLX_ALPHA_SIZE,    m_settings.bitsPerPixel/4,
-								GLX_DEPTH_SIZE,    m_settings.depthBits,
-								GLX_STENCIL_SIZE,  m_settings.stencilBits,
-								GLX_DRAWABLE_TYPE, m_win ? GLX_WINDOW_BIT : GLX_PIXMAP_BIT,
-								None};
-
-			int count;
-			// get matching context settings
-			GLXFBConfig *fbConfigs = glXChooseFBConfig(m_disp,DefaultScreen(m_disp),attributes,&count);
-
-			if (!fbConfigs)
+			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+			globDispMutex.lock();
+			#endif
+			
+			if (globDispN > 0) globDispN++;
+			else
 			{
-				// disable double-buffer and retry
-				attributes[1] = False; 
-				fbConfigs = glXChooseFBConfig(m_disp,DefaultScreen(m_disp),attributes,&count);
-
-				if (!fbConfigs)
-				{
-					fw_log << "no matching context found" << std::endl;
-					return None;
-				}
+				globDisp = XOpenDisplay(NULL);
+				globDispN = 1;
 			}
-
-			GLXFBConfig config = fbConfigs[0];
-			XFree(fbConfigs);
-			return config;
+			
+			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+			globDispMutex.unLock();
+			#endif
+			
+			return globDisp;
 		}
 
+		void freeGlobDisp(Display *disp)
+		{
+			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+			globDispMutex.lock();
+			#endif
+			
+			if (globDispN > 0 && globDisp == disp) 
+			{
+				globDispN--;
+				if (globDispN == 0)
+				{
+					XCloseDisplay(globDisp);
+					globDisp = 0;
+				}
+			}
+			
+			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+			globDispMutex.unLock();
+			#endif
+		}
+		
+		
+		
+		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+		fm::Mutex globXwinMutex;
+		#endif
+		
+		std::deque< ::Window> xwins;
+		
+		void regXWin(::Window win)
+		{
+			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+			priv::globXwinMutex.lock();
+			#endif
+			
+			xwins.push_back(win);
+			
+			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+			priv::globXwinMutex.unLock();
+			#endif
+		}
+		
+		void unregXWin(::Window win)
+		{
+			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+			priv::globXwinMutex.lock();
+			#endif
+			
+			C(xwins.size())
+				if (xwins[i] == win)
+				{
+					xwins[i] = xwins.back();
+					xwins.pop_back();
+					break;
+				}
+			
+			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+			priv::globXwinMutex.unLock();
+			#endif
+		}
+		
+		class CurHolder
+		{
+		public:
+			::Cursor curs[(fm::Size)Mouse::CursorCount];
+			::Display *disp;
+			
+			CurHolder() : disp(0)
+			{
+				C(sizeof(curs)/sizeof(*curs))
+					curs[i] = None;
+			}
+			
+			~CurHolder()
+			{
+				if (disp)
+				{
+					C(sizeof(curs)/sizeof(*curs))	
+						if (curs[i])
+							XFreeCursor(disp,curs[i]);
+						
+					fw::priv::freeGlobDisp(disp);
+				}
+			}
+			
+			::Cursor fetch(Mouse::Cursor cursor)
+			{
+				if (!disp)
+				{
+					if (globDispN > 0) globDispN++;
+					else
+					{
+						globDisp = XOpenDisplay(NULL);
+						globDispN = 1;
+					}
+					
+					disp = globDisp;
+				}
+				
+				fm::Size index = (int)cursor;
+				
+				if (index >= (fm::Size)Mouse::CursorCount) index = 0;
+				
+				::Cursor &cur = curs[index];
+				
+				if (!cur)
+				{
+					int data[(fm::Size)Mouse::CursorCount] = {XC_left_ptr,XC_xterm,XC_hand2,XC_X_cursor,XC_watch};
+				
+					cur = XCreateFontCursor(disp,data[index]);
+				}
+				
+				return cur;
+			}
+		};
+		
+		CurHolder curHolder;
+	}
+	
+	void Mouse::setCursor(Mouse::Cursor cursor)
+	{
+		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+		priv::globXwinMutex.lock();
+		priv::globDispMutex.lock();
+		#endif
+		
+		// priv::globCursor = cursor;
+		
+		if (priv::globDisp)
+			C(priv::xwins.size())
+				XDefineCursor(priv::globDisp,priv::xwins[i],priv::curHolder.fetch(cursor));
+		
+		
+		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+		priv::globDispMutex.unLock();
+		priv::globXwinMutex.unLock();
+		#endif
+	}
+		
+	namespace Xlib
+	{
 		bool GLContext::createContext(GLXFBConfig config,::GLXContext sharedContext)
 		{
 			// chack for OpenGL support
 			int buf;
 			if (!glXQueryExtension(m_disp,&buf,&buf)) 
-			{
-				fw_log << "OpenGL not supported by X server" << std::endl;
 				return false;
-			}
+			
 
 			// if GLX_ARB_create_context is present that means OpenGL 3.0+ is available
 			std::string extensions =  glXQueryExtensionsString(m_disp, DefaultScreen(m_disp));
@@ -86,10 +218,8 @@ namespace fw
 									None};
 
 				if (!glXCreateContextAttribsARB)
-				{
-					fw_log << "glXCreateContextAttribsARB is NULL" << std::endl;
 					return false;
-				}
+				
 				
 				// set an empty error handler as glXCreateContextAttribsARB will often cause GLXBadFBConfig and BadMatch
 				int (*oldHandler)(Display*,XErrorEvent*) = XSetErrorHandler(errorHandler);
@@ -101,11 +231,8 @@ namespace fw
 					m_handle = glXCreateContextAttribsARB(m_disp,config,sharedContext,True,attributes);
 
 					if (m_handle)
-					{/*
-						fw_log << attributes[5] << " _kecske" << std::endl;
-						int profile;
-						glGetIntegerv(GL_CONTEXT_PROFILE_MASK,&profile);
-						fw_log << profile << std::endl;*/
+					{
+						XSetErrorHandler(oldHandler);
 						return true;
 					}
 
@@ -114,6 +241,8 @@ namespace fw
 					attributes[1] = m_settings.majorVersion;
 					attributes[3] = m_settings.minorVersion;
 				}
+				
+				XFlush(m_disp);
 
 				// set back the old handler
 				XSetErrorHandler(oldHandler);
@@ -123,13 +252,10 @@ namespace fw
 			m_handle = glXCreateNewContext(m_disp,config,GLX_RGBA_TYPE,sharedContext,True);
 
 			m_settings.majorVersion = 2,
-			m_settings.minorVersion = 9;
+			m_settings.minorVersion = 1;
 
 			if (!m_handle)
-			{
-				fw_log << "glXCreateNewContext failed" << std::endl;
 				return false;
-			}
 
 			return true;
 		}
@@ -204,21 +330,18 @@ namespace fw
 			m_settings = settings;
 
 			// copy window
-			m_win  = window;
+			m_win = window;
 
 			// connect to X
-			m_disp = XOpenDisplay(NULL);
-
+			m_disp = priv::getGlobDisp();
+			
 			if (!m_disp)
-			{
-				fw_log << "XOpenDisplay failed" << std::endl;
 				return false;
-			}
 
 			// choose best configuration available
-			GLXFBConfig config = createConfig();
+			GLXFBConfig config;
 			
-			if (!config)
+			if (!priv::getFBConfig(m_disp,&config,true))
 				return false;
 
 			return createContext(config,sharedContext);
@@ -234,19 +357,17 @@ namespace fw
 			m_settings = settings;
 
 			// open our own Display
-			m_disp = XOpenDisplay(NULL);
-
+			m_disp = priv::getGlobDisp();
+			
 			if (!m_disp)
-			{
-				fw_log << "XOpenDisplay failed" << std::endl;
 				return false;
-			}
 
 			// choose best configuration available
-			GLXFBConfig config = createConfig();
-
-			if (!config)
+			GLXFBConfig config;
+			
+			if (!priv::getFBConfig(m_disp,&config,true))
 				return false;
+
 
 			int attributes[] = {GLX_PBUFFER_WIDTH,      (int)width,  //< The requested width
 								GLX_PBUFFER_HEIGHT,     (int)height, //< The requested height
@@ -258,10 +379,7 @@ namespace fw
 			m_pbuf = glXCreatePbuffer(m_disp,config,attributes);
 
 			if (!m_pbuf)
-			{
-				fw_log << "glXCreatePbuffer failed" << std::endl;
 				return false;
-			}
 
 			return createContext(config,sharedContext);
 		}
@@ -278,7 +396,7 @@ namespace fw
 				glXDestroyContext(m_disp,m_handle);
 				m_handle = NULL;
 			}
-
+			
 			// delete pixel buffer
 			if (m_pbuf)
 			{
@@ -289,7 +407,7 @@ namespace fw
 			// close the connection with X
 			if (m_disp)
 			{
-				XCloseDisplay(m_disp);
+				priv::freeGlobDisp(m_disp);
 				m_disp = NULL;
 			}
 
@@ -325,5 +443,6 @@ namespace fw
 		}
 	}
 }
+
 
 

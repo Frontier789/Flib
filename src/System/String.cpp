@@ -19,6 +19,7 @@
 #include <FRONTIER/System/String.hpp>
 #include <cstdlib>
 #include <cwchar>
+#include <locale>
 
 namespace fm
 {
@@ -26,13 +27,23 @@ namespace fm
 	namespace priv
 	{
 		/////////////////////////////////////////////////////////////
-		fm::Uint32 FRONTIER_API utf32FromAnsi(char character)
+		fm::Uint32 FRONTIER_API utf32FromAnsi(char character,const std::locale &loc = std::locale())
 		{
-			std::mbstate_t mbt;
-			wchar_t wc = 0;
-			std::mbrtowc(&wc,&character,1,&mbt);
+        #ifdef FRONTIER_OS_WINDOWS
 
-			return (fm::Uint32)wc;
+            (void)loc;
+
+            std::mbstate_t mbt;
+            wchar_t wc = 0;
+            std::mbrtowc(&wc,&character,1,&mbt);
+
+            return (fm::Uint32)wc;
+
+        #else
+
+            return (fm::Uint32)std::use_facet< std::ctype<wchar_t> >(loc).widen(character);
+
+        #endif // FRONTIER_OS_WINDOWS
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -86,27 +97,27 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	String::String(char character)
+	String::String(char character,const std::locale &loc)
 	{
-		m_str += priv::utf32FromAnsi(character);
+		m_str += priv::utf32FromAnsi(character,loc);
 	}
 
 	/////////////////////////////////////////////////////////////
-	String::String(const char *text)
+	String::String(const char *text,const std::locale &loc)
 	{
 		if (text)
 			while (*text)
 			{
-				m_str += priv::utf32FromAnsi(*text);
+				m_str += priv::utf32FromAnsi(*text,loc);
 				text++;
 			}
 	}
 
 	/////////////////////////////////////////////////////////////
-	String::String(const std::string &text)
+	String::String(const std::string &text,const std::locale &loc)
 	{
 		C(text.length())
-			m_str += priv::utf32FromAnsi(text[i]);
+			m_str += priv::utf32FromAnsi(text[i],loc);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -152,13 +163,22 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
+	String::String(const fm::Uint32 *text,fm::Size charCount)
+	{
+		if (text)
+			m_str.assign(text,text+charCount);
+		else
+            resize(charCount);
+	}
+
+	/////////////////////////////////////////////////////////////
 	String::String(const std::basic_string<fm::Uint32> &text) : m_str(text)
 	{
 
 	}
 
 	/////////////////////////////////////////////////////////////
-	std::string String::str() const
+	std::string String::str(const std::locale &loc) const
 	{
 		fm::Size s = m_str.size();
 
@@ -167,12 +187,22 @@ namespace fm
 
 		C(s)
 		{
+        #ifdef FRONTIER_OS_WINDOWS
+            (void)loc;
 			char *c = new char[MB_CUR_MAX];
 
-			if (std::wctomb(c, wchar_t(m_str[i])) >= 0)
+            std::mbstate_t mbt;
+			if (std::wcrtomb(c, wchar_t(m_str[i]),&mbt) != std::size_t(-1))
 				ret += *c;
 
 			delete[] c;
+        #else
+
+			char c = std::use_facet< std::ctype<wchar_t> >(loc).narrow(m_str[i],'\0');
+			if (c != '\0' || m_str[i] == 0)
+                ret += m_str[i];
+
+        #endif // FRONTIER_OS_WINDOWS
 		}
 
 		return ret;
@@ -211,7 +241,7 @@ namespace fm
 	{
 		return fromUtf8<const char *>(bytes,bytes+byteCount+1,invalidSign);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	String String::fromUtf8(const std::string &str,fm::Uint32 invalidSign)
 	{
@@ -323,6 +353,18 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
+	fm::Uint32 &String::at(fm::Size index)
+	{
+		return m_str[index];
+	}
+
+	/////////////////////////////////////////////////////////////
+	const fm::Uint32 &String::at(fm::Size index) const
+	{
+		return m_str[index];
+	}
+
+	/////////////////////////////////////////////////////////////
 	String::reference String::erase(fm::Size pos,fm::Size len)
 	{
 		m_str.erase(pos,len);
@@ -333,6 +375,10 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	String::reference String::insert(fm::Size pos,const String &str)
 	{
+		fm::Size len = size();
+
+		if (pos > len) pos = len;
+
 		m_str.insert(pos,str.m_str);
 
 		return *this;
@@ -399,6 +445,8 @@ namespace fm
 	{
 		fm::Size s = size();
 		fm::Size s2 = str.size();
+
+		if (pos + s2 >= s + 1) return fm::String::npos;
 
 		if (len > s+1-pos-s2)
 			len = s+1-pos-s2;
@@ -620,4 +668,76 @@ namespace fm
 
 		return ret;
 	}
+
+	/////////////////////////////////////////////////////////////
+	String toString(char num)
+	{
+		return toString((long long)num);
+	}
+
+	/////////////////////////////////////////////////////////////
+	String toString(unsigned char num)
+	{
+		return toString((unsigned long long)num);
+	}
+
+	/////////////////////////////////////////////////////////////
+	String toString(short num)
+	{
+		return toString((long long)num);
+	}
+
+	/////////////////////////////////////////////////////////////
+	String toString(unsigned short num)
+	{
+		return toString((unsigned long long)num);
+	}
+
+	/////////////////////////////////////////////////////////////
+	String toString(int num)
+	{
+		return toString((long long)num);
+	}
+
+	/////////////////////////////////////////////////////////////
+	String toString(unsigned int num)
+	{
+		return toString((unsigned long long)num);
+	}
+
+	/////////////////////////////////////////////////////////////
+	String toString(long num)
+	{
+		return toString((long long)num);
+	}
+
+	/////////////////////////////////////////////////////////////
+	String toString(unsigned long num)
+	{
+		return toString((long long)num);
+	}
+
+	/////////////////////////////////////////////////////////////
+	String toString(long long num)
+	{
+		if (num < 0)
+			return "-"+toString((unsigned long long)(-num));
+
+		return toString((unsigned long long)num);
+	}
+
+	/////////////////////////////////////////////////////////////
+	String toString(unsigned long long ull)
+	{
+	    if (!ull) return "0";
+
+		String ret;
+		while (ull)
+			ret = char('0'+ull%10)+ret,
+			ull /= 10;
+
+		return ret;
+	}
+
+	/////////////////////////////////////////////////////////////
 }

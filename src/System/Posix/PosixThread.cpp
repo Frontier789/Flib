@@ -17,8 +17,6 @@
 #include <FRONTIER/System/Posix/PosixThread.hpp>
 #include <FRONTIER/System/Clock.hpp>
 #include <FRONTIER/System/Sleep.hpp>
-#include <FRONTIER/System/FmLog.hpp>
-#include "fmPosixPrintErrno.hpp"
 #include <pthread.h>
 #include <signal.h>
 #include <errno.h>
@@ -31,31 +29,33 @@ namespace fm
 {
 	namespace Posix
 	{
-		
+
 		/////////////////////////////////////////////////////////////
 		void *Thread::startThread(void *param)
 		{
-			fm::priv::ThreadFuntionCaller *caller = (fm::priv::ThreadFuntionCaller*)param;
-			
+			priv::DataPass *caller = (priv::DataPass*)param;
+
 		#ifdef USE_PTHREAD_CANCEL
 			pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 		#endif
-			
+
 			if (caller)
 			{
-				caller->m_currentThreadPtr->set(caller->m_owner);
-				caller->callFunc();
+			    fm::Thread::setCurrentThread(caller->thread);
+
+				caller->delegate.call(caller->thread);
 			}
-			
+
 			return 0;
 		}
 
 		/////////////////////////////////////////////////////////////
-		Thread::Thread() : m_id(NULL),
+		Thread::Thread() : m_id(fm::nullPtr),
+                           m_caller(fm::nullPtr),
 						   m_running(false),
 						   m_isExiting(false)
 		{
-			
+
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -69,24 +69,27 @@ namespace fm
 		{
 			// delete windows handle
 			delete m_id;
-			m_id = NULL;
-			
+			m_id = fm::nullPtr;
+
 			m_running = false;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
-		bool Thread::create(fm::priv::ThreadFuntionCaller *runner)
+		fm::Result Thread::setEntry(const fm::Delegate<void,fm::Thread *> &runner,fm::Thread *owner)
 		{
 			// clean the mess
 			cleanUp();
-			
+
 			// create the new handle
 			m_id = new pthread_t;
-			
+
 			// copy the caller function
-			m_caller = runner;
-			
-			return true;
+			delete m_caller;
+			m_caller = new priv::DataPass;
+			m_caller->delegate = runner;
+			m_caller->thread = owner;
+
+			return fm::Result();
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -94,25 +97,19 @@ namespace fm
 		{
 			if (!m_id && m_caller)
 				m_id = new pthread_t;
-			
+
 			if (m_id)
 			{
 				m_isExiting = false;
+
 				if (pthread_create(m_id,NULL,startThread,m_caller) == 0)
 				{
 					m_running = true;
 					return true;
 				}
-					
-				fm::PosixPrintErrno(fm::fm_log,pthread_create);
 			}
-			return false;
-		}
 
-		/////////////////////////////////////////////////////////////
-		Thread *Thread::getCurrentThread()
-		{
-			return (Thread*)(fm::Thread::getCurrentThread()->getImpl());
+			return false;
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -121,13 +118,11 @@ namespace fm
 			if (m_running)
 			{
 				if (pthread_join(*m_id,NULL) != 0)
-				{
-					fm::PosixPrintErrno(fm::fm_log,pthread_join);
 					return false;
-				}
-				
+
 				cleanUp();
 			}
+
 			return true;
 		}
 
@@ -137,27 +132,25 @@ namespace fm
 			if (m_running)
 			{
 				fm::Clock clk;
-				while (clk.getTime() < timeOut && pthread_kill(*m_id,0)==0)
+				while (clk.getTime() < timeOut && pthread_kill(*m_id,0) == 0)
 					fm::Sleep(fm::milliseconds(3));
-				
+
 				return (clk.getTime() < timeOut);
 			}
+
 			return true;
 		}
 
 		/////////////////////////////////////////////////////////////
-		bool Thread::isExiting(const Thread *thread)
+		bool Thread::isExiting(const Posix::Thread &thread)
 		{
-			if (thread)
-			{
-				thread->m_exitMutex.lock();
-				bool ret = thread->m_isExiting;
-				thread->m_exitMutex.unLock();
-				
-				return ret;
-			}
+			bool ret;
 
-			return false;
+            thread.m_exitMutex.lock();
+            ret = thread.m_isExiting;
+            thread.m_exitMutex.unLock();
+
+            return ret;
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -175,16 +168,10 @@ namespace fm
 			{
 			#ifdef USE_PTHREAD_CANCEL
 				if (pthread_cancel(*m_id) != 0)
-				{
-					fm::PosixPrintErrno(fm::fm_log,pthread_cancel);
 					return false;
-				}
 			#else
 				if (pthread_kill(*m_id,SIGUSR1) != 0)
-				{
-					fm::PosixPrintErrno(fm::fm_log,pthread_kill);
 					return false;
-				}
 			#endif
 			}
 			return true;

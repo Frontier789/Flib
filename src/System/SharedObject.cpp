@@ -15,7 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/macros/OS.h>
-
+ 
 #ifdef FRONTIER_OS_WINDOWS
 	#include "Wapi/WapiSharedObject.cpp"
 #endif

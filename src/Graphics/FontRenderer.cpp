@@ -1,7 +1,7 @@
 #include <FRONTIER/Graphics/FontRenderer.hpp>
 #include <FRONTIER/System/macros/C.hpp>
-#include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/System/Math.hpp>
 
@@ -11,10 +11,7 @@
 
 namespace fg
 {
-	/////////////////////////////////////////////////////////////
-	#define FRONTIER_FT_PRINT_ERROR(func,error) fg::fg_log << "Internal FreeType function failed in " __FILE__ ": " << __LINE__ << " FT_errorCode = " << error << " (" << fg::priv::ftErrorToString(error) << ")" << std::endl
-
-    namespace priv
+	namespace priv
     {
         std::string ftErrorToString(int error);
     }
@@ -25,10 +22,7 @@ namespace fg
 								   m_loaded(false),
 								   m_currentSize(0)
 	{
-		int error = FT_Init_FreeType((FT_Library*)m_ftLibrary);
-
-		if (error)
-			FRONTIER_FT_PRINT_ERROR(FT_Init_FreeType,error);
+		FT_Init_FreeType((FT_Library*)m_ftLibrary);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -37,6 +31,7 @@ namespace fg
 		// free FreeType side data
 		if (m_loaded)
 			FT_Done_Face(*((FT_Face*)m_ftFaceData));
+		
 		FT_Done_FreeType(*((FT_Library*)m_ftLibrary));
 
 		// delete allocated memory
@@ -45,7 +40,7 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool FontRenderer::loadFromFile(const std::string &fileName,unsigned int size)
+	fm::Result FontRenderer::loadFromFile(const std::string &fileName,unsigned int size)
 	{
 		// free the current font
 		if (m_loaded)
@@ -54,20 +49,22 @@ namespace fg
 		// load the first font face in the file
 		int error = FT_New_Face(*((FT_Library*)m_ftLibrary),fileName.c_str(),0,(FT_Face*)m_ftFaceData);
 
+		m_loaded = (error==0);
+		
+		fm::Error err;
+		
 		// check error
 		if (error)
-			FRONTIER_FT_PRINT_ERROR(FT_New_Face,error);
-
-		m_loaded = (error==0);
+			err = fm::Error("FTError","FTFuncFailed","FT_New_Face failed (" + fm::toString(error).str() + "): "+fg::priv::ftErrorToString(error),"FT_New_Face",__FILE__,__LINE__);
 
 		// set character size
 		setCharacterSize(size);
 
-		return m_loaded;
+		return err;
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool FontRenderer::loadFromMemory(const void *fileContent,fm::Size fileSizeInBytes,unsigned int size)
+	fm::Result FontRenderer::loadFromMemory(const void *fileContent,fm::Size fileSizeInBytes,unsigned int size)
 	{
 		// free the current font
 		if (m_loaded)
@@ -79,17 +76,20 @@ namespace fg
 									   fileSizeInBytes,
 									   0,
 									   (FT_Face*)m_ftFaceData);
-
+		
+		
+		m_loaded = (error==0);
+		
+		fm::Error err;
+		
 		// check error
 		if (error)
-			FRONTIER_FT_PRINT_ERROR(FT_New_Memory_Face,error);
-
-		m_loaded = (error==0);
+			err = fm::Error("FTError","FTFuncFailed","FT_New_Memory_Face failed (" + fm::toString(error).str() + "): "+fg::priv::ftErrorToString(error),"FT_New_Memory_Face",__FILE__,__LINE__);
 
 		// set character size
 		setCharacterSize(size);
 
-		return m_loaded;
+		return err;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -110,10 +110,7 @@ namespace fg
 		int error = FT_Load_Glyph(*((FT_Face*)m_ftFaceData),glyphIndex,FT_LOAD_FORCE_AUTOHINT | FT_LOAD_DEFAULT);
 
 		if (error)
-		{
-			FRONTIER_FT_PRINT_ERROR(FT_Load_Glyph,error);
 			return fg::Image();
-		}
 
 		FT_Face face = (*((FT_Face*)m_ftFaceData));
 
@@ -128,10 +125,7 @@ namespace fg
 		error = FT_Render_Glyph( face->glyph,FT_RENDER_MODE_NORMAL);
 
 		if (error)
-		{
-			FRONTIER_FT_PRINT_ERROR(FT_Render_Glyph,error);
 			return fg::Image();
-		}
 
 		// get bitmap details
 		fm::Size width  = face->glyph->bitmap.width;
@@ -287,13 +281,11 @@ namespace fg
 			FT_Vector delta;
 
 			// get kerning from FreeType
-			int error = FT_Get_Kerning(*((FT_Face*)m_ftFaceData),
+			FT_Get_Kerning(*((FT_Face*)m_ftFaceData),
 						   			   leftGlyphIndex,
 						   			   rightGlyphIndex,
 						   			   FT_KERNING_DEFAULT,
 						   			   &delta);
-			if (error)
-				FRONTIER_FT_PRINT_ERROR(FT_Get_Kerning,error);
 
 			return delta.x >> 6;
 		}
@@ -314,11 +306,7 @@ namespace fg
 		m_currentSize = size;
 
 		// tell FreeType to switch size
-		int error = FT_Set_Pixel_Sizes(*((FT_Face*)m_ftFaceData),m_currentSize,0);
-
-		// check error
-		if (error)
-			FRONTIER_FT_PRINT_ERROR(FT_Set_Pixel_Sizes,error);
+		FT_Set_Pixel_Sizes(*((FT_Face*)m_ftFaceData),m_currentSize,0);
 
 		FT_Face face = (*((FT_Face*)m_ftFaceData));
 

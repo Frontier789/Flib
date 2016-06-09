@@ -25,8 +25,12 @@
 
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/System/NullPtr.hpp>
+#include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/System/Error.hpp>
 #define FRONTIER_IMAGE
 #include <vector>
+#include <string>
 
 namespace fm
 {
@@ -39,18 +43,6 @@ namespace fm
     class rect;
 
     typedef rect<fm::Size> rect2s;
-}
-
-namespace std
-{
-    template<typename>
-    class char_traits;
-	template<typename>
-    class allocator;
-	template<typename,typename,typename>
-	class basic_string;
-
-	typedef basic_string<char,std::char_traits<char>,std::allocator<char> > string;
 }
 
 namespace fg
@@ -326,10 +318,10 @@ namespace fg
 		///
 		/// @param filename The name of the file to load
 		///
-		/// @return True if everything went ok
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		bool loadFromFile(const std::string &filename);
+		fm::Result loadFromFile(const std::string &filename);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load image from a file that is loaded into memory
@@ -343,10 +335,10 @@ namespace fg
 		/// @param buffer A pointer to the beginning of the file in memory
 		/// @param byteCount The number of bytes in the file
 		///
-		/// @return True if everything went ok
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		bool loadFromMemory(const void *buffer,fm::Size byteCount);
+		fm::Result loadFromMemory(const void *buffer,fm::Size byteCount);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Save image to a file
@@ -359,10 +351,10 @@ namespace fg
 		///
 		/// @param filename The name of the file to save to
 		///
-		/// @return True if everything went ok
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		bool saveToFile(const std::string &filename) const;
+		fm::Result saveToFile(const std::string &filename) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Save image to a memory region
@@ -376,10 +368,10 @@ namespace fg
 		/// @param byteCount The number of bytes returned (0 on error)
 		/// @param ext The extension of the file
 		///
-		/// @return A pointer to the data (allocated with operator new)
+		/// @return A pointer to the data (allocated with operator new[])
 		///
 		/////////////////////////////////////////////////////////////
-		unsigned char *saveToMemory(fm::Size &byteCount,const std::string &ext) const;
+		fm::Uint8 *saveToMemory(fm::Size &byteCount,const std::string &ext) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Resize The image
@@ -409,6 +401,18 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		Image scale(const fm::vec2s &size,bool linearFilter = true);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Swap the content of two images
+		///
+		/// swaps in constant time
+		///
+		/// @param img The image to swap with
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference swap(Image &img);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get size of the image
@@ -529,11 +533,12 @@ namespace fg
 		/// Supports: .ico
 		///
 		/// @param file The name of the file
+		/// @param error Returns the error (if any) that happened
 		///
 		/// @return A vector of images
 		///
 		/////////////////////////////////////////////////////////////
-		static std::vector<Image> loadMultipleImagesFromFile(const std::string &file);
+		static std::vector<Image> loadMultipleImagesFromFile(const std::string &file,fm::Error *error = fm::nullPtr);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load images from a file in memory that contains more than one
@@ -543,11 +548,12 @@ namespace fg
 		/// @param data The file in memory
 		/// @param byteCount The number of bytes in the file
 		/// @param ext The extension (file type) of the file in memory
+		/// @param error Returns the error (if any) that happened
 		///
 		/// @return A vector of images
 		///
 		/////////////////////////////////////////////////////////////
-		static std::vector<Image> loadMultipleImagesFromMemory(const fm::Uint8 *data,fm::Size byteCount,const std::string &ext);
+		static std::vector<Image> loadMultipleImagesFromMemory(const fm::Uint8 *data,fm::Size byteCount,const std::string &ext,fm::Error *error = fm::nullPtr);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Save image(s) to a file
@@ -558,10 +564,10 @@ namespace fg
 		/// @param imageCount The number of images
 		/// @param file The name of the file
 		///
-		/// @return A vector of images
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		static bool saveMultipleImagesToFile(Image const* const* images,fm::Size imageCount,const std::string &file);
+		static fm::Result saveMultipleImagesToFile(Image const* const* images,fm::Size imageCount,const std::string &file);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Save image(s) to a file in memory

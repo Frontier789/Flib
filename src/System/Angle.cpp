@@ -100,6 +100,12 @@ namespace fm
 	{
 		return radians(left.asRadians()-right.asRadians());
 	}
+	
+	/////////////////////////////////////////////////////////////
+	Angle operator-(const Angle &angle)
+	{
+		return radians(-angle.asRadians());
+	}
 
 	/////////////////////////////////////////////////////////////
 	Angle operator*(const Angle &left,const float &right)

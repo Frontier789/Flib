@@ -26,6 +26,8 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
+#include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/System/macros/TYPES.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
 
@@ -101,8 +103,9 @@ namespace fg
 		std::map<std::string, int> m_uniforms;   ///< The "id" of the uniforms and their name
 		std::map<std::string, int> m_attribs;    ///< The "id" of the attributes and their name
 		std::map<std::string, TexUniformData > m_textures; ///< The state and name of the texture uniforms
-		unsigned int m_texCounter; ///< The counter used when activating texture slots
-		bool link(); ///< Internal function used to link the compiled shaders to the shader program
+		fm::Size m_texCounter; ///< The counter used when activating texture slots
+		fm::Uint32 m_defVao;   ///< Default vao for core profiles
+		fm::Result link(); ///< Internal function used to link the compiled shaders to the shader program
 		void init(); ///< Internal function used at setup
 		void freeSubShaders(); ///< Internal function used at clean-up
 		virtual void clearData(); ///< clear uniforms, attributes, textures etc
@@ -130,25 +133,17 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the shader program from files
 		///
-		/// If at least on of the files are unreadable or
-		/// contain an invalid shader source an error will
-		/// be prompted to fg_log and the shader program becomes invalid
-		///
 		/// @param files A pointer to the names of files to be compiled
 		/// @param types A pointer to the types of shaders
 		/// @param count The number of shaders in the shader program
 		///
-		/// @return True if no error occured
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-        bool loadFromFiles(const std::string *files,const unsigned int *types,unsigned int count);
+        fm::Result loadFromFiles(const std::string *files,const unsigned int *types,unsigned int count);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the shader program from files
-		///
-		/// If at least on of the two files are unreadable or
-		/// contain an invalid shader source an error will
-		/// be prompted to fg_log and the shader program becomes invalid
 		///
 		/// It is assumed that the first file contains the source
 		/// of the vertex shader while the second one contains the source of
@@ -157,33 +152,25 @@ namespace fg
 		/// @param vertexShaderFile Name of the file that contains the vertex shader source
 		/// @param fragmentShaderFile Name of the file that contains the fragment shader source
 		///
-		/// @return True if no error occured
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-        bool loadFromFiles(const std::string &vertexShaderFile,const std::string &fragmentShaderFile);
+        fm::Result loadFromFiles(const std::string &vertexShaderFile,const std::string &fragmentShaderFile);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the shader program from sources stored in memory
-		///
-		/// If at least on of the sources contains an
-		/// invalid shader source an error will
-		/// be prompted to fg_log and the shader program becomes invalid
 		///
 		/// @param data A pointer to the sources to be compiled
 		/// @param types A pointer to the types of shaders
 		/// @param count The number of shaders in the shader program
 		///
-		/// @return True if no error occured
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-        bool loadFromMemory(const std::string *data,const unsigned int *types,unsigned int count);
+        fm::Result loadFromMemory(const std::string *data,const unsigned int *types,unsigned int count);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the shader program from sources stored in memory
-		///
-		/// If at least on of the sources contains an
-		/// invalid shader source an error will
-		/// be prompted to fg_log and the shader program becomes invalid
 		///
 		/// It is assumed that the first string contains the source
 		/// of the vertex shader while the second one contains the source of
@@ -192,10 +179,10 @@ namespace fg
 		/// @param vertexShaderData The source of vertex shader
 		/// @param fragmentShaderData The source of fragment shader
 		///
-		/// @return True if no error occured
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-        bool loadFromMemory(const std::string &vertexShaderData,const std::string &fragmentShaderData);
+        fm::Result loadFromMemory(const std::string &vertexShaderData,const std::string &fragmentShaderData);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the shader program for usage
@@ -208,10 +195,6 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Find the "id" of a uniform
-		///
-		/// If the shader program is invalid or @a name does not
-		/// correspond to an active uniform in the shader program
-		/// an error is prompted to fg_log and -1 is returned
 		///
 		/// This function is mostly used internally
 		///
@@ -237,17 +220,12 @@ namespace fg
 		///
 		/// @param name The name of the attribute
 		/// @param enable True to enable false to disable
-		///
-		///
+		/// 
 		/////////////////////////////////////////////////////////////
 		void enableAttribPointer(const std::string &name,bool enable = true);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Find the "id" of an attribute
-		///
-		/// If the shader program is invalid or @a name does not
-		/// correspond to an active attribute in the shader program
-		/// an error is prompted to fg_log and -1 is returned
 		///
 		/// This function is mostly used internally
 		///
@@ -274,11 +252,6 @@ namespace fg
 		/// If the shader program is invalid no error will be prompted
 		/// and the shader program will not be modified
 		///
-		/// if either of @a posName or @a clrName does not
-		/// correspond to an active attribute in
-		/// the shader program an error is prompted to
-		/// fg_log
-		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
 		/// with this shader program being bound will use
@@ -288,23 +261,18 @@ namespace fg
 		/// @param clrName The name of the color attribute
 		/// @param pointer A pointer to the data stored in fm::vertex
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
         template<class pt,class ct,class tpt,class nt>
-		reference setAttribPointer(const std::string &posName,
-								   const std::string &clrName,const fm::vertex<pt,ct,tpt,nt> *pointer);
+		fm::Result setAttribPointer(const std::string &posName,
+								    const std::string &clrName,const fm::vertex<pt,ct,tpt,nt> *pointer);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with three attributes
 		///
 		/// If the shader program is invalid no error will be prompted
 		/// and the shader program will not be modified
-		///
-		/// if either of @a posName or @a clrName or @a texPosName does not
-		/// correspond to an active attribute in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -316,24 +284,19 @@ namespace fg
 		/// @param texPosName The name of the texture position attribute
 		/// @param pointer A pointer to the data stored in fm::vertex
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
         template<class pt,class ct,class tpt,class nt>
-		reference setAttribPointer(const std::string &posName,
-								   const std::string &clrName,
-								   const std::string &texPosName,const fm::vertex<pt,ct,tpt,nt> *pointer);
+		fm::Result setAttribPointer(const std::string &posName,
+								    const std::string &clrName,
+								    const std::string &texPosName,const fm::vertex<pt,ct,tpt,nt> *pointer);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with four attributes
 		///
 		/// If the shader program is invalid no error will be prompted
 		/// and the shader program will not be modified
-		///
-		/// if either of @a posName or @a clrName or @a texPosName or @a normName does not
-		/// correspond to an active attribute in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -346,25 +309,20 @@ namespace fg
 		/// @param normName The name os the normal attribute
 		/// @param pointer A pointer to the data stored in fm::vertex
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
         template<class pt,class ct,class tpt,class nt>
-		reference setAttribPointer(const std::string &posName,
-								   const std::string &clrName,
-								   const std::string &texPosName,
-								   const std::string &normName,const fm::vertex<pt,ct,tpt,nt> *pointer);
+		fm::Result setAttribPointer(const std::string &posName,
+								    const std::string &clrName,
+								    const std::string &texPosName,
+								    const std::string &normName,const fm::vertex<pt,ct,tpt,nt> *pointer);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one attributes
 		///
 		/// If the shader program is invalid no error will be prompted
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active attribute in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -380,21 +338,16 @@ namespace fg
 		/// @param pointer A pointer to the data
 		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-        reference setAttribPointer(const std::string &name,unsigned int components,unsigned long type,bool normalize,const void *pointer,unsigned int stride=0);
+        fm::Result setAttribPointer(const std::string &name,unsigned int components,unsigned long type,bool normalize,const void *pointer,unsigned int stride = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with a one dimensional attribute
 		///
 		/// If the shader program is invalid no error will be prompted
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active attribute in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -405,22 +358,17 @@ namespace fg
 		/// @param pointer A pointer to the data
 		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		reference setAttribPointer(const std::string &name,const T *pointer,unsigned int stride=0);
+		fm::Result setAttribPointer(const std::string &name,const T *pointer,unsigned int stride = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec2 attributes
 		///
 		/// If the shader program is invalid no error will be prompted
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active attribute in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -431,22 +379,17 @@ namespace fg
 		/// @param pointer A pointer to the data stored in fm::vec2
 		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		reference setAttribPointer(const std::string &name,const fm::vector2<T> *pointer,unsigned int stride=0);
+		fm::Result setAttribPointer(const std::string &name,const fm::vector2<T> *pointer,unsigned int stride = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec3 attributes
 		///
 		/// If the shader program is invalid no error will be prompted
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active attribute in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -457,22 +400,17 @@ namespace fg
 		/// @param pointer A pointer to the data stored in fm::vec3
 		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		reference setAttribPointer(const std::string &name,const fm::vector3<T> *pointer,unsigned int stride=0);
+		fm::Result setAttribPointer(const std::string &name,const fm::vector3<T> *pointer,unsigned int stride = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec4 attributes
 		///
 		/// If the shader program is invalid no error will be prompted
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active attribute in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -483,22 +421,17 @@ namespace fg
 		/// @param pointer A pointer to the data stored in fm::vec4
 		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		reference setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride=0);
+		fm::Result setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec4 attributes
 		///
 		/// If the shader program is invalid no error will be prompted
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active attribute in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// After successfully calling this function
 		/// a call to glDrawArrays or glDrawElements
@@ -509,10 +442,10 @@ namespace fg
 		/// @param pointer A pointer to the data stored in fg::Color
 		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setAttribPointer(const std::string &name,const fg::Color *pointer,unsigned int stride=0);
+		fm::Result setAttribPointer(const std::string &name,const fg::Color *pointer,unsigned int stride = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a float uniform
@@ -528,10 +461,10 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param x The value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,float x);
+		fm::Result setUniform(const std::string &name,float x);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a vec2 uniform
@@ -548,10 +481,10 @@ namespace fg
 		/// @param x The x value of the uniform
 		/// @param y The y value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,float x,float y);
+		fm::Result setUniform(const std::string &name,float x,float y);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a vec3 uniform
@@ -569,10 +502,10 @@ namespace fg
 		/// @param y The y value of the uniform
 		/// @param z The z value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,float x,float y,float z);
+		fm::Result setUniform(const std::string &name,float x,float y,float z);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a vec4 uniform
@@ -591,10 +524,10 @@ namespace fg
 		/// @param z The z value of the uniform
 		/// @param w The w value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,float x,float y,float z,float w);
+		fm::Result setUniform(const std::string &name,float x,float y,float z,float w);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an int uniform
@@ -610,10 +543,10 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param x The value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,int x);
+		fm::Result setUniform(const std::string &name,int x);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an ivec2 uniform
@@ -630,10 +563,10 @@ namespace fg
 		/// @param x The x value of the uniform
 		/// @param y The y value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,int x,int y);
+		fm::Result setUniform(const std::string &name,int x,int y);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an ivec3 uniform
@@ -651,10 +584,10 @@ namespace fg
 		/// @param y The y value of the uniform
 		/// @param z The z value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,int x,int y,int z);
+		fm::Result setUniform(const std::string &name,int x,int y,int z);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an ivec4 uniform
@@ -673,10 +606,10 @@ namespace fg
 		/// @param z The z value of the uniform
 		/// @param w The w value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,int x,int y,int z,int w);
+		fm::Result setUniform(const std::string &name,int x,int y,int z,int w);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an vec2 uniform
@@ -692,10 +625,10 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param v The value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,const fm::vec2 &v);
+		fm::Result setUniform(const std::string &name,const fm::vec2 &v);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an vec3 uniform
@@ -711,10 +644,10 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param v The value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,const fm::vec3 &v);
+		fm::Result setUniform(const std::string &name,const fm::vec3 &v);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an vec4 uniform
@@ -730,10 +663,10 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param v The value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,const fm::vec4 &v);
+		fm::Result setUniform(const std::string &name,const fm::vec4 &v);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an mat3 uniform
@@ -749,11 +682,11 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param m The value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
 		template<fm::MATRIX::StorageOrder storeOrder>
-		reference setUniform(const std::string &name,const fm::mat3 &m);
+		fm::Result setUniform(const std::string &name,const fm::mat3 &m);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an mat3 uniform
@@ -770,10 +703,10 @@ namespace fg
 		/// @param m The value of the uniform
 		/// @param storeOrder If RowMajor then the matrix will be transposed before sending
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,const fm::mat3 &m,fm::MATRIX::StorageOrder storeOrder = fm::MATRIX::RowMajor);
+		fm::Result setUniform(const std::string &name,const fm::mat3 &m,fm::MATRIX::StorageOrder storeOrder = fm::MATRIX::RowMajor);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an mat4 uniform
@@ -789,11 +722,11 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param m The value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
 		template<fm::MATRIX::StorageOrder storeOrder>
-		reference setUniform(const std::string &name,const fm::mat4 &m);
+		fm::Result setUniform(const std::string &name,const fm::mat4 &m);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an mat4 uniform
@@ -810,10 +743,10 @@ namespace fg
 		/// @param m The value of the uniform
 		/// @param storeOrder If RowMajor then the matrix will be transposed before sending
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,const fm::mat4 &m,fm::MATRIX::StorageOrder storeOrder = fm::MATRIX::RowMajor);
+		fm::Result setUniform(const std::string &name,const fm::mat4 &m,fm::MATRIX::StorageOrder storeOrder = fm::MATRIX::RowMajor);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of color uniform (vec4)
@@ -829,10 +762,10 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param c The value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,const Color &c);
+		fm::Result setUniform(const std::string &name,const Color &c);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a sampler2D uniform
@@ -848,10 +781,10 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,const Texture &tex);
+		fm::Result setUniform(const std::string &name,const Texture &tex);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a sampler2D uniform
@@ -867,10 +800,10 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform (NULL means unbound)
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,const Texture *tex);
+		fm::Result setUniform(const std::string &name,const Texture *tex);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a samplerCube uniform
@@ -886,10 +819,10 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,const CubeTexture &tex);
+		fm::Result setUniform(const std::string &name,const CubeTexture &tex);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a samplerCube uniform
@@ -905,10 +838,10 @@ namespace fg
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform (NULL means unbound)
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference setUniform(const std::string &name,const CubeTexture *tex);
+		fm::Result setUniform(const std::string &name,const CubeTexture *tex);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a shader program for usage
@@ -951,10 +884,6 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Compile a shader from source
 		///
-		/// If the shader couldn't be created (glCreateShader failed)
-		/// or the source couldn't be compiled then an error is prompted
-		/// to fg_log and 0 is returned
-		///
 		/// If the returned value is not 0 it is a
 		/// valid OpenGL shader and can be attached to a shader program
 		/// and it should be deleted using glDeleteShader by the caller
@@ -965,18 +894,15 @@ namespace fg
 		///
 		/// @param text The source of the shader
 		/// @param type The type of the shader
+		/// @param ret The id of the created subshader is returned
 		///
-		/// @return The id of the created shader (0 on error)
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-        static unsigned int compileSubShader(const std::string &text,unsigned int type);
+        static fm::Result compileSubShader(const std::string &text,unsigned int type,unsigned int &ret);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Compile a shader from a file
-		///
-		/// If the shader couldn't be created (glCreateShader failed)
-		/// or the source in the file couldn't be compiled then an error is prompted
-		/// to fg_log and 0 is returned
 		///
 		/// If the returned value is not 0 it is a
 		/// valid OpenGL shader and can be attached to a shader program
@@ -988,11 +914,12 @@ namespace fg
 		///
 		/// @param file The name of the file that contains the source of the shader
 		/// @param type The type of the shader
+		/// @param ret The id of the created subshader is returned
 		///
-		/// @return The id of the created shader (0 on error)
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-        static unsigned int compileSubShaderFromFile(const std::string &file,unsigned int type);
+        static fm::Result compileSubShaderFromFile(const std::string &file,unsigned int type,unsigned int &ret);
 
 	};
 

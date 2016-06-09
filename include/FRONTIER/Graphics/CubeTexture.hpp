@@ -1,5 +1,6 @@
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
+#include <FRONTIER/System/Result.hpp>
 
 namespace fm
 {
@@ -16,7 +17,7 @@ namespace fg
 	class CubeTextureFace : public fg::Texture
 	{
 		/////////////////////////////////////////////////////////////
-		virtual fm::Uint32 getTexRebinding() const;   ///< Internal function
+		virtual fm::Uint32 getTexRebinding() const; ///< Internal function
 		virtual fm::Uint32 getTexBinding() const; ///< Internal function
 		virtual fm::Uint32 getTexTarget() const; ///< Internal function
 
@@ -34,7 +35,7 @@ namespace fg
 		virtual ~CubeTextureFace();
 
 		/////////////////////////////////////////////////////////////
-		bool create(fm::Size width,fm::Size height);
+		fm::Result create(fm::Size width,fm::Size height);
 
 		/////////////////////////////////////////////////////////////
 		Texture::reference setRepeated(bool repeat);
@@ -67,7 +68,7 @@ namespace fg
 		explicit CubeTexture(fm::Size size);
 
 		/////////////////////////////////////////////////////////////
-		bool create(fm::Size size);
+		fm::Result create(fm::Size size);
 
 		/////////////////////////////////////////////////////////////
 		fm::Size getSize() const;
@@ -127,13 +128,13 @@ namespace fg
 		bool isSmooth() const;
 
 		/////////////////////////////////////////////////////////////
-		void bind() const;
+		fm::Result bind() const;
 
 		/////////////////////////////////////////////////////////////
-		static void bind(const CubeTexture *texture);
+		static fm::Result bind(const CubeTexture *texture);
 
 		/////////////////////////////////////////////////////////////
-		static void bind(const CubeTexture &texture);
+		static fm::Result bind(const CubeTexture &texture);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the maximum size in any dimension of a texture

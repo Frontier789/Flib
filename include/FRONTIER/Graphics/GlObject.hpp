@@ -16,8 +16,10 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_GLOBJECT_HPP_INCLUDED
 #define FRONTIER_GLOBJECT_HPP_INCLUDED
+#include <FRONTIER/System/macros/TYPES.hpp>
 #include <FRONTIER/System/macros/API.h>
 #define FRONTIER_GLOBJECT
+
 namespace fg
 {
 	//////////////////////////////////
@@ -27,9 +29,9 @@ namespace fg
 	//////////////////////////////////
     class FRONTIER_API GlObject
     {
-		unsigned int m_id; ///< The id of the object
-    public:
+		fm::Uint32 m_id; ///< The id of the object
 
+    public:
 		//////////////////////////////////
 		/// @brief Default constructor
 		///
@@ -50,7 +52,7 @@ namespace fg
 		/// @return The id
 		///
 		//////////////////////////////////
-		unsigned int &getGlId();
+		fm::Uint32 &getGlId();
 
 		//////////////////////////////////
 		/// @brief Get read-only access to the id
@@ -58,7 +60,7 @@ namespace fg
 		/// @return The id
 		///
 		//////////////////////////////////
-		const unsigned int &getGlId() const;
+		const fm::Uint32 &getGlId() const;
     };
 	//////////////////////////////////
 	/// @class GlObject

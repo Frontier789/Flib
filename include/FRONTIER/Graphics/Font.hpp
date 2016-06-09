@@ -31,6 +31,7 @@
 #include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/Graphics/Glyph.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
+#include <FRONTIER/System/Result.hpp>
 #define FRONTIER_FONT
 #include <string>
 #include <map>
@@ -39,6 +40,8 @@ namespace fm
 {
 	template<class>
 	class vector2;
+	
+	class String;
 }
 
 namespace fg
@@ -112,10 +115,10 @@ namespace fg
 		/// @param fileName The name of the ttf file
 		/// @param size The initial size
 		///
-		/// @return True if everything went right false otherwise
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		bool loadFromFile(const std::string &fileName,unsigned int size = 64);
+		fm::Result loadFromFile(const std::string &fileName,unsigned int size = 64);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the Font from a ttf file that loaded in memory
@@ -127,10 +130,10 @@ namespace fg
 		/// @param fileSizeInBytes The number of bytes in the loaded file
 		/// @param size The initial size
 		///
-		/// @return True if everything went right false otherwise
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		bool loadFromMemory(const void *fileContent,fm::Size fileSizeInBytes,unsigned int size=64);
+		fm::Result loadFromMemory(const void *fileContent,fm::Size fileSizeInBytes,unsigned int size=64);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the mignification and magnification filter on the texture atlases
@@ -155,6 +158,15 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		Glyph getGlyph(const fm::Uint32 &letter,unsigned int type = Glyph::Regular) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Precache characters
+		///
+		/// @param characters The characters to precache
+		/// @param type The style of the glyphs
+		///
+		/////////////////////////////////////////////////////////////
+		void preCache(const fm::String &characters,unsigned int type = Glyph::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Render a glyph's image with the current size

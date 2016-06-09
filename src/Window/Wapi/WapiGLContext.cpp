@@ -14,9 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Window/Wapi/fwWapiPrintLastError.hpp>
 #include <FRONTIER/Window/Wapi/WapiGLContext.hpp>
-#include <FRONTIER/Window/FwLog.hpp>
 
 #define WGL_CONTEXT_MAJOR_VERSION_ARB             0x2091
 #define WGL_CONTEXT_MINOR_VERSION_ARB             0x2092
@@ -68,16 +66,10 @@ namespace fw
 						// If there are no more dummy windows deregister their class
 						if (!m_contextWindowCount)
 							if (!UnregisterClassA(FRONTIER_DUMMY_WINDOW_CLASS, GetModuleHandle(NULL)))
-							{
-								fw::WapiPrintLastError(fw_log,UnregisterClassA);
 								return false;
-							}
 					}
 					else
-					{
-						fw::WapiPrintLastError(fw_log,DestroyWindow);
 						return false;
-					}
 				}
 				m_ownWindow = false;
 			}
@@ -86,10 +78,8 @@ namespace fw
 			if (m_hglrc)
 			{
 				if (!wglDeleteContext(m_hglrc))
-				{
-					fw::WapiPrintLastError(fw_log,wglDeleteContext);
 					return false;
-				}
+				
 				m_hglrc = NULL;
 			}
 
@@ -117,10 +107,7 @@ namespace fw
 			// Get DeviceContext of the window
 			m_hdc = GetDC(m_hwnd);
 			if (!m_hdc) // Check for errors
-			{
-				fw::WapiPrintLastError(fw_log,GetDC);
 				return false;
-			}
 
 			// set up pixelformet
 			if (!setPixelFormat())
@@ -157,11 +144,8 @@ namespace fw
 				// use wglCreateContext
 				m_hglrc = wglCreateContext(m_hdc);
 				if (!m_hglrc)
-				{
-					fw::WapiPrintLastError(fw_log,wglCreateContext);
 					return false;
-				}
-
+				
 				const unsigned char *(*glGetString)(unsigned int) = (const unsigned char *(*)(unsigned int))wglGetProcAddress("glGetString");
 
 				if (glGetString)
@@ -192,10 +176,7 @@ namespace fw
 			// share resources
 			if (sharedContext)
 				if (!wglShareLists(sharedContext,m_hglrc))
-				{
-					fw::WapiPrintLastError(fw_log,wglShareLists);
 					return false;
-				}
 			
 			// restore last context
 			if (oldContext)
@@ -240,10 +221,7 @@ namespace fw
 
 				// Tell windows about the new class
 				if (!RegisterClassA(&winClass))
-				{
-					fw::WapiPrintLastError(fw_log,RegisterClassA);
 					return false;
-				}
 			}
 
 			// note that a new window is being created
@@ -256,10 +234,7 @@ namespace fw
 								   NULL,NULL,NULL,NULL);
 
 			if (!m_hwnd)
-			{
-				fw::WapiPrintLastError(fw_log,CreateWindowA);
 				return false;
-			}
 
 			// the context owns this window
 			m_ownWindow = true;
@@ -287,10 +262,7 @@ namespace fw
 				result = wglMakeCurrent(m_hdc,NULL);    // Otherwise deactivate the current
 
 			if (!result) // Check for errors
-			{
-				fw::WapiPrintLastError(fw_log,wglMakeCurrent);
 				return false;
-			}
 
 			return true;
 		}
@@ -300,10 +272,8 @@ namespace fw
 		{
 			if (m_hdc && m_hglrc)
 				if (!SwapBuffers(m_hdc))
-				{
-					fw::WapiPrintLastError(fw_log,SwapBuffers);
 					return false;
-				}
+				
 			return true;
 		}
 
@@ -333,34 +303,26 @@ namespace fw
 			descriptor.dwLayerMask  = PFD_MAIN_PLANE;
 			descriptor.dwFlags      = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 			descriptor.iPixelType   = PFD_TYPE_RGBA;
-			descriptor.cColorBits   = m_settings.bitsPerPixel;
-			descriptor.cDepthBits   = m_settings.depthBits;
-			descriptor.cStencilBits = m_settings.stencilBits;
-			descriptor.cAlphaBits   = m_settings.bitsPerPixel==32 ? 8 : 0;
+			descriptor.cColorBits   = 32;
+			descriptor.cDepthBits   = 24;
+			descriptor.cStencilBits = 8;
+			descriptor.cAlphaBits   = 8;
 
 			// ask windows for a pixelformat's id that matches our requirements
 			int formatID = ChoosePixelFormat(m_hdc, &descriptor);
 			if (!formatID)
-			{
-				fw::WapiPrintLastError(fw_log,to find a suitable pixel format for device context -- cannot create OpenGL context);
 				return false;
-			}
+			
 
 			// Extract the depth and stencil bits from the chosen format
 			PIXELFORMATDESCRIPTOR obtainedFormat;
 			obtainedFormat.nSize    = sizeof(PIXELFORMATDESCRIPTOR);
 			obtainedFormat.nVersion = 1;
 			DescribePixelFormat(m_hdc, formatID, sizeof(PIXELFORMATDESCRIPTOR), &obtainedFormat);
-			m_settings.bitsPerPixel = obtainedFormat.cColorBits;
-			m_settings.depthBits    = descriptor.cDepthBits;
-			m_settings.stencilBits  = descriptor.cStencilBits;
 
 			// Set the chosen pixel format
 			if (!SetPixelFormat(m_hdc, formatID, &obtainedFormat))
-			{
-				fw::WapiPrintLastError(fw_log,to set pixel format for device context -- cannot create OpenGL context);
 				return false;
-			}
 
 			return true;
 		}

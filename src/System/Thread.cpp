@@ -14,11 +14,12 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/System/macros/OS.h>
 #include <FRONTIER/System/Thread.hpp>
 
 #ifdef FRONTIER_OS_WINDOWS
-	#include "Wapi/fmWapiPrintLastError.cpp"
+	#include "Wapi/fmWapiGetLastError.cpp"
 	#include "Wapi/WapiThread.cpp"
 	namespace fm
 	{
@@ -28,7 +29,6 @@
 		}
 	}
 #elif defined(FRONTIER_OS_LINUX)
-	#include "Posix/fmPosixPrintErrno.cpp"
 	#include "Posix/PosixThread.cpp"
 	namespace fm
 	{
@@ -46,68 +46,45 @@
 
 #ifndef FRONTIER_NO_THREAD
 
+#include <FRONTIER/System/NullPtr.hpp>
+
 namespace fm
 {
 	fm::TlsPtr<fm::Thread> Thread::m_currentThread;
 
 	/////////////////////////////////////////////////////////////
-	void Thread::cleanUp()
+	Thread::Thread() : m_impl(new priv::Thread)
 	{
-		// ask the thread to exit
-		requestExit();
-		
-		// wait for it
-		join();
-		
-		// delete the caller data
-		delete (fm::priv::ThreadFuntionCaller*)m_storage;
-		m_storage = NULL;
-		
-		// delete the implementation (it's destructor takes care of it)
-		delete (priv::Thread*)m_impl;
-		m_impl = NULL;
+
 	}
-	
-	/////////////////////////////////////////////////////////////
-	bool Thread::init(void *storage)
-	{
-		// clean start
-		cleanUp();
-		
-		// save the caller object
-		m_storage = storage;
-		
-		// create new implementation object
-		m_impl = new priv::Thread;
-		
-		if (!((priv::Thread*)m_impl)->create((fm::priv::ThreadFuntionCaller*)m_storage))
-		{
-			cleanUp();
-			return false;
-		}
-		
-		return true;
-	}
-	
-	/////////////////////////////////////////////////////////////
-	Thread::Thread() : m_impl(NULL),
-					   m_storage(NULL)
-	{
-		
-	}
-	
+
+    /////////////////////////////////////////////////////////////
+    Thread::Thread(const fm::Delegate<void,Thread *> &delegate) : m_impl(new priv::Thread)
+    {
+        create(delegate);
+    }
+
 	/////////////////////////////////////////////////////////////
 	Thread::~Thread()
 	{
-		cleanUp();
+	    requestExit();
+	    delete (priv::Thread*)m_impl;
 	}
+
+    /////////////////////////////////////////////////////////////
+    fm::Result Thread::create(const fm::Delegate<void,Thread *> &delegate)
+	{
+        requestExit();
+
+        join();
+
+        return ((priv::Thread*)m_impl)->setEntry(delegate,this);
+    }
 
 	/////////////////////////////////////////////////////////////
 	bool Thread::start()
 	{
-		if (m_impl)
-			return ((priv::Thread*)m_impl)->start();
-		return false;
+        return ((priv::Thread*)m_impl)->start();
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -119,40 +96,39 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	bool Thread::join()
 	{
-		if (m_impl)
-			return ((priv::Thread*)m_impl)->join();
-		return true;
+		return ((priv::Thread*)m_impl)->join();
 	}
 
 	/////////////////////////////////////////////////////////////
 	bool Thread::join(const Time &timeOut)
 	{
-		if (m_impl)
-			return ((priv::Thread*)m_impl)->join(timeOut);
-		return true;
+		return ((priv::Thread*)m_impl)->join(timeOut);
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool Thread::isExiting(const Thread *thread)
+	bool Thread::isExiting(const Thread &thread)
 	{
-		if (thread)
-			return priv::Thread::isExiting((priv::Thread*)(thread->getImpl()));
-		return false;
+		return priv::Thread::isExiting(*(priv::Thread*)(thread.getImpl()));
 	}
+
+    /////////////////////////////////////////////////////////////
+    void Thread::setCurrentThread(Thread *thread)
+    {
+        m_currentThread.set(thread);
+    }
 
 	/////////////////////////////////////////////////////////////
 	void Thread::requestExit()
 	{
-		if (m_impl)
-			((priv::Thread*)m_impl)->requestExit();
+		((priv::Thread*)m_impl)->requestExit();
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	void *Thread::getImpl()
 	{
 		return m_impl;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	const void *Thread::getImpl() const
 	{
@@ -162,9 +138,7 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	bool Thread::forceExit()
 	{
-		if (m_impl)
-			return ((priv::Thread*)m_impl)->forceExit();
-		return true;
+        return ((priv::Thread*)m_impl)->forceExit();
 	}
 }
 

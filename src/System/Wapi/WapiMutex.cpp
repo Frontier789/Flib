@@ -26,31 +26,29 @@ namespace fm
 		{
 			InitializeCriticalSection(&m_critSect);
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		Mutex::~Mutex()
 		{
 			DeleteCriticalSection(&m_critSect);
 		}
-		
+
 		/////////////////////////////////////////////////////////////
-		bool Mutex::lock()
+		void Mutex::lock()
 		{
 			EnterCriticalSection(&m_critSect);
-			return true;
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		bool Mutex::attemptLock()
 		{
 			return TryEnterCriticalSection(&m_critSect);
 		}
-		
+
 		/////////////////////////////////////////////////////////////
-		bool Mutex::unLock()
+		void Mutex::unLock()
 		{
 			LeaveCriticalSection(&m_critSect);
-			return true;
 		}
 	}
 }

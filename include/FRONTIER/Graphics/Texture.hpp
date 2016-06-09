@@ -29,6 +29,7 @@
 
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/System/Result.hpp>
 
 #define FRONTIER_TEXTURE
 
@@ -129,10 +130,10 @@ namespace fg
 		/// @param width The requested width
 		/// @param height The requested height
 		///
-		/// @return True if no error occured
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		virtual bool create(fm::Size width,fm::Size height);
+		virtual fm::Result create(fm::Size width,fm::Size height);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief (re)create the texture with given size
@@ -146,10 +147,10 @@ namespace fg
 		///
 		/// @param size The requested size
 		///
-		/// @return True if no error occured
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		bool create(const fm::vec2s &size);
+		fm::Result create(const fm::vec2s &size);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create a OpenGL texture from image
@@ -163,10 +164,10 @@ namespace fg
 		///
 		/// @param img The image to send to OpenGL
 		///
-		/// @return True if no error occured
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		virtual bool loadFromImage(const Image &img);
+		virtual fm::Result loadFromImage(const Image &img);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load a OpenGL texture from a file
@@ -183,10 +184,10 @@ namespace fg
 		///
 		/// @param filename The name of the image file
 		///
-		/// @return True if no error occured
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		bool loadFromFile(const std::string &filename);
+		fm::Result loadFromFile(const std::string &filename);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the repeate flag
@@ -242,10 +243,10 @@ namespace fg
 		/// @param w Width of the target rectangle
 		/// @param h Height of the target rectangle
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		virtual reference update(const Color *pixels,fm::Size x,fm::Size y,fm::Size w,fm::Size h);
+		virtual fm::Result update(const Color *pixels,fm::Size x,fm::Size y,fm::Size w,fm::Size h);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the content of the texture
@@ -258,10 +259,10 @@ namespace fg
 		/// @param y Y coordinate in the texture where the pixels will be put
 		/// @param size Size of the target rectangle
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Color *pixels,fm::Size x,fm::Size y,fm::vec2s size);
+		fm::Result update(const Color *pixels,fm::Size x,fm::Size y,fm::vec2s size);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the content of the texture
@@ -274,10 +275,10 @@ namespace fg
 		/// @param w Width of the target rectangle
 		/// @param h Height of the target rectangle
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Color *pixels,fm::vec2s pos,fm::Size w,fm::Size h);
+		fm::Result update(const Color *pixels,fm::vec2s pos,fm::Size w,fm::Size h);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the content of the texture
@@ -289,10 +290,10 @@ namespace fg
 		/// @param pos coordinate in the texture where the pixels will be put
 		/// @param size Size of the target rectangle
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Color *pixels,fm::vec2s pos,fm::vec2s size);
+		fm::Result update(const Color *pixels,fm::vec2s pos,fm::vec2s size);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the content of the texture
@@ -305,10 +306,10 @@ namespace fg
 		///
 		/// @param pixels Pointer to the new color values
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Color *pixels);
+		fm::Result update(const Color *pixels);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the content of the texture
@@ -317,10 +318,10 @@ namespace fg
 		///
 		/// @param image The image to blit
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Image &image);
+		fm::Result update(const Image &image);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the content of the texture
@@ -330,10 +331,10 @@ namespace fg
 		/// @param image The image to blit
 		/// @param pos The position where the image will be blit
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Image &image,fm::vec2s pos);
+		fm::Result update(const Image &image,fm::vec2s pos);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the content of the texture
@@ -344,10 +345,10 @@ namespace fg
 		/// @param x The x coordinate where the image will be blit
 		/// @param y The y coordinate where the image will be blit
 		///
-		/// @return reference to itself
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Image &image,unsigned x,unsigned y);
+		fm::Result update(const Image &image,unsigned x,unsigned y);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy the content of the texture to client-memory
@@ -355,12 +356,13 @@ namespace fg
 		/// If available an FBO will be used to retrieve the data
 		/// if not glGetTexImage will be used (if available)
 		/// if neither of the above then a white fg::Image (same size as texture) is returned
-		/// and an error is prompted to fg_log
-		///
+		/// 
+		/// @param error The error returned
+		/// 
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		Image copyToImage() const;
+		Image copyToImage(fm::Error *error = fm::nullPtr) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the texture for usage
@@ -368,8 +370,10 @@ namespace fg
 		/// This function uses the GL_TXTURE_2D target
 		/// This function does not modify the texture matrix
 		///
+		/// @return The error-state of the function
+		///
 		/////////////////////////////////////////////////////////////
-		void bind() const;
+		fm::Result bind() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a texture for usage
@@ -382,8 +386,10 @@ namespace fg
 		///
 		/// @param texture The texture to be bound (or NULL)
 		///
+		/// @return The error-state of the function
+		///
 		/////////////////////////////////////////////////////////////
-		static void bind(const Texture *texture);
+		static fm::Result bind(const Texture *texture);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a texture for usage
@@ -393,8 +399,10 @@ namespace fg
 		///
 		/// @param texture The texture to be bound (or NULL)
 		///
+		/// @return The error-state of the function
+		///
 		/////////////////////////////////////////////////////////////
-		static void bind(const Texture &texture);
+		static fm::Result bind(const Texture &texture);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the pixel-to-unit transformation for the texture

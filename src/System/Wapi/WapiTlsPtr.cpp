@@ -15,9 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/Wapi/WapiTlsPtr.hpp>
-#include <FRONTIER/System/macros/API.h>
-#include <FRONTIER/System/FmLog.hpp>
-#include "fmWapiPrintLastError.hpp"
+#include <FRONTIER/System/NullPtr.hpp>
 #include <windows.h>
 
 namespace fm
@@ -28,21 +26,20 @@ namespace fm
 		{
 			return *((DWORD*)data);
 		}
-		
+
 		const DWORD &getID(const void *data)
 		{
 			return *((DWORD*)data);
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		TlsPtr::TlsPtr() : m_id(new DWORD)
 		{
 			getID(m_id) = TlsAlloc();
 			if (!isValid())
 			{
-				fm::WapiPrintLastError(fm::fm_log,TlsAlloc);
 				delete (DWORD*)m_id;
-				m_id = NULL;
+				m_id = fm::nullPtr;
 			}
 		}
 
@@ -50,9 +47,8 @@ namespace fm
 		TlsPtr::~TlsPtr()
 		{
 			if (m_id)
-				if (!TlsFree(getID(m_id)))
-					fm::WapiPrintLastError(fm::fm_log,TlsFree);
-			
+				TlsFree(getID(m_id));
+
 			delete (DWORD*)m_id;
 		}
 
@@ -61,29 +57,26 @@ namespace fm
 		{
 			if (!isValid())
 				return false;
-			
+
 			if (!TlsSetValue(getID(m_id),ptr))
-			{
-				fm::WapiPrintLastError(fm::fm_log,TlsSetValue);
 				return false;
-			}
-			
-			return true;	
+
+			return true;
 		}
 
 		/////////////////////////////////////////////////////////////
 		void *TlsPtr::getPtr() const
 		{
 			if (!isValid())
-				return NULL;
-			
+				return fm::nullPtr;
+
 			return TlsGetValue(getID(m_id));
 		}
 
 		/////////////////////////////////////////////////////////////
 		bool TlsPtr::isValid() const
 		{
-			return m_id != NULL;
+			return m_id != fm::nullPtr;
 		}
 	}
 }

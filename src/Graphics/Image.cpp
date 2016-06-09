@@ -16,11 +16,11 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
-#include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
+#include <FRONTIER/System/Error.hpp>
 #include <FRONTIER/System/Rect.hpp>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -98,13 +98,14 @@ namespace fg
 		{
 			m_sizeW = width;
 			m_sizeH = height;
-			m_pixels.resize(0),
+			m_pixels = std::vector<Color>();
 			m_pixels.resize(width*height,color);
 		}
 		else
 			m_sizeW = 0,
 			m_sizeH = 0,
-			m_pixels.clear();
+			m_pixels = std::vector<Color>();
+
 		return *this;
 	}
 
@@ -128,7 +129,8 @@ namespace fg
 		else
 			m_sizeW = 0,
 			m_sizeH = 0,
-			m_pixels.clear();
+			m_pixels = std::vector<Color>();
+
 		return *this;
 	}
 
@@ -145,6 +147,7 @@ namespace fg
 	{
 		create(copy.getSize());
 		copyFrom(copy,0,0,fm::rect2s(0,0,0,0));
+
 		return *this;
 	}
 
@@ -154,6 +157,7 @@ namespace fg
 	{
 		create(sourceRect.area() ? sourceRect.size : fm::vec2s(copy.getSize())-sourceRect.pos);
 		copyFrom(copy,0,0,sourceRect);
+
 		return *this;
 	}
 
@@ -273,10 +277,10 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	bool Image::loadFromFile(const std::string &filename)
+	fm::Result Image::loadFromFile(const std::string &filename)
 	{
 		// empty current pixels
-		m_pixels.clear();
+		m_pixels = std::vector<Color>();
 
 		// ask stbi to load the file
 		int width, height, channels;
@@ -294,20 +298,17 @@ namespace fg
 			// let stbi free its used memory
 			stbi_image_free(ptr);
 
-			return true;
+			return fm::Result();
 		}
-		else
-		{
-			fg_log << "Failed to load image \"" << filename << "\". Reason : " << stbi_failure_reason() << std::endl;
-			return false;
-		}
+
+		return fm::Error("IOError","FileNotFound",filename + " couldn't be opened for reading","Image.loadFromFile",__FILE__,__LINE__);
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool Image::loadFromMemory(const void *buffer,fm::Size byteCount)
+	fm::Result Image::loadFromMemory(const void *buffer,fm::Size byteCount)
 	{
 		// empty current pixels
-		m_pixels.clear();
+		m_pixels = std::vector<Color>();
 
 		// ask stbi to load the file
 		int width, height, channels;
@@ -325,13 +326,10 @@ namespace fg
 			// let stbi free its used memory
 			stbi_image_free(ptr);
 
-			return true;
+			return fm::Result();
 		}
-		else
-		{
-			fg_log << "Failed to load image from memory Reason : " << stbi_failure_reason() << std::endl;
-			return false;
-		}
+
+		return fm::Error("STBIError","stbi_failure","Iternal error with stbi: "+std::string(stbi_failure_reason()),"Image.loadFromMemory",__FILE__,__LINE__);
 	}
 
 
@@ -405,6 +403,7 @@ namespace fg
 		Cx(m_sizeW/2.f)
 			Cy(m_sizeH)
 				std::swap(m_pixels[x+y*m_sizeW],m_pixels[(m_sizeW-x-1)+y*m_sizeW]);
+
 		return *this;
 	}
 
@@ -415,12 +414,13 @@ namespace fg
 		Cx(m_sizeW)
 			Cy(m_sizeH/2.f)
 				std::swap(m_pixels[x+y*m_sizeW],m_pixels[x+(m_sizeH-y-1)*m_sizeW]);
+
 		return *this;
 	}
 
 
 	////////////////////////////////////////////////////////////
-	bool Image::saveToFile(const std::string &filename) const
+	fm::Result Image::saveToFile(const std::string &filename) const
 	{
 		// if the image is valid
 		if (!m_pixels.empty() && (m_sizeW > 0) && (m_sizeH > 0))
@@ -428,52 +428,57 @@ namespace fg
 			// get extension
 			std::string extension = getExtension(filename);
 
+			int error = 0;
+
 			if (extension == "bmp")
 			{
 				// BMP format
 				if (stbi_write_bmp(filename.c_str(), m_sizeW, m_sizeH, 4, &m_pixels[0]))
-					return true;
+					return fm::Result();
+				else
+					error = 1;
 			}
 			else if (extension == "tga")
 			{
 				// TGA format
 				if (stbi_write_tga(filename.c_str(), m_sizeW, m_sizeH, 4, &m_pixels[0]))
-					return true;
+					return fm::Result();
+				else
+					error = 1;
 			}
-			else if(extension == "png")
+			else if (extension == "jpg" || extension == "jpeg") // its a bit more messy
 			{
-				// PNG format
-				if (stbi_write_png(filename.c_str(), m_sizeW, m_sizeH, 4, &m_pixels[0],0))
-					return true;
-			}
-			else if(extension == "jpg" || extension == "jpeg") // its a bit more messy
-			{
-				bool success = jpge::compress_image_to_jpeg_file(filename.c_str(), m_sizeW, m_sizeH, 4, (unsigned char *)&m_pixels[0]);
-				if (!success)
-				{
-					fg_log << "jpge failed to save " << filename << std::endl;
-					return false;
-				}
-				return true;
+				if (jpge::compress_image_to_jpeg_file(filename.c_str(), m_sizeW, m_sizeH, 4, (unsigned char *)&m_pixels[0]))
+					return fm::Result();
+				else
+					error = 2;
 			}
 			else
 			{
-				std::string pngfilename = filename+".png";
+				std::string pngfilename = filename;
 
-				// Unknown extension, output it as png
-				fg_log << "Unknown extension \"" << extension <<"\" changed output name to "<<pngfilename<<std::endl;
+				if (extension != "png") // unkown extension
+					pngfilename += ".png";
 
+				// PNG format
 				if (stbi_write_png(pngfilename.c_str(), m_sizeW, m_sizeH, 4, &m_pixels[0],0))
-					return true;
+					return fm::Result();
+				else
+					error = 1;
 			}
+
+			if (error == 1)
+				return fm::Error("STBIError","stbi_failure","Iternal error with stbi: "+std::string(stbi_failure_reason()),"Image.saveToFile",__FILE__,__LINE__);
+
+			if (error == 2)
+				return fm::Error("STBIError","stbi_failure","Iternal error with stbi: "+std::string(stbi_failure_reason()),"Image.saveToFile",__FILE__,__LINE__);
 		}
 
-		fg_log << filename << " couldn't be saved because it's empty." << std::endl;
-		return false;
+		return fm::Error("ImageError","SavingEmptyImage","Image couldn't be saved because it's empty ("+filename+")","Image.saveToFile",__FILE__,__LINE__);
 	}
 
 	/////////////////////////////////////////////////////////////
-	unsigned char *Image::saveToMemory(fm::Size &byteCount,const std::string &ext) const
+	fm::Uint8 *Image::saveToMemory(fm::Size &byteCount,const std::string &ext) const
 	{
 		// if the image is valid
 		if (!m_pixels.empty() && (m_sizeW > 0) && (m_sizeH > 0))
@@ -499,8 +504,9 @@ namespace fg
 						ret[i] = data[i];
 					return ret;
 				}
+
 				byteCount = 0;
-				return NULL;
+				return fm::nullPtr;
 			}
 			else if(extension == "png")
 			{
@@ -511,14 +517,16 @@ namespace fg
 					byteCount = len;
 					return png;
 				}
+
 				byteCount = 0;
 				if (png)
 					delete[] png;
-				return NULL;
+
+				return fm::nullPtr;
 			}
 			else if(extension == "jpg" || extension == "jpeg") // its a bit more messy
 			{
-				unsigned char *buffer = NULL;
+				unsigned char *buffer = fm::nullPtr;
 				fm::Size allBytes = m_sizeW*m_sizeH*sizeof(fg::Color);
 				byteCount = allBytes/16;
 				bool success = false;
@@ -533,24 +541,22 @@ namespace fg
 						byteCount*=2;
 					}
 				}
+
 				if (!success)
 				{
-					fg_log << "jpge failed to save to memory" << std::endl;
 					byteCount = 0;
-					return NULL;
+					return fm::nullPtr;
 				}
+
 				unsigned char *ret = new unsigned char[byteCount];
 				memcpy(ret,buffer,byteCount);
 				delete[] buffer;
 				return ret;
 			}
-
-			// Unknown extension
-			fg_log << "Unknown extension \"" << ext <<"\""<<std::endl;
 		}
 
 		byteCount = 0;
-		return NULL;
+		return fm::nullPtr;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -587,15 +593,28 @@ namespace fg
 	{
 		return scale(size.w,size.h,linearFilter);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	Image::reference Image::swap(Image &img)
+	{
+		m_pixels.swap(img.m_pixels);
+		
+		fm::Size tmp;
+		
+		tmp = m_sizeW; m_sizeW = img.m_sizeW; img.m_sizeW = tmp;
+		tmp = m_sizeH; m_sizeH = img.m_sizeH; img.m_sizeH = tmp;
+		
+		return *this;
+	}
 
 	/////////////////////////////////////////////////////////////
-	std::vector<Image> Image::loadMultipleImagesFromFile(const std::string &file)
+	std::vector<Image> Image::loadMultipleImagesFromFile(const std::string &file,fm::Error *error)
 	{
 		std::ifstream in(file.c_str(),std::ios_base::binary);
 
 		if (!in)
 		{
-			fg_log << "Error reading file " << file << std::endl;
+			if (error) *error = fm::Error("IOError","FileNotFound",file + " couldn't be opened for reading","Image.loadMultipleImagesFromFile",__FILE__,__LINE__);
 			return std::vector<Image>();
 		}
 
@@ -608,47 +627,45 @@ namespace fg
 		str.assign((std::istreambuf_iterator<char>(in)),
 					std::istreambuf_iterator<char>());
 
-		std::string error;
+		std::string errors;
 
-		std::vector<Image> ret = Ico::getImages((const fm::Uint8*)(fm::UintPtr)&str[0],str.length()*sizeof(str[0]),error);
-		if (error != std::string())
-			fg_log << "Error loading " << file << " : " << error << std::endl;
+		std::vector<Image> ret = Ico::getImages((const fm::Uint8*)(fm::UintPtr)&str[0],str.length()*sizeof(str[0]),errors);
+		if (errors != std::string() && error)
+			*error = fm::Error("ImageError","IcoError","Error loading " + file + " : " + errors,"Image.loadMultipleImagesFromFile",__FILE__,__LINE__);
 
 		return ret;
 	}
 
 
 	/////////////////////////////////////////////////////////////
-	std::vector<Image> Image::loadMultipleImagesFromMemory(const fm::Uint8 *data,fm::Size byteCount,const std::string &ext)
+	std::vector<Image> Image::loadMultipleImagesFromMemory(const fm::Uint8 *data,fm::Size byteCount,const std::string &ext,fm::Error *error)
 	{
 		(void)ext;
 
-		std::string error;
+		std::string errors;
 
-		std::vector<Image> ret = Ico::getImages(data,byteCount,error);
-		if (error != std::string())
-			fg_log << "Error loading icon : " << error << std::endl;
+		std::vector<Image> ret = Ico::getImages(data,byteCount,errors);
+		if (errors != std::string() && error)
+			*error = fm::Error("ImageError","IcoError","Error reading icon " + errors,"Image.loadMultipleImagesFromMemory",__FILE__,__LINE__);
 
 		return ret;
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool Image::saveMultipleImagesToFile(Image const* const *images,fm::Size imageCount,const std::string &file)
+	fm::Result Image::saveMultipleImagesToFile(Image const* const *images,fm::Size imageCount,const std::string &file)
 	{
 		if (!imageCount)
-			return false;
+			return fm::Result("ImageError","SavingZeroImages","Attempt to save 0 images to icon file " + file,"Image.saveMultipleImagesToFile",__FILE__,__LINE__);
 
 		std::ofstream ki(file.c_str(),std::ios_base::binary);
 
 		if (!ki)
-		{
-			fg_log << "Error writing file " << file << std::endl;
-			return false;
-		}
+			return fm::Error("IOError","FileNotWritable",file + " couldn't be opened for writing","Image.saveMultipleImagesToFile",__FILE__,__LINE__);
+
 
 		Ico::writeImages(ki,images,imageCount);
 
-		return true;
+		return fm::Result();
 	}
 
 

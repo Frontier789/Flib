@@ -16,7 +16,6 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Xlib/XlibWindow.hpp>
 #include <FRONTIER/Window/Event.hpp>
-#include <FRONTIER/Window/FwLog.hpp>
 
 #define XK_MISCELLANY
 #include <X11/keysymdef.h>
@@ -49,7 +48,7 @@ namespace fw
 
 			operator bool() const
 			{
-				return disp!=NULL;
+				return disp != NULL;
 			}
 		};
 		static const priv::XConnection xCon;

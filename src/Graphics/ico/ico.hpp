@@ -224,17 +224,7 @@ namespace Ico
 	}
 
 	void extractImage(const fm::Uint8 *buffer,Entry &entry,fm::Size &realBitsCount,fg::Image &ret)
-	{/**
-		fg::fg_log << "found icon with " << std::endl;
-		fg::fg_log << "width = " << (int)entry.width << std::endl;
-		fg::fg_log << "height = " << (int)entry.height  << std::endl;
-		fg::fg_log << "colorCount = " << (int)entry.colorCount << std::endl;
-		fg::fg_log << "reserved   = " << (int)entry.reserved   << std::endl;
-		fg::fg_log << "planes     = " << (int)entry.planes     << std::endl;
-		fg::fg_log << "bpp        = " << (int)entry.bpp        << std::endl;
-		fg::fg_log << "byteCount  = " << (int)entry.byteCount  << std::endl;
-		fg::fg_log << "offsetInFile = " << (int)entry.offsetInFile  << std::endl;*/
-		
+	{
 		const fm::Uint8 *begin = buffer+entry.offsetInFile;
 		
 		// find out if its a png
@@ -256,16 +246,11 @@ namespace Ico
 		
 		fm::Uint16 width = /*bmpHeader.width*/entry.width ? entry.width : 256;
 		fm::Uint16 height = /*bmpHeader.height*/entry.height ? entry.height : 256;
-		/**
-		fg::fg_log << "w1 = " << width  << std::endl;
-		fg::fg_log << "h1 = " << height << std::endl;
-*/
+
 		ret.create(width,height);
 
 		realBitsCount = (bmpHeader.bitCount ? bmpHeader.bitCount : realBitsCount);
-		/**
-		fg::fg_log << "bitCount = " << realBitsCount << std::endl;
-*/
+
 		const fm::Uint8 *cursor = buffer+entry.offsetInFile+40;
 
 		// rgba + vertical swap

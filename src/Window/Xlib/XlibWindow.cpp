@@ -15,10 +15,16 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Xlib/XlibWindow.hpp>
-#include <FRONTIER/Graphics/Image.hpp>
+#include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/Graphics/Image.hpp> 
 #include <FRONTIER/Window/Window.hpp>
-#include <FRONTIER/Window/FwLog.hpp>
-#include <algorithm>
+
+
+#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+#include <FRONTIER/System/Mutex.hpp>
+#endif
+
+#include <GL/glx.h>
 #include <string>
 #include <vector>
 
@@ -90,6 +96,65 @@ std::vector<int> getPropertyInts(Display *disp,Window win,Atom property,Atom rty
 
 namespace fw
 {
+	namespace priv
+	{
+		bool getFBConfig(Display *disp,void *fbconfptr,bool window)
+		{
+			int glx_major, glx_minor;
+		 
+			// FBConfigs were added in GLX version 1.3.
+			if (!glXQueryVersion(disp, &glx_major, &glx_minor) || 
+					 ((glx_major == 1) && (glx_minor < 3)) || (glx_major < 1))
+			{
+				return false;
+			}
+			
+			
+			// GLX attributes
+			int attributes[] =
+			{
+				GLX_DOUBLEBUFFER     , True,
+				GLX_X_RENDERABLE     , True,
+				GLX_DRAWABLE_TYPE    , window ? GLX_WINDOW_BIT : GLX_PIXMAP_BIT,
+				GLX_RENDER_TYPE      , GLX_RGBA_BIT,
+				GLX_X_VISUAL_TYPE    , GLX_TRUE_COLOR,
+				GLX_RED_SIZE         , 8,
+				GLX_GREEN_SIZE       , 8,
+				GLX_BLUE_SIZE        , 8,
+				GLX_ALPHA_SIZE       , 8,
+				GLX_DEPTH_SIZE       , 24,
+				GLX_STENCIL_SIZE     , 8,
+				None
+			};
+
+			int count;
+			// get matching context settings
+			GLXFBConfig *fbConfigs = glXChooseFBConfig(disp,DefaultScreen(disp),attributes,&count);
+
+			if (!fbConfigs)
+			{
+				// disable double-buffer and retry
+				attributes[1] = False; 
+				fbConfigs = glXChooseFBConfig(disp,DefaultScreen(disp),attributes,&count);
+
+				if (!fbConfigs)
+					return false;
+				
+			}
+			
+			
+			*((GLXFBConfig*)fbconfptr) = fbConfigs[0];
+
+			// Free FBConfigs
+			XFree(fbConfigs);
+			
+			return true;
+		}
+		
+		void regXWin(::Window win);
+		void unregXWin(::Window win);
+	}
+	
 	namespace Xlib 
 	{
 		/////////////////////////////////////////////////////////////		
@@ -410,10 +475,7 @@ namespace fw
 						if (status == XLookupKeySym || status == XLookupBoth || status == XLookupChars)
 							ev.text.utf8character = fm::String::fromUtf8(buf)[0];
 						else
-						{
-							fw::fw_log<<"oh god "<<status<<std::endl;
 							ev.text.utf8character = (fm::Uint32)buf[0];
-						}
 						
 						postEvent(ev);
 					}
@@ -473,11 +535,6 @@ namespace fw
 					XConvertSelection(m_disp,m_xdndAtoms.XdndSelection,m_supportUriList ? m_uri_listAtom : XA_STRING,
 									  m_xdndAtoms.exchangeAtom,m_win,CurrentTime);
 				}
-/*
-				char *name = XGetAtomName(m_disp, xev.xclient.message_type);
-
-				fw_log << name << " happened" << std::endl;
-				XFree(name);*/
 			}
 
 			// our window is getting a selection
@@ -494,8 +551,8 @@ namespace fw
 			    	ev.drop.x = p.x;
 			    	ev.drop.y = p.y;
 
-			    	std::size_t length = msg.length();
-			    	for (std::size_t i=0;i<length;i++)
+			    	fm::Size length = msg.length();
+			    	for (fm::Size i=0;i<length;i++)
 			    	{
 			    		if (msg[i] == '\r') continue;
 			    		if (msg[i] == '\n')
@@ -517,8 +574,6 @@ namespace fw
 
 			    	postEvent(ev);
 			    }
-
-			    // fw_log << "msg = " << msg << std::endl;
 			    
 			    // reply with finish
 			    XEvent reply;
@@ -540,15 +595,10 @@ namespace fw
 			if (m_disp) 
 				return true;
 
-			m_disp = XOpenDisplay(NULL);
+			m_disp = priv::getGlobDisp();
 
 			if (!m_disp)
-			{
-				fw_log << "XOpenDisplay failed" << std::endl;
 				return false;
-			}
-
-			m_rootWin = DefaultRootWindow(m_disp);
 
 			return true;
 		}
@@ -571,7 +621,8 @@ namespace fw
 						   m_emptyCursor(None),
 						   m_parent(NULL),
 						   m_eventCallback(NULL),
-						   m_xic(XIC())
+						   m_xic(XIC()),
+						   m_cmap(None)
 		{
 
 		}
@@ -605,7 +656,7 @@ namespace fw
 			close();
 
 			if (m_disp)
-				XCloseDisplay(m_disp);
+				priv::freeGlobDisp(m_disp);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -619,10 +670,33 @@ namespace fw
 			
 			m_parent = parent;
 
+			GLXFBConfig fbConf;
+			if (!priv::getFBConfig(m_disp,&fbConf,true))
+				return false;
+
+			// Get a visual
+			XVisualInfo *vi = glXGetVisualFromFBConfig(m_disp, fbConf);
+			
+			m_rootWin = RootWindow(m_disp, vi->screen);
+
+			// Creating colormap
+			m_cmap = XCreateColormap(m_disp,m_rootWin,vi->visual, AllocNone);
+			
+			
+
 			// ask X to create a window
 			XSetWindowAttributes wa;                                                     
 			wa.override_redirect = (style & fw::Window::Menu) ? True : False;  
-			m_win = XCreateWindow(m_disp,container ? container : m_rootWin,x,y,w,h,5,CopyFromParent,InputOutput,CopyFromParent,CWOverrideRedirect,&wa);
+			wa.colormap          = m_cmap;
+			wa.background_pixmap = None;
+			wa.border_pixel      = 0;
+			
+			m_win = XCreateWindow(m_disp,container ? container : m_rootWin,
+								  x,y,w,h,0,vi->depth,InputOutput,vi->visual,
+								  CWBorderPixel|CWColormap|CWOverrideRedirect,&wa);
+			
+			// Free visual info
+			XFree(vi);
 			
 			if (m_win != (::Window)NULL)
 			{
@@ -720,24 +794,22 @@ namespace fw
 				
 				XIM xim = XOpenIM(m_disp, NULL, NULL, NULL);
 				if (!xim)
-				{
-					fw::fw_log << "XOpenIM failed"<<std::endl;
 				    return false;
-				}
+				
 
 				m_xic = XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, m_win, NULL);
 				if (!m_xic)
-				{
-					fw::fw_log << "XCreateIC failed"<<std::endl;
 				    return false;
-				}
-
+				  
 				XSetICFocus(m_xic);
 				
+				priv::regXWin(m_win);
 				
 				return true;
 			}
-			
+			else
+				XFreeColormap(m_disp, m_cmap);
+				
 			return false;
 		}
 
@@ -870,9 +942,14 @@ namespace fw
 				// unregister this from parent's children
 				if (m_parent)
 				{
-					std::deque<Xlib::Window *>::iterator it = std::find(m_parent->m_children.begin(),m_parent->m_children.end(),this);
-					if (it != m_parent->m_children.end())
-						m_parent->m_children.erase(it);
+					for (std::deque<Xlib::Window *>::iterator it = m_parent->m_children.begin();it != m_parent->m_children.end();++it)
+					{
+						if (*it == this)
+						{
+							m_parent->m_children.erase(it);
+							break;
+						}
+					}
 					
 					m_parent = NULL;
 				}
@@ -880,8 +957,11 @@ namespace fw
 				// delete cursor
 				if (m_emptyCursor != None)
 					XFreeCursor(m_disp,m_emptyCursor);
+				
+				priv::unregXWin(m_win);
 
 				XDestroyWindow(m_disp,m_win);
+				XFreeColormap(m_disp, m_cmap);
 				XFlush(m_disp);
 				m_opened = false;
 
@@ -1138,30 +1218,49 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		void Window::setIcon(const fg::Image &icon)
 		{
-			std::vector<fg::Color> *iconPixels = (std::vector<fg::Color> *)&icon;
-				
-			fm::Size width  =  *((fm::Size *)(iconPixels+1));
-			fm::Size height = *(((fm::Size *)(iconPixels+1))+1);
-			fm::vec2s size(width,height);
+			if (!isOpen()) return;
 			
-			// convert RGBA to BGRA
-			fg::Color *BGRApixels = new fg::Color[size.w*size.h];
-			for (fm::Size i=0;i<size.w*size.h;i++)
-				BGRApixels[i] = iconPixels->at(i),
-				std::swap(BGRApixels[i].r,BGRApixels[i].b);
-
+			// copy information
+			const fg::Color *rpixels = icon.getPixelsPtr();
+			fm::vec2s size = icon.getSize();
+			
+			fg::Color *Modpixels = new fg::Color[size.area()];
+			
+			// change to argb
+			for (fm::Size i = 0;i < size.area();++i)
+				Modpixels[i] = fg::Color(rpixels[i].a,rpixels[i].r,rpixels[i].g,rpixels[i].b);
+			
+			fm::Size propsize = 2 + size.area();
+			long *propdata = new long[propsize * sizeof(long)];
+			
+			propdata[0] = size.w;
+			propdata[1] = size.h;
+			
+			for (fm::Size i = 0;i < size.area();++i)
+				propdata[2 + i] = ((fm::Uint32*)rpixels)[i];
+			
+			XChangeProperty(m_disp,m_win,XInternAtom(m_disp,"_NET_WM_ICON",False),XA_CARDINAL,32,
+							PropModeReplace,(unsigned char *)propdata, propsize);
+			
+			delete[] propdata;
+			
+			
+			// change to bgra
+			for (fm::Size i = 0;i < size.area();i++)
+				Modpixels[i] = fg::Color(rpixels[i].b,rpixels[i].g,rpixels[i].r,rpixels[i].a);
+			
 			// obtain information about X setup
 			int screen         = DefaultScreen(m_disp); 
 			Visual *visual     = DefaultVisual(m_disp,screen);
 			unsigned int depth = DefaultDepth(m_disp,screen);
 			
 			// create an image
-			XImage *xIcon      = XCreateImage(m_disp,visual,depth,ZPixmap,0,(char*)BGRApixels,size.w,size.h,32,0);
+			XImage *xIcon = XCreateImage(m_disp,visual,depth,ZPixmap,0,(char*)Modpixels,size.w,size.h,32,0);
+			// delete[] Modpixels;
+			
 			if (!xIcon)
-			{
-				fw_log << "XCreateImage failed" << std::endl;
 				return;
-			}
+			
 
 			// convert image to pixmap
 			Pixmap xpixmap = XCreatePixmap(m_disp,RootWindow(m_disp,screen),size.w,size.h,depth);
@@ -1174,7 +1273,7 @@ namespace fw
 			// create bitmask
 			fm::Size pitch = (size.w + 7) / 8;
 			fm::Uint8 *pixelMask = new fm::Uint8[pitch * size.h];
-			fm::Uint8 *pixels = (fm::Uint8*)BGRApixels;
+			fm::Uint8 *pixels = (fm::Uint8*)Modpixels;
 			for (fm::Size x=0;x<size.h;x++)
 				for (fm::Size y=0;y<pitch;y++)
 					for (fm::Size k = 0; k < 8; k++)
@@ -1188,7 +1287,7 @@ namespace fw
 			Pixmap maskPixmap = XCreatePixmapFromBitmapData(m_disp,m_win,(char*)&pixelMask[0],size.w,size.h, 1, 0, 1);
 
 			// finally set the icon
-			XWMHints* hints = XAllocWMHints();
+			XWMHints* hints    = XAllocWMHints();
 			hints->flags       = IconPixmapHint | IconMaskHint;
 			hints->icon_pixmap = xpixmap;
 			hints->icon_mask   = maskPixmap;

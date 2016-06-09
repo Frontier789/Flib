@@ -20,19 +20,19 @@ namespace fm
 	/// Constructors //////////////////////////////////////////////////////////
 	Time::Time() : m_amount(0)
 	{
-		
+
 	}
 
 	/////////////////////////////////////////////////////////////
 	Time::Time(const double &value,MeasureType type) : m_amount(value*(long double)type)
 	{
-		
+
 	}
 
 	/////////////////////////////////////////////////////////////
 	Time::Time(const Time &copy) : m_amount(copy.m_amount)
 	{
-		
+
 	}
 
 	/// Functions //////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ namespace fm
 	{
 		return m_amount/1000.0/1000.0;
 	}
-	
+
 
 	/////////////////////////////////////////////////////////////
 	double Time::asMicsecs() const
@@ -72,6 +72,25 @@ namespace fm
 		return m_amount/1000.0/1000.0;
 	}
 
+
+	/////////////////////////////////////////////////////////////
+	double Time::Ms() const
+	{
+		return m_amount;
+	}
+
+	/////////////////////////////////////////////////////////////
+	double Time::ms() const
+	{
+		return m_amount/1000.0;
+	}
+
+	/////////////////////////////////////////////////////////////
+	double Time::s() const
+	{
+		return m_amount/1000.0/1000.0;
+	}
+
 	/////////////////////////////////////////////////////////////
 	const Time Time::Zero = Time(0,Microseconds);
 
@@ -86,107 +105,113 @@ namespace fm
 	{
 		return microseconds(left.asMicroseconds()-right.asMicroseconds());
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Time operator-(const Time &time)
 	{
 		return microseconds(time.asMicroseconds()*-1.0);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Time operator*(const Time &left,const double &right)
 	{
 		return microseconds(left.asMicroseconds()*right);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Time operator*(const double &left,const Time &right)
 	{
 		return microseconds(left*right.asMicroseconds());
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Time operator/(const Time &left,const double &right)
 	{
 		return microseconds(left.asMicroseconds()/right);
 	}
-	
+
+	/////////////////////////////////////////////////////////////
+	double operator/(const Time &left,const Time &right)
+	{
+		return left.asMicroseconds()/right.asMicroseconds();
+	}
+
 	/////////////////////////////////////////////////////////////
 	Time &operator+=(Time &left,const Time &right)
 	{
 		*((long*)&left) += right.asMicroseconds();
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Time &operator-=(Time &left,const Time &right)
 	{
 		*((long*)&left) -= right.asMicroseconds();
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Time &operator*=(Time &left,const double &right)
 	{
 		*((long*)&left) *= right;
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Time &operator/=(Time &left,const double &right)
 	{
 		*((long*)&left) /= right;
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator==(const Time &left,const Time &right)
 	{
 		return (left.asMicroseconds()==right.asMicroseconds());
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator!=(const Time &left,const Time &right)
 	{
 		return (left.asMicroseconds()!=right.asMicroseconds());
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator< (const Time &left,const Time &right)
 	{
 		return (left.asMicroseconds()<right.asMicroseconds());
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator<=(const Time &left,const Time &right)
 	{
 		return (left.asMicroseconds()<=right.asMicroseconds());
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator> (const Time &left,const Time &right)
 	{
 		return (left.asMicroseconds()>right.asMicroseconds());
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	bool operator>=(const Time &left,const Time &right)
 	{
 		return (left.asMicroseconds()>=right.asMicroseconds());
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Time microseconds(double Msecs)
 	{
 		return Time(Msecs,Time::Microseconds);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Time milliseconds(double msecs)
 	{
 		return Time(msecs,Time::Milliseconds);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Time seconds(double secs)
 	{

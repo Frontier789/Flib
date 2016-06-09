@@ -181,6 +181,17 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
+	/// @brief Overload of unary operator -
+	///
+	/// @param angle The operand (Angle)
+	///
+	/// @return Result of the negation
+	///
+	/////////////////////////////////////////////////////////////
+	Angle FRONTIER_API operator-(const Angle &angle);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::Angle
 	/// @brief Overload of binary operator *
 	///
 	/// @param left Left operand (Angle)

@@ -840,7 +840,7 @@ namespace fm
 		/// @return The look-at matrix
 		///
 		/////////////////////////////////////////////////////////////
-		matrix<4,4,float> lookAt(const vec3 &cam_pos,const vec3 &target_pos,				   StorageOrder storeOrder=RowMajor);
+		matrix<4,4,float> lookAt(const vec3 &cam_pos,const vec3 &target_pos,StorageOrder storeOrder=RowMajor);
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix

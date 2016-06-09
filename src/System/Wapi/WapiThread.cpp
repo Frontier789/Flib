@@ -15,66 +15,83 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/Wapi/WapiThread.hpp>
-#include <FRONTIER/System/FmLog.hpp>
-#include "fmWapiPrintLastError.hpp"
+#include "fmWapiGetLastError.hpp"
+#include <FRONTIER/System/Delegate.hpp>
 
 namespace fm
 {
 	namespace Wapi
 	{
-		/////////////////////////////////////////////////////////////
+	    namespace priv
+	    {
+	        class DataPass
+	        {
+            public:
+                fm::Delegate<void,fm::Thread*> delegate;
+                fm::Thread *thread;
+	        };
+	    }
+
+	    /////////////////////////////////////////////////////////////
 		DWORD __stdcall Thread::startThread(void *param)
 		{
-			fm::priv::ThreadFuntionCaller *caller = (fm::priv::ThreadFuntionCaller*)param;
-			
-			if (caller)
+		    priv::DataPass *data = (priv::DataPass*)param;
+
+			if (data->delegate)
 			{
-				caller->m_currentThreadPtr->set(caller->m_owner);
-				caller->callFunc();
+			    fm::Thread::setCurrentThread(data->thread);
+
+				data->delegate.call(data->thread);
 			}
 			
+			delete data;
+
 			return 0;
 		}
 
 		/////////////////////////////////////////////////////////////
-		Thread::Thread() : m_id(NULL),
+		Thread::Thread() : m_id(fm::nullPtr),
 						   m_isExiting(0)
 		{
-			
+
 		}
 
+		/////////////////////////////////////////////////////////////
 		void Thread::cleanUp()
 		{
 			// since the thread is not running at this point
 			// operator= is safe
 			m_isExiting = 0;
-			
+
 			// delete windows handle
 			if (m_id)
 			{
-				if (!CloseHandle(m_id))
-					fm::WapiPrintLastError(fm::fm_log,CloseHandle);
-				m_id = NULL;
+				CloseHandle(m_id);
+				m_id = fm::nullPtr;
 			}
 		}
 		/////////////////////////////////////////////////////////////
-		bool Thread::create(fm::priv::ThreadFuntionCaller *runner)
+		fm::Result Thread::setEntry(const fm::Delegate<void,fm::Thread *> &runner,fm::Thread *owner)
 		{
 			// clean the mess
 			cleanUp();
-			
+
+			priv::DataPass *data = new priv::DataPass;
+            data->delegate = runner;
+			data->thread   = owner;
+
 			// create the new handle
-			m_id = CreateThread(NULL,0,
-								startThread,runner,
+			m_id = CreateThread(fm::nullPtr,0,
+								startThread,data,
 								CREATE_SUSPENDED,NULL);
-			
+
 			if (!m_id)
 			{
-				fm::WapiPrintLastError(fm::fm_log,CreateThread);
-				return false;
+				return fm::WapiGetLastError(CreateThread);
+				delete data;
 			}
-			
-			return true;
+
+			return fm::Result();
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -82,18 +99,11 @@ namespace fm
 		{
 			if (m_id)
 			{
-				if (ResumeThread(m_id)!=(DWORD)(-1))
+				if (ResumeThread(m_id) != (DWORD)(-1))
 					return true;
-					
-				fm::WapiPrintLastError(fm::fm_log,ResumeThread);
 			}
-			return false;
-		}
 
-		/////////////////////////////////////////////////////////////
-		Thread *Thread::getCurrentThread()
-		{
-			return (Thread*)(fm::Thread::getCurrentThread()->getImpl());
+			return false;
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -102,12 +112,11 @@ namespace fm
 			if (m_id)
 			{
 				DWORD result = WaitForSingleObject(m_id,INFINITE);
+
 				if (result == WAIT_FAILED)
-				{
-					fm::WapiPrintLastError(fm::fm_log,WaitForSingleObject);
 					return false;
-				}
 			}
+
 			return true;
 		}
 
@@ -117,32 +126,29 @@ namespace fm
 			if (m_id)
 			{
 				DWORD result = WaitForSingleObject(m_id,timeOut.asMilliseconds());
+
 				if (result == WAIT_FAILED)
-				{
-					fm::WapiPrintLastError(fm::fm_log,WaitForSingleObject);
 					return false;
-				}
+
 				if (result == WAIT_TIMEOUT)
 					return false;
 			}
+
 			return true;
 		}
 
 		/////////////////////////////////////////////////////////////
-		bool Thread::isExiting(const Thread *thread)
+		bool Thread::isExiting(const Thread &thread)
 		{
-			if (thread)
-			{
-				LONG value = InterlockedExchangeAdd(&thread->m_isExiting,0);
-				return value != 0;
-			}
-			return false;
+			LONG value = InterlockedExchangeAdd(&thread.m_isExiting,0);
+
+            return value != 0;
 		}
 
 		/////////////////////////////////////////////////////////////
 		void Thread::requestExit()
 		{
-			InterlockedExchange(&m_isExiting,1); 
+			InterlockedExchange(&m_isExiting,1);
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -151,11 +157,9 @@ namespace fm
 			if (m_id)
 			{
 				if (!TerminateThread(m_id,0))
-				{
-					fm::WapiPrintLastError(fm::fm_log,TerminateThread);
 					return false;
-				}
 			}
+
 			return true;
 		}
 
@@ -164,11 +168,10 @@ namespace fm
 		{
 			if (m_id)
 			{
-				if (SuspendThread(m_id)!=(DWORD)(-1))
+				if (SuspendThread(m_id) != (DWORD)(-1))
 					return true;
-				
-				fm::WapiPrintLastError(fm::fm_log,SuspendThread);
 			}
+
 			return false;
 		}
 	}

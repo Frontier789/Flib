@@ -17,9 +17,9 @@
 #include <FRONTIER/Graphics/FontRenderer.hpp>
 #include <FRONTIER/Graphics/TextureAtlas.hpp>
 #include <FRONTIER/System/macros/C.hpp>
-#include <FRONTIER/Graphics/FgLog.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
+#include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Rect.hpp>
 
 namespace fg
@@ -69,7 +69,7 @@ namespace fg
 
 
 	/// functions /////////////////////////////////////////////////////////
-    bool Font::loadFromFile(const std::string &fileName,unsigned int size)
+    fm::Result Font::loadFromFile(const std::string &fileName,unsigned int size)
     {
     	init();
         return m_renderer->loadFromFile(fileName,size);
@@ -77,7 +77,7 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-    bool Font::loadFromMemory(const void *fileContent,fm::Size fileLength,unsigned int size)
+    fm::Result Font::loadFromMemory(const void *fileContent,fm::Size fileLength,unsigned int size)
     {
         init();
         return m_renderer->loadFromMemory(fileContent,fileLength,size);
@@ -128,7 +128,7 @@ namespace fg
 		// try finding it in the dictionary
 		Glyph glyph = (*m_texAtlases)[m_renderer->getCharacterSize()].fetch(Identifier(letter,style));
 		
-		if (glyph!=Glyph())
+		if (glyph != Glyph())
 			return glyph;
 
 		// no match, create it
@@ -137,6 +137,30 @@ namespace fg
 		
 		return (*m_texAtlases)[m_renderer->getCharacterSize()].upload(img,Identifier(letter,style),leftdown);
     }
+    
+	/////////////////////////////////////////////////////////////
+	void Font::preCache(const fm::String &characters,unsigned int type) const
+	{
+		if (!m_renderer)
+			return;
+
+		// try finding it in the dictionary
+		TextureAtlas<Identifier> &texAtl = (*m_texAtlases)[m_renderer->getCharacterSize()];
+		
+		C(characters.size())
+		{
+			fm::Uint32 c = characters[i];
+			Glyph g = texAtl.fetch(Identifier(c,type));
+			
+			if (g == Glyph())
+			{
+				fm::vec2 leftdown;
+				fg::Image img = renderGlyph(c,type,&leftdown);
+				
+				texAtl.upload(img,Identifier(c,type),leftdown);
+			}
+		}
+	}
 
 
 	////////////////////////////////////////////////////////////

@@ -15,11 +15,11 @@
 ///                                                                    ///
 //////////////////////////////////////////////////////////////////////////
 #include <FRONTIER/System/macros/OS.h>
+#include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/Window/Window.hpp>
 
 #ifdef FRONTIER_OS_WINDOWS
 	#include "Wapi/WapiWindow.cpp"
-	#include "Wapi/fwWapiPrintLastError.cpp"
 #elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
 	#include "Xlib/XlibWindow.cpp"
 #endif

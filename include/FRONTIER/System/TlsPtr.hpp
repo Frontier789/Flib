@@ -23,11 +23,11 @@ namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to store pointers thread-locally
-	/// 
+	///
 	/// @ingroup System
-	/// 
+	///
 	/// Upon error this class prompts to fm::fm_log
-	/// 
+	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	class TlsPtr : public fm::NonCopyable
@@ -36,138 +36,138 @@ namespace fm
 	public:
 		typedef TlsPtr &reference;
 		typedef const TlsPtr &const_reference;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
-		/// 
+		///
 		/// Initializes the pointer to NULL for every thread
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		TlsPtr();
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
-		/// 
-		/// The user is responsible for freeing 
+		///
+		/// The user is responsible for freeing
 		/// the data associated with the assigned pointer
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		~TlsPtr();
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of operator ->
-		/// 
+		///
 		/// One can acces the assigned pointer's target's fields using -> from a TlsPtr
-		/// 
+		///
 		/// @return The assigned pointer
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		T *operator->();
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of operator ->
-		/// 
+		///
 		/// One can acces the assigned pointer's target's fields using -> from a TlsPtr
-		/// 
+		///
 		/// @return The assigned pointer
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		const T *operator->() const;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of operator *
-		/// 
+		///
 		/// One can dereference the assigned pointer using *
 		/// Warning: does not prevent NULL dereferencing!
-		/// 
+		///
 		/// @return The assigned pointer's target
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		T &operator*();
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of operator *
-		/// 
+		///
 		/// One can dereference the assigned pointer using *
 		/// Warning: does not prevent NULL dereferencing!
-		/// 
+		///
 		/// @return The assigned pointer's target
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		const T &operator*() const;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign a pointer
-		/// 
-		/// The user is responsible for freeing 
+		///
+		/// The user is responsible for freeing
 		/// the data associated with the assigned pointer
-		/// 
+		///
 		/// @return Reference to itself
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		reference operator=(T *pointer);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign a pointer
-		/// 
-		/// The user is responsible for freeing 
+		///
+		/// The user is responsible for freeing
 		/// the data associated with the assigned pointer
-		/// 
+		///
 		/// @return Reference to itself
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		reference set(T *pointer);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if a internal error happend
-		/// 
+		///
 		/// In case an internal error other function wont do anything
-		/// 
+		///
 		/// @return True iff everything went right
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		bool isValid() const;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Convert to pointer
-		/// 
+		///
 		/// @return The pointer
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		T *get();
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Convert to pointer
-		/// 
+		///
 		/// @return The pointer
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		const T *get() const;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Convert to pointer
-		/// 
+		///
 		/// @return The pointer
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		operator T*();
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Convert to pointer
-		/// 
+		///
 		/// @return The pointer
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		operator const T*() const;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Check if not NULL
-		/// 
+		///
 		/// @return True iff the associated pointer is not NULL
-		/// 
+		///
 		/////////////////////////////////////////////////////////////
 		operator bool() const;
-	};	
+	};
 }
 
 #endif // FRONTIER_TLSPTR_HPP_INCLUDED

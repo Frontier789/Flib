@@ -93,15 +93,9 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	GLContext::Settings::Settings(unsigned char majorVersion,
 								  unsigned char minorVersion,
-								  bool compatiblityProfile,
-								  unsigned char bitsPerPixel,
-								  unsigned char depthBits,
-								  unsigned char stencilBits) : majorVersion(majorVersion),
-															   minorVersion(minorVersion),
-															   compatiblityProfile(compatiblityProfile),
-															   bitsPerPixel(bitsPerPixel),
-															   depthBits(depthBits),
-															   stencilBits(stencilBits)
+								  bool compatiblityProfile) : majorVersion(majorVersion),
+															  minorVersion(minorVersion),
+															  compatiblityProfile(compatiblityProfile)
 	{
 
 	}
@@ -109,11 +103,11 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	void GLContext::Settings::decreaseVersion()
 	{
-		// set to the highest known if 1.0
+		// set to 0.0 if 1.0
 		if (majorVersion == 1 && minorVersion == 0)
 		{
-			majorVersion = 4,
-			minorVersion = 5;
+			majorVersion = 0,
+			minorVersion = 0;
 			return;
 		}
 
@@ -232,7 +226,7 @@ namespace fw
 	{
 		return m_context->getSettings();
 	}
-
+	
 	/////////////////////////////////////////////////////////////
 	void GLContext::setClearColor(const fm::vec4 &color)
 	{

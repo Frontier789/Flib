@@ -25,9 +25,11 @@
 #include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
+#include <FRONTIER/System/Vertex.hpp>
 
 #define FRONTIER_DRAWDATA
 #include <vector>
+#include <map>
 
 namespace fg
 {
@@ -61,33 +63,57 @@ namespace fg
 		class Attribute
 		{
 		public:
-			AssociationPoint type;
 			fm::Size components;
 			fm::Size stride;
 			fm::Size count;
-			unsigned long componentType;
+			fm::Size componentType;
 			fg::Buffer *buf;
+			bool ownBuffer;
 
-			Attribute(AssociationPoint type = Assoc::Unused,
-					  fm::Size components = 0,
+			Attribute(fm::Size components = 0,
 					  fm::Size stride = 0,
 					  fm::Size count = 0,
-					  unsigned long componentType = 0,
-					  fg::Buffer *buf = fm::nullPtr);
+					  fm::Size componentType = 0,
+					  fg::Buffer *buffer = fm::nullPtr,
+					  bool ownBuffer = true);
 
-			template<class T>
-			Attribute(AssociationPoint type,T *pointer,fm::Size N,typename fm::Enable_if<fg::Is_GLDataType<T>::value >::type* = fm::nullPtr);
+			Attribute(const Attribute &attr);
 
-			template<class T,fm::Size N>
-			Attribute(AssociationPoint type,const T (&pointer)[N],typename fm::Enable_if<fg::Is_GLDataType<T>::value >::type* = fm::nullPtr);
+            Attribute &operator=(const Attribute &attr);
 
-			template<class T>
-			Attribute(AssociationPoint type,T *pointer,fm::Size N,typename fm::Enable_if<!fg::Is_GLDataType<T>::value >::type* = fm::nullPtr);
+            template<class T,fm::Size N>
+			inline typename fm::Enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &operator=(const T (&data)[N]);
 
-			template<class T,fm::Size N>
-			Attribute(AssociationPoint type,const T (&pointer)[N],typename fm::Enable_if<!fg::Is_GLDataType<T>::value >::type* = fm::nullPtr);
+            template<class T,fm::Size N>
+            inline typename fm::Enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &operator=(const T (&data)[N]);
 
-			~Attribute();
+            template<class T,fm::Size N>
+            inline typename fm::Enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N]);
+
+            template<class T>
+            inline typename fm::Enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N);
+
+            template<class T,fm::Size N>
+            inline typename fm::Enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N]);
+
+            template<class T>
+			inline typename fm::Enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N);
+
+            Attribute &set(fm::Size components,
+                           fm::Size stride,
+                           fm::Size count,
+                           fm::Size componentType,
+                           const void *pointer,
+                           fm::Size bytesToCopy);
+
+            Attribute &set(fm::Size components,
+                           fm::Size stride,
+                           fm::Size count,
+                           fm::Size componentType,
+                           fg::Buffer *buffer = fm::nullPtr,
+                           bool ownBuffer = true);
+
+            ~Attribute();
 		};
 
 		class DrawCall
@@ -99,33 +125,97 @@ namespace fg
 			fm::Size drawBeg;
 			fm::Size drawLen;
 
-			unsigned long componentType;
+			fm::Size componentType;
 			fg::Buffer *buf;
+			bool ownBuffer;
 
-			template<class T>
-			DrawCall(T *pointer,fm::Size N,fg::Primitive primitive,fm::Size drawBeg = 0,fm::Size drawLen = fm::Size(-1));
+			DrawCall(fg::Primitive primitive = fg::Triangles,
+                     fm::Size indexCount = 0,
+                     fm::Size drawBeg = 0,
+                     fm::Size drawLen = 0,
+                     fm::Size compType = 0,
+                     fg::Buffer *buffer = fm::nullPtr,
+                     bool ownBuffer = true);
 
-			template<class T,fm::Size N>
-			DrawCall(const T (&pointer)[N],fg::Primitive primitive,fm::Size drawBeg = 0,fm::Size drawLen = fm::Size(-1));
+            DrawCall(const DrawCall &drawCall);
 
-			DrawCall(const IndexArrayHolder &indices,fg::Primitive primitive,fm::Size drawBeg = 0,fm::Size drawLen = fm::Size(-1));
+            DrawCall &operator=(const DrawCall &drawCall);
 
-			DrawCall(fg::Primitive primitive,fm::Size drawBeg = 0,fm::Size drawLen = fm::Size(-1));
+            template<class T,fm::Size N>
+            inline DrawCall &operator=(const T (&data)[N]);
 
-			~DrawCall();
+            DrawCall &operator=(const IndexArrayHolder &indices);
+
+            template<class T,fm::Size N>
+            inline DrawCall &set(const T (&data)[N],fg::Primitive primitive);
+
+            template<class T>
+            inline DrawCall &set(const T *pointer,fm::Size N,fg::Primitive primitive);
+
+            DrawCall &set(const void *ptr,fm::Size indCount,fm::Size compType,fm::Size bytesToCopy,fg::Primitive primitive);
+
+            DrawCall &set(const IndexArrayHolder &indices,fg::Primitive primitive);
+
+            DrawCall &set(fm::Size beg,fm::Size len,fg::Primitive primitive);
+
+            DrawCall &setRange(fm::Size beg,fm::Size len);
+
+            ~DrawCall();
 		};
 
-		std::vector<Attribute*> attrs;
-		std::vector<DrawCall*>  drawCalls;
+    protected:
+		std::map<AssociationPoint,Attribute> m_attrs;
+		std::vector<DrawCall> m_drawCalls;
 
+    public:
 		DrawData();
 
 		explicit DrawData(const Mesh &m);
 
-		virtual ~DrawData();
+/*
+		template<class PT,class CT,class TT,class NT,fm::Size N>
+		inline explicit DrawData(const fm::vertex<PT,CT,TT,NT> (&data)[N],fg::Primitive primitive = fg::Triangles);
 
-		Attribute *operator[](AssociationPoint type);
-		DrawData &setAttribute(Attribute *ptr);
+		template<class PT,class CT,class TT,class NT>
+		inline DrawData(const fm::vertex<PT,CT,TT,NT> *pointer,fm::Size N,fg::Primitive primitive = fg::Triangles);
+
+
+		template<class PT,class CT,class TT,class NT,fm::Size N>
+		inline DrawData &set(const fm::vertex<PT,CT,TT,NT> (&data)[N],bool calcDrawCall = true,fg::Primitive primitive = fg::Triangles)
+
+		template<class PT,class CT,class TT,class NT>
+		inline DrawData &set(const fm::vertex<PT,CT,TT,NT> *pointer,fm::Size N,bool calcDrawCall = true,fg::Primitive primitive = fg::Triangles)
+*/
+        /* access attribute */
+		Attribute &operator[](AssociationPoint type);
+		const Attribute &operator[](AssociationPoint type) const;
+
+		/* assign mesh */
+		DrawData &operator=(const Mesh &mesh);
+
+
+		DrawData &remAttr(AssociationPoint type);
+		bool hasAttr(AssociationPoint type) const;
+
+		/* modify draw datas */
+		DrawCall &addDraw(fg::Primitive primitive = fg::Triangles);
+		DrawCall &addDraw(const fg::IndexArrayHolder &inds,fg::Primitive primitive = fg::Triangles);
+        DrawCall &addDraw(fm::Size beg,fm::Size len,fg::Primitive primitive = fg::Triangles);
+
+        template<class T,fm::Size N>
+        inline DrawCall &addDraw(const T (&data)[N],fg::Primitive primitive);
+
+        template<class T>
+        inline DrawCall &addDraw(const T *pointer,fm::Size N,fg::Primitive primitive);
+
+		/* query */
+		DrawCall &getDraw(fm::Size index);
+		const DrawCall &getDraw(fm::Size index) const;
+
+		fm::Size getDrawCount() const;
+
+        /* reset */
+		void reset();
 	};
 }
 

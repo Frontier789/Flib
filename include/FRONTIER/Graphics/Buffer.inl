@@ -21,28 +21,28 @@ namespace fg
 {
 	////////////////////////////////////////////////////////////
 	template<class T,fm::Size S>
-	Buffer &Buffer::setData(const T (&data)[S])
+	fm::Result Buffer::setData(const T (&data)[S])
 	{
 		return setData(&data[0],sizeof(data));
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T,fm::Size S>
-	Buffer &Buffer::setData(const T (&data)[S],Usage usage)
+	fm::Result Buffer::setData(const T (&data)[S],Usage usage)
 	{
 		return setData(&data[0],sizeof(data),m_type,usage);
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T,fm::Size S>
-	Buffer &Buffer::setData(const T (&data)[S],BufferType type)
+	fm::Result Buffer::setData(const T (&data)[S],BufferType type)
 	{
 		return setData(&data[0],sizeof(data),type,m_usage);
 	}
 
 	////////////////////////////////////////////////////////////
 	template<class T,fm::Size S>
-	Buffer &Buffer::setData(const T (&data)[S],BufferType type,Usage usage)
+	fm::Result Buffer::setData(const T (&data)[S],BufferType type,Usage usage)
 	{
 		return setData(&data[0],sizeof(data),type,usage);
 	}

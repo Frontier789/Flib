@@ -22,145 +22,354 @@
 
 namespace fg
 {
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 	Assoc::Point operator+(const Assoc::Point &pt,int delta)
 	{
-		return (Assoc::Point)(((int)pt)+delta);
+	    return (Assoc::Point)((int)pt + delta);
 	}
-	
-	//////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////
 	Assoc::Point operator-(const Assoc::Point &pt,int delta)
 	{
-		return (Assoc::Point)(((int)pt)-delta);
-	}
-	
-	//////////////////////////////////////////////////////////////////////////
-	DrawData::Attribute::Attribute(AssociationPoint type,
-								   fm::Size components,
-								   fm::Size stride,
-								   fm::Size count,
-								   unsigned long componentType,
-								   fg::Buffer *buf) : type(type),
-													  components(components),
-													  stride(stride),
-													  count(count),
-													  componentType(componentType),
-													  buf(buf)
-	{
-		
+	    return (Assoc::Point)((int)pt - delta);
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	DrawData::Attribute::~Attribute()
-	{
-		delete buf;
-	}
-	
-	
-	//////////////////////////////////////////////////////////////////////////
-	DrawData::DrawCall::DrawCall(const IndexArrayHolder &indices,
-								 fg::Primitive primitive,
-								 fm::Size drawBeg,
-								 fm::Size drawLen) : primitive(primitive),
-													 indexCount(indices.getSize()),
-													 drawBeg(drawBeg),
-													 drawLen(drawLen),
-													 componentType(indices.doUse16bits() ? fg::Is_GLDataType<fm::Uint16>::enumVal : fg::Is_GLDataType<fm::Uint32>::enumVal),
-													 buf(new fg::Buffer(fg::IndexBuffer))
-	{
-		buf->setData(indices.getPtr(),(indices.doUse16bits() ? sizeof(fm::Uint16) : sizeof(fm::Uint32)) * indices.getSize());
-	}
-	
-	//////////////////////////////////////////////////////////////////////////
-	DrawData::DrawCall::DrawCall(fg::Primitive primitive,
-								 fm::Size drawBeg,
-								 fm::Size drawLen) : primitive(primitive),
-													 indexCount(0),
-													 drawBeg(drawBeg),
-													 drawLen(drawLen),
-													 componentType(0),
-													 buf(fm::nullPtr)
-	{
-		
-	}
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::Attribute::Attribute(fm::Size components,
+                                   fm::Size stride,
+                                   fm::Size count,
+                                   fm::Size componentType,
+                                   fg::Buffer *buffer,
+                                   bool ownBuffer) : components(components),
+                                                     stride(stride),
+                                                     count(count),
+                                                     componentType(componentType),
+                                                     buf(buffer ? buffer : new fg::Buffer),
+                                                     ownBuffer(buffer ? ownBuffer : true)
+    {
 
-	//////////////////////////////////////////////////////////////////////////
-	DrawData::DrawCall::~DrawCall()
-	{
-		delete buf;
-	}
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::Attribute::Attribute(const DrawData::Attribute &attr) : buf(fm::nullPtr),
+																	  ownBuffer(false)
+    {
+        (*this) = attr;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::Attribute &DrawData::Attribute::operator=(const DrawData::Attribute &attr)
+    {
+        components = attr.components;
+        stride = attr.stride;
+        count = attr.count;
+        componentType = attr.componentType;
+
+        if (attr.buf)
+        {
+            if (!ownBuffer || !buf) buf = new fg::Buffer;
+            (*buf) = (*attr.buf);
+            ownBuffer = true;
+        }
+        else
+        {
+            if (ownBuffer) delete buf;
+            buf = fm::nullPtr;
+            ownBuffer = false;
+        }
+
+        return *this;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::Attribute &DrawData::Attribute::set(fm::Size components,
+                                                  fm::Size stride,
+                                                  fm::Size count,
+                                                  fm::Size componentType,
+                                                  const void *pointer,
+                                                  fm::Size bytesToCopy)
+    {
+        this->components = components;
+        this->stride = stride;
+        this->count = count;
+        this->componentType = componentType;
+        if (!ownBuffer || !buf)
+        {
+            ownBuffer = true;
+            buf = new fg::Buffer;
+        }
+
+        buf->setData(pointer,bytesToCopy);
+
+        return *this;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::Attribute &DrawData::Attribute::set(fm::Size components,
+                                                  fm::Size stride,
+                                                  fm::Size count,
+                                                  fm::Size componentType,
+                                                  fg::Buffer *buf,
+                                                  bool ownBuffer)
+    {
+        this->components = components;
+        this->stride = stride;
+        this->count = count;
+        this->componentType = componentType;
+
+        if (ownBuffer) delete buf;
+
+        this->buf = buf;
+        this->ownBuffer = ownBuffer;
+
+        return *this;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::Attribute::~Attribute()
+    {
+        if (ownBuffer)
+            delete buf;
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::DrawCall::DrawCall(fg::Primitive primitive,
+                                 fm::Size indexCount,
+                                 fm::Size drawBeg,
+                                 fm::Size drawLen,
+                                 fm::Size compType,
+                                 fg::Buffer *buffer,
+                                 bool ownBuffer) : primitive(primitive),
+                                                   indexCount(indexCount),
+                                                   drawBeg(drawBeg),
+                                                   drawLen(drawLen),
+                                                   componentType(compType),
+                                                   buf(buffer ? buffer : new fg::Buffer(fg::IndexBuffer)),
+                                                   ownBuffer(buffer ? ownBuffer : true)
+    {
+
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::DrawCall::DrawCall(const DrawData::DrawCall &drawCall) : buf(fm::nullPtr),
+                                                                       ownBuffer(false)
+    {
+        (*this) = drawCall;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::DrawCall &DrawData::DrawCall::operator=(const DrawData::DrawCall &drawCall)
+    {
+        primitive = drawCall.primitive;
+        indexCount = drawCall.indexCount;
+        drawBeg = drawCall.drawBeg;
+        drawLen = drawCall.drawLen;
+        componentType = drawCall.componentType;
+
+        if (drawCall.buf)
+        {
+            if (!ownBuffer || !buf) buf = new fg::Buffer(fg::IndexBuffer);
+            (*buf) = (*drawCall.buf);
+            ownBuffer = true;
+        }
+        else
+        {
+            if (ownBuffer) delete buf;
+            buf = fm::nullPtr;
+            ownBuffer = false;
+        }
+
+		return *this;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::DrawCall &DrawData::DrawCall::operator=(const IndexArrayHolder &indices)
+    {
+        return set(indices,fg::Triangles);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::DrawCall &DrawData::DrawCall::set(const void *ptr,fm::Size indCount,fm::Size compType,fm::Size bytesToCopy,fg::Primitive primitive)
+    {
+        this->primitive = primitive;
+        indexCount = indCount;
+        drawBeg = 0;
+        drawLen = indCount;
+        componentType = compType;
+        if (!ownBuffer || !buf)
+        {
+            ownBuffer = true;
+            buf = new fg::Buffer(fg::IndexBuffer);
+        }
+
+        buf->setData(ptr,bytesToCopy);
+
+		return *this;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::DrawCall &DrawData::DrawCall::set(const IndexArrayHolder &indices,fg::Primitive primitive)
+    {
+        if (indices.doUse16bits())
+            return set((fm::Uint16*)indices.getPtr(),indices.getSize(),primitive);
+
+        return set((fm::Uint32*)indices.getPtr(),indices.getSize(),primitive);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::DrawCall &DrawData::DrawCall::set(fm::Size beg,fm::Size len,fg::Primitive primitive)
+    {
+        this->primitive = primitive;
+        indexCount = 0;
+        componentType = 0;
+
+        if (ownBuffer) delete buf;
+        buf = fm::nullPtr;
+        ownBuffer = false;
+
+        drawBeg = beg;
+        drawLen = len;
+
+		return *this;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::DrawCall &DrawData::DrawCall::setRange(fm::Size beg,fm::Size len)
+    {
+        drawBeg = beg;
+        drawLen = len;
+
+        return *this;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::DrawCall::~DrawCall()
+    {
+        if (ownBuffer)
+            delete buf;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
 	DrawData::DrawData()
 	{
-		
+
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 	DrawData::DrawData(const Mesh &m)
 	{
-		if (m.pts.size())
-			attrs.push_back(new Attribute(Assoc::Position,&m.pts[0],m.pts.size()));
-			
-		if (m.uvs.size())
-			attrs.push_back(new Attribute(Assoc::TextureUV,&m.uvs[0],m.uvs.size()));
-			
-		if (m.norms.size())
-			attrs.push_back(new Attribute(Assoc::Normal,&m.norms[0],m.norms.size()));
-			
-		if (m.tans.size())
-			attrs.push_back(new Attribute(Assoc::Tangent,&m.tans[0],m.tans.size()));
-			
-		if (m.bitans.size())
-			attrs.push_back(new Attribute(Assoc::Bitangent,&m.bitans[0],m.bitans.size()));
-		
-		if (m.indices.size())
-			drawCalls.push_back(new DrawCall(IndexArrayHolder(&m.indices[0],m.indices.size()),m.primitive));
+		(*this) = m;
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+	DrawData::Attribute &DrawData::operator[](AssociationPoint type)
+	{
+		return m_attrs[type];
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+	const DrawData::Attribute &DrawData::operator[](AssociationPoint type) const
+	{
+		return m_attrs.find(type)->second;
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+	DrawData &DrawData::operator=(const Mesh &mesh)
+	{
+		reset();
+
+		if (mesh.pts.size())
+			m_attrs[Assoc::Position].set(&mesh.pts[0],mesh.pts.size());
+
+		if (mesh.uvs.size())
+			m_attrs[Assoc::TextureUV].set(&mesh.uvs[0],mesh.uvs.size());
+
+		if (mesh.norms.size())
+			m_attrs[Assoc::Normal].set(&mesh.norms[0],mesh.norms.size());
+
+		if (mesh.tans.size())
+			m_attrs[Assoc::Tangent].set(&mesh.tans[0],mesh.tans.size());
+
+		if (mesh.bitans.size())
+			m_attrs[Assoc::Bitangent].set(&mesh.bitans[0],mesh.bitans.size());
+
+		if (mesh.indices.size())
+		{
+			m_drawCalls.push_back(DrawCall());
+			m_drawCalls.back().set(&mesh.indices[0],mesh.indices.size(),mesh.primitive);
+		}
 		else
-			drawCalls.push_back(new DrawCall(m.primitive,0,m.pts.size()));
-	}
+		{
+			m_drawCalls.push_back(DrawCall());
+			m_drawCalls.back().set(0,mesh.pts.size(),mesh.primitive);
+		}
 
-	//////////////////////////////////////////////////////////////////////////
-	DrawData::~DrawData()
-	{
-		C(attrs.size())
-            delete attrs[i];
-
-        C(drawCalls.size())
-            delete drawCalls[i];
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	DrawData::Attribute *DrawData::operator[](AssociationPoint type)
-	{
-		C(attrs.size())
-			if (attrs[i] && attrs[i]->type == type)
-				return attrs[i];
-		
-		return fm::nullPtr;
-	}
-	
-	//////////////////////////////////////////////////////////////////////////
-	DrawData &DrawData::setAttribute(DrawData::Attribute *ptr)
-	{
-		if (!ptr)
-			return *this;
-	
-		bool found = false;
-		
-		C(attrs.size())
-			if (attrs[i] && attrs[i]->type == ptr->type)
-			{
-				delete attrs[i];
-				
-				attrs[i] = ptr;
-				
-				found = true;
-			}
-		
-		if (!found)
-			attrs.push_back(ptr);
-		
 		return *this;
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+	DrawData &DrawData::remAttr(AssociationPoint type)
+	{
+		m_attrs.erase(type);
+		return *this;
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+	bool DrawData::hasAttr(AssociationPoint type) const
+	{
+		return m_attrs.find(type) != m_attrs.end();
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+	DrawData::DrawCall &DrawData::getDraw(fm::Size index)
+	{
+		return m_drawCalls[index];
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+	const DrawData::DrawCall &DrawData::getDraw(fm::Size index) const
+	{
+		return m_drawCalls[index];
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+	DrawData::DrawCall &DrawData::addDraw(fg::Primitive primitive)
+	{
+		m_drawCalls.push_back(DrawCall());
+		m_drawCalls.back().primitive = primitive;
+
+		return m_drawCalls.back();
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::DrawCall &DrawData::addDraw(const fg::IndexArrayHolder &inds,fg::Primitive primitive)
+    {
+        m_drawCalls.push_back(DrawCall());
+        m_drawCalls.back().set(inds,primitive);
+
+        return m_drawCalls.back();
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    DrawData::DrawCall &DrawData::addDraw(fm::Size beg,fm::Size len,fg::Primitive primitive)
+    {
+        m_drawCalls.push_back(DrawCall());
+        m_drawCalls.back().set(beg,len,primitive);
+
+        return m_drawCalls.back();
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+	void DrawData::reset()
+	{
+		m_attrs.clear();
+		m_drawCalls.clear();
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+	fm::Size DrawData::getDrawCount() const
+	{
+		return m_drawCalls.size();
 	}
 }

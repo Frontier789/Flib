@@ -17,6 +17,7 @@
 #ifndef FRONTIER_SHADER_INL_INCLUDED
 #define FRONTIER_SHADER_INL_INCLUDED
 #include <FRONTIER/GL/Is_GLDataType.hpp>
+#include <FRONTIER/System/Error.hpp>
 
 namespace fg
 {
@@ -42,78 +43,86 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class pt,class ct,class tpt,class nt>
-	inline typename Shader::reference Shader::setAttribPointer(const std::string &posName,
-															   const std::string &clrName,const fm::vertex<pt,ct,tpt,nt> *pointer)
+	inline typename fm::Result Shader::setAttribPointer(const std::string &posName,
+														const std::string &clrName,
+														const fm::vertex<pt,ct,tpt,nt> *pointer)
 	{
-		setAttribPointer(posName,&pointer[0].pos,priv::getStride<pt,ct,tpt,nt>());
-		setAttribPointer(clrName,&pointer[0].clr,priv::getStride<pt,ct,tpt,nt>());
-		return *this;
+		fm::Error err;
+		if (err = setAttribPointer(posName,&pointer[0].pos,priv::getStride<pt,ct,tpt,nt>())) return err;
+		if (err = setAttribPointer(clrName,&pointer[0].clr,priv::getStride<pt,ct,tpt,nt>())) return err;
+		
+		return fm::Result();
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class pt,class ct,class tpt,class nt>
-	inline Shader::reference Shader::setAttribPointer(const std::string &posName,
-													  const std::string &clrName,
-													  const std::string &texPosName,const fm::vertex<pt,ct,tpt,nt> *pointer)
+	inline fm::Result Shader::setAttribPointer(const std::string &posName,
+											   const std::string &clrName,
+											   const std::string &texPosName,
+											   const fm::vertex<pt,ct,tpt,nt> *pointer)
 	{
-		setAttribPointer(posName   ,&pointer[0].pos   ,priv::getStride<pt,ct,tpt,nt>());
-		setAttribPointer(clrName   ,&pointer[0].clr   ,priv::getStride<pt,ct,tpt,nt>());
-		setAttribPointer(texPosName,&pointer[0].texPos,priv::getStride<pt,ct,tpt,nt>());
-		return *this;
+		fm::Error err;
+		if (err = setAttribPointer(posName   ,&pointer[0].pos   ,priv::getStride<pt,ct,tpt,nt>())) return err;
+		if (err = setAttribPointer(clrName   ,&pointer[0].clr   ,priv::getStride<pt,ct,tpt,nt>())) return err;
+		if (err = setAttribPointer(texPosName,&pointer[0].texPos,priv::getStride<pt,ct,tpt,nt>())) return err;
+		
+		return fm::Result();
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class pt,class ct,class tpt,class nt>
-	inline Shader::reference Shader::setAttribPointer(const std::string &posName,
+	inline fm::Result Shader::setAttribPointer(const std::string &posName,
 													  const std::string &clrName,
 													  const std::string &texPosName,
 													  const std::string &normName,const fm::vertex<pt,ct,tpt,nt> *pointer)
 	{
-		setAttribPointer(posName   ,&pointer[0].pos   ,priv::getStride<pt,ct,tpt,nt>());
-		setAttribPointer(clrName   ,&pointer[0].clr   ,priv::getStride<pt,ct,tpt,nt>());
-		setAttribPointer(texPosName,&pointer[0].texPos,priv::getStride<pt,ct,tpt,nt>());
-		setAttribPointer(normName  ,&pointer[0].norm  ,priv::getStride<pt,ct,tpt,nt>());
-		return *this;
+		fm::Error err;
+		if (err = setAttribPointer(posName   ,&pointer[0].pos   ,priv::getStride<pt,ct,tpt,nt>())) return err;
+		if (err = setAttribPointer(clrName   ,&pointer[0].clr   ,priv::getStride<pt,ct,tpt,nt>())) return err;
+		if (err = setAttribPointer(texPosName,&pointer[0].texPos,priv::getStride<pt,ct,tpt,nt>())) return err;
+		if (err = setAttribPointer(normName  ,&pointer[0].norm  ,priv::getStride<pt,ct,tpt,nt>())) return err;
+		
+		return fm::Result();
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline typename Shader::reference Shader::setAttribPointer(const std::string &name,const T *pointer,unsigned int stride)
+	inline fm::Result Shader::setAttribPointer(const std::string &name,const T *pointer,unsigned int stride)
 	{
 		return setAttribPointer(name,1,fg::Is_GLDataType<T>::enumVal,0,pointer,stride);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline typename Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vector2<T> *pointer,unsigned int stride)
+	inline fm::Result Shader::setAttribPointer(const std::string &name,const fm::vector2<T> *pointer,unsigned int stride)
 	{
 		return setAttribPointer(name,2,fg::Is_GLDataType<T>::enumVal,0,pointer,stride);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline typename Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vector3<T> *pointer,unsigned int stride)
+	inline fm::Result Shader::setAttribPointer(const std::string &name,const fm::vector3<T> *pointer,unsigned int stride)
 	{
 		return setAttribPointer(name,3,fg::Is_GLDataType<T>::enumVal,0,pointer,stride);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline typename Shader::reference Shader::setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride)
+	inline fm::Result Shader::setAttribPointer(const std::string &name,const fm::vector4<T> *pointer,unsigned int stride)
 	{
 		return setAttribPointer(name,4,fg::Is_GLDataType<T>::enumVal,0,pointer,stride);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<fm::MATRIX::StorageOrder storeOrder>
-	inline Shader::reference Shader::setUniform(const std::string &name,const fm::mat3 &m)
+	inline fm::Result Shader::setUniform(const std::string &name,const fm::mat3 &m)
 	{
 		return setUniform(name,m,storeOrder);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<fm::MATRIX::StorageOrder storeOrder>
-	inline Shader::reference Shader::setUniform(const std::string &name,const fm::mat4 &m)
+	inline fm::Result Shader::setUniform(const std::string &name,const fm::mat4 &m)
 	{
 		return setUniform(name,m,storeOrder);
 	}

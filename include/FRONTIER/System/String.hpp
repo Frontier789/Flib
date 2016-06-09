@@ -20,10 +20,13 @@
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/API.h>
 #define FRONTIER_STRING
+#include <locale>
 #include <string>
 
 namespace fm
 {
+    typedef Uint32 Char;
+
 	/////////////////////////////////////////////////////////////
 	/// @brief A string class that automatically converts input to utf32 encoding
 	///
@@ -70,25 +73,28 @@ namespace fm
 		/// @brief Load the content of the string from a single character
 		///
 		/// @param character The character
+		/// @param loc The locale to use
 		///
 		/////////////////////////////////////////////////////////////
-		String(char character);
+		String(char character,const std::locale &loc = std::locale());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the content of the string from an ansi text
 		///
 		/// @param text The text
+		/// @param loc The locale to use
 		///
 		/////////////////////////////////////////////////////////////
-		String(const char *text);
+		String(const char *text,const std::locale &loc = std::locale());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the content of the string from an ansi text
 		///
 		/// @param text The text
+		/// @param loc The locale to use
 		///
 		/////////////////////////////////////////////////////////////
-		String(const std::string &text);
+		String(const std::string &text,const std::locale &loc = std::locale());
 
 		/* wide */
 
@@ -133,6 +139,15 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		String(const fm::Uint32 *text);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the content of the string from a utf32 text
+		///
+		/// @param text The utf32 text
+		/// @param charCount The number of characters to copy
+		///
+		/////////////////////////////////////////////////////////////
+		String(const fm::Uint32 *text,fm::Size charCount);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the content of the string from a utf32 text
@@ -223,10 +238,12 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Convert the string to ansi string
 		///
+		/// @param loc The locale to use
+		///
 		/// @return The constructed string
 		///
 		/////////////////////////////////////////////////////////////
-		std::string str() const;
+		std::string str(const std::locale &loc = std::locale()) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Convert the string to wide string
@@ -283,6 +300,26 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Size length() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Access element
+		///
+		/// @param index The index of the character
+		///
+		/// @return Reference to the character
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Uint32 &at(fm::Size index);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Access element
+		///
+		/// @param index The index of the character
+		///
+		/// @return Reference to the character
+		///
+		/////////////////////////////////////////////////////////////
+		const fm::Uint32 &at(fm::Size index) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Erase a part of the string
@@ -570,7 +607,16 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	String operator+(const String &str1, const String &str2);
 
-	// fm::Uint32 utf32From8
+	String toString(char               num);
+	String toString(unsigned char      num);
+	String toString(short              num);
+	String toString(unsigned short     num);
+	String toString(int                num);
+	String toString(unsigned int       num);
+	String toString(long               num);
+	String toString(unsigned long      num);
+	String toString(long long          num);
+	String toString(unsigned long long num);
 }
 
 #endif // FRONTIER_STRING_HPP_INCLUDED

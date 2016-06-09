@@ -48,9 +48,9 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	Mutex::Mutex() : m_impl(new priv::Mutex)
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Mutex::~Mutex()
 	{
@@ -58,9 +58,9 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool Mutex::lock()
+	void Mutex::lock()
 	{
-		return ((priv::Mutex*)m_impl)->lock();
+		((priv::Mutex*)m_impl)->lock();
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -70,9 +70,9 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool Mutex::unLock()
+	void Mutex::unLock()
 	{
-		return ((priv::Mutex*)m_impl)->unLock();
+		((priv::Mutex*)m_impl)->unLock();
 	}
 }
 #endif

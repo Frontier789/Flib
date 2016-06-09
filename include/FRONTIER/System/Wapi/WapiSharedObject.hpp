@@ -17,11 +17,14 @@
 #ifndef FRONTIER_WAPISHAREDOBJECT_HPP_INCLUDED
 #define FRONTIER_WAPISHAREDOBJECT_HPP_INCLUDED
 #include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/System/Result.hpp>
 #define FRONTIER_WAPISHAREDOBJECT
 #include <windows.h>
 
 namespace fm
 {
+	class String;
+	
 	namespace Wapi
 	{
 		/////////////////////////////////////////////////////////////
@@ -52,7 +55,7 @@ namespace fm
 			/// @param objName The name of the dll
 			/// 
 			/////////////////////////////////////////////////////////////
-			SharedObject(const char *objName);
+			SharedObject(const fm::String &objName);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Default destructor
@@ -68,13 +71,13 @@ namespace fm
 			/// 
 			/// @param objName The name of the dll
 			/// 
-			/// @return True iff everything went right
+			/// @return The error-state of the function
 			/// 
 			/////////////////////////////////////////////////////////////
-			bool load(const char *objName);
+			fm::Result load(const fm::String &objName);
 			
 			/////////////////////////////////////////////////////////////
-			/// @brief Find out if the class has a opened dll
+			/// @brief Find out if the class has an opened dll
 			/// 
 			/// @return True iff a dll is loaded
 			/// 
@@ -82,7 +85,7 @@ namespace fm
 			bool isValid() const;
 			
 			/////////////////////////////////////////////////////////////
-			/// @brief Find out if the class has a opened dll
+			/// @brief Find out if the class has an opened dll
 			/// 
 			/// @return True iff a dll is loaded
 			/// 
@@ -92,7 +95,7 @@ namespace fm
 			/////////////////////////////////////////////////////////////
 			/// @brief Get a function's address from the loaded dll
 			/// 
-			/// One should cast the returned value to the correct type!
+			/// The returned value needs to bo castd to the correct type!
 			/// 
 			/// @return The address of the function (NULL iff the function couldn't be found or no dll is loaded)
 			/// 
@@ -101,9 +104,6 @@ namespace fm
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Get a function's address from the loaded dll
-			/// 
-			/// One should supply the correct type of the function as
-			/// a template parameter
 			/// 
 			/// @return The address of the function (NULL iff the function couldn't be found or no dll is loaded)
 			/// 
@@ -117,7 +117,7 @@ namespace fm
 			/// @return The handle (NULL if no dll is loaded)
 			/// 
 			/////////////////////////////////////////////////////////////
-			HINSTANCE getHandle() const;
+			Handle getHandle() const;
 		};
 	}
 }

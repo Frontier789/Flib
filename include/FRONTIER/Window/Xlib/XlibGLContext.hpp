@@ -24,6 +24,13 @@
 
 namespace fw
 {
+	namespace priv
+	{
+		Display *FRONTIER_API getGlobDisp();
+		void FRONTIER_API freeGlobDisp(Display *disp);
+		bool FRONTIER_API getFBConfig(Display *disp,void *fbconfptr,bool window);
+	}
+	
 	namespace Xlib
 	{
 		/////////////////////////////////////////////////////////////
@@ -40,7 +47,6 @@ namespace fw
 			GLXContext m_handle; ///< Holds the identifier of the context
 			fw::GLContext::Settings m_settings; ///< The settings of the context
 
-			GLXFBConfig createConfig(); ///< Internal function used to get a GLXFBConfig
 			static int errorHandler(Display *disp,XErrorEvent *xerrev); ///< Function used to avoid X's automatic error handling boiling us out
 			bool createContext(GLXFBConfig config,::GLXContext sharedContext); ///< Function used to set up the context
 

@@ -14,10 +14,8 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Window/Wapi/fwWapiPrintLastError.hpp>
 #include <FRONTIER/Window/Wapi/WapiWindow.hpp>
 #include <FRONTIER/Window/Event.hpp>
-#include <FRONTIER/Window/FwLog.hpp>
 #include <windows.h>
 
 namespace fw
@@ -102,15 +100,25 @@ namespace fw
 		return (GetAsyncKeyState(VKcode) & 0x8000);
 	}
 
+    /////////////////////////////////////////////////////////////
+    void Mouse::setCursor(Mouse::Cursor cursor)
+    {
+        LPCTSTR data[(fm::Size)Mouse::CursorCount] = {IDC_ARROW,IDC_IBEAM,IDC_HAND,IDC_NO,IDC_WAIT};
+
+        fm::Size index = (fm::Size)cursor;
+
+        if (index >= (fm::Size)Mouse::CursorCount) index = 0;
+
+        SetCursor(LoadCursor(NULL,data[index]));
+    }
+
 	/////////////////////////////////////////////////////////////
 	fm::vec2i Mouse::getPosition()
 	{
 		POINT p;
 		if (!GetCursorPos(&p))
-		{
-			fw::WapiPrintLastError(fw_log,GetCursorPos);
 			return fm::vec2u();
-		}
+
 		return fm::vec2u::loadxy(p);
 	}
 
@@ -119,24 +127,18 @@ namespace fw
 	{
 		POINT p;
 		if (!GetCursorPos(&p))
-		{
-			fw::WapiPrintLastError(fw_log,GetCursorPos);
 			return fm::vec2i();
-		}
 
 		if (!ScreenToClient(window.getHandle(), &p))
-		{
-			fw::WapiPrintLastError(fw_log,ScreenToClient);
 			return fm::vec2i();
-		}
+
 		return fm::vec2i::loadxy(p);
 	}
 
 	/////////////////////////////////////////////////////////////
 	void Mouse::setPosition(const fm::vec2i &pos)
 	{
-		if (!SetCursorPos(pos.x,pos.y))
-			fw::WapiPrintLastError(fw_log,SetCursorPos);
+		SetCursorPos(pos.x,pos.y);
 	}
 
 	/////////////////////////////////////////////////////////////

@@ -26,6 +26,8 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_end>
 
+#include <FRONTIER/System/macros/API.h>
+
 #define FRONTIER_CAMERA
 
 namespace fm

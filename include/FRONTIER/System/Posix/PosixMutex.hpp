@@ -30,53 +30,48 @@ namespace fm
 		public:
 			typedef Mutex &reference;
 			typedef const Mutex &const_reference;
-		
+
 			/////////////////////////////////////////////////////////////
 			/// @brief Default constructor
-			/// 
+			///
 			/////////////////////////////////////////////////////////////
 			Mutex();
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Default destructor
-			/// 
-			/// One should unlock the mutex 
+			///
+			/// One should unlock the mutex
 			/// before destucting it
-			/// 
+			///
 			/////////////////////////////////////////////////////////////
 			~Mutex();
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Locks the mutex
-			/// 
+			///
 			/// Blocks until the mutex is not available for lock.
-			/// Upon internal error the mutex is NOT locked and false is returned
-			/// 
-			/// @return True iff everything went right
-			/// 
+			///
 			/////////////////////////////////////////////////////////////
-			bool lock();
+			void lock();
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Tries to lock the mutex
-			/// 
+			///
 			/// If the mutex is already locked this function
 			/// returns (false) immediately
-			/// 
+			///
 			/// @return True iff the mutex got locked
-			/// 
+			///
 			/////////////////////////////////////////////////////////////
 			bool attemptLock();
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Unlocks the mutex
-			/// 
+			///
 			/// After this call the mutex will not be locked
-			/// 
-			/// @return True iff everything went right
-			/// 
+			///
 			/////////////////////////////////////////////////////////////
-			bool unLock();
+			void unLock();
 		};
 	}
 }

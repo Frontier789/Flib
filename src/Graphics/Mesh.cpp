@@ -31,9 +31,9 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	Mesh::Mesh() : primitive(fg::Triangles)
 	{
-		
+
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Mesh Mesh::copy()
 	{
@@ -110,9 +110,9 @@ namespace fg
     {
         Mesh ret;
         ret.pts.resize((W+1)*(H+1));
-        ret.uvs.resize((W+1)*(H+1));
+        ret.uvs.resize(ret.pts.size());
         ret.primitive = fg::Triangles;
-        ret.indices.resize(W*(H+1)*2*3);
+        ret.indices.resize(W*H*2*3);
 
         fm::Size ptsi = 0;
         fm::Size uvsi = 0;
@@ -143,30 +143,101 @@ namespace fg
 				fm::vec2i offsets[] = {fm::vec2i(0,0),fm::vec2i(1,0),fm::vec2i(1,1),
 									   fm::vec2i(0,0),fm::vec2i(1,1),fm::vec2i(0,1)};
 
-				if (x < W)
+				if (x < W && y < H)
 					C(6)
-						ret.indices[indi++] = (x+offsets[i].x)*(H+1) + (y+offsets[i].y)%(H+1);
+						ret.indices[indi++] = (x+offsets[i].x)*(H+1) + y+offsets[i].y;
 			}
 		}
 
         return ret;
     }
+/*
+	/////////////////////////////////////////////////////////////
+    Mesh Mesh::getCylinder(float radius,float height, fm::Size W,fm::Size H, const fm::Delegate<float,float &,float &> &rfunc)
+	{
+		Mesh ret;
+		ret.pts.resize((W+1)*2 + 2 + H*(W+1));
+		ret.uvs.resize(ret.pts.size());
+		ret.primitive = fg::Triangles;
+		ret.indicess.resize(W*2*3 + W*(H-1)*2*3);
 
+        fm::Size ptsi = 0;
+        fm::Size uvsi = 0;
+        fm::Size indi = 0;
+
+        ret.pts[ptsi++] = fm::vec3(0,height/2,0);
+		C(W+1)
+		{
+		    float xp = i/float(W);
+		    float yp = 1;
+		    float r = (rfunc ? rfunc(xp,yp) : 1.f);
+
+		    fm::vec2 p = fm::pol2(radius*r,fm::deg(xp*360));
+		    ret.pts[ptsi++] = fm::vec3(p.x,height/2,p.y);
+		    if (i < W)
+            {
+                ret.inds[indi++] = 0;
+                ret.inds[indi++] = i+1;
+                ret.inds[indi++] = i+2;
+            }
+		}
+
+        ret.pts[ptsi++] = fm::vec3(0,-height/2,0);
+		C(W+1)
+		{
+		    float xp = i/float(W);
+		    float yp = 0;
+		    float r = (rfunc ? rfunc(xp,yp) : 1.f);
+
+		    fm::vec2 p = fm::pol2(radius*r,fm::deg(xp*360));
+		    ret.pts[ptsi++] = fm::vec3(p.x,-height/2,p.y);
+		    if (i < W)
+            {
+                ret.inds[indi++] = W+2;
+                ret.inds[indi++] = W+2+i+1;
+                ret.inds[indi++] = W+2+i+2;
+            }
+		}
+	}
+*/
+	class Comparator
+    {
+        bool almostEqual(float a,float b)
+        {
+            return fm::math::abs(a-b) < epsilon;
+        }
+
+    public:
+    	float epsilon;
+    	Comparator(float ep) : epsilon(ep) {}
+
+        bool operator()(const fm::vec3 &l,const fm::vec3 &r)
+        {
+        	if (almostEqual((l-r).length(),epsilon)) return false;
+            if (l.x != r.x) return l.x < r.x;
+            if (l.y != r.y) return l.y < r.y;
+            if (l.z != r.z) return l.z < r.z;
+
+			return false;
+        }
+    };
 	/////////////////////////////////////////////////////////////
     void Mesh::calcNormals()
     {
 		if (pts.size() < 3)
             return;
-           
-		if (primitive != fg::Triangles && 
-			primitive != fg::TriangleStrip && 
+
+		if (primitive != fg::Triangles &&
+			primitive != fg::TriangleStrip &&
 			primitive != fg::TriangleFan)
 			return;
-		
+
 		bool useInds = (indices.size()!=0);
-		
+
 		norms.resize(pts.size(),fm::vec3());
-		
+
+		float mnDst = -1;
+
 		C((useInds ? indices.size() : pts.size()) - 2)
 		{
 			fm::Uint32 ind0 = useInds ? indices[i+0] : i+0;
@@ -181,13 +252,49 @@ namespace fg
 			{
 				ind0 = 0;
 			}
-			
-			fm::vec3 N = (pts[ind1]-pts[ind0]).cross(pts[ind2]-pts[ind0]);
+
+			fm::vec3 v0 = pts[ind1]-pts[ind0], v1 = pts[ind2]-pts[ind0], v2 = pts[ind1]-pts[ind2];
+
+			if (mnDst == -1) mnDst = v0.length();
+			mnDst = fm::math::min(mnDst,v0.length());
+			mnDst = fm::math::min(mnDst,v1.length());
+			mnDst = fm::math::min(mnDst,v2.length());
+
+			fm::vec3 N = (v0).cross(v1);
 			norms[ind0] += N;
 			norms[ind1] += N;
 			norms[ind2] += N;
         }
-        
+        // fg::fg_log << "k " << mnDst << std::endl;
+//        if (joinSamePts)
+            {
+                std::map<fm::vec3,std::set<fm::Size>,Comparator > pToInds(Comparator(mnDst*.5));
+
+                C(pts.size())
+                    pToInds[pts[i]].insert(i);
+
+                for (std::map<fm::vec3,std::set<fm::Size>,Comparator >::const_iterator it = pToInds.begin();it != pToInds.end();++it)
+                {
+                    fm::vec3 n;
+                    float db = 0;
+                    for (std::set<fm::Size>::const_iterator pit = it->second.begin();pit != it->second.end();++pit)
+                        n += norms[*pit],
+                        ++db;
+                    /*
+					if (it->second.size() > 1)
+					{
+						fg::fg_log << it->first << " : ";
+       	             for (std::set<fm::Size>::const_iterator pit = it->second.begin();pit != it->second.end();++pit)
+							fg::fg_log << *pit << " / ";
+						fg::fg_log << std::endl;
+					}*/
+                    n /= db;
+
+                    for (std::set<fm::Size>::const_iterator pit = it->second.begin();pit != it->second.end();++pit)
+                        norms[*pit] = n;
+                }
+            }
+
         C(norms.size())
 			norms[i] = norms[i].sgn();
     }
@@ -197,17 +304,17 @@ namespace fg
     {
 		if (pts.size() < 3 || uvs.size() < 3)
             return;
-           
-		if (primitive != fg::Triangles && 
-			primitive != fg::TriangleStrip && 
+
+		if (primitive != fg::Triangles &&
+			primitive != fg::TriangleStrip &&
 			primitive != fg::TriangleFan)
 			return;
-		
+
 		bool useInds = (indices.size()!=0);
-		
+
 		tans.resize(pts.size(),fm::vec3());
 		bitans.resize(pts.size(),fm::vec3());
-		
+
 		C((useInds ? indices.size() : pts.size()) - 2)
 		{
 			fm::Uint32 ind0 = useInds ? indices[i+0] : i+0;
@@ -248,10 +355,10 @@ namespace fg
 			bitans[ind1] += B;
 			bitans[ind2] += B;
         }
-        
+
         C(tans.size())
 			tans[i] = tans[i].sgn();
-			
+
         C(bitans.size())
 			bitans[i] = bitans[i].sgn();
     }

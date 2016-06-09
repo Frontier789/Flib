@@ -17,19 +17,27 @@
 #include <FRONTIER/Graphics/ShaderManager.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/GL/Is_GLDataType.hpp>
-#include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/Graphics/Mesh.hpp>
-#include <FRONTIER/System/matrix.hpp>
+#include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/System/Camera.hpp>
+#include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
 namespace fg
 {
 	////////////////////////////////////////////////////////////
     ShaderManager::ShaderManager() : m_stacks(3,fm::MatrixStack<4,4,float>(fm::mat4())),
+                                     m_cam(fm::nullPtr),
                                      m_matNames(8,std::string()),
                                      m_matIds(8,0)
+    {
+
+    }
+
+	////////////////////////////////////////////////////////////
+    ShaderManager::~ShaderManager()
     {
 
     }
@@ -40,6 +48,8 @@ namespace fg
         m_cam = fm::nullPtr;
 
         m_assocPoints.clear();
+        m_texNames = std::vector<std::string>();
+        m_texUseNames = std::vector<std::string>();
 
         C(m_matIds.size())
             m_matIds[i] = 0;
@@ -67,7 +77,7 @@ namespace fg
         if (overWrite)
             m_assocPoints[point] = attrName;
         else if (m_assocPoints.find(point) == m_assocPoints.end())
-                m_assocPoints[point] = attrName;
+                 m_assocPoints[point] = attrName;
     }
 
 	////////////////////////////////////////////////////////////
@@ -88,7 +98,33 @@ namespace fg
     }
 
 	////////////////////////////////////////////////////////////
+    void ShaderManager::regTexture(const std::string &texName,const std::string &texInUse)
+    {
+        m_texNames.push_back(texName);
+        m_texUseNames.push_back(texInUse);
+    }
+
+	////////////////////////////////////////////////////////////
+    void ShaderManager::useTexture(fm::Ref<const fg::Texture> tex,fm::Size texIndex)
+    {
+        if (texIndex < m_texNames.size())
+        {
+            setUniform(m_texNames[texIndex],(const fg::Texture*)tex);
+
+            if (m_texUseNames[texIndex].size() != 0)
+                setUniform(m_texUseNames[texIndex],(tex ? 1 : 0));
+        }
+    }
+
+	////////////////////////////////////////////////////////////
     void ShaderManager::clearAssociations()
+    {
+        m_texNames = std::vector<std::string>();
+        m_texUseNames = std::vector<std::string>();
+    }
+
+	////////////////////////////////////////////////////////////
+    void ShaderManager::clearTextures()
     {
         m_assocPoints.clear();
     }
@@ -134,72 +170,44 @@ namespace fg
             setUniform(m_matNames[7],m_stacks[2].top());
 
         for (std::map<int,std::string>::const_iterator it = m_assocPoints.begin();it != m_assocPoints.end();++it)
-            C(data.attrs.size())
-                if (data.attrs[i] && data.attrs[i]->type == it->first && hasAttribute(it->second))
-                    fg::Buffer::bind(data.attrs[i]->buf,fg::ArrayBuffer),
-                    setAttribPointer(it->second,data.attrs[i]->components,data.attrs[i]->componentType,false,fm::nullPtr,data.attrs[i]->stride);
+        {
+			if (data.hasAttr((fg::Assoc::Point)it->first) && hasAttribute(it->second))
+			{
+				const fg::DrawData::Attribute &attr = data[(fg::Assoc::Point)it->first];
+
+				fg::Buffer::bind(attr.buf,fg::ArrayBuffer),
+				setAttribPointer(it->second,attr.components,attr.componentType,false,fm::nullPtr,attr.stride);
+			}
+        }
     }
 
 	////////////////////////////////////////////////////////////
     void ShaderManager::draw(const fg::DrawData &data)
     {
-        prepareDraw(data);
-
-        C(data.drawCalls.size())
-        {
-			fg::DrawData::DrawCall *draw = data.drawCalls[i];
-			
-			if (draw)
-            {
-            	fg::Buffer::bind(draw->buf,fg::IndexBuffer);
-            	
-				if (draw->buf)
-					glCheck(glDrawElements(draw->primitive,draw->indexCount,draw->componentType,fm::nullPtr));
-				else
-					glCheck(glDrawArrays(draw->primitive,draw->drawBeg,draw->drawLen));
-            }
-        }
+		draw(data,0,data.getDrawCount());
     }
 
 	////////////////////////////////////////////////////////////
     void ShaderManager::draw(const fg::DrawData &data,fm::Size indexSet)
     {
-        prepareDraw(data);
-
-        if(indexSet < data.drawCalls.size())
-        {
-        	fg::DrawData::DrawCall *draw = data.drawCalls[indexSet];
-			
-			if (draw)
-            {
-            	fg::Buffer::bind(draw->buf,fg::IndexBuffer);
-            	
-				if (draw->buf)
-					glDrawElements(draw->primitive,draw->indexCount,draw->componentType,fm::nullPtr);
-				else
-					glDrawArrays(draw->primitive,draw->drawBeg,draw->drawLen);
-            }
-        }
+        draw(data,indexSet,1);
     }
 
 	////////////////////////////////////////////////////////////
-    void ShaderManager::draw(const fg::DrawData &data,fm::Size *indexSets,fm::Size indexSetCount)
+    void ShaderManager::draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount)
     {
         prepareDraw(data);
 
-        C(indexSetCount)
+        C(indexCount)
         {
-			fg::DrawData::DrawCall *draw = data.drawCalls[indexSets[i]];
-			
-			if (draw)
-            {
-            	fg::Buffer::bind(draw->buf,fg::IndexBuffer);
-            	
-				if (draw->buf)
-					glDrawElements(draw->primitive,draw->indexCount,draw->componentType,fm::nullPtr);
-				else
-					glDrawArrays(draw->primitive,draw->drawBeg,draw->drawLen);
-            }
+			const fg::DrawData::DrawCall &draw = data.getDraw(indexBeg+i);
+
+			fg::Buffer::bind(draw.buf,fg::IndexBuffer);
+
+			if (draw.componentType)
+				glDrawElements(draw.primitive,draw.indexCount,draw.componentType,fm::nullPtr);
+			else
+				glDrawArrays(draw.primitive,draw.drawBeg,draw.drawLen);
         }
     }
 

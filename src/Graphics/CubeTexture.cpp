@@ -1,9 +1,10 @@
 #include <FRONTIER/Graphics/CubeTexture.hpp>
-#include <FRONTIER/Graphics/GLCheck.hpp>
 #include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
-#include <FRONTIER/Graphics/FgLog.hpp>
+#include <FRONTIER/System/String.hpp>
+#include <FRONTIER/System/Error.hpp>
+#include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
 namespace fg
@@ -31,12 +32,12 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool CubeTextureFace::create(fm::Size width,fm::Size height)
+	fm::Result CubeTextureFace::create(fm::Size width,fm::Size height)
 	{
         if (m_cubeTex.getSize() != fm::math::max(width,height))
 			return m_cubeTex.create(fm::math::max(width,height));
 
-		return true;
+		return fm::Result();
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -82,23 +83,18 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	bool CubeTexture::create(fm::Size size)
+	fm::Result CubeTexture::create(fm::Size size)
 	{
 		// check for empty texture
 		if (!size)
-		{
-			fg_log << "Couldn't create Texture, invalid cube texture size: ("<<size<<")"<<std::endl;
-			return false;
-		}
+			return fm::Error("CubeTextureError","CreatingEmptyTexture","Couldn't create CubeTexture, invalid texture size: (0)","CubeTexture.create",__FILE__,__LINE__);
 
 		// opengl wouldn't accpet too big textures
 		fm::Size maxSize = getMaximumSize();
 		if (size > maxSize)
-		{
-			fg_log << "Couldn't create texture with size ("<<size<<").\n"
-				   << "Because its bigger than the maximum ("<<maxSize<<")"<<std::endl;
-			return false;
-		}
+			return fm::Error("CubeTextureError","CreatingTooBigTexture","Couldn't create texture with size (" + fm::toString(size).str() + ")","CubeTexture.create",__FILE__,__LINE__);
+
+		fm::Error err;
 
 		// setup internal data
 		m_size = size;
@@ -106,7 +102,7 @@ namespace fg
 		if (glIsTexture(getGlId()) == GL_FALSE)
 		{
 			GLuint glId;
-			glCheck(glGenTextures(1,&glId));
+			err += glCheck(glGenTextures(1,&glId));
 			getGlId() = glId;
 		}
 
@@ -114,7 +110,7 @@ namespace fg
 		GLint boundTex;
 		glCheck(glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &boundTex));
 		{
-			glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,getGlId()));
+			err += glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,getGlId()));
 
 			// set TEXTURE_WRAP
 			glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_R,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
@@ -124,22 +120,22 @@ namespace fg
 			if (glGetError() != GL_NO_ERROR)
 			{
 				m_isRepeated = !m_isRepeated;
-				glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_R,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
-				glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
-				glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
+				err += glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_R,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
+				err += glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
+				err += glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
 			}
 
 			// set TEXTURE_FILTER
-			glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
-			glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
+			err += glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
+			err += glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
 
 			// upload data
 			C(6)
-				glCheck(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,getInternalFormat(),m_size,m_size,0,getFormat(),getType(),fm::nullPtr));
+				err += glCheck(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,getInternalFormat(),m_size,m_size,0,getFormat(),getType(),fm::nullPtr));
 		}
-		glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,boundTex));
+		err += glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,boundTex));
 
-		return true;
+		return err;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -191,16 +187,16 @@ namespace fg
 			if (getGlId())
 			{
 				GLint boundTex;
-				glCheck(glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &boundTex));
+				glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &boundTex);
 				{
-					glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,getGlId()));
+					glBindTexture(GL_TEXTURE_CUBE_MAP,getGlId());
 
 					// set TEXTURE_WRAP
 					glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_R,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 					glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 					glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 				}
-				glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,boundTex));
+				glBindTexture(GL_TEXTURE_CUBE_MAP,boundTex);
 			}
 		}
 
@@ -217,15 +213,15 @@ namespace fg
 			if (getGlId())
 			{
 				GLint boundTex;
-				glCheck(glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &boundTex));
+				glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &boundTex);
 				{
-					glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,getGlId()));
+					glBindTexture(GL_TEXTURE_CUBE_MAP,getGlId());
 
 					// set TEXTURE_FILTER
-					glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
-					glCheck(glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
+					glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST);
+					glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST);
 				}
-				glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,boundTex));
+				glBindTexture(GL_TEXTURE_CUBE_MAP,boundTex);
 			}
 		}
 
@@ -245,31 +241,31 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	void CubeTexture::bind() const
+	fm::Result CubeTexture::bind() const
 	{
-		glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,getGlId()));
+		return glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,getGlId()));
 	}
 
 	/////////////////////////////////////////////////////////////
-	void CubeTexture::bind(const CubeTexture *texture)
+	fm::Result CubeTexture::bind(const CubeTexture *texture)
 	{
 		if (texture)
-			texture->bind();
-		else
-			glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,0));
+			return texture->bind();
+
+		return glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,0));
 	}
 
 	/////////////////////////////////////////////////////////////
-	void CubeTexture::bind(const CubeTexture &texture)
+	fm::Result CubeTexture::bind(const CubeTexture &texture)
 	{
-		texture.bind();
+		return texture.bind();
 	}
 
 	/////////////////////////////////////////////////////////////
 	fm::Size CubeTexture::getMaximumSize()
 	{
 		GLint size;
-		glCheck(glGetIntegerv(GL_MAX_TEXTURE_SIZE,&size));
+		glGetIntegerv(GL_MAX_TEXTURE_SIZE,&size);
 
 		return size;
 	}

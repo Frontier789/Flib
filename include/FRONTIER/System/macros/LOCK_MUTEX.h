@@ -21,7 +21,7 @@
 	#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 		#define FRONTIER_LOCK_MUTEX(mutex) (mutex).lock()
 	#else
-		#define FRONTIER_LOCK_MUTEX(mutex) (void)
+		#define FRONTIER_LOCK_MUTEX(mutex) (void)0
     #endif
 #endif
 
@@ -31,6 +31,6 @@
 	#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 		#define FRONTIER_UNLOCK_MUTEX(mutex) (mutex).unLock()
 	#else
-		#define FRONTIER_UNLOCK_MUTEX(mutex) (void)
+		#define FRONTIER_UNLOCK_MUTEX(mutex) (void)0
     #endif
 #endif

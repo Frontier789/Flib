@@ -121,6 +121,13 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<fm::Size W,fm::Size H,class T,class Container>
+	inline void MatrixStack<W,H,T,Container>::clear() const
+	{
+		m_container.clear();
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<fm::Size W,fm::Size H,class T,class Container>
 	inline fm::Size MatrixStack<W,H,T,Container>::size() const
 	{
 		return m_container.size();

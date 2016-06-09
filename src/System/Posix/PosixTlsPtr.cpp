@@ -16,8 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/Posix/PosixTlsPtr.hpp>
 #include <FRONTIER/System/macros/API.h>
-#include <FRONTIER/System/FmLog.hpp>
-#include "fmPosixPrintErrno.hpp"
+#include <FRONTIER/System/NullPtr.hpp>
 #include <pthread.h>
 #include <string.h>
 #include <errno.h>
@@ -30,20 +29,19 @@ namespace fm
 		{
 			return *((pthread_key_t*)data);
 		}
-		
+
 		const pthread_key_t &getID(const void *data)
 		{
 			return *((pthread_key_t*)data);
 		}
-		
+
 		/////////////////////////////////////////////////////////////
 		TlsPtr::TlsPtr() : m_id(new pthread_key_t)
 		{
-			if (pthread_key_create((pthread_key_t*)m_id,NULL) != 0)
+			if (pthread_key_create((pthread_key_t*)m_id,fm::nullPtr) != 0)
 			{
-				fm::PosixPrintErrno(fm::fm_log,pthread_key_create);
 				delete (pthread_key_t*)m_id;
-				m_id = NULL;
+				m_id = fm::nullPtr;
 			}
 		}
 
@@ -51,8 +49,7 @@ namespace fm
 		TlsPtr::~TlsPtr()
 		{
 			if (m_id)
-				if (pthread_key_delete(getID(m_id)) != 0)
-					fm::PosixPrintErrno(fm::fm_log,pthread_key_delete);
+				pthread_key_delete(getID(m_id));
 
 			delete (pthread_key_t*)m_id;
 		}
@@ -62,29 +59,26 @@ namespace fm
 		{
 			if (!isValid())
 				return false;
-			
+
 			if (pthread_setspecific(getID(m_id),ptr) != 0)
-			{
-				fm::PosixPrintErrno(fm::fm_log,pthread_setspecific);
 				return false;
-			}
-			
-			return true;	
+
+			return true;
 		}
 
 		/////////////////////////////////////////////////////////////
 		void *TlsPtr::getPtr() const
 		{
 			if (!isValid())
-				return NULL;
-			
+				return fm::nullPtr;
+
 			return pthread_getspecific(getID(m_id));
 		}
 
 		/////////////////////////////////////////////////////////////
 		bool TlsPtr::isValid() const
 		{
-			return m_id != NULL;
+			return m_id != fm::nullPtr;
 		}
 	}
 }

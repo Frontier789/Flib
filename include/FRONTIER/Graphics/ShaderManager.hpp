@@ -19,13 +19,15 @@
 #include <FRONTIER/System/MatrixStack.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
-#include <FRONTIER/System/Camera.hpp>
+#include <FRONTIER/System/Ref.hpp>
 #define FRONTIER_SHADERMANAGER
 
 namespace fm
 {
     template<fm::Size,fm::Size,class> class matrix;
     typedef matrix<4,4,float> mat4;
+
+    class Camera;
 }
 
 namespace fg
@@ -37,26 +39,38 @@ namespace fg
     protected:
         std::vector<fm::MatrixStack<4,4,float> > m_stacks;
         void clearData();
-        void prepareDraw(const fg::DrawData &data);
+        virtual void prepareDraw(const fg::DrawData &data);
 
         fm::Camera *m_cam;
         std::vector<std::string> m_matNames;
         std::vector<int> m_matIds;
 
         std::map<int,std::string> m_assocPoints; /// e.g.  DrawData::Pos -> "in_pos"
+        std::vector<std::string> m_texNames;
+        std::vector<std::string> m_texUseNames;
     public:
 
+        ////////////////////////////////////////////////////////////
         ShaderManager();
 
-        void setCamera(fm::Camera *cam,const std::string &projMat = "",const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
+        virtual ~ShaderManager();
+
+        ////////////////////////////////////////////////////////////
+        virtual void setCamera(fm::Camera *cam,const std::string &projMat = "",const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
         void associate(const std::string &attrName,int point,bool overWrite = true);
-        void setMatrices(const std::string &modelMat,const std::string &normalMat = std::string(),const std::string &colorMat = std::string(),const std::string &texUVMat = std::string());
+        virtual void setMatrices(const std::string &modelMat,const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "");
+        void regTexture(const std::string &texName,const std::string &texInUse = "");
+        virtual void useTexture(fm::Ref<const fg::Texture> tex,fm::Size texIndex = 0);
+
+        ////////////////////////////////////////////////////////////
         void clearAssociations();
-        void update();
+        void clearTextures();
+        virtual void update();
         void draw(const fg::DrawData &data);
         void draw(const fg::DrawData &data,fm::Size indexSet);
-        void draw(const fg::DrawData &data,fm::Size *indexSets,fm::Size indexSetCount);
+        virtual void draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount);
 
+        ////////////////////////////////////////////////////////////
         fm::MatrixStack<4,4,float> &getModelStack();
         fm::MatrixStack<4,4,float> &getColorStack();
         fm::MatrixStack<4,4,float> &getTexUVStack();

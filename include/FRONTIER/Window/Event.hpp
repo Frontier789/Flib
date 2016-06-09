@@ -183,6 +183,27 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		static bool isButtonHeld(Button button);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Enumerates the known mouse cursors
+		///
+		/////////////////////////////////////////////////////////////
+		enum Cursor {
+			Arrow,      ///< The default arrow cursor
+			IBeam,      ///< The text entering cursor
+			Click,      ///< The clickable cursor
+			No,         ///< The forbidding cursir
+			Loading,    ///< The loading cursor
+			CursorCount ///< The number of cursors
+		};
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Change the cursor
+		///
+		/// @param cursor The new cursor
+		///
+		/////////////////////////////////////////////////////////////
+		static void setCursor(Cursor cursor);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the cursor's distance from the upper left corner
@@ -392,15 +413,15 @@ namespace fw
 		EventType type; ///< The type of the event
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Holds the fileds of the event
+		/// @brief Holds the fields of the event
 		///
-		/// We only use one field at a time so union is sufficent
+		/// We only use one field at a time so union is sufficient
 		///
 		/////////////////////////////////////////////////////////////
 		union {
 			KeyboardEvent   key;    ///< used with KeyPressed, KeyReleased events
 			ButtonEvent     mouse;  ///< used with ButtonPressed, ButtonReleased events
-			MotionEvent     motion; ///< used with MouseMoved event
+			MotionEvent     motion; ///< used with MouseMoved, MouseEntered, MouseLeft events
 			ResizeEvent     size;   ///< used with Resize event
 			TextEvent       text;   ///< used with TextEntered event
 			MouseWheelEvent wheel;  ///< used with MouseWheelMoved event
@@ -418,7 +439,7 @@ namespace fw
 			union {
 				KeyboardEvent   key;    ///< used with KeyPressed KeyReleased events
 				ButtonEvent     mouse;  ///< used with ButtonPressed ButtonReleased events
-				MotionEvent     motion; ///< used with MouseMoved event
+				MotionEvent     motion; ///< used with MouseMoved, MouseEntered, MouseLeft event
 				ResizeEvent     size;   ///< used with Resize event
 				TextEvent       text;   ///< used with TextEntered
 				MouseWheelEvent wheel;  ///< used with MouseWheelMoved event

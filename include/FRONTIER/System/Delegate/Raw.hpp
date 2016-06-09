@@ -29,7 +29,7 @@ namespace fm
         inline R operator()(FRONTIER_DELEGATE_CALL_PARAMS);
 
         inline virtual DelegateImpl<R FRONTIER_DELEGATE_TEMPLATE_LIST> *makeNewCopy() const;
-        
+
 		inline virtual int getTypeID() const;
     };
 
@@ -76,7 +76,22 @@ namespace fm
         inline Delegate(R (*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV));
 
         template<class Object>
-        inline Delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV),const typename Identity<Object>::type &object = Object());
+        inline Delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV),const typename Identity<Object>::type &object);
+
+        template<class Object>
+        inline Delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const,const typename Identity<Object>::type &object);
+
+        template<class Object>
+        inline Delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV),typename Identity<Object>::type *object);
+
+        template<class Object>
+        inline Delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const,const typename Identity<Object>::type *object);
+
+        template<class Object>
+        inline Delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV));
+
+        template<class Object>
+        inline Delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const);
 
         template<class Object>
         inline Delegate(const Object &object = Object(),typename Enable_if<priv::IsCallable<Object,R FRONTIER_DELEGATE_TEMPLATE_LIST>::value,int>::type * = 0);
@@ -90,7 +105,7 @@ namespace fm
         inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> &operator=(const Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> &d);
 
 		inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> &operator=(fm::priv::NullPtr theNullPtr);
-		
+
 		inline operator bool() const;
     };
 }

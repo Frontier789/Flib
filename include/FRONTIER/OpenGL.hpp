@@ -16,13 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_OPENGL_HPP_INCLUDED
 #define FRONTIER_OPENGL_HPP_INCLUDED
-#include <FRONTIER/System/Log.hpp>
 #define FRONTIER_OPENGL
-
-namespace fg
-{
-	extern fm::Log OpenGL_log;
-}
 
 //////////////////////////////////
 /// It would cause name conflict so we
@@ -105,6 +99,7 @@ namespace fg
 
 #include <FRONTIER/GL/GL_VALUES.h>
 #include <FRONTIER/GL/GL_TYPES.hpp>
+#include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/GL/GL_FUNCTIONS.h>
 
 

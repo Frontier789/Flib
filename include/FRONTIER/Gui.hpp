@@ -34,16 +34,14 @@ namespace Fgui
 
 }
 
-#include <FRONTIER/Gui/Div.hpp>
-#include <FRONTIER/Gui/Table.hpp>
-#include <FRONTIER/Gui/Anchor.hpp>
+#include <FRONTIER/Gui/Text.hpp>
 #include <FRONTIER/Gui/Widget.hpp>
 #include <FRONTIER/Gui/Button.hpp>
-#include <FRONTIER/Gui/Housing.hpp>
-#include <FRONTIER/Gui/BasicText.hpp>
-#include <FRONTIER/Gui/BasicControl.hpp>
-#include <FRONTIER/Gui/StringControl.hpp>
-#include <FRONTIER/Gui/NumericControl.hpp>
-#include <FRONTIER/Gui/ValueControlBase.hpp>
+#include <FRONTIER/Gui/Layout.hpp>
+#include <FRONTIER/Gui/EditText.hpp>
+#include <FRONTIER/Gui/GuiElement.hpp>
+#include <FRONTIER/Gui/BasicLayout.hpp>
+#include <FRONTIER/Gui/LinearLayout.hpp>
+#include <FRONTIER/Gui/ValueControl.hpp>
 
 #endif // FRONTIER_GUI_MODULE_HPP_INCLUDED

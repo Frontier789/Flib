@@ -38,6 +38,13 @@ namespace fg
 
 namespace fw
 {
+	namespace priv
+	{
+		Display *FRONTIER_API getGlobDisp();
+		void FRONTIER_API freeGlobDisp(Display *disp);
+		bool FRONTIER_API getFBConfig(Display *disp,void *fbconfptr,bool window);
+	}
+	
 	/////////////////////////////////////////////////////////////
 	///
 	/// 	@brief Classes related to xlib are held in this namespace
@@ -108,7 +115,8 @@ namespace fw
 			EventCallback m_eventCallback; ///< Holds the handle of the event callback
 			void getStateProperties(Atom *&atoms,unsigned long *count) const;  ///< Internal function used to get properties of the window
 			std::deque<Xlib::Window *> m_children; ///< Holds the window's children
-			XIC m_xic; ///< X inout context
+			XIC m_xic;       ///< X inout context
+			Colormap m_cmap; ///< The colormap of the window
 			
 		public:
 			typedef Window &reference;
@@ -456,3 +464,4 @@ namespace fw
 }
 
 #endif // FRONTIER_XLIB_WINDOW_INCLUDED
+

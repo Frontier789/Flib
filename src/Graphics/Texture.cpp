@@ -17,11 +17,12 @@
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
-#include <FRONTIER/Graphics/GLCheck.hpp>
-#include <FRONTIER/Graphics/FgLog.hpp>
+#include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/System/Error.hpp>
 #include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/OpenGL.hpp>
 #include <cstring>
@@ -43,7 +44,7 @@ namespace fg
 			TextureSaver(GLenum binding,GLenum texTarget) : m_target(texTarget)
 			{
 				GLint textureId;
-				glCheck(glGetIntegerv(binding, &textureId));
+				glGetIntegerv(binding, &textureId);
 				m_textureId = textureId;
 			}
 
@@ -51,7 +52,7 @@ namespace fg
 			~TextureSaver()
 			{
 				GLint textureId = m_textureId;
-				glCheck(glBindTexture(m_target, textureId));
+				glBindTexture(m_target, textureId);
 			}
 		};
 	}
@@ -92,25 +93,31 @@ namespace fg
 		loadFromImage(img);
 	}
 
+	////////////////////////////////////////////////////////////
+	Texture::Texture(const std::string &filename) : m_isRepeated(false),
+                                                    m_isSmooth(false)
+
+	{
+		loadFromFile(filename);
+	}
+
 	/// destructor /////////////////////////////////////////////////////////
 	Texture::~Texture()
 	{
 		if (getGlId() && glIsTexture(getGlId())==GL_TRUE)
 		{
 			GLuint glId = getGlId();
-			glCheck(glDeleteTextures(1,&glId));
+			glDeleteTextures(1,&glId);
 		}
 	}
 
 	/// functions /////////////////////////////////////////////////////////
-	bool Texture::create(fm::Size width,fm::Size height)
+	fm::Result Texture::create(fm::Size width,fm::Size height)
 	{
 		// check for empty texture
 		if (!width || !height)
-		{
-			fg_log << "Couldn't create Texture, invalid texture size: ("<<width<<";"<<height<<")"<<std::endl;
-			return false;
-		}
+			return fm::Error("TextureError","CreatingEmptyTexture","Couldn't create Texture, invalid texture size: (" + fm::toString(width).str() + ";" + fm::toString(height).str() + ")","Texture.create",__FILE__,__LINE__);
+
 
 		// validate size
 		fm::vec2s realSize = getValidSize(fm::vec2s(width,height));
@@ -118,12 +125,9 @@ namespace fg
 
 		// opengl wouldn't accpet too big textures
 		if (realSize.w > maxSize || realSize.h > maxSize)
-		{
-			fg_log << "Couldn't create texture with size ("<<width<<";"<<height<<").\n"
-					  << "Because its internal size ("<<realSize.w<<";"<<realSize.h<<")"
-					  <<"is bigger than the maximum ("<<maxSize<<";"<<maxSize<<")"<<std::endl;
-			return false;
-		}
+			return fm::Error("TextureError","CreatingTooBigTexture","Couldn't create texture with size (" + fm::toString(width).str() + ";" + fm::toString(height).str() + ")","Texture.create",__FILE__,__LINE__);
+
+		fm::Error err;
 
 		// setup internal data
 		m_realSize = realSize;
@@ -132,7 +136,7 @@ namespace fg
 		if (glIsTexture(getGlId()) == GL_FALSE)
 		{
 			GLuint glId;
-			glCheck(glGenTextures(1,&glId));
+			err += glCheck(glGenTextures(1,&glId));
 			getGlId() = glId;
 		}
 
@@ -147,52 +151,59 @@ namespace fg
 		if (glGetError() != GL_NO_ERROR)
 		{
 			m_isRepeated = !m_isRepeated;
-			glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
-			glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
+			err += glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
+			err += glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
 		}
 
 		// set TEXTURE_FILTER
-		glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
-		glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
-		
+		err += glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
+		err += glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
+
 		if (getFormat() == GL_DEPTH_COMPONENT)
-			glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_COMPARE_MODE,GL_COMPARE_REF_TO_TEXTURE));
+			err += glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_COMPARE_MODE,GL_COMPARE_REF_TO_TEXTURE));
 
 		// upload data
-		glCheck(glTexImage2D(getTexTarget(),0,getInternalFormat(),m_realSize.w,m_realSize.h,0,getFormat(),getType(),fm::nullPtr));
+		err += glCheck(glTexImage2D(getTexTarget(),0,getInternalFormat(),m_realSize.w,m_realSize.h,0,getFormat(),getType(),fm::nullPtr));
 
-		return true;
+		return err;
 	}
 
 	////////////////////////////////////////////////////////////
-	bool Texture::create(const fm::vec2s &size)
+	fm::Result Texture::create(const fm::vec2s &size)
 	{
 		return create(size.w,size.h);
 	}
 
 	////////////////////////////////////////////////////////////
-	bool Texture::loadFromImage(const Image &img)
+	fm::Result Texture::loadFromImage(const Image &img)
 	{
+		fm::Error err;
+
 		// resize texture to needed size
-		if (create(img.getSize()))
+		if (err = create(img.getSize()))
+			return err;
+		else
 		{
 			// upload data
 			priv::TextureSaver save(getTexBinding(),getTexRebinding());
 			bind();
 
-			glCheck(glTexSubImage2D(getTexTarget(),0,0,0,img.getSize().w,img.getSize().h,getFormat(),getType(), img.getPixelsPtr()));
+			err += glCheck(glTexSubImage2D(getTexTarget(),0,0,0,img.getSize().w,img.getSize().h,getFormat(),getType(), img.getPixelsPtr()));
 		}
-		else
-			return false;
-		return true;
+
+		return err;
 	}
 
 
 	////////////////////////////////////////////////////////////
-	bool Texture::loadFromFile(const std::string &filename)
+	fm::Result Texture::loadFromFile(const std::string &filename)
 	{
 		Image img;
-		return img.loadFromFile(filename) && loadFromImage(img);
+		fm::Error err;
+
+		if (err = img.loadFromFile(filename)) return err;
+
+		return loadFromImage(img);
 	}
 
 
@@ -213,8 +224,8 @@ namespace fg
 				glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 				if (glGetError() != GL_NO_ERROR)
 				{
-					glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_CLAMP_TO_EDGE : GL_REPEAT));
-					glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_CLAMP_TO_EDGE : GL_REPEAT));
+					glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+					glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_CLAMP_TO_EDGE : GL_REPEAT);
 				}
 			}
 		}
@@ -234,8 +245,8 @@ namespace fg
 				priv::TextureSaver save(getTexBinding(),getTexRebinding());
 
 				bind();
-				glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
-				glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
+				glTexParameteri(getTexTarget(),GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST);
+				glTexParameteri(getTexTarget(),GL_TEXTURE_MIN_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST);
 			}
 		}
 		return *this;
@@ -254,65 +265,72 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Color *pixels,fm::Size x,fm::Size y,fm::Size w,fm::Size h)
+	fm::Result Texture::update(const Color *pixels,fm::Size x,fm::Size y,fm::Size w,fm::Size h)
 	{
+		fm::Error err;
+
 		if (pixels && getGlId())
 		{
 			priv::TextureSaver save(getTexBinding(),getTexRebinding());
 
 			bind();
-			glCheck(glTexSubImage2D(getTexTarget(), 0, x, y, w, h, getFormat(), getType(), pixels));
+			err += glCheck(glTexSubImage2D(getTexTarget(), 0, x, y, w, h, getFormat(), getType(), pixels));
 		}
-		return *this;
+		else
+			return fm::Error("TextureError","UpdateWith0ID","Texture::update was called with 0 id","Texture.update",__FILE__,__LINE__);
+
+		return err;
 	}
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Color *pixels,fm::Size x,fm::Size y,fm::vec2s size)
+	fm::Result Texture::update(const Color *pixels,fm::Size x,fm::Size y,fm::vec2s size)
 	{
 		return update(pixels,x,y,size.w,size.h);
 	}
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Color *pixels,fm::vec2s pos,fm::Size w,fm::Size h)
+	fm::Result Texture::update(const Color *pixels,fm::vec2s pos,fm::Size w,fm::Size h)
 	{
 		return update(pixels,pos.x,pos.y,w,h);
 	}
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Color *pixels,fm::vec2s pos,fm::vec2s size)
+	fm::Result Texture::update(const Color *pixels,fm::vec2s pos,fm::vec2s size)
 	{
 		return update(pixels,pos.x,pos.y,size.w,size.h);
 	}
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Color *pixels)
+	fm::Result Texture::update(const Color *pixels)
 	{
 		return update(pixels,0,0,m_size);
 	}
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Image &image)
+	fm::Result Texture::update(const Image &image)
 	{
 		return update(image.getPixelsPtr(),0,0,image.getSize());
 	}
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Image &image,fm::vec2s pos)
+	fm::Result Texture::update(const Image &image,fm::vec2s pos)
 	{
 		return update(image.getPixelsPtr(),pos,image.getSize());
 	}
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Image &image,unsigned x,unsigned y)
+	fm::Result Texture::update(const Image &image,unsigned x,unsigned y)
 	{
 		return update(image.getPixelsPtr(),x,y,image.getSize());
 	}
 
 	////////////////////////////////////////////////////////////
-	Image Texture::copyToImage() const
+	Image Texture::copyToImage(fm::Error *error) const
 	{
 		if (!getGlId())
 			return Image();
+
+		fm::Error err;
 
 		// retrieve bound framebuffer
 		GLint framebuffer;
@@ -323,21 +341,21 @@ namespace fg
 		{
 			// build a new framebuffer
 			GLuint fb_id;
-			glCheck(glGenFramebuffers(1,&fb_id));
-			glCheck(glBindFramebuffer(GL_FRAMEBUFFER,fb_id));
-			glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER,getAttachement(),getTexTarget(),getGlId(),0));
+			err += glCheck(glGenFramebuffers(1,&fb_id));
+			err += glCheck(glBindFramebuffer(GL_FRAMEBUFFER,fb_id));
+			err += glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER,getAttachement(),getTexTarget(),getGlId(),0));
 
 			// Tell GL no draw and read buffers will be needed
 			if (getAttachement() == GL_DEPTH_ATTACHMENT)
 			{
-				glCheck(glDrawBuffer(GL_NONE));
-				glCheck(glReadBuffer(GL_NONE));
+				err += glCheck(glDrawBuffer(GL_NONE));
+				err += glCheck(glReadBuffer(GL_NONE));
 			}
 
 			// read back texture
 			fg::Image ret;
 			ret.create(m_size);
-			glCheck(glReadPixels(0,0,m_size.w,m_size.h,getFormat(),getType(),ret.getPixelsPtr()));
+			err += glCheck(glReadPixels(0,0,m_size.w,m_size.h,getFormat(),getType(),ret.getPixelsPtr()));
 			glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
 			glDeleteFramebuffers(1,&fb_id);
 			return ret;
@@ -353,14 +371,14 @@ namespace fg
 		{
 			// simply copy back texture
 			bind();
-			glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),ret.getPixelsPtr()));
+			err += glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),ret.getPixelsPtr()));
 		}
 		else
 		{
 			// copy the whole texture
 			std::vector<Color> allPixels(m_realSize.w * m_realSize.h);
 			bind();
-			glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),&allPixels[0]));
+			err += glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),&allPixels[0]));
 
 			// cut the useful part
 			const Color *src = &allPixels[0];
@@ -374,29 +392,31 @@ namespace fg
 			}
 		}
 
+		if (error)
+			*error = err;
+
 		return ret;
 	}
 
 	////////////////////////////////////////////////////////////
-	void Texture::bind() const
+	fm::Result Texture::bind() const
 	{
-		if (getGlId())
-			glCheck(glBindTexture(getTexRebinding(),getGlId()));
+		return glCheck(glBindTexture(getTexRebinding(),getGlId()));
 	}
 
 	////////////////////////////////////////////////////////////
-	void Texture::bind(const Texture *texture)
+	fm::Result Texture::bind(const Texture *texture)
 	{
 		if (texture)
-			texture->bind();
-		else
-			glCheck(glBindTexture(GL_TEXTURE_2D,0));
+			return texture->bind();
+
+		return glCheck(glBindTexture(GL_TEXTURE_2D,0));
 	}
 
 	////////////////////////////////////////////////////////////
-	void Texture::bind(const Texture &texture)
+	fm::Result Texture::bind(const Texture &texture)
 	{
-		texture.bind();
+		return texture.bind();
 	}
 
 	/////////////////////////////////////////////////////////////

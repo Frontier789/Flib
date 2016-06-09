@@ -95,9 +95,6 @@ namespace fw
 			unsigned char majorVersion; ///< The major OpenGL version
 			unsigned char minorVersion; ///< The minor OpenGL version
 			bool compatiblityProfile;   ///< Indicates that the context is backward compatible
-			unsigned char bitsPerPixel; ///< The number of bits describing a pixel (usually 32)
-			unsigned char depthBits;    ///< The number of bits holding the depth value
-			unsigned char stencilBits;  ///< The number of stencil bits
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Default constructor
@@ -106,18 +103,12 @@ namespace fw
 			///
 			/// @param majorVersion The major OpenGL version
 			/// @param minorVersion The minor OpenGL version
-			/// @param bitsPerPixel The number of bits describing a pixel (usually 32)
-			/// @param depthBits    The number of bits holding the depth value
-			/// @param stencilBits  The number of stencil bits
 			/// @param compatiblityProfile Indicates that the context is backward compatible
 			///
 			/////////////////////////////////////////////////////////////
 			Settings(unsigned char majorVersion = 4,
 					 unsigned char minorVersion = 5,
-					 bool compatiblityProfile   = true,
-					 unsigned char bitsPerPixel = 32,
-					 unsigned char depthBits    = 24,
-					 unsigned char stencilBits  = 8);
+					 bool compatiblityProfile   = true);
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Decreases the OpenGL version AND keeps it valid (max knwown is 4.5)

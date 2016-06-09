@@ -1,207 +1,196 @@
-#include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/Gui/Widget.hpp>
+#include <FRONTIER/System/Rect.hpp>
 
-namespace Fgui
+////////////////////////////////////////////////////////////
+Widget::Widget(const fm::vec2 &pos,
+               const fm::vec2 &size,
+               const fm::String &id,
+               Layout *parent,
+               bool enabled) : GuiElement(pos,size,id,parent,enabled),
+                               m_mouseIn(false),
+                               m_pressed(0)
 {
-	/////////////////////////////////////////////////////////////
-	const std::string Widget::m_className = "Widget";
 
-	/////////////////////////////////////////////////////////////
-	std::deque<Widget *> Widget::allWidgets;
-
-	/////////////////////////////////////////////////////////////
-	Widget::Widget(const std::string &name,const Anchor &anchor,const fm::vec2 &size,Widget *parent) : m_name(name),
-																									   m_anchor(anchor),
-																									   m_size(size),
-																									   m_parent(parent),
-																									   m_enabled(true)
-	{
-		allWidgets.push_back(this);
-	}
-
-	/////////////////////////////////////////////////////////////
-	Widget::Widget(const Widget &copy) : m_name(copy.m_name),
-										 m_anchor(copy.m_anchor),
-										 m_size(copy.m_size),
-										 m_parent(copy.m_parent),
-										 m_enabled(copy.m_enabled)
-	{
-		allWidgets.push_back(this);
-	}
-
-	/////////////////////////////////////////////////////////////
-	Widget::~Widget()
-	{
-		for (std::deque<Widget*>::iterator it = allWidgets.begin();it!=allWidgets.end();++it)
-			if (*it == this)
-			{
-				allWidgets.erase(it);
-				return;
-			}
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Widget::setAnchor(const Anchor &anchor)
-	{
-		m_anchor = anchor;
-	}
-
-	/////////////////////////////////////////////////////////////
-	const Anchor &Widget::getAnchor() const
-	{
-		return m_anchor;
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Widget::setParent(Widget *parent)
-	{
-		m_parent = parent;
-	}
-
-	/////////////////////////////////////////////////////////////
-	Widget *Widget::getParent() const
-	{
-		return m_parent;
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Widget::setSize(const fm::vec2 &size)
-	{
-		m_size = size;
-	}
-
-	/////////////////////////////////////////////////////////////
-	fm::vec2 Widget::getSize() const
-	{
-		return m_size;
-	}
-
-	/////////////////////////////////////////////////////////////
-	fm::vec2 Widget::getInternalSize() const
-	{
-		return getSize();
-	}
-
-	/////////////////////////////////////////////////////////////
-	fm::vec2 Widget::getInternalPos() const
-	{
-		return fm::vec2();
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Widget::setName(const std::string &name)
-	{
-		m_name = name;
-	}
-
-	/////////////////////////////////////////////////////////////
-	std::string Widget::getName() const
-	{
-		return m_name;
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Widget::setEnabled(bool enabled)
-	{
-		m_enabled = enabled;
-	}
-
-	/////////////////////////////////////////////////////////////
-	bool Widget::getEnabled() const
-	{
-		return m_enabled;
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Widget::setActive(Widget *active)
-	{
-		if (m_parent)
-			m_parent->setActive(active);
-	}
-
-	////////////////////////////////////////////////////////
-	Widget *Widget::getActive()
-	{
-		if (m_parent)
-			return m_parent->getActive();
-
-		return fm::nullPtr;
-	}
-
-	/////////////////////////////////////////////////////////////
-	fm::vec2 Widget::getParentSize() const
-	{
-		if (m_parent)
-			return m_parent->getSize();
-
-		return fm::vec2();
-	}
-
-	/////////////////////////////////////////////////////////////
-	fm::vec2 Widget::getRootSize() const
-	{
-		if (m_parent)
-			return m_parent->getRootSize();
-
-		return getSize();
-	}
-
-	/////////////////////////////////////////////////////////////
-	fm::vec2 Widget::getPosInParent() const
-	{
-		return m_anchor.getPosInParent(*this);
-	}
-
-	/////////////////////////////////////////////////////////////
-	fm::vec2 Widget::getPosInRoot() const
-	{
-		return m_anchor.getPosInRoot(*this);
-	}
-
-	/////////////////////////////////////////////////////////////
-	Widget *Widget::getRoot()
-	{
-		return m_parent ? m_parent->getRoot() : this;
-	}
-
-	/////////////////////////////////////////////////////////////
-	Widget *Widget::findNamed(const std::string &name)
-	{
-		if (getName() == name)
-			return this;
-
-		return fm::nullPtr;
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Widget::onDraw()
-	{
-
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Widget::onUpdate()
-	{
-
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Widget::onParentChange()
-	{
-
-	}
-
-	/////////////////////////////////////////////////////////////
-	bool Widget::handleEvent(const fw::Event &ev)
-	{
-		(void)ev;
-
-		return false;
-	}
-
-	/////////////////////////////////////////////////////////////
-	const std::string &Widget::getRealType() const
-	{
-		return m_className;
-	}
 }
+
+////////////////////////////////////////////////////////////
+Widget::Widget(const fm::vec2 &size,
+               const fm::String &id,
+               Layout *parent,
+               bool enabled) : GuiElement(fm::vec2(),size,id,parent,enabled),
+                               m_mouseIn(false),
+                               m_pressed(0)
+{
+
+}
+
+////////////////////////////////////////////////////////////
+Widget::Widget(const fm::String &id,
+               Layout *parent,
+               bool enabled) : GuiElement(id,parent,enabled),
+                               m_mouseIn(false),
+                               m_pressed(0)
+{
+
+}
+
+////////////////////////////////////////////////////////////
+Widget::~Widget()
+{
+
+}
+
+////////////////////////////////////////////////////////////
+bool Widget::handleEvent(const fw::Event &ev)
+{
+    if (GuiElement::handleEvent(ev))
+        return true;
+
+    if (ev.type == fw::Event::MouseMoved ||
+        ev.type == fw::Event::MouseEntered ||
+        ev.type == fw::Event::MouseLeft)
+    {
+        fm::vec2 p  = fm::vec2i(ev.motion);
+        bool inside = contains(p);
+
+        if (!m_mouseIn && inside)
+        {
+            m_mouseIn = true;
+            handleEnter(p);
+
+            return false;
+        }
+        if (m_mouseIn && !inside && !m_pressed)
+        {
+            m_mouseIn = false;
+            handleLeave(p);
+
+            return false;
+        }
+
+        if (m_mouseIn)
+        {
+            handleHover(p);
+        }
+
+        return true;
+    }
+
+    if (ev.type == fw::Event::ButtonPressed)
+    {
+        fm::vec2 p  = fm::vec2i(ev.mouse);
+        bool inside = contains(p);
+
+        if (inside && ev.mouse.button == fw::Mouse::Left)
+            setActive(true);
+
+        if (m_pressed)
+        {
+            m_pressed++;
+            handlePress(p,ev.mouse.button);
+
+            return true;
+        }
+        else
+        {
+            if (inside)
+            {
+                if (!m_mouseIn)
+                {
+                    m_mouseIn = true;
+                    handleEnter(p);
+
+                    return false;
+                }
+
+                setActive(true);
+
+                m_pressed++;
+                handlePress(p,ev.mouse.button);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    if (ev.type == fw::Event::ButtonReleased)
+    {
+        fm::vec2 p  = fm::vec2i(ev.mouse);
+        bool inside = contains(p);
+
+        if (m_pressed)
+        {
+            m_pressed--;
+            handleRelease(p,ev.mouse.button);
+
+            if (!m_pressed)
+            {
+                if (!inside)
+                {
+                    m_mouseIn = false;
+                    handleLeave(p);
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+        else
+        {
+            if (m_mouseIn && inside)
+            {
+                m_mouseIn = true;
+                handleEnter(p);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    return false;
+}
+
+////////////////////////////////////////////////////////////
+void Widget::handleEnter(fm::vec2 p)
+{
+    onEnter(*this,p);
+}
+
+////////////////////////////////////////////////////////////
+void Widget::handleLeave(fm::vec2 p)
+{
+    onLeave(*this,p);
+}
+
+////////////////////////////////////////////////////////////
+void Widget::handleHover(fm::vec2 p)
+{
+    onHover(*this,p);
+}
+
+////////////////////////////////////////////////////////////
+void Widget::handlePress(fm::vec2 p,fw::Mouse::Button btn)
+{
+    onPress(*this,p,btn);
+}
+
+////////////////////////////////////////////////////////////
+void Widget::handleRelease(fm::vec2 p,fw::Mouse::Button btn)
+{
+    onRelease(*this,p,btn);
+}
+
+////////////////////////////////////////////////////////////
+bool Widget::contains(fm::vec2 p) const
+{
+    return fm::rect2f(getPos()+fm::vec2(1,1),getSize()-fm::vec2(1,1)).contains(p);
+}
+
+
+
+

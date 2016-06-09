@@ -104,6 +104,38 @@ namespace fm
 
     }
 
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
+    template<class Object>
+    Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>::Delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const,const typename Identity<Object>::type &object) : m_impl(new MemberCFuncDelegateImpl<Object,R FRONTIER_DELEGATE_TEMPLATE_LIST>(funcPtr,object))
+    {
+
+    }
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
+    template<class Object>
+    Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>::Delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV),typename Identity<Object>::type *object) : m_impl(new MemberFuncPtrDelegateImpl<Object,R FRONTIER_DELEGATE_TEMPLATE_LIST>(funcPtr,object))
+    {
+
+    }
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
+    template<class Object>
+    Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>::Delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const,const typename Identity<Object>::type *object) : m_impl(new MemberFuncCPtrDelegateImpl<Object,R FRONTIER_DELEGATE_TEMPLATE_LIST>(funcPtr,object))
+    {
+
+    }
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
+    template<class Object>
+    Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>::Delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const) : m_impl(new MemberCFuncDelegateImpl<Object,R FRONTIER_DELEGATE_TEMPLATE_LIST>(funcPtr,Object()))
+    {
+
+    }
+
     #include <FRONTIER/System/Delegate/CallableImpl.hpp>
 
     /////////////////////////////////////////////////////////////
@@ -156,7 +188,7 @@ namespace fm
 
 		return *this;
     }
-		
+
     /////////////////////////////////////////////////////////////
     template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL>
 	FRONTIER_DELEGATE::operator bool() const

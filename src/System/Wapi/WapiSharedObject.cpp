@@ -15,8 +15,9 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/Wapi/WapiSharedObject.hpp>
-#include <FRONTIER/System/FmLog.hpp>
-#include "fmWapiPrintLastError.hpp"
+#include <FRONTIER/System/NullPtr.hpp>
+#include <FRONTIER/System/String.hpp>
+#include "fmWapiGetLastError.hpp"
 
 namespace fm
 {
@@ -29,7 +30,7 @@ namespace fm
 		}
 
 		////////////////////////////////////////////////////////////
-		SharedObject::SharedObject(const char *objName) : m_handle(0)
+		SharedObject::SharedObject(const fm::String &objName) : m_handle(0)
 		{
 			load(objName);
 		}
@@ -37,27 +38,22 @@ namespace fm
 		////////////////////////////////////////////////////////////
 		SharedObject::~SharedObject()
 		{
-			if (m_handle)
-				if (!FreeLibrary(m_handle))
-					fm::WapiPrintLastError(fm::fm_log,FreeLibrary);
+			if (isValid())
+				FreeLibrary(m_handle);
 		}
 
 		////////////////////////////////////////////////////////////
-		bool SharedObject::load(const char *objName)
+		fm::Result SharedObject::load(const fm::String &objName)
 		{
-			if (m_handle)
-				if (!FreeLibrary(m_handle))
-					fm::WapiPrintLastError(fm::fm_log,FreeLibrary);
+			if (isValid())
+				FreeLibrary(m_handle);
 			
-			m_handle = LoadLibraryA(objName);
+			m_handle = LoadLibraryA(objName.str().c_str());
 			
-			if (!m_handle)
-			{
-				fm::WapiPrintLastError(fm::fm_log,LoadLibrary);
-				return false;
-			}
+			if (!isValid())
+				return fm::WapiGetLastError(LoadLibrary);
 			
-			return true;
+			return fm::Result();
 		}
 
 		////////////////////////////////////////////////////////////
@@ -69,24 +65,23 @@ namespace fm
 		////////////////////////////////////////////////////////////
 		SharedObject::operator bool() const
 		{
-			return m_handle;
+			return isValid();
 		}
 
 		////////////////////////////////////////////////////////////
 		void (*SharedObject::getProcAddress(const char *funcName) const)()
 		{
-			if (m_handle)
+			if (isValid())
 			{
 				void (*func)() = (void(*)())GetProcAddress(m_handle, funcName);
+				
 				if (!func)
-				{
-					fm::WapiPrintLastError(fm::fm_log,GetProcAddress);
-					return (void(*)())0;
-				}
+					return fm::nullPtr;
+				
 				return func;
 			}
 			
-			return (void(*)())0; 
+			return fm::nullPtr; 
 		}
 
 		////////////////////////////////////////////////////////////

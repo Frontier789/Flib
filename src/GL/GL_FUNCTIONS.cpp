@@ -16,15 +16,15 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
 #include <FRONTIER/System/macros/OS.h>
+#include <FRONTIER/System/String.hpp>
+#include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/OpenGL.hpp>
-#include <iostream>
 
 namespace fg
 {
-	fm::Log OpenGL_log = std::cout;
 	void printNULL(const char *funcName)
 	{
-		OpenGL_log << "Error: "<<funcName<<" is NULL"<<std::endl;
+		fg::GL::raiseGLError(fm::Error("GLError","MissingFunc",fm::String(funcName).str() + " couldn't be loaded from shared object",funcName,__FILE__,__LINE__));
 	}
 }
 	
