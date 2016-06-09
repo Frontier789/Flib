@@ -183,7 +183,7 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		static bool isButtonHeld(Button button);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Enumerates the known mouse cursors
 		///
@@ -324,10 +324,10 @@ namespace fw
 	public:
 		int x; ///< X coordinate of the cursor
 		int y; ///< Y coordinate of the cursor
-		bool shift; ///< Indicates that shift was held when the event occured
-		bool ctrl;  ///< Indicates that control was held when the event occured
-		bool alt;   ///< Indicates that alt was held when the event occured
-		int delta;  ///< The amount the wheel moved (+1 means it was rotated once, forward, away from the user)
+		bool shift;  ///< Indicates that shift was held when the event occured
+		bool ctrl;   ///< Indicates that control was held when the event occured
+		bool alt;    ///< Indicates that alt was held when the event occured
+		float delta; ///< The amount the wheel moved (+1 means it was rotated once, forward, away from the user)
 
 		operator fm::vec2i() const; ///< convert to vec2i
 	};

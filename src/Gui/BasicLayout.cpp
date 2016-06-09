@@ -1,120 +1,122 @@
 #include <FRONTIER/Gui/BasicLayout.hpp>
 
-
-////////////////////////////////////////////////////////////
-BasicLayout::BasicLayout() : Layout(fm::vec2(),fm::vec2(),"unnamed",fm::nullPtr)
+namespace fgui
 {
-
-}
-
-////////////////////////////////////////////////////////////
-BasicLayout::BasicLayout(const fm::vec2 &pos,
-                         const fm::String &id,
-                         Layout *parent) : Layout(pos,fm::vec2(),id,parent)
-{
-
-}
-
-////////////////////////////////////////////////////////////
-BasicLayout::BasicLayout(const fm::String &id,
-                         Layout *parent) : Layout(fm::vec2(),fm::vec2(),id,parent)
-{
-
-}
-
-////////////////////////////////////////////////////////////
-BasicLayout::~BasicLayout()
-{
-
-}
-
-////////////////////////////////////////////////////////////
-void BasicLayout::onContentChanged()
-{
-	fm::vec2 maxp;
-
-	C(elementCount())
+    ////////////////////////////////////////////////////////////
+    BasicLayout::BasicLayout() : Layout(fm::vec2(),fm::vec2(),"unnamed",fm::nullPtr)
     {
-        GuiElement *e = elementAt(i);
-        if (e)
+
+    }
+
+    ////////////////////////////////////////////////////////////
+    BasicLayout::BasicLayout(const fm::vec2 &pos,
+                             const fm::String &id,
+                             Layout *parent) : Layout(pos,fm::vec2(),id,parent)
+    {
+
+    }
+
+    ////////////////////////////////////////////////////////////
+    BasicLayout::BasicLayout(const fm::String &id,
+                             Layout *parent) : Layout(fm::vec2(),fm::vec2(),id,parent)
+    {
+
+    }
+
+    ////////////////////////////////////////////////////////////
+    BasicLayout::~BasicLayout()
+    {
+
+    }
+
+    ////////////////////////////////////////////////////////////
+    void BasicLayout::onContentChanged()
+    {
+        fm::vec2 maxp;
+
+        C(elementCount())
         {
-            fm::vec2 s = e->getSize();
-            fm::vec2 p = e->getPosInParent();
+            GuiElement *e = elementAt(i);
+            if (e)
+            {
+                fm::vec2 s = e->getSize();
+                fm::vec2 p = e->getPosInParent();
 
-            if (p.x + s.w > maxp.x) maxp.x = p.x + s.w;
-            if (p.y + s.h > maxp.y) maxp.y = p.y + s.h;
+                if (p.x + s.w > maxp.x) maxp.x = p.x + s.w;
+                if (p.y + s.h > maxp.y) maxp.y = p.y + s.h;
+            }
         }
+
+        if (getSize() != maxp)
+            setSize(maxp);
     }
 
-	if (getSize() != maxp)
-		setSize(maxp);
-}
-
-////////////////////////////////////////////////////////////
-fm::Size BasicLayout::elementCount() const
-{
-    return m_elements.size();
-}
-
-////////////////////////////////////////////////////////////
-GuiElement *BasicLayout::elementAt(fm::Size index)
-{
-    if (index >= elementCount()) return fm::nullPtr;
-
-    return m_elements[index];
-}
-
-////////////////////////////////////////////////////////////
-void BasicLayout::insertElement(fm::Size index,GuiElement *newElement)
-{
-    if (m_elements.size() <= index)
+    ////////////////////////////////////////////////////////////
+    fm::Size BasicLayout::elementCount() const
     {
-        m_elements.resize(index+1,fm::nullPtr);
+        return m_elements.size();
     }
-    else
+
+    ////////////////////////////////////////////////////////////
+    GuiElement *BasicLayout::elementAt(fm::Size index)
     {
-        m_elements.push_back(fm::nullPtr);
+        if (index >= elementCount()) return fm::nullPtr;
+
+        return m_elements[index];
     }
 
-    fm::Size i = m_elements.size()-1;
-    while (i > index)
+    ////////////////////////////////////////////////////////////
+    void BasicLayout::insertElement(fm::Size index,GuiElement *newElement)
     {
-        GuiElement *tmp = m_elements[i];
-        m_elements[i]   = m_elements[i-1];
-        m_elements[i-1] = tmp;
+        if (m_elements.size() <= index)
+        {
+            m_elements.resize(index+1,fm::nullPtr);
+        }
+        else
+        {
+            m_elements.push_back(fm::nullPtr);
+        }
 
-        --i;
-    }
+        fm::Size i = m_elements.size()-1;
+        while (i > index)
+        {
+            GuiElement *tmp = m_elements[i];
+            m_elements[i]   = m_elements[i-1];
+            m_elements[i-1] = tmp;
 
-    m_elements[i] = newElement;
-    newElement->setParent(this);
+            --i;
+        }
 
-    if (newElement && newElement->getParent() != this)
+        m_elements[i] = newElement;
         newElement->setParent(this);
 
-    onContentChanged();
-}
+        if (newElement && newElement->getParent() != this)
+            newElement->setParent(this);
 
-////////////////////////////////////////////////////////////
-GuiElement *BasicLayout::remElement(fm::Size index)
-{
-    if (index < m_elements.size())
+        onContentChanged();
+    }
+
+    ////////////////////////////////////////////////////////////
+    GuiElement *BasicLayout::remElement(fm::Size index)
     {
-        GuiElement *ret = m_elements[index];
-
-        while (index+1 < m_elements.size())
+        if (index < m_elements.size())
         {
-            m_elements[index] = m_elements[index+1];
-        }
+            GuiElement *ret = m_elements[index];
 
-        m_elements.pop_back();
+            while (index+1 < m_elements.size())
+            {
+                m_elements[index] = m_elements[index+1];
+            }
+
+            m_elements.pop_back();
+
+            onContentChanged();
+
+            return ret;
+        }
 
         onContentChanged();
 
-        return ret;
+        return fm::nullPtr;
     }
-
-    onContentChanged();
-
-    return fm::nullPtr;
 }

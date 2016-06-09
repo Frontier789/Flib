@@ -623,7 +623,7 @@ namespace fw
 				{
 					fm::vec2i pos = Mouse::getPosition(*this);
 					Event ev(Event::MouseWheelMoved);
-					ev.wheel.delta = GET_WHEEL_DELTA_WPARAM(wParam)/WHEEL_DELTA;
+					ev.wheel.delta = GET_WHEEL_DELTA_WPARAM(wParam)/float(WHEEL_DELTA);
 					ev.wheel.ctrl  = (GetKeyState(VK_CONTROL) & 0x8000);
 					ev.wheel.alt   = (GetKeyState(VK_MENU)    & 0x8000);
 					ev.wheel.shift = (GetKeyState(VK_SHIFT)   & 0x8000);

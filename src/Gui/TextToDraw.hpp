@@ -7,18 +7,24 @@
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
 
-float getCharWidth(const fg::Font *font,fm::Uint32 cp,fg::Glyph *retGlyph = fm::nullPtr,bool monoSpace = false,fm::Size tabSize = 4);
+namespace fgui
+{
+    namespace priv
+    {
+        float getCharWidth(const fg::Font *font,fm::Uint32 cp,fg::Glyph *retGlyph = fm::nullPtr,bool monoSpace = false,fm::Size tabSize = 4);
 
-void getDrawFromText(fg::DrawData &ret,
-                     const fm::String **lines,
-                     fm::Size linesCount,
-                     const fg::Font *font,
-                     fm::Size charSize,
-                     const fg::Texture **retTex = fm::nullPtr,
-                     fm::vec2 *retSize = fm::nullPtr,
-                     fm::rect2i viewRect = fm::rect2i(),
-                     fm::vec4 color = fm::vec4::White,
-                     int spacing = 0, /* 0 tight  1 mono */
-                     fm::Size spacesInTab = 4,
-                     const fm::String &newLine = "\n",
-                     const fm::String &notDrawn = "\n\t\r \b");
+        void getDrawFromText(fg::DrawData &ret,
+                             const fm::String **lines,
+                             fm::Size linesCount,
+                             const fg::Font *font,
+                             fm::Size charSize,
+                             const fg::Texture **retTex = fm::nullPtr,
+                             fm::vec2 *retSize = fm::nullPtr,
+                             fm::rect2i viewRect = fm::rect2i(),
+                             fm::vec4 color = fm::vec4::White,
+                             int spacing = 0, /* 0 tight  1 mono */
+                             fm::Size spacesInTab = 4,
+                             const fm::String &newLine = "\n",
+                             const fm::String &notDrawn = "\n\t\r \b");
+    }
+}

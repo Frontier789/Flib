@@ -10,78 +10,81 @@
 #include <FRONTIER/System/Time.hpp>
 #include <FRONTIER/Config.hpp>
 
-class Layout;
-
-class GuiElement : public fg::Drawable
+namespace fgui
 {
-protected:
-    ////////////////////////////////////////////////////////////
-    fm::vec2 m_pos;
-    fm::vec2 m_userSize;
-    fm::vec2 m_realSize;
-    Layout *m_parent;
-    fm::String m_id;
-    bool m_enabled;
-    bool m_active;
+    class Layout;
 
-public:
-    ////////////////////////////////////////////////////////////
-    GuiElement();
+    class GuiElement : public fg::Drawable
+    {
+    protected:
+        ////////////////////////////////////////////////////////////
+        fm::vec2 m_pos;
+        fm::vec2 m_userSize;
+        fm::vec2 m_realSize;
+        Layout *m_parent;
+        fm::String m_id;
+        bool m_enabled;
+        bool m_active;
 
-    ////////////////////////////////////////////////////////////
-    GuiElement(const fm::vec2 &pos,
-               const fm::vec2 &size,
-               const fm::String &id = "unnamed",
-               Layout *parent = fm::nullPtr,
-               bool enabled = true);
+    public:
+        ////////////////////////////////////////////////////////////
+        GuiElement();
 
-    ////////////////////////////////////////////////////////////
-    explicit GuiElement(const fm::vec2 &size,
-                        const fm::String &id = "unnamed",
-                        Layout *parent = fm::nullPtr,
-                        bool enabled = true);
+        ////////////////////////////////////////////////////////////
+        GuiElement(const fm::vec2 &pos,
+                   const fm::vec2 &size,
+                   const fm::String &id = "unnamed",
+                   Layout *parent = fm::nullPtr,
+                   bool enabled = true);
 
-    ////////////////////////////////////////////////////////////
-    explicit GuiElement(const fm::String &id,
-                        Layout *parent = fm::nullPtr,
-                        bool enabled = true);
+        ////////////////////////////////////////////////////////////
+        explicit GuiElement(const fm::vec2 &size,
+                            const fm::String &id = "unnamed",
+                            Layout *parent = fm::nullPtr,
+                            bool enabled = true);
 
-    ////////////////////////////////////////////////////////////
-    virtual ~GuiElement();
+        ////////////////////////////////////////////////////////////
+        explicit GuiElement(const fm::String &id,
+                            Layout *parent = fm::nullPtr,
+                            bool enabled = true);
 
-    ////////////////////////////////////////////////////////////
-    virtual bool handleEvent(const fw::Event &ev);
+        ////////////////////////////////////////////////////////////
+        virtual ~GuiElement();
 
-    ////////////////////////////////////////////////////////////
-    virtual void onDraw(fg::ShaderManager &shader) const;
-    virtual void onUpdate(const fm::Time &dt = fm::Time::Zero);
+        ////////////////////////////////////////////////////////////
+        virtual bool handleEvent(const fw::Event &ev);
 
-    ////////////////////////////////////////////////////////////
-    virtual void setParent(Layout *parent);
-    Layout *const &getParent() const;
-    Layout *&getParent();
+        ////////////////////////////////////////////////////////////
+        virtual void onDraw(fg::ShaderManager &shader) const;
+        virtual void onUpdate(const fm::Time &dt = fm::Time::Zero);
 
-    ////////////////////////////////////////////////////////////
-    virtual void setActive(bool active = true);
-    bool isActive() const;
+        ////////////////////////////////////////////////////////////
+        virtual void setParent(Layout *parent);
+        Layout *const &getParent() const;
+        Layout *&getParent();
 
-    ////////////////////////////////////////////////////////////
-    virtual void setEnabled(bool enabled = true);
-    bool isEnabled() const;
+        ////////////////////////////////////////////////////////////
+        virtual void setActive(bool active = true);
+        bool isActive() const;
 
-    ////////////////////////////////////////////////////////////
-    virtual void setPos(const fm::vec2 &pos);
-    fm::vec2 getPosInParent() const;
-    fm::vec2 getPos() const;
+        ////////////////////////////////////////////////////////////
+        virtual void setEnabled(bool enabled = true);
+        bool isEnabled() const;
 
-    ////////////////////////////////////////////////////////////
-    virtual void setSize(const fm::vec2 &size);
-    virtual fm::vec2 getSize() const;
+        ////////////////////////////////////////////////////////////
+        virtual void setPos(const fm::vec2 &pos);
+        fm::vec2 getPosInParent() const;
+        fm::vec2 getPos() const;
 
-    ////////////////////////////////////////////////////////////
-    void setId(const fm::String &id);
-    const fm::String &getId() const;
-};
+        ////////////////////////////////////////////////////////////
+        virtual void setSize(const fm::vec2 &size);
+        virtual fm::vec2 getSize() const;
+
+        ////////////////////////////////////////////////////////////
+        void setId(const fm::String &id);
+        const fm::String &getId() const;
+    };
+}
 
 #endif // FRONTIER_GUIELEMENT_HPP_INCLUDED
 
