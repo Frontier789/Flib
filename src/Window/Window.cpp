@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-/// Copyright (C) 2014 Frontier (fr0nt13r789@github.c/// Copyright (C) 2014-2015 Frontier (fr0nt13r789@gmail.com)           ///
+/// Copyright (C) 2014 Frontier (fr0nt13r789@github.c/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
