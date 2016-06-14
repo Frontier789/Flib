@@ -22,7 +22,7 @@ LIBPATH=$(PATH_TO_LIB)/$(LIBNAME)
 static: MAKE_STATIC_TARGETS
 dynamic: MAKE_DYNAMIC_TARGETS
 
-#include system submake
+#include System submake
 include f_system.mk
 
 #include OpenGL submake
@@ -42,6 +42,9 @@ include f_util.mk
 
 #include Gui submake
 include f_gui.mk
+
+#include Network submake
+include f_network.mk
 
 STATIC_TARGETS+=$(LIBPATH)/libf.a
 DYNAMIC_TARGETS+=$(LIBPATH)/f.dll $(LIBPATH)/libf-dll.a

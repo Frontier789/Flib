@@ -41,15 +41,15 @@ namespace fgui
         virtual const GuiElement *elementAt(fm::Size index) const;
 
         /////////////////////////////////////////////////////////////
-        virtual fm::Size          findElement(const GuiElement *element) const;
-        virtual void              addElement(GuiElement *newElement);
-        virtual void              swapElement(fm::Size index0,fm::Size index1);
-        virtual void              setElement(fm::Size index,GuiElement *newElement);
-        virtual void              insertElement(fm::Size index,GuiElement *newElement) = 0;
-        virtual GuiElement       *remElement(fm::Size index) = 0;
-        fm::Size                  remElement(GuiElement *element);
-        virtual void              delElement(fm::Size index);
-        virtual void              delElement(GuiElement *element);
+        virtual fm::Size    findElement(const GuiElement *element) const;
+        virtual void        addElement(GuiElement *newElement);
+        virtual void        swapElement(fm::Size index0,fm::Size index1);
+        virtual void        setElement(fm::Size index,GuiElement *newElement);
+        virtual void        insertElement(fm::Size index,GuiElement *newElement) = 0;
+        virtual GuiElement *remElement(fm::Size index) = 0;
+        fm::Size            remElement(GuiElement *element);
+        virtual void        delElement(fm::Size index);
+        virtual void        delElement(GuiElement *element);
 
         /////////////////////////////////////////////////////////////
         virtual void onDraw(fg::ShaderManager &shader) const;
