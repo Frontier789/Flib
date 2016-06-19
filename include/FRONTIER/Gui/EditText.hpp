@@ -166,7 +166,7 @@ namespace fgui
         virtual void handleRelease(fm::vec2 p,fw::Mouse::Button btn);
 
         ////////////////////////////////////////////////////////////
-        virtual void onDraw(fg::ShaderManager &shader) const;
+        virtual void onDraw(fg::ShaderManager &shader);
         virtual void onUpdate(float dt = 0.f);
 
         ////////////////////////////////////////////////////////////

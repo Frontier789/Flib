@@ -49,7 +49,7 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    void Text::onDraw(fg::ShaderManager &shader) const
+    void Text::onDraw(fg::ShaderManager &shader)
     {
         if (!m_tex)
             return;

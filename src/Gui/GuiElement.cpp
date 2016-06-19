@@ -74,7 +74,7 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    void GuiElement::onDraw(fg::ShaderManager &shader) const
+    void GuiElement::onDraw(fg::ShaderManager &shader)
     {
         (void)shader;
     }

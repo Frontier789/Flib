@@ -55,7 +55,7 @@ namespace fgui
         virtual bool handleEvent(const fw::Event &ev);
 
         ////////////////////////////////////////////////////////////
-        virtual void onDraw(fg::ShaderManager &shader) const;
+        virtual void onDraw(fg::ShaderManager &shader);
         virtual void onUpdate(const fm::Time &dt = fm::Time::Zero);
 
         ////////////////////////////////////////////////////////////

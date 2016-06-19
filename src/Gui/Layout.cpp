@@ -143,13 +143,13 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    void Layout::onDraw(fg::ShaderManager &shader) const
+    void Layout::onDraw(fg::ShaderManager &shader)
     {
         GuiElement::onDraw(shader);
 
         C(elementCount())
         {
-            const GuiElement *e = elementAt(i);
+            GuiElement *e = elementAt(i);
             if (e)
                 e->onDraw(shader);
         }

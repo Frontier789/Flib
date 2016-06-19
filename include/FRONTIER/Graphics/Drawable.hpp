@@ -34,7 +34,7 @@ namespace fg
 		virtual ~Drawable();
     	
 		/////////////////////////////////////////////////////////////
-        virtual void onDraw(ShaderManager &shader) const = 0;
+        virtual void onDraw(ShaderManager &shader) = 0;
 
 		/////////////////////////////////////////////////////////////
         virtual void onUpdate(const fm::Time &dt) = 0;

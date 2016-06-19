@@ -1191,7 +1191,7 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    void EditText::onDraw(fg::ShaderManager &shader) const
+    void EditText::onDraw(fg::ShaderManager &shader)
     {
         if (!m_tex)
             return;

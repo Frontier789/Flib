@@ -41,7 +41,7 @@ namespace fgui
                       fm::vec4 clr = fm::vec4::Black);
 
         ////////////////////////////////////////////////////////////
-        virtual void onDraw(fg::ShaderManager &shader) const;
+        virtual void onDraw(fg::ShaderManager &shader);
         virtual void onUpdate(float dt = 0.f);
 
         ////////////////////////////////////////////////////////////

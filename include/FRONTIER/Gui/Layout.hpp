@@ -52,7 +52,7 @@ namespace fgui
         virtual void        delElement(GuiElement *element);
 
         /////////////////////////////////////////////////////////////
-        virtual void onDraw(fg::ShaderManager &shader) const;
+        virtual void onDraw(fg::ShaderManager &shader);
         virtual void onUpdate(const fm::Time &dt = fm::Time::Zero);
 
         /////////////////////////////////////////////////////////////
