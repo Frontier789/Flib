@@ -80,6 +80,17 @@ namespace fw
 			/// 
 			/////////////////////////////////////////////////////////////
 			bool setActive(bool active = true);
+
+			/////////////////////////////////////////////////////////////
+			/// @brief Retrieve the size of the context
+			///
+			/// @param w The width is returned
+			/// @param h The height is returned
+			///
+			/// @return True if everything went right
+			///
+			/////////////////////////////////////////////////////////////
+			bool getSize(unsigned int &w,unsigned int &h);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Swap the back and front buffer

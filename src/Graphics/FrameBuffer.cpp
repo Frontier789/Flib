@@ -218,7 +218,14 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	fm::Result FrameBuffer::bind(const FrameBuffer *fbo)
 	{
-		return glCheck(glBindFramebuffer(GL_FRAMEBUFFER, fbo ? fbo->getGlId() : 0));
+		fm::Error err = glCheck(glBindFramebuffer(GL_FRAMEBUFFER, fbo ? fbo->getGlId() : 0));
+		
+		if (!err && fbo)
+		{
+			glViewport(0,0,fbo->m_width,fbo->m_height);
+		}
+		
+		return err;
 	}
 
 	////////////////////////////////////////////////////////////

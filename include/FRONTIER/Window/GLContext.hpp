@@ -339,11 +339,12 @@ namespace fw
 		/// @param pos The coordinates of the rectangle to be read
 		/// @param size The size of the rectangle to be read
 		/// @param flip If true the image will be flipped vertically
+		/// @param frontBuffer Capture the front buffer (use the backbuffer iff false)
 		///
 		/// @return The read Image
 		///
 		/////////////////////////////////////////////////////////////
-		static fg::Image capture(const fm::vec2s &pos,const fm::vec2s &size,bool flip = true);
+		static fg::Image capture(const fm::vec2s &pos,const fm::vec2s &size,bool flip = true,bool frontBuffer = false);
 	};
 }
 

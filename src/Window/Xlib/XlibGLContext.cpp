@@ -304,6 +304,29 @@ namespace fw
 			}
 			return false;
 		}
+		
+		/////////////////////////////////////////////////////////////
+		bool GLContext::getSize(unsigned int &w,unsigned int &h)
+		{
+			if (m_win)
+			{
+				int x,y;
+				unsigned int border,depth;
+
+				// simply retrieve the data
+				XGetGeometry(m_disp,m_win,&m_rootWin,&x,&y,&w,&h,&border,&depth);
+			}
+			else if (m_pbuf)
+			{
+				int x,y;
+				unsigned int border,depth;
+				
+				// simply retrieve the data
+				XGetGeometry(m_disp,m_pbuf,&m_rootWin,&x,&y,&w,&h,&border,&depth);
+			}
+			
+			return true;
+		}
 					
 		/////////////////////////////////////////////////////////////
 		bool GLContext::swapBuffers()

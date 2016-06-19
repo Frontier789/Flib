@@ -229,7 +229,7 @@ namespace fw
 
 			// create the new (hidden) window
 			m_hwnd = CreateWindowA(FRONTIER_DUMMY_WINDOW_CLASS,
-								   "dummy_window",0,
+								   "dummy_window",WS_POPUP,
 								   CW_USEDEFAULT,CW_USEDEFAULT,width,height,
 								   NULL,NULL,NULL,NULL);
 
@@ -264,6 +264,21 @@ namespace fw
 			if (!result) // Check for errors
 				return false;
 
+			return true;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		bool GLContext::getSize(unsigned int &w,unsigned int &h)
+		{
+			if (m_hwnd)
+			{
+				RECT client_rect;
+				if (!GetClientRect(m_hwnd,&client_rect)) // retrieve client rect
+					return false;
+
+				w = client_rect.right;
+				h = client_rect.bottom;
+			}
 			return true;
 		}
 

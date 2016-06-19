@@ -152,7 +152,17 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	bool GLContext::setActive(bool active)
 	{
-		return m_context->setActive(active);
+		bool success = m_context->setActive(active);
+		
+		if (success && active)
+		{
+			unsigned int w = 1,h = 1;
+			m_context->getSize(w,h);
+			
+			glViewport(0,0,w,h);
+		}
+		
+		return success;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -275,11 +285,14 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
-	fg::Image GLContext::capture(const fm::vec2s &pos,const fm::vec2s &size,bool flip)
+	fg::Image GLContext::capture(const fm::vec2s &pos,const fm::vec2s &size,bool flip,bool frontBuffer)
 	{
 		fg::Image ret;
 		ret.create(size);
+		
+		glReadBuffer(frontBuffer ? GL_FRONT : GL_BACK);
 		glReadPixels(pos.x,pos.y,size.w,size.h,GL_RGBA,GL_UNSIGNED_BYTE,&ret.getPixel(0,0));
+		
 		if (flip)
 			ret.flipVertically();
 		return ret;
