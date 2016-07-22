@@ -9,10 +9,12 @@ override CXXFLAGS+=-Wno-long-long -Wfatal-errors -Wall -Wextra -Os -pedantic
 override CXXFLAGS+=-DFRONTIER_LIBBUILD -DFRONTIER_PROTECT_SHARED_VARIABLES
 
 ifeq ($(LIBNAME),)
-LIBNAME=lib
+ LIBNAME=lib
 endif
 
-PATH_TO_ROOT=..
+ifeq ($(PATH_TO_ROOT),)
+ PATH_TO_ROOT=..
+endif
 PATH_TO_LIB=$(PATH_TO_ROOT)
 PATH_TO_SRC=$(PATH_TO_ROOT)/src
 PATH_TO_INCLUDE=$(PATH_TO_ROOT)/include

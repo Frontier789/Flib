@@ -219,6 +219,18 @@ namespace fg
 		static void setViewport(const fm::rect2s &viewport);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the viewport
+		///
+		/// The viewport specifies the part of the render
+		/// target that is used for rendering (in pixels)
+		/// For more details see <a href="https://www.opengl.org/sdk/docs/man/html/glViewport.xhtml">this article</a>
+		///
+		/// @return The viewport
+		///
+		/////////////////////////////////////////////////////////////
+		static fm::rect2s getViewport();
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Bind the framebuffer for usage
 		///
 		/// @return The error-state of the function

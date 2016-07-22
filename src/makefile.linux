@@ -1,3 +1,0 @@
-LIBNAME=libLinux
-PLATFORM=Linux
-include frnt.mk

@@ -1,3 +1,0 @@
-LIBNAME=libAnd
-PLATFORM=Android
-include frnt.mk

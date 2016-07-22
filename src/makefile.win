@@ -1,3 +1,0 @@
-LIBNAME=libWin
-PLATFORM=Windows
-include frnt.mk

@@ -17,11 +17,12 @@
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
-#include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/System/Error.hpp>
+#include <FRONTIER/System/Rect.hpp>
+#include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
 class ObjectBinder
@@ -244,6 +245,15 @@ namespace fg
 	void FrameBuffer::setViewport(const fm::rect2s &viewport)
 	{
 		glViewport(viewport.pos.x,viewport.pos.y,viewport.size.w,viewport.size.h);
+	}
+
+	////////////////////////////////////////////////////////////
+	fm::rect2s FrameBuffer::getViewport()
+	{
+		GLint vp[4]; 
+		glGetIntegerv(GL_VIEWPORT, vp);
+		
+		return fm::rect2s(vp[0],vp[1],vp[2],vp[3]);
 	}
 
 	////////////////////////////////////////////////////////////
