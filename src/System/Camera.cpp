@@ -1,4 +1,5 @@
 #include <FRONTIER/System/macros/TYPES.hpp>
+#include <FRONTIER/System/MatrixStack.hpp>
 #include <FRONTIER/System/Quaternion.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Polar2.hpp>
@@ -14,9 +15,8 @@ namespace fm
 	{
 		vec3 viewOnPlane = vec3(m_viewDir.x,0,m_viewDir.z).sgn();
 
-		m_pitch = fm::rad(  std::acos(viewOnPlane.dot(m_viewDir))*(m_viewDir.y < 0 ? -1 : 1)  );
-
-		m_yaw = fm::rad(  std::acos(viewOnPlane.dot(vec3(0,0,-1)))*(m_viewDir.x < 0 ? 1 : -1)  );
+		m_pitch = fm::rad( std::acos(viewOnPlane.dot(m_viewDir))   *(m_viewDir.y < 0 ? -1 : 1) );
+		m_yaw   = fm::rad( std::acos(viewOnPlane.dot(vec3(0,0,-1)))*(m_viewDir.x < 0 ? 1 : -1) );
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -30,8 +30,7 @@ namespace fm
 											 m_znear(0.0),
 											 m_zfar(0.0),
 											 m_3d(false),
-											 m_updateViewMat(false),
-											 m_updateProjMat(false)
+											 m_updateViewMat(false)
 	{
 
 	}
@@ -50,8 +49,7 @@ namespace fm
 								 m_zfar(zfar),
 								 m_3d(true),
 								 m_viewDir(lookDir.sgn()),
-								 m_updateViewMat(true),
-								 m_updateProjMat(true)
+								 m_updateViewMat(true)
 	{
 		anglesFromDir();
 	}
@@ -69,34 +67,33 @@ namespace fm
 								 m_zfar(zfar),
 								 m_3d(false),
 								 m_viewDir(lookDir.sgn()),
-								 m_updateViewMat(true),
-								 m_updateProjMat(true)
+								 m_updateViewMat(true)
 	{
 		anglesFromDir();
 	}
-
+	
+	/////////////////////////////////////////////////////////////
+	void Camera::updateProj()
+	{
+		m_projStack.clear();
+		
+		if (m_3d)
+			m_projStack.push(fm::MATRIX::perspective(m_fov,m_screenSize.w/m_screenSize.h,m_znear,m_zfar));
+		else
+		{
+			float r = m_screenSize.h/m_screenSize.w;
+			m_projStack.push(fm::MATRIX::ortho(-m_viewWidth/2,
+											   -m_viewWidth/2*r,
+												m_viewWidth/2,
+												m_viewWidth/2*r,
+												m_znear,m_zfar));
+		}
+	}
 
 	/////////////////////////////////////////////////////////////
 	const mat4 &Camera::getProjMat() const
 	{
-		if (m_updateProjMat)
-		{
-			m_updateProjMat = false;
-
-			if (m_3d)
-				m_projMat = fm::MATRIX::perspective(m_fov,m_screenSize.w/m_screenSize.h,m_znear,m_zfar);
-			else
-			{
-				float r = m_screenSize.h/m_screenSize.w;
-				m_projMat = fm::MATRIX::ortho(-m_viewWidth/2,
-											  -m_viewWidth/2*r,
-											   m_viewWidth/2,
-											   m_viewWidth/2*r,
-											   m_znear,m_zfar);
-			}
-		}
-
-		return m_projMat;
+		return m_projStack.top();
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -160,7 +157,7 @@ namespace fm
 	{
 		m_screenSize = screenSize;
 
-		m_updateProjMat = true;
+		updateProj();
 
 		return *this;
 	}
@@ -174,19 +171,7 @@ namespace fm
 		m_zfar  = zfar;
 		m_3d    = true;
 
-		m_updateProjMat = true;
-
-		return *this;
-	}
-
-	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::set3D(const vec2 &screenSize,const Angle &fov)
-	{
-		m_screenSize = screenSize;
-		m_fov = fov;
-		m_3d  = true;
-
-		m_updateProjMat = true;
+		updateProj();
 
 		return *this;
 	}
@@ -200,31 +185,21 @@ namespace fm
 		m_zfar  = zfar;
 		m_3d    = false;
 
-		m_updateProjMat = true;
+		updateProj();
 
 		return *this;
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::set2D(const vec2 &screenSize,float viewWidth)
+	Camera::reference Camera::set2D(const vec2 &screenSize)
 	{
-		m_screenSize = screenSize;
-		m_viewWidth  = viewWidth;
-		m_3d = false;
-
-		m_updateProjMat = true;
-
-		return *this;
+		return set2D(screenSize,screenSize.w,-1,1);
 	}
-
+	
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::setProjMat(const mat4 &projMat)
+	MatrixStack<4,4,float> &Camera::getProjStack()
 	{
-		m_projMat = projMat;
-
-		m_updateProjMat = false;
-
-		return *this;
+		return m_projStack;
 	}
 
 	/////////////////////////////////////////////////////////////

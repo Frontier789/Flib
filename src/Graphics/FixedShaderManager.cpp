@@ -73,37 +73,34 @@ namespace fg
 		{
 			fg::Shader::bind(fm::nullPtr);
 		}
-
+		
+		// activate the texture if any
 		if (m_activeTex)
 			glEnable(GL_TEXTURE_2D);
 		else
 			glDisable(GL_TEXTURE_2D);
 
 		fg::Texture::bind(m_activeTex);
-
+		
+		// set projection matrix
 		if (m_cam)
 		{
 			glMatrixMode(GL_PROJECTION);
 			glLoadMatrixf(&m_cam->getProjMat().transpose()[0][0]);
 		}
-
-        if (m_cam || m_matIds[4] == 1)
-		{
-			fm::mat4 m = m_stacks[0].top();
-
-			if (m_cam)
-				m = m_cam->getViewMat() * m;
-
-			glMatrixMode(GL_MODELVIEW);
-			glLoadMatrixf(&m.transpose()[0][0]);
-		}
-
-        if (m_matIds[7] == 1)
-		{
-			glMatrixMode(GL_TEXTURE);
-			glLoadMatrixf(&m_stacks[2].top().transpose()[0][0]);
-		}
-
+		
+		// set model and view matrix
+		fm::mat4 m = m_stacks[0].top();
+		if (m_cam)
+			m = m_cam->getViewMat() * m;
+		glMatrixMode(GL_MODELVIEW);
+		glLoadMatrixf(&m.transpose()[0][0]);
+		
+		// set texture matrix
+		glMatrixMode(GL_TEXTURE);
+		glLoadMatrixf(&m_stacks[2].top().transpose()[0][0]);
+		
+		// set attributes
 		if (data.hasAttr(fg::Assoc::Position))
 		{
 			const fg::DrawData::Attribute &attr = data[fg::Assoc::Position];
@@ -157,5 +154,8 @@ namespace fg
 		if (data.hasAttr(fg::Assoc::Color))     glDisableClientState(GL_COLOR_ARRAY);
 		if (data.hasAttr(fg::Assoc::TextureUV)) glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		if (data.hasAttr(fg::Assoc::Normal))    glDisableClientState(GL_NORMAL_ARRAY);
+		
+		if (m_activeTex)
+			glDisable(GL_TEXTURE_2D);
     }
 }

@@ -201,6 +201,14 @@ namespace fm
 		return ret;
 	}
 
+	/////////////////////////////////////////////////////////////
+	template<fm::Size W,fm::Size H,class T>
+	template<fm::Size H2>
+	inline typename matrix<W,H,T>::reference matrix<W,H,T>::preMul(const matrix<H,H2,T> &mat)
+	{
+		return (*this) = mat * (*this);
+	}
+
 
 	////////////////////////////////////////////////////////////
 	template<fm::Size W,fm::Size H,class T>

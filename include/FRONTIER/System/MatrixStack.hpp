@@ -103,7 +103,7 @@ namespace fm
 		/// @return The matrix
 		///
 		/////////////////////////////////////////////////////////////
-		fm::matrix<W,H,T> top() const;
+		const fm::matrix<W,H,T> &top() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the top matrix
@@ -133,7 +133,7 @@ namespace fm
 		/// @brief Clear the whole stack
 		///
 		/////////////////////////////////////////////////////////////
-		void clear() const;
+		void clear();
 	};
 }
 

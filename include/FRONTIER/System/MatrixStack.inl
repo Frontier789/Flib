@@ -62,6 +62,8 @@ namespace fm
 	{
 		if (!empty())
 			m_container.back() *= mat;
+		else
+			push(mat);
 
 		return *this;
 	}
@@ -72,6 +74,8 @@ namespace fm
 	{
 		if (!empty())
 			m_container.back() = mat * m_container.back();
+		else
+			push(mat);
 
 		return *this;
 	}
@@ -81,7 +85,7 @@ namespace fm
 	inline fm::matrix<W,H,T> MatrixStack<W,H,T,Container>::pop()
 	{
 		if (empty())
-			return fm::matrix<W,H,T>();
+			return fm::matrix<W,H,T>::identity;
 		else
 		{
 			fm::matrix<W,H,T> cpy = m_container.back();
@@ -92,10 +96,10 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<fm::Size W,fm::Size H,class T,class Container>
-	inline fm::matrix<W,H,T> MatrixStack<W,H,T,Container>::top() const
+	inline const fm::matrix<W,H,T> &MatrixStack<W,H,T,Container>::top() const
 	{
 		if (empty())
-			return fm::matrix<W,H,T>();
+			return fm::matrix<W,H,T>::identity;
 
 		return m_container.back();
 	}
@@ -121,7 +125,7 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<fm::Size W,fm::Size H,class T,class Container>
-	inline void MatrixStack<W,H,T,Container>::clear() const
+	inline void MatrixStack<W,H,T,Container>::clear()
 	{
 		m_container.clear();
 	}

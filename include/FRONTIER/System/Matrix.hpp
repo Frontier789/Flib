@@ -239,6 +239,19 @@ namespace fm
 		matrix<W,H,T> byComp(const matrix<W,H,T> &mat) const;
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Multiply by a matrix from the left
+		/// 
+		/// a.preMul(b)  equals to   a = b*a;
+		///
+		/// @param mat The matrix to multiply by
+		///
+		/// @return Product of the multiplication
+		///
+		/////////////////////////////////////////////////////////////
+		template<fm::Size H2>
+		reference preMul(const matrix<H,H2,T> &mat);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Converts the matrix
 		///
 		/// Converts the matrix to a W2xH2 sized matrix with base type T2.

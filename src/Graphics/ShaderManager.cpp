@@ -155,6 +155,8 @@ namespace fg
 	////////////////////////////////////////////////////////////
     void ShaderManager::prepareDraw(const fg::DrawData &data)
     {
+    	update();
+    	
         bind();
 
         if (m_matIds[4] == 1)

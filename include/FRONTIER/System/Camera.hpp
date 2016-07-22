@@ -19,6 +19,7 @@
 
 #include <FRONTIER/System/macros/dont_include_inl_begin>
 
+#include <FRONTIER/System/MatrixStack.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Angle.hpp>
@@ -56,7 +57,9 @@ namespace fm
 		mutable mat4 m_projMat;       ///< The current projection matrix
 		mutable mat4 m_viewMat;       ///< The current view matrix
 		mutable bool m_updateViewMat; ///< Indicates whether the view matrix shall be updated
-		mutable bool m_updateProjMat; ///< Indicates whether the projection matrix shall be updated
+		
+		MatrixStack<4,4,float> m_projStack; ///< Holds the projection stack
+		void updateProj(); ///< Update the projection matrix (resets the stack)
 
 	public:
 		typedef Camera &reference;
@@ -213,21 +216,10 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference set3D(const vec2 &screenSize,const Angle &fov,float znear,float zfar);
+		reference set3D(const vec2 &screenSize,const Angle &fov,float znear = .1,float zfar = 100);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set up a 3D camera
-		///
-		/// @param screenSize The size of the screen the camera projects to
-		/// @param fov The field of view (if in 3D mode)
-		///
-		/// @return Reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference set3D(const vec2 &screenSize,const Angle &fov);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Set up a 3D camera
+		/// @brief Set up a 2D camera
 		///
 		/// @param screenSize The size of the screen the camera projects to
 		/// @param viewWidth The width of the "canvas" in world-space units
@@ -237,36 +229,29 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference set2D(const vec2 &screenSize,float viewWidth,float znear,float zfar);
+		reference set2D(const vec2 &screenSize,float viewWidth,float znear = -1,float zfar = 1);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set up a 3D camera
 		///
 		/// @param screenSize The size of the screen the camera projects to
-		/// @param viewWidth The width of the "canvas" in world-space units
 		///
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference set2D(const vec2 &screenSize,float viewWidth);
-
+		reference set2D(const vec2 &screenSize);
+		
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the projection matrix directly
-		///
-		/// Does not change anything beside the projection matrix
-		///
-		/// @param projMat The new projection matrix
-		///
-		/// @return Reference to itself
+		/// @brief Get the projection stack
+		/// 
+		/// @return The projection matrix stack
 		///
 		/////////////////////////////////////////////////////////////
-		reference setProjMat(const mat4 &projMat);
+		MatrixStack<4,4,float> &getProjStack();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the view matrix directly
-		///
-		/// Does not change anything beside the projection matrix
-		///
+		/// 
 		/// @param viewMat The new view matrix
 		///
 		/// @return Reference to itself
