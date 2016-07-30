@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/IndexArrayHolder.hpp>
 #include <FRONTIER/System/macros/C.hpp>
+#include <FRONTIER/System/Swap.hpp>
 #include <algorithm>
 
 namespace fg
@@ -132,5 +133,15 @@ namespace fg
 	void *IndexArrayHolder::getPtr()
 	{
 		return m_ptr;
+	}
+		
+	/////////////////////////////////////////////////////////////
+	IndexArrayHolder::reference IndexArrayHolder::swap(IndexArrayHolder &arr)
+	{
+		fm::swap(m_ptr      ,arr.m_ptr      );
+		fm::swap(m_use16bits,arr.m_use16bits);
+		fm::swap(m_size     ,arr.m_size     );
+		
+		return *this;
 	}
 }

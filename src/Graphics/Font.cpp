@@ -251,4 +251,14 @@ namespace fg
 	{
 		return (*m_texAtlases)[characterSize ? characterSize : m_renderer->getCharacterSize()].upload(img,Identifier(letter,type),leftdown);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	Font::reference Font::swap(Font &font)
+	{
+		fm::swap(m_refCount  ,font.m_refCount  );
+		fm::swap(m_renderer  ,font.m_renderer  );
+		fm::swap(m_texAtlases,font.m_texAtlases);
+		
+		return *this;
+	}
 }

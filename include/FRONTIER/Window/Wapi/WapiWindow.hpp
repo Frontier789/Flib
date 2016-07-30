@@ -175,6 +175,24 @@ namespace fw
 			
 
 			/////////////////////////////////////////////////////////////
+			/// @brief (Re)Open the window
+			///
+			/// Upon internal error a message is prompted to fw::fw_log 
+			///
+			/// @param w Width of the window
+			/// @param h Height of the window
+			/// @param title Title of the window
+			/// @param style Style of the window (see fw::WindowStyle)
+			/// @param parent The parent of the window (when the parent is deactivated so is the child)
+			/// @param container The window that contains this (0 for nobody)
+			///
+			/// @return True iff everything went right
+			///
+			/////////////////////////////////////////////////////////////
+			bool open(unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Wapi::Window *parent = NULL,HWND container = 0);
+			
+
+			/////////////////////////////////////////////////////////////
 			/// @brief Change the window that contains this window
 			///
 			/// @param container The window that contains this (0 for nobody)

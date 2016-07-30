@@ -20,6 +20,7 @@
 #include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Error.hpp>
+#include <FRONTIER/System/Swap.hpp>
 #include <FRONTIER/OpenGL.hpp>
 #include <cstring>
 
@@ -337,6 +338,18 @@ namespace fg
 		int testBound;
 		glGetIntegerv(GL_ARRAY_BUFFER_BINDING,&testBound);
 		return (glGetError() == GL_NO_ERROR);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Buffer::reference Buffer::swap(Buffer &buf)
+	{
+		fm::swap(getGlId(),buf.getGlId());
+		fm::swap(m_type   ,buf.m_type   );
+		fm::swap(m_usage  ,buf.m_usage  );
+		fm::swap(m_data   ,buf.m_data   );
+		fm::swap(m_size   ,buf.m_size   );
+		
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////

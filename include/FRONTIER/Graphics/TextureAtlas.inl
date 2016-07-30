@@ -18,6 +18,7 @@
 #define FRONTIER_TEXTUREATLAS_INL_INCLUDED
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
+#include <FRONTIER/System/Swap.hpp>
 #include <algorithm>
 
 namespace fg
@@ -228,6 +229,18 @@ namespace fg
 	inline const Texture &TextureAtlas<MT,Cp>::getTexture() const
 	{
 		return m_impl->getTexture();
+	}
+		
+	/////////////////////////////////////////////////////////////
+	template<class MT,class Cp>
+	typename TextureAtlas<MT,Cp>::reference TextureAtlas<MT,Cp>::swap(TextureAtlas &texAtl)
+	{
+		m_glyphTable.swap(texAtl.m_glyphTable);
+		
+		fm::swap(m_impl,texAtl.m_impl);
+		fm::swap(m_comp,texAtl.m_comp);
+		
+		return *this;
 	}
 }
 #endif //FRONTIER_TEXTUREATLAS_INL_INCLUDED

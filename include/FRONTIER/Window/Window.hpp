@@ -141,6 +141,20 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		Window(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title = " ",fw::Window::WindowStyle style = fw::Window::Default,Window *parent = NULL,Handle container = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
 
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct the window from its attributes
+		/// 
+		/// @param size The size of the window
+		/// @param title Title of the window
+		/// @param style Style of the window (see fw::WindowStyle)
+		/// @param parent The parent of the window (when the parent is deactivated so is the child)
+		/// @param container The window that contains the new one
+		/// @param settings The settings (hints) for the OpenGL context
+		///
+		/////////////////////////////////////////////////////////////
+		Window(const fm::vec2u &size,const fm::String &title = " ",fw::Window::WindowStyle style = fw::Window::Default,Window *parent = NULL,Handle container = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
 		///
@@ -170,6 +184,22 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		bool open(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title = " ",fw::Window::WindowStyle style = fw::Window::Default,Window *parent = NULL,Handle container = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
+
+
+		/////////////////////////////////////////////////////////////
+		/// @brief (Re)Open the window
+		///
+		/// @param size The size of the window
+		/// @param title Title of the window
+		/// @param style Style of the window (see fw::WindowStyle)
+		/// @param parent The parent of the window (when the parent is deactivated so is the child)
+		/// @param container The window that contains the new one
+		/// @param settings The settings (hints) for the OpenGL context
+		///
+		/// @return True iff everything went right
+		///
+		/////////////////////////////////////////////////////////////
+		bool open(const fm::vec2u &size,const fm::String &title = " ",fw::Window::WindowStyle style = fw::Window::Default,Window *parent = NULL,Handle container = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Destroy the GL context

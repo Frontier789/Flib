@@ -65,6 +65,12 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
+	Window::Window(const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings) : m_window(new priv::Window)
+	{
+		open(size,title,style,parent,container,settings);
+	}
+
+	/////////////////////////////////////////////////////////////
 	Window::~Window()
 	{
 		delete m_window;
@@ -81,6 +87,16 @@ namespace fw
 	bool Window::open(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings)
 	{
 		bool ok1 = m_window->open(pos.x,pos.y,size.w,size.h,title,style,(parent ? &parent->getOSWindow() : NULL),(priv::Window::Handle)container);
+		bool ok2 = this->create((priv::Window::Handle)m_window->getHandle(),settings);
+		bool ok3 = this->setActive();
+
+		return ok1 && ok2 && ok3;
+	}
+
+	/////////////////////////////////////////////////////////////
+	bool Window::open(const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings)
+	{
+		bool ok1 = m_window->open(size.w,size.h,title,style,(parent ? &parent->getOSWindow() : NULL),(priv::Window::Handle)container);
 		bool ok2 = this->create((priv::Window::Handle)m_window->getHandle(),settings);
 		bool ok3 = this->setActive();
 

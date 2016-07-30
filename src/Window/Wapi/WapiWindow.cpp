@@ -928,6 +928,12 @@ namespace fw
 
 			return true;
 		}
+		
+		////////////////////////////////////////////////////////////
+		bool Window::open(unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Wapi::Window *parent,HWND container)
+		{
+			return open(CW_USEDEFAULT,CW_USEDEFAULT,w,h,title,style,parent,container);
+		}
 
 		////////////////////////////////////////////////////////////
 		bool Window::isOpen() const

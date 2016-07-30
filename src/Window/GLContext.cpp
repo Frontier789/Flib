@@ -126,7 +126,8 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
-	GLContext::GLContext() : m_context(new priv::GLContext)
+	GLContext::GLContext() : m_context(new priv::GLContext),
+							 m_depthTestMode(fw::Unused)
 	{
 
 	}
@@ -257,13 +258,21 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
+	void GLContext::clear(bool colorBuffer)
+	{
+		clear(colorBuffer,m_depthTestMode != fw::Unused,false);
+	}
+
+	/////////////////////////////////////////////////////////////
 	void GLContext::setBlend(BlendMode mode)
 	{
 		if (mode == Overwrite)
 			glDisable(GL_BLEND);
+			
 		if (mode == Additive)
 			glEnable(GL_BLEND),
 			glBlendFunc(GL_ONE,GL_ONE);
+			
 		if (mode == Alpha)
 			glEnable(GL_BLEND),
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -282,6 +291,8 @@ namespace fw
 		if (mode == GEqual)  glDepthFunc(GL_GEQUAL);
 		if (mode == Greater) glDepthFunc(GL_GREATER);
 		if (mode == Always)  glDepthFunc(GL_ALWAYS);
+		
+		m_depthTestMode = mode;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -295,6 +306,25 @@ namespace fw
 		
 		if (flip)
 			ret.flipVertically();
+			
+		return ret;
+	}
+
+	/////////////////////////////////////////////////////////////
+	fg::Image GLContext::capture(bool flip,bool frontBuffer)
+	{
+		unsigned int w = 1,h = 1;
+		m_context->getSize(w,h);
+		
+		fg::Image ret;
+		ret.create(w,h);
+		
+		glReadBuffer(frontBuffer ? GL_FRONT : GL_BACK);
+		glReadPixels(0,0,w,h,GL_RGBA,GL_UNSIGNED_BYTE,&ret.getPixel(0,0));
+		
+		if (flip)
+			ret.flipVertically();
+			
 		return ret;
 	}
 }

@@ -34,6 +34,9 @@ namespace fg
     {
 		Mesh(const Mesh &m);
     public:
+		typedef Mesh &reference;
+		typedef const Mesh &const_reference;
+		
 		std::vector<fm::vec3> pts;
 		std::vector<fm::vec2> uvs;
 
@@ -47,7 +50,7 @@ namespace fg
 		Mesh();
 		
 		Mesh copy();
-		void swap(Mesh &target);
+		reference swap(Mesh &target);
 
 		void calcNormals();
 		void calcTangents();

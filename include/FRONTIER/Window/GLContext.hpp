@@ -73,6 +73,7 @@ namespace fw
 	class FRONTIER_API GLContext : public fm::NonCopyable
 	{
 		priv::GLContext *m_context;
+		DepthTestMode m_depthTestMode;
 	public:
 
 		typedef GLContext &reference;
@@ -287,7 +288,7 @@ namespace fw
 		/// @param color The new clear-color
 		///
 		/////////////////////////////////////////////////////////////
-		static void setClearColor(const fm::vector4<float> &color);
+		void setClearColor(const fm::vector4<float> &color);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the clearing depth used by the currently active context
@@ -295,7 +296,19 @@ namespace fw
 		/// @param depth The new clearing depth
 		///
 		/////////////////////////////////////////////////////////////
-		static void setClearDepth(float depth);
+		void setClearDepth(float depth);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Clears the specified buffers of the currently active context
+		/// 
+		/// The depth buffer gets cleared if the depth test mode is not set to Unused
+		/// 
+		/// @param colorBuffer If true the color buffer will be cleared with the set clear-color
+		///
+		/// @see setClearColor
+		///
+		/////////////////////////////////////////////////////////////
+		void clear(bool colorBuffer = true);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Clears the specified buffers of the currently active context
@@ -307,7 +320,7 @@ namespace fw
 		/// @see setClearColor
 		///
 		/////////////////////////////////////////////////////////////
-		static void clear(bool colorBuffer = true,bool depthBuffer = false,bool stencilBuffer = false);
+		void clear(bool colorBuffer,bool depthBuffer,bool stencilBuffer = false);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the blending mode of the current context
@@ -317,7 +330,7 @@ namespace fw
 		/// @see BlendMode
 		///
 		/////////////////////////////////////////////////////////////
-		static void setBlend(BlendMode mode);
+		void setBlend(BlendMode mode);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the depthtest mode of the current context
@@ -327,7 +340,7 @@ namespace fw
 		/// @see DepthTestMode
 		///
 		/////////////////////////////////////////////////////////////
-		static void setDepthTest(DepthTestMode mode);
+		void setDepthTest(DepthTestMode mode);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy the content of the currently bound render target to the cpu
@@ -345,6 +358,21 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		static fg::Image capture(const fm::vec2s &pos,const fm::vec2s &size,bool flip = true,bool frontBuffer = false);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy the content of the currently bound render target to the cpu
+		///
+		/// OpenGL uses a coordinate system with origin at the lower-left corner
+		/// so flipping the image is desireable if a coordinate system with origin at
+		/// the upper left corner is used
+		///
+		/// @param flip If true the image will be flipped vertically
+		/// @param frontBuffer Capture the front buffer (use the backbuffer iff false)
+		///
+		/// @return The read Image
+		///
+		/////////////////////////////////////////////////////////////
+		fg::Image capture(bool flip = true,bool frontBuffer = false);
 	};
 }
 

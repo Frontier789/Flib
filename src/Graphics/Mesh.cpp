@@ -22,6 +22,7 @@
 #include <FRONTIER/System/Polar3.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Polar2.hpp>
+#include <FRONTIER/System/Swap.hpp>
 #include <FRONTIER/Graphics/Mesh.hpp>
 #include <set>
 #include <map>
@@ -48,18 +49,21 @@ namespace fg
 
 	    return ret;
 	}
-
+	
 	/////////////////////////////////////////////////////////////
-    void Mesh::swap(Mesh &target)
-    {
-        target.pts.swap(pts);
-	    target.uvs.swap(uvs);
-	    target.norms.swap(norms);
-	    target.tans.swap(tans);
-	    target.bitans.swap(bitans);
-	    target.indices.swap(indices);
-	    std::swap(primitive,target.primitive);
-    }
+	Mesh::reference Mesh::swap(Mesh &target)
+	{
+		pts    .swap(target.pts    );
+		uvs    .swap(target.uvs    );
+		norms  .swap(target.norms  );
+		tans   .swap(target.tans   );
+		bitans .swap(target.bitans );
+		indices.swap(target.indices);
+		
+		fm::swap(primitive,target.primitive);
+		
+		return *this;
+	}
 
 	/////////////////////////////////////////////////////////////
     Mesh Mesh::getSphere(float radius,fm::Size W,fm::Size H,const fm::Delegate<float,float &,float &> &rfunc)

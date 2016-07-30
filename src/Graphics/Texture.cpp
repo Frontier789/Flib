@@ -23,6 +23,7 @@
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Error.hpp>
+#include <FRONTIER/System/Swap.hpp>
 #include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/OpenGL.hpp>
 #include <cstring>
@@ -464,5 +465,17 @@ namespace fg
 	Texture::operator bool() const
 	{
 		return getGlId();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Texture::reference Texture::swap(Texture &tex)
+	{
+		fm::swap(getGlId()   ,tex.getGlId()    );
+		fm::swap(m_realSize  ,tex.m_realSize   );
+		fm::swap(m_size      ,tex.m_size       );
+		fm::swap(m_isRepeated,tex.m_isRepeated );
+		fm::swap(m_isSmooth  ,tex.m_isSmooth   );
+		
+		return *this;
 	}
 }

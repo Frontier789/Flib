@@ -97,7 +97,7 @@ namespace fg
 		/// If @a copy is invalid (uninitialized) then this the object will be invalid (uninitialized)
 		///
 		/////////////////////////////////////////////////////////////
-		Font(const_reference copy);
+		Font(const Font &copy);
 
 
 		/////////////////////////////////////////////////////////////
@@ -258,8 +258,19 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		Glyph upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type = Glyph::Regular,const fm::vec2s &leftdown = fm::vec2s(),unsigned int characterSize = 0);
 		
+		/////////////////////////////////////////////////////////////
+		/// @brief Swap the content of the two objects
+		///
+		/// swaps in constant time
+		///
+		/// @param font The object to swap with
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference swap(Font &font);
+		
 	private:
-
 		/////////////////////////////////////////////////////////////
 		/// @brief Internal function used to clean up the resources
 		///

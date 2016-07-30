@@ -814,6 +814,12 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
+		bool Window::open(int x,int y,unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Xlib::Window *parent,::Window container)
+		{
+			return open(0,0,w,h,title,style,parent,container);
+		}
+
+		////////////////////////////////////////////////////////////
 		bool Window::isOpen() const
 		{
 			return m_opened;

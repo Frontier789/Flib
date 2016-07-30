@@ -57,7 +57,6 @@ namespace fg
 		typedef TextureAtlas &reference;
 		typedef const TextureAtlas &const_reference;
 		
-
 		/////////////////////////////////////////////////////////////
 		/// @brief Simple class that holds the attributes of a key and the associated Image
 		/// 
@@ -238,6 +237,18 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		const Texture &getTexture() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Swap the content of the two objects
+		///
+		/// swaps in constant time
+		///
+		/// @param texAtl The object to swap with
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference swap(TextureAtlas &texAtl);
 	};
 }
 

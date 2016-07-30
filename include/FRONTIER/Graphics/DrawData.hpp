@@ -168,6 +168,9 @@ namespace fg
 		std::vector<DrawCall> m_drawCalls;
 
     public:
+		typedef DrawData &reference;
+		typedef const DrawData &const_reference;
+		
 		DrawData();
 
 		explicit DrawData(const Mesh &m);
@@ -216,6 +219,9 @@ namespace fg
 
         /* reset */
 		void reset();
+		
+		/////////////////////////////////////////////////////////////
+		reference swap(DrawData &drawData);
 	};
 }
 

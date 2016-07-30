@@ -372,4 +372,13 @@ namespace fg
 	{
 		return m_drawCalls.size();
 	}
+		
+	/////////////////////////////////////////////////////////////
+	DrawData::reference DrawData::swap(DrawData &drawData)
+	{
+		m_attrs    .swap(drawData.m_attrs    );
+		m_drawCalls.swap(drawData.m_drawCalls);
+		
+		return *this;
+	}
 }

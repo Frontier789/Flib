@@ -31,6 +31,7 @@
 #include <FRONTIER/System/type_traits/Enable_if.hpp>
 #include <FRONTIER/System/type_traits/Remove_cv.hpp>
 #include <FRONTIER/System/type_traits/Is_specOf.hpp>
+#include <FRONTIER/System/type_traits/Has_swap.hpp>
 #include <FRONTIER/System/type_traits/Is_array.hpp>
 #include <FRONTIER/System/type_traits/Is_const.hpp>
 #include <FRONTIER/System/type_traits/Is_void.hpp>

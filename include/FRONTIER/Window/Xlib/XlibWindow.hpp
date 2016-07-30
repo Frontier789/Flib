@@ -182,6 +182,24 @@ namespace fw
 			/////////////////////////////////////////////////////////////
 			bool open(int x,int y,unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Xlib::Window *parent = NULL,::Window container = 0);
 
+
+			/////////////////////////////////////////////////////////////
+			/// @brief (Re)Open the window
+			///
+			/// Upon internal error a message is prompted to fw::Wapi::log
+			///
+			/// @param w Width of the window
+			/// @param h Height of the window
+			/// @param title Title of the window
+			/// @param style Style of the window (see fw::WindowStyle)
+			/// @param parent The owner of the new window
+			/// @param container The window which will contain the new window
+			///
+			/// @return True iff everything went right
+			///
+			/////////////////////////////////////////////////////////////
+			bool open(unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Xlib::Window *parent = NULL,::Window container = 0);
+
 			/////////////////////////////////////////////////////////////
 			/// @brief Check if the window is opened
 			///
