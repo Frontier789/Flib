@@ -18,23 +18,13 @@
 #define FRONTIER_GL_FUNCTIONS_H_INCLUDED
 #include <FRONTIER/System/macros/API.h>
 	
+	#ifdef __GNUC__
+		#define __stdcall __attribute__((stdcall))
+	#endif
+	
 	#ifndef APIENTRY
-		#if defined(__MINGW32__)
-			#ifndef WIN32_LEAN_AND_MEAN
-				#define WIN32_LEAN_AND_MEAN 1
-			#endif
-			#ifndef NOMINMAX
-				#define NOMINMAX
-			#endif
-			#include <windows.h>
-		#elif (defined(_MSC_VER) && (_MSC_VER >= 800)) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__)
-			#ifndef WIN32_LEAN_AND_MEAN
-				#define WIN32_LEAN_AND_MEAN 1
-			#endif
-			#ifndef NOMINMAX
-				#define NOMINMAX
-			#endif
-			#include <windows.h>
+		#if defined(__MINGW32__) || (defined(_MSC_VER) && (_MSC_VER >= 800)) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__)
+			#define APIENTRY __stdcall
 		#else
 			#define APIENTRY
 		#endif
@@ -47,7 +37,6 @@
 			#define API_ENTRY
 		#endif
 	#endif //API_ENTRY
-	
 	
 	#ifdef __cplusplus
 	extern "C"

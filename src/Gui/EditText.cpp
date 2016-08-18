@@ -1,6 +1,24 @@
+////////////////////////////////////////////////////////////////////////// <!--
+/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+///                                                                    ///
+/// Flib is licensed under the terms of GNU GPL.                       ///
+/// Therefore you may freely use it in your project,                   ///
+/// modify it, redistribute it without any warranty on the             ///
+/// condition that this disclaimer is not modified/removed.            ///
+/// You may not misclaim the origin of this software.                  ///
+///                                                                    ///
+/// If you use this software in your program/project a                 ///
+/// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
+/// is not required but highly appreciated.                            ///
+///                                                                    ///
+/// You should have received a copy of GNU GPL with this software      ///
+///                                                                    ///
+////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/IndexArrayHolder.hpp>
+#include <FRONTIER/Graphics/FramedSprite.hpp>
 #include <FRONTIER/Gui/ResourceManager.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
+#include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Util/Clipboard.hpp>
 #include <FRONTIER/Window/Event.hpp>
 #include <FRONTIER/Gui/EditText.hpp>
@@ -115,7 +133,7 @@ namespace fgui
 
         priv::getDrawFromText(m_charsDraw,&ptr[0],m_lines.size(),
                               m_font,m_charSize,&m_tex,
-                              fm::nullPtr,fm::rect2i(getViewPos(),getSize()),
+                              fm::nullPtr,fm::rect2i(getViewPos(),getInnerSize()),
                               fm::vec4::Black,m_monoSpace ? 1 : 0);
     }
 
@@ -133,7 +151,7 @@ namespace fgui
 
         fm::vec2 offset = -getViewPos();
 
-        fm::vec2 size = getSize();
+        fm::vec2 size = getInnerSize();
 
         fm::Size mnLine = fm::max(-offset.y/m_metrics.lineGap,0.f);
         fm::Size mxLine = fm::max((-offset.y+size.h)/m_metrics.lineGap,0.f);
@@ -208,7 +226,7 @@ namespace fgui
         std::vector<fm::vec4> clr;
 
         fm::vec2 offset = -getViewPos();
-        fm::vec2 size = getSize();
+        fm::vec2 size = getInnerSize();
 
         fm::Size mnLine = fm::max(-offset.y/m_metrics.lineGap,0.f);
         fm::Size mxLine = fm::max((-offset.y+size.h)/m_metrics.lineGap,0.f);
@@ -217,7 +235,7 @@ namespace fgui
         {
             if (m_carets[i].tp.line > mxLine || m_carets[i].tp.line < mnLine) continue;
 
-            fm::vec2 p0 = pixPosFromTextPos(m_carets[i].tp) + offset;
+			fm::vec2 p0 = pixPosFromTextPos(m_carets[i].tp) + offset + fm::vec2(m_insert ? 1 : 0,0);
             fm::vec2 p1 = p0 + fm::vec2(0,m_metrics.lineGap);
 
             if (!m_insert)
@@ -239,14 +257,14 @@ namespace fgui
                 Cx(6)
                     pts.push_back(delta[x]*p0 + (fm::vec2(1,1)-delta[x])*p1);
 
-                clr.resize(clr.size()+6,fm::vec4::Black);
+                clr.resize(clr.size()+6,m_cursorColor);
             }
             else
             {
                 pts.push_back(p0);
                 pts.push_back(p1);
 
-                clr.resize(clr.size()+2,fm::vec4::Black);
+                clr.resize(clr.size()+2,m_cursorColor);
             }
 
         }
@@ -264,6 +282,22 @@ namespace fgui
         m_caretsDraw[fg::Assoc::Color].set(&clr[0],clr.size());
         m_caretsDraw.addDraw(0,pts.size(),m_insert ? fg::Lines : fg::Triangles);
     }
+    
+    /////////////////////////////////////////////////////////////
+	void EditText::updateCaretColors()
+	{
+		if (m_caretsDraw.getDrawCount() > 0)
+		{
+			fm::Size n = m_caretsDraw.getDraw(0).drawLen;
+			
+			if (n > 0)
+			{
+				std::vector<fm::vec4> clr(n,m_cursorColor);
+				
+				m_caretsDraw[fg::Assoc::Color].set(&clr[0],clr.size());
+			}
+		}
+	}
 
     /////////////////////////////////////////////////////////////
     fm::vec2 EditText::pixPosFromTextPos(const TextPos &tp) const
@@ -293,7 +327,7 @@ namespace fgui
         fm::Size line = lineFromPixPos(pixPos);
         fm::Size pos;
 
-        if (pixPos.y >= fm::max<float>((lineCount+5)*m_metrics.lineGap,getSize().h+getViewPos().y+m_metrics.lineGap*2))
+        if (pixPos.y >= fm::max<float>((lineCount+5)*m_metrics.lineGap,getInnerSize().h+getViewPos().y+m_metrics.lineGap*2))
         {
             pos = getLine(lineCount-1).size();
         }
@@ -445,45 +479,26 @@ namespace fgui
                        Layout *parent,
                        const fm::String &text,
 					   fm::Ref<const fg::Font> font,
-                       fm::Size characterSize) : Widget(pos,size,id,parent),
-                                                 m_tex(fm::nullPtr),
-                                                 m_font(fm::nullPtr),
-                                                 m_charSize(characterSize),
-                                                 m_recordUndo(true),
-                                                 m_monoSpace(true),
-                                                 m_editable(true),
-                                                 m_freeView(false),
-                                                 m_insert(true),
-                                                 m_rightDrag(false),
-                                                 m_dragMode(NoDrag),
-                                                 m_lastClick(fm::String::npos,fm::String::npos),
-                                                 m_recalcChars(true),
-                                                 m_recalcCarets(true),
-                                                 m_recalcSelect(true)
-    {
-        setFont(font);
-        setText(text);
-    }
-
-    ////////////////////////////////////////////////////////////
-    EditText::EditText(const fm::String &text,
-                       const fm::vec2 &size,
-                       fm::Ref<const fg::Font> font,
-                       fm::Size characterSize) : Widget(fm::vec2(),size,"unnamed",fm::nullPtr),
-                                                 m_tex(fm::nullPtr),
-                                                 m_font(fm::nullPtr),
-                                                 m_charSize(characterSize),
-                                                 m_monoSpace(true),
-                                                 m_editable(true),
-                                                 m_freeView(false),
-                                                 m_insert(true),
-                                                 m_rightDrag(false),
-                                                 m_dragMode(NoDrag),
-                                                 m_lastClick(fm::String::npos,fm::String::npos),
-                                                 m_recalcChars(true),
-                                                 m_recalcCarets(true),
-                                                 m_recalcSelect(true)
-
+                       fm::Size characterSize,
+                       fm::Ref<fg::FramedSprite> bckg,
+                       fm::vec2 frameSize) : Widget(pos,size,id,parent),
+                                             m_blinkCallback(fm::Delegate<fm::vec4,const fm::Clock &>(&EditText::defBlinkFunc,this)),
+                                             m_bckg(bckg),
+                                             m_tex(fm::nullPtr),
+                                             m_font(fm::nullPtr),
+                                             m_frameSize(frameSize),
+                                             m_charSize(characterSize),
+                                             m_recordUndo(true),
+                                             m_monoSpace(true),
+                                             m_editable(true),
+                                             m_freeView(false),
+                                             m_insert(true),
+                                             m_rightDrag(false),
+                                             m_dragMode(NoDrag),
+                                             m_lastClick(fm::String::npos,fm::String::npos),
+                                             m_recalcChars(true),
+                                             m_recalcCarets(true),
+                                             m_recalcSelect(true)
     {
         setFont(font);
         setText(text);
@@ -491,25 +506,32 @@ namespace fgui
 
     ////////////////////////////////////////////////////////////
     EditText::EditText(const fm::vec2 &size,
+                       const fm::String &text,
                        fm::Ref<const fg::Font> font,
-                       fm::Size characterSize) : Widget(fm::vec2(),size,"unnamed",fm::nullPtr),
-                                                 m_tex(fm::nullPtr),
-                                                 m_font(fm::nullPtr),
-                                                 m_charSize(characterSize),
-                                                 m_monoSpace(true),
-                                                 m_editable(true),
-                                                 m_freeView(false),
-                                                 m_insert(true),
-                                                 m_rightDrag(false),
-                                                 m_dragMode(NoDrag),
-                                                 m_lastClick(fm::String::npos,fm::String::npos),
-                                                 m_recalcChars(true),
-                                                 m_recalcCarets(true),
-                                                 m_recalcSelect(true)
+                       fm::Size characterSize,
+                       fm::Ref<fg::FramedSprite> bckg,
+                       fm::vec2 frameSize) : Widget(fm::vec2(),size,"unnamed",fm::nullPtr),
+                                             m_blinkCallback(fm::Delegate<fm::vec4,const fm::Clock &>(&EditText::defBlinkFunc,this)),
+                                             m_bckg(bckg),
+                                             m_tex(fm::nullPtr),
+                                             m_font(fm::nullPtr),
+                                             m_frameSize(frameSize),
+                                             m_charSize(characterSize),
+                                             m_recordUndo(true),
+                                             m_monoSpace(true),
+                                             m_editable(true),
+                                             m_freeView(false),
+                                             m_insert(true),
+                                             m_rightDrag(false),
+                                             m_dragMode(NoDrag),
+                                             m_lastClick(fm::String::npos,fm::String::npos),
+                                             m_recalcChars(true),
+                                             m_recalcCarets(true),
+                                             m_recalcSelect(true)
 
     {
         setFont(font);
-        setText("");
+        setText(text);
     }
 
     ////////////////////////////////////////////////////////////
@@ -519,6 +541,8 @@ namespace fgui
         {
             if (ev.type == fw::Event::TextEntered)
             {
+            	m_blinkClk.restart();
+            	
                 if (!getEditable()) return false;
 
                 fm::Uint32 notPrinted[] = {'\b','\n','\r',127};
@@ -547,7 +571,7 @@ namespace fgui
                     int am = 3;
 
                     if (ev.wheel.shift)
-                        am = getSize().h / m_metrics.lineGap;
+                        am = getInnerSize().h / m_metrics.lineGap;
 
                     if (ev.wheel.alt)
                         am = 1;
@@ -574,7 +598,8 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     void EditText::handleEnter(fm::vec2 p)
     {
-        fw::Mouse::setCursor(fw::Mouse::IBeam);
+		if (m_dragMode == NoDrag && !m_rightDrag)
+			fw::Mouse::setCursor(fw::Mouse::IBeam);
 
         Widget::handleEnter(p);
     }
@@ -582,15 +607,16 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     void EditText::handleLeave(fm::vec2 p)
     {
-        fw::Mouse::setCursor(fw::Mouse::Arrow);
+		if (m_dragMode == NoDrag && !m_rightDrag)
+			fw::Mouse::setCursor(fw::Mouse::Arrow);
 
-        Widget::handleEnter(p);
+        Widget::handleLeave(p);
     }
 
     ////////////////////////////////////////////////////////////
     void EditText::handleHover(fm::vec2 p)
     {
-        fm::vec2 inp = p-getPos()+getViewPos();
+        fm::vec2 inp = p-getPos()+getViewPos()-getFrameSize();
         TextPos tp = textPosFromPixPos(inp);
 
         if (m_rightDrag)
@@ -658,35 +684,51 @@ namespace fgui
     {
         if (btn == fw::Mouse::Left)
         {
-            fm::vec2 inp = p-getPos()+getViewPos();
+        	m_blinkClk.restart();
+        	
+            fm::vec2 inp = p-getPos()+getViewPos()-getFrameSize();
             TextPos tp = textPosFromPixPos(inp);
+            
+			if (fw::Keyboard::isKeyHeld(fw::Keyboard::LShift) ||
+				fw::Keyboard::isKeyHeld(fw::Keyboard::RShift))
+			{
+				if (m_dragMode == NoDrag)
+				{
+					setCaret(m_carets.back(),tp,m_carets.back().sel);
 
-            if (fw::Keyboard::isKeyHeld(fw::Keyboard::LShift) ||
-                fw::Keyboard::isKeyHeld(fw::Keyboard::RShift))
-            {
-                if (m_dragMode == NoDrag)
-                {
-                    setCaret(m_carets.back(),tp,m_carets.back().sel);
+					remDoubleCarets();
+				}
+			}
+			else
+			{
+				if (fw::Keyboard::isKeyHeld(fw::Keyboard::LCtrl) ||
+					fw::Keyboard::isKeyHeld(fw::Keyboard::RCtrl))
+				{
+					addCaret(tp);
 
-                    remDoubleCarets();
-                }
-            }
-            else
-            {
-                if (fw::Keyboard::isKeyHeld(fw::Keyboard::LCtrl) ||
-                    fw::Keyboard::isKeyHeld(fw::Keyboard::RCtrl))
-                {
-                    addCaret(tp);
-
-                    remDoubleCarets();
-                }
-                else
-                {
-                    m_carets.resize(1);
-                    setCaret(m_carets[0],tp,tp);
-                }
-            }
-
+					remDoubleCarets();
+				}
+				else
+				{
+					m_carets.resize(1);
+					setCaret(m_carets[0],tp,tp);
+				}
+			}
+            
+			if (inp.x < 0)
+			{
+				m_dragMode = KeepWordDrag;
+				m_dragTP0  = TextPos(tp.line,0);
+				m_dragTP1  = TextPos(tp.line,getLine(tp.line).size());
+				
+				setCaret(m_carets.back(),TextPos(tp.line,0),TextPos(tp.line,getLine(tp.line).size()));
+				
+				addUndo();
+				
+				return;
+			}
+			
+            
             addUndo();
 
             // double click
@@ -745,6 +787,9 @@ namespace fgui
         {
             m_rightDrag = false;
         }
+        
+		if (m_dragMode == NoDrag && !m_rightDrag && !getMouseIn())
+			fw::Mouse::setCursor(fw::Mouse::Arrow);
 
         Widget::handleRelease(p,btn);
     }
@@ -754,9 +799,11 @@ namespace fgui
     {
         int movPos  = (key.code == fw::Keyboard::Left)*-1 + (key.code == fw::Keyboard::Right)*1;
         int movLine = (key.code == fw::Keyboard::Up  )*-1 + (key.code == fw::Keyboard::Down )*1;
-
+		
         if (movLine)
         {
+			m_blinkClk.restart();
+        	
             if (!getEditable())
             {
                 if (key.shift || key.alt)
@@ -853,6 +900,8 @@ namespace fgui
 
         if (movPos)
         {
+        	m_blinkClk.restart();
+        	
             bool left = movPos < 0;
             sortCarets(left);
 
@@ -870,6 +919,8 @@ namespace fgui
 
         if (del)
         {
+        	m_blinkClk.restart();
+        	
             if (!getEditable()) return false;
 
             sortCarets(del < 0);
@@ -889,6 +940,8 @@ namespace fgui
 
         if (key.code == fw::Keyboard::Enter)
         {
+        	m_blinkClk.restart();
+        	
             if (!getEditable()) return false;
 
             if (key.shift)
@@ -924,6 +977,8 @@ namespace fgui
 
         if (key.code == fw::Keyboard::Tab)
         {
+        	m_blinkClk.restart();
+        	
             if (!getEditable()) return false;
 
             addUndo(UndoStep::InsertText);
@@ -934,6 +989,8 @@ namespace fgui
 
         if (key.code == fw::Keyboard::End)
         {
+        	m_blinkClk.restart();
+        	
             if (key.ctrl)
             {
                 fm::Size lineCount = getLineCount();
@@ -973,6 +1030,8 @@ namespace fgui
 
         if (key.code == fw::Keyboard::Insert)
         {
+        	m_blinkClk.restart();
+        	
             m_insert = !m_insert;
 
             m_recalcCarets = true;
@@ -980,6 +1039,8 @@ namespace fgui
 
         if (key.code == fw::Keyboard::Home)
         {
+        	m_blinkClk.restart();
+        	
             if (key.ctrl)
             {
                 TextPos maxSel(0,0);
@@ -1022,6 +1083,8 @@ namespace fgui
             if (key.code == fw::Keyboard::C ||
                 key.code == fw::Keyboard::X)
             {
+            	m_blinkClk.restart();
+            	
                 if (fm::util::clipboard::openClipboard())
                 {
                     fm::String clipData;
@@ -1068,6 +1131,8 @@ namespace fgui
             }
             if (key.code == fw::Keyboard::V)
             {
+            	m_blinkClk.restart();
+            	
                 if (!getEditable()) return false;
 
                 if (fm::util::clipboard::openClipboard())
@@ -1100,17 +1165,20 @@ namespace fgui
 
                         C(m_carets.size())
                             insertText(m_carets[i],clipData.substr(beg,clipData.size()-beg));
-
                     }
                     else
                     {
                        fm::util::clipboard::closeClipboard();
                     }
                 }
+                
+                bringCaretsToView();
             }
 
             if (key.code == fw::Keyboard::Z)
             {
+            	m_blinkClk.restart();
+            	
                 if (!getEditable()) return false;
 
                 if (key.shift)
@@ -1121,6 +1189,8 @@ namespace fgui
 
             if (key.code == fw::Keyboard::Y)
             {
+            	m_blinkClk.restart();
+            	
                 if (!getEditable()) return false;
 
                 redo();
@@ -1128,6 +1198,8 @@ namespace fgui
 
             if (key.code == fw::Keyboard::A)
             {
+            	m_blinkClk.restart();
+            	
                 m_carets.resize(1);
                 fm::Size lineCount = getLineCount();
                 TextPos lastTP(lineCount-1,getLine(lineCount-1).size());
@@ -1137,6 +1209,8 @@ namespace fgui
 
             if (key.code == fw::Keyboard::T)
             {
+            	m_blinkClk.restart();
+            	
                 if (!getEditable()) return false;
 
                 sortCarets(true);
@@ -1160,6 +1234,8 @@ namespace fgui
 
             if (key.code == fw::Keyboard::D)
             {
+            	m_blinkClk.restart();
+            	
                 if (!getEditable()) return false;
 
                 finishUndo();
@@ -1224,14 +1300,21 @@ namespace fgui
         GuiElement::onDraw(shader);
 
         fw::Window::setBlend(fw::Alpha);
+        
+		if (m_bckg)
+		{
+			m_bckg->setSize(getSize());
+			m_bckg->setPos(getPos());
+			
+			m_bckg->onDraw(shader);
+		}
 
-        shader.getModelStack().push().mul(fm::MATRIX::translation(fm::vec2i(getPos())));
+        shader.getModelStack().push().mul(fm::MATRIX::translation(fm::vec2i(getPos()+getFrameSize())));
         shader.getTexUVStack().push(m_tex->getPixToUnitMatrix());
 
         shader.useTexture(fm::nullPtr);
         shader.draw(m_selectDraw);
 
-        shader.getColorStack().push().mul(fm::MATRIX::scaling(0,0,0));
         shader.useTexture(m_tex);
         shader.draw(m_charsDraw);
 
@@ -1267,6 +1350,13 @@ namespace fgui
             m_recalcSelect = false;
             recalcSelect();
         }
+        
+		fm::vec4 c = m_blinkCallback(m_blinkClk);
+		if (c != m_cursorColor)
+		{
+			m_cursorColor = c;
+			updateCaretColors();
+		}
     }
         
     ////////////////////////////////////////////////////////////
@@ -1277,18 +1367,65 @@ namespace fgui
 		if (resMan)
 		{
 			fg::Font *font = (fg::Font*)resMan->get("defFont");
-			if (font) setFont(font);
-		}
-	}
+			
+            if (font) 
+                setFont(font);
+            
+            fg::FramedSprite *bckg = (fg::FramedSprite*)resMan->get("defEditTextBckg");
+            
+            if (bckg)
+                setBackground(bckg);
+        }
+        else
+            setBackground(fm::nullPtr);
+    }
+    
 
     ////////////////////////////////////////////////////////////
     void EditText::setSize(const fm::vec2 &size)
     {
-        GuiElement::setSize(size);
+		fm::vec2 rsize = size;
+		fm::vec2 frame = getFrameSize();
+		
+		if (frame.w*2 > size.w) rsize.w = frame.w*2;
+		if (frame.h*2 > size.h) rsize.h = frame.h*2;
+		
+        GuiElement::setSize(rsize);
 
         m_recalcChars  = true;
         m_recalcSelect = true;
     }
+
+	////////////////////////////////////////////////////////////
+	void EditText::setBackground(fm::Ref<fg::FramedSprite> bckg)
+	{
+		m_bckg = bckg;
+		
+		if (m_bckg)
+		{
+			setFrameSize(m_bckg->getFrameSize());
+		}
+	}
+	
+	////////////////////////////////////////////////////////////
+	void EditText::setFrameSize(fm::vec2 frameSize)
+	{
+		setSize(getInnerSize()+frameSize*2);
+		
+		m_frameSize = frameSize;
+	}
+	
+	////////////////////////////////////////////////////////////
+	fm::vec2 EditText::getFrameSize() const
+	{
+		return m_frameSize;
+	}
+	
+	////////////////////////////////////////////////////////////
+	fm::vec2 EditText::getInnerSize() const
+	{
+		return getSize() - getFrameSize()*2;
+	}
 
     ////////////////////////////////////////////////////////////
     void EditText::setText(const fm::String &text)
@@ -1513,7 +1650,7 @@ namespace fgui
                 return line.substr(0,i);
         }
 
-        return line.size();
+        return line;
     }
 
     ////////////////////////////////////////////////////////////
@@ -1538,12 +1675,21 @@ namespace fgui
 
         fm::vec2 p = pixPosFromTextPos(tp);
         fm::vec2 v = getViewPos();
-        fm::vec2 size = getSize();
+        fm::vec2 size = getInnerSize();
         float spaceW  = getCharWidth(' ');
 
         float dUp   = m_metrics.lineGap;
         float dDown = m_metrics.lineGap*2;
 
+        if (p.y + dDown > v.y + size.h) v.y = p.y + dDown - size.h;
+		else if (p.y - dUp   < v.y)          v.y = p.y - dUp;
+
+        if (p.x + spaceW*1.5 > v.x + size.w) v.x = p.x + spaceW*1.5 - size.w;
+		else if (p.x - spaceW     < v.x)          v.x = p.x - spaceW;
+		
+		p.x = fm::max<float>(p.x,0);
+		p.y = fm::max<float>(p.y,0);
+/*
         if (v.h <= 2*m_metrics.lineGap)
             dUp   = 0,
             dDown = m_metrics.lineGap;
@@ -1553,7 +1699,7 @@ namespace fgui
 
         if (p.x - spaceW     < v.x)          v.x = p.x - spaceW;
         if (p.x + spaceW*1.5 > v.x + size.w) v.x = p.x + spaceW*1.5 - size.w;
-
+*/
         setViewPos(v);
     }
 
@@ -1756,6 +1902,27 @@ namespace fgui
     {
 
     }
+	
+    ////////////////////////////////////////////////////////////
+	fm::vec4 EditText::defBlinkFunc(const fm::Clock &clk) const
+	{
+		fm::Uint64 ms = clk.getTime().asMilliseconds();
+		
+		// return fm::vec4(0,0,0,(std::cos((ms%2000)/2000.0 * 3.14159265358979 * 2)/2 + .5));
+		
+        if (ms < 400) return fm::vec4(0,0,0,1);
+        
+		float t = (ms / 400.0) / 2;
+		
+		t = t - fm::Uint64(t);
+		t = t*2;
+		t = t-1;
+		t = std::abs(t);
+		t = 1-t;
+		t = (3 - 2*t)*t*t;
+		
+		return fm::vec4(0,0,0,t);
+	}
 
     ////////////////////////////////////////////////////////////
     void EditText::undo()

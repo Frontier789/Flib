@@ -1,3 +1,19 @@
+////////////////////////////////////////////////////////////////////////// <!--
+/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+///                                                                    ///
+/// Flib is licensed under the terms of GNU GPL.                       ///
+/// Therefore you may freely use it in your project,                   ///
+/// modify it, redistribute it without any warranty on the             ///
+/// condition that this disclaimer is not modified/removed.            ///
+/// You may not misclaim the origin of this software.                  ///
+///                                                                    ///
+/// If you use this software in your program/project a                 ///
+/// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
+/// is not required but highly appreciated.                            ///
+///                                                                    ///
+/// You should have received a copy of GNU GPL with this software      ///
+///                                                                    ///
+////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_EDITTEXT_HPP_INCLUDED
 #define FRONTIER_EDITTEXT_HPP_INCLUDED
 #include <FRONTIER/Graphics/DrawData.hpp>
@@ -6,6 +22,11 @@
 #include <FRONTIER/System/Ref.hpp>
 #include <FRONTIER/Gui/Widget.hpp>
 #define FRONTIER_EDITTEXT
+
+namespace fg
+{
+	class FramedSprite;
+}
 
 namespace fgui
 {
@@ -83,17 +104,22 @@ namespace fgui
 
     protected:
         ////////////////////////////////////////////////////////////
-        fg::DrawData m_charsDraw;
-        fg::DrawData m_selectDraw;
-        fg::DrawData m_caretsDraw;
+		fm::Delegate<fm::vec4,const fm::Clock &> m_blinkCallback;
         std::deque<fm::String> m_lines;
         std::vector<Caret> m_carets;
+        fg::DrawData m_selectDraw;
+        fg::DrawData m_caretsDraw;
+        fg::DrawData m_charsDraw;
+		fg::FramedSprite *m_bckg;
         const fg::Texture *m_tex;
         std::deque<Undo> m_undos;
         std::deque<Undo> m_redos;
         const fg::Font *m_font;
+		fm::vec4 m_cursorColor;
         fg::Metrics m_metrics;
         fm::vec2 m_pixViewPos;
+		fm::vec2 m_frameSize;
+		fm::Clock m_blinkClk;
         fm::Size m_charSize;
         fm::vec2 m_viewPos;
         bool m_recordUndo;
@@ -138,6 +164,8 @@ namespace fgui
         void moveLine(fm::Size line,fm::Size newIndex);
 
         virtual void onTextChanged();
+		virtual fm::vec4 defBlinkFunc(const fm::Clock &clk) const;
+        void updateCaretColors();
 
     public:
         ////////////////////////////////////////////////////////////
@@ -147,18 +175,17 @@ namespace fgui
                  Layout *parent = fm::nullPtr,
                  const fm::String &text = "",
                  fm::Ref<const fg::Font> font = fm::nullPtr,
-                 fm::Size characterSize = 12);
-
-        ////////////////////////////////////////////////////////////
-        EditText(const fm::String &text,
-                 const fm::vec2 &size,
-                 fm::Ref<const fg::Font> font = fm::nullPtr,
-                 fm::Size characterSize = 12);
+                 fm::Size characterSize = 12,
+                 fm::Ref<fg::FramedSprite> bckg = fm::nullPtr,
+                 fm::vec2 frameSize = fm::vec2());
 
         ////////////////////////////////////////////////////////////
         EditText(const fm::vec2 &size,
+                 const fm::String &text = "",
                  fm::Ref<const fg::Font> font = fm::nullPtr,
-                 fm::Size characterSize = 12);
+                 fm::Size characterSize = 12,
+                 fm::Ref<fg::FramedSprite> bckg = fm::nullPtr,
+                 fm::vec2 frameSize = fm::vec2());
 
         ////////////////////////////////////////////////////////////
         virtual bool handleEvent(const fw::Event &ev);
@@ -178,6 +205,12 @@ namespace fgui
 
         ////////////////////////////////////////////////////////////
         virtual void setSize(const fm::vec2 &size);
+
+        ////////////////////////////////////////////////////////////
+		virtual void setBackground(fm::Ref<fg::FramedSprite> bckg);
+		virtual void setFrameSize(fm::vec2 frameSize);
+		fm::vec2 getFrameSize() const;
+		fm::vec2 getInnerSize() const;
 
         ////////////////////////////////////////////////////////////
         virtual void setText(const fm::String &text);

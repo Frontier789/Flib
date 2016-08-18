@@ -814,9 +814,14 @@ namespace fw
 		}
 
 		////////////////////////////////////////////////////////////
-		bool Window::open(int x,int y,unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Xlib::Window *parent,::Window container)
+		bool Window::open(unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Xlib::Window *parent,::Window container)
 		{
-			return open(0,0,w,h,title,style,parent,container);
+			if (!checkDisplay())
+				return false;
+			
+			Screen *scr = DefaultScreenOfDisplay(m_disp);
+			
+			return open(WidthOfScreen(scr)/2,HeightOfScreen(scr)/2,w,h,title,style,parent,container);
 		}
 
 		////////////////////////////////////////////////////////////

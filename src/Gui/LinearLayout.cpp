@@ -1,3 +1,19 @@
+////////////////////////////////////////////////////////////////////////// <!--
+/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+///                                                                    ///
+/// Flib is licensed under the terms of GNU GPL.                       ///
+/// Therefore you may freely use it in your project,                   ///
+/// modify it, redistribute it without any warranty on the             ///
+/// condition that this disclaimer is not modified/removed.            ///
+/// You may not misclaim the origin of this software.                  ///
+///                                                                    ///
+/// If you use this software in your program/project a                 ///
+/// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
+/// is not required but highly appreciated.                            ///
+///                                                                    ///
+/// You should have received a copy of GNU GPL with this software      ///
+///                                                                    ///
+////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Gui/LinearLayout.hpp>
 #include <FRONTIER/System/Swap.hpp>
 
@@ -131,15 +147,17 @@ namespace fgui
             {
 				m_elements[index]   = m_elements[index+1];
 				m_elemAligns[index] = m_elemAligns[index+1];
+				
+				++index;
             }
 
             m_elements.pop_back();
             m_elemAligns.pop_back();
 
+			m_needRecalc = true;
+
             return ret;
         }
-
-        m_needRecalc = true;
 
         return fm::nullPtr;
     }
@@ -245,6 +263,9 @@ namespace fgui
                 mnSize[maxSide]  = fm::max(mnSize[maxSide],s[maxSide]);
             }
         }
+        
+		if (elementCount())
+			mnSize[addSide] += (elementCount()-1)*3;
 
         m_realSize.w = fm::max(mnSize.w,m_userSize.w);
         m_realSize.h = fm::max(mnSize.h,m_userSize.h);
@@ -258,6 +279,8 @@ namespace fgui
             if (e)
             {
                 fm::vec2 s = e->getSize();
+                
+				s[addSide] += 3;
 
                 float offset = (ratio-1.f)*s[addSide]/2.f;
 
@@ -270,7 +293,7 @@ namespace fgui
 				if (m_elemAligns[i] == 2)
 					p[maxSide] += m_realSize[maxSide] - s[maxSide];
 
-                e->setPos(p);
+                e->setPos(fm::vec2((fm::vec2i)p));
 
                 used += ratio*s[addSide];                
             }

@@ -312,17 +312,21 @@ namespace fw
 			{
 				int x,y;
 				unsigned int border,depth;
+				
+				::Window rootWin = None;
 
 				// simply retrieve the data
-				XGetGeometry(m_disp,m_win,&m_rootWin,&x,&y,&w,&h,&border,&depth);
+				XGetGeometry(m_disp,m_win,&rootWin,&x,&y,&w,&h,&border,&depth);
 			}
 			else if (m_pbuf)
 			{
 				int x,y;
 				unsigned int border,depth;
 				
+				::Window rootWin = None;
+				
 				// simply retrieve the data
-				XGetGeometry(m_disp,m_pbuf,&m_rootWin,&x,&y,&w,&h,&border,&depth);
+				XGetGeometry(m_disp,m_pbuf,&rootWin,&x,&y,&w,&h,&border,&depth);
 			}
 			
 			return true;

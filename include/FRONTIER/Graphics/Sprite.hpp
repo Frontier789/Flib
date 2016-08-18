@@ -33,6 +33,7 @@ namespace fg
 	//////////////////////////////////
     class FRONTIER_API Sprite : public Drawable
     {
+	public:
         const fg::Texture *m_tex;
         fm::rect2s m_texRect;
         fg::DrawData m_draw;

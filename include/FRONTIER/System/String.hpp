@@ -160,19 +160,6 @@ namespace fm
 		/* static load */
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Load the content of the string from a utf8 text
-		///
-		/// @param first The first used character
-		/// @param last The first character that is not used
-		/// @param invalidSign The codepoint to insert if the character is invalid (0 means omit)
-		///
-		/// @return The loaded string
-		///
-		/////////////////////////////////////////////////////////////
-		template <typename InputIterator>
-		static String fromUtf8(InputIterator first, InputIterator last,fm::Uint32 invalidSign = 0xFFFD);
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Load the content of the string from a utf8 string literal
 		///
 		/// @param bytes The string literal (e.g. "some UTF8 text")
@@ -208,6 +195,19 @@ namespace fm
 		static String fromUtf8(const std::string &str,fm::Uint32 invalidSign = 0xFFFD);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Load the content of the string from a utf8 text
+		///
+		/// @param first The first used character
+		/// @param last The first character that is not used
+		/// @param invalidSign The codepoint to insert if the character is invalid (0 means omit)
+		///
+		/// @return The loaded string
+		///
+		/////////////////////////////////////////////////////////////
+		template <typename InputIterator8bit>
+		static String fromUtf8(InputIterator8bit first, InputIterator8bit last,fm::Uint32 invalidSign = 0xFFFD);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Load the content of the string from a utf16 text
 		///
 		/// @param first The first used character
@@ -217,8 +217,8 @@ namespace fm
 		/// @return The loaded string
 		///
 		/////////////////////////////////////////////////////////////
-		template <typename InputIterator>
-		static String fromUtf16(InputIterator first, InputIterator last,fm::Uint32 invalidSign = 0xFFFD);
+		template <typename InputIterator8bit>
+		static String fromUtf16(InputIterator8bit first, InputIterator8bit last,fm::Uint32 invalidSign = 0xFFFD);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the content of the string from a utf32 text
@@ -230,8 +230,8 @@ namespace fm
 		/// @return The loaded string
 		///
 		/////////////////////////////////////////////////////////////
-		template <typename InputIterator>
-		static String fromUtf32(InputIterator first, InputIterator last,fm::Uint32 invalidSign = 0xFFFD);
+		template <typename InputIterator8bit>
+		static String fromUtf32(InputIterator8bit first, InputIterator8bit last,fm::Uint32 invalidSign = 0xFFFD);
 
 		/* convert */
 

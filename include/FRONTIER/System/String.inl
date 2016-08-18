@@ -77,8 +77,15 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template <typename InputIterator>
-	inline String String::fromUtf8(InputIterator first, InputIterator last,fm::Uint32 invalidSign)
+	template <fm::Size byteCount>
+	inline String String::fromUtf8(const char (&bytes)[byteCount],fm::Uint32 invalidSign)
+	{
+		return fromUtf8<const char*>((const char *)bytes,(const char *)bytes+byteCount-1,invalidSign);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template <typename InputIterator8bit>
+	inline String String::fromUtf8(InputIterator8bit first, InputIterator8bit last,fm::Uint32 invalidSign)
 	{
 		String ret;
 
@@ -130,71 +137,46 @@ namespace fm
 
 		return ret;
 	}
-
+	
 	/////////////////////////////////////////////////////////////
-	template <fm::Size byteCount>
-	inline String String::fromUtf8(const char (&bytes)[byteCount],fm::Uint32 invalidSign)
-	{
-		return fromUtf8<const char*>((const char *)bytes,(const char *)bytes+byteCount-1,invalidSign);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template <typename InputIterator>
-	inline String String::fromUtf16(InputIterator first, InputIterator last,fm::Uint32 invalidSign)
+	template <typename InputIterator8bit>
+	inline String String::fromUtf16(InputIterator8bit first, InputIterator8bit last,fm::Uint32 invalidSign)
 	{
 		String ret;
-
-		while (first != last)
+		
+		while (first != last) 
 		{
-			fm::Uint16 half = (fm::Uint8)*first++;
-			half <<= 8;
-			half += (fm::Uint8)*first++;
-
-			// Check if surrogate pair
-			if ((half >= 0xD800) && (half <= 0xDBFF))
-			{
-				if (first != last)
-				{
-					fm::Uint32 half2 = (fm::Uint8)*first++;
-					half2 <<= 8;
-					half2 += (fm::Uint8)*first++;
-
-					if ((half2 >= 0xDC00) && (half2 <= 0xDFFF))
-					{
-						ret += (((half - 0xD800) << 10) + (half2 - 0xDC00) + 0x0010000);
-					}
-					else
-					{
-						// Handle invalid character
-						if (invalidSign)
-							ret += invalidSign;
-					}
-				}
-				else
-				{
-					// Handle incomplete character
-					if (invalidSign)
-						ret += invalidSign;
-				}
-			}
+			fm::Uint16 c = fm::Uint16(fm::Uint8(*first++) << 8) + fm::Uint8(*first++);
+			
+			if (c < 0xE000)
+				ret += (fm::Uint32)c;
 			else
 			{
-				ret += (fm::Uint32)half;
+				if ((c & 0xfffffc00) == 0xd800 && first < last && (*first & 0xfffffc00) == 0xdc00)
+					ret += fm::Uint32(c) << 10 + fm::Uint8(*first++) - 0x35fdc00;
+				else
+					ret += invalidSign;
 			}
 		}
-
+		
 		return ret;
 	}
 
 	/////////////////////////////////////////////////////////////
-	template <typename InputIterator>
-	inline String String::fromUtf32(InputIterator first, InputIterator last,fm::Uint32 invalidSign)
+	template <typename InputIterator8bit>
+	inline String String::fromUtf32(InputIterator8bit first, InputIterator8bit last,fm::Uint32 invalidSign)
 	{
 		(void)invalidSign;
 
 		String ret;
 
-		ret.m_str.assign(first,last);
+		while (first != last)
+		{
+			fm::Uint32 c = 0;
+			for(int i = 0;i<4;++i) c = (fm::Uint16(fm::Uint8(c)) << 8) + fm::Uint8(*first++);
+			
+			ret += c;
+		}
 
 		return ret;
 	}

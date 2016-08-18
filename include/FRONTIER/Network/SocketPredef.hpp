@@ -34,8 +34,9 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 #define FRONTIER_INVALID_SOCKET ((fn::SocketID)(-1))
 #define FRONTIER_SOCKET_ERROR -1
-#define FRONTIER_CLOSE_SOCKET(soc) close(soc)
+#define FRONTIER_CLOSE_SOCKET(soc) ::close(soc)
 #endif

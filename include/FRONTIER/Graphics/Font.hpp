@@ -115,7 +115,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result loadFromFile(const std::string &fileName,unsigned int size = 64);
+		fm::Result loadFromFile(const std::string &fileName,unsigned int size = 14);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the Font from a ttf file that loaded in memory
@@ -127,7 +127,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result loadFromMemory(const void *fileContent,fm::Size fileSizeInBytes,unsigned int size=64);
+		fm::Result loadFromMemory(const void *fileContent,fm::Size fileSizeInBytes,unsigned int size = 14);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the mignification and magnification filter on the texture atlases

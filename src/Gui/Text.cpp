@@ -1,3 +1,19 @@
+////////////////////////////////////////////////////////////////////////// <!--
+/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+///                                                                    ///
+/// Flib is licensed under the terms of GNU GPL.                       ///
+/// Therefore you may freely use it in your project,                   ///
+/// modify it, redistribute it without any warranty on the             ///
+/// condition that this disclaimer is not modified/removed.            ///
+/// You may not misclaim the origin of this software.                  ///
+///                                                                    ///
+/// If you use this software in your program/project a                 ///
+/// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
+/// is not required but highly appreciated.                            ///
+///                                                                    ///
+/// You should have received a copy of GNU GPL with this software      ///
+///                                                                    ///
+////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Gui/ResourceManager.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/System/Rect.hpp>
@@ -32,6 +48,24 @@ namespace fgui
                fm::Size characterSize,
                int align,
                fm::vec4 clr) : GuiElement(fm::vec2(),fm::vec2(),"unnamed",fm::nullPtr),
+                               m_tex(fm::nullPtr),
+                               m_font(font),
+                               m_charSize(characterSize),
+                               m_needRecalc(true),
+                               m_text(text),
+                               m_clr(clr),
+                               m_align(align)
+    {
+
+    }
+
+    ////////////////////////////////////////////////////////////
+    Text::Text(const RelPos &pos,
+               const fm::String &text,
+               fm::Ref<const fg::Font> font,
+               fm::Size characterSize,
+               int align,
+               fm::vec4 clr) : GuiElement(pos,fm::vec2(),"unnamed",fm::nullPtr),
                                m_tex(fm::nullPtr),
                                m_font(font),
                                m_charSize(characterSize),

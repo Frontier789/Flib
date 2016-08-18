@@ -56,11 +56,15 @@ namespace fg
         virtual ~ShaderManager();
 
         ////////////////////////////////////////////////////////////
-        virtual void setCamera(fm::Camera *cam,const std::string &projMat = "",const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
         void associate(const std::string &attrName,int point,bool overWrite = true);
         virtual void setMatrices(const std::string &modelMat,const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "");
         void regTexture(const std::string &texName,const std::string &texInUse = "");
         virtual void useTexture(fm::Ref<const fg::Texture> tex,fm::Size texIndex = 0);
+        
+        ////////////////////////////////////////////////////////////
+        virtual void setCamera(fm::Camera *cam);
+        virtual void setCamera(fm::Camera *cam,const std::string &projMat,const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
+		fm::Camera *getCamera();
 
         ////////////////////////////////////////////////////////////
         void clearAssociations();

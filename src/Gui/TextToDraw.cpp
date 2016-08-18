@@ -1,3 +1,19 @@
+////////////////////////////////////////////////////////////////////////// <!--
+/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+///                                                                    ///
+/// Flib is licensed under the terms of GNU GPL.                       ///
+/// Therefore you may freely use it in your project,                   ///
+/// modify it, redistribute it without any warranty on the             ///
+/// condition that this disclaimer is not modified/removed.            ///
+/// You may not misclaim the origin of this software.                  ///
+///                                                                    ///
+/// If you use this software in your program/project a                 ///
+/// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
+/// is not required but highly appreciated.                            ///
+///                                                                    ///
+/// You should have received a copy of GNU GPL with this software      ///
+///                                                                    ///
+////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/IndexArrayHolder.hpp>
 #include <FRONTIER/System/macros/Size.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
@@ -129,7 +145,7 @@ namespace fgui
                         {
                             fm::vec2 fixOffset = cursor - g.leftdown*fm::vec2(0,1) - viewRect.pos;
                             fm::vec2 locP = fm::vec2(x,y)*g.size;
-                            locP.x += fm::Size((xadvance - g.size.w)/2.f);
+                            locP.x += int((xadvance - g.size.w)/2.f);
 
                             fm::vec2 lineP = locP - fm::vec2(0,g.size.h) + fm::vec2(0,metrics.maxH);
 

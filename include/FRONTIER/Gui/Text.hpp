@@ -1,6 +1,23 @@
+////////////////////////////////////////////////////////////////////////// <!--
+/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+///                                                                    ///
+/// Flib is licensed under the terms of GNU GPL.                       ///
+/// Therefore you may freely use it in your project,                   ///
+/// modify it, redistribute it without any warranty on the             ///
+/// condition that this disclaimer is not modified/removed.            ///
+/// You may not misclaim the origin of this software.                  ///
+///                                                                    ///
+/// If you use this software in your program/project a                 ///
+/// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
+/// is not required but highly appreciated.                            ///
+///                                                                    ///
+/// You should have received a copy of GNU GPL with this software      ///
+///                                                                    ///
+////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_TEXT_HPP_INCLUDED
 #define FRONTIER_TEXT_HPP_INCLUDED
-#include <FRONTIER/Graphics/DrawData.hpp>#include <FRONTIER/Gui/GuiElement.hpp>
+#include <FRONTIER/Graphics/DrawData.hpp>
+#include <FRONTIER/Gui/GuiElement.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
 #include <FRONTIER/System/Ref.hpp>
 #define FRONTIER_TEXT
@@ -26,8 +43,8 @@ namespace fgui
     public:
         ////////////////////////////////////////////////////////////
         explicit Text(const RelPos &pos,
-                      const fm::String &id = "unnamed",
-                      Layout *parent = fm::nullPtr,
+                      const fm::String &id,
+                      Layout *parent,
                       const fm::String &text = "",
                       fm::Ref<const fg::Font> font = fm::nullPtr,
                       fm::Size characterSize = 12,
@@ -36,6 +53,14 @@ namespace fgui
 
         ////////////////////////////////////////////////////////////
         explicit Text(const fm::String &text,
+                      fm::Ref<const fg::Font> font = fm::nullPtr,
+                      fm::Size characterSize = 12,
+                      int align = 0,
+                      fm::vec4 clr = fm::vec4::Black);
+
+        ////////////////////////////////////////////////////////////
+        explicit Text(const RelPos &pos,
+                      const fm::String &text,
                       fm::Ref<const fg::Font> font = fm::nullPtr,
                       fm::Size characterSize = 12,
                       int align = 0,

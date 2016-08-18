@@ -40,21 +40,6 @@ namespace fm
 			/////////////////////////////////////////////////////////////
 			fm::String getData()
 			{
-				if (IsClipboardFormatAvailable(CF_TEXT))
-				{
-					fm::String ret;
-					HANDLE h = GetClipboardData(CF_TEXT);
-
-					if (h)
-					{
-						ret = fm::String((LPTSTR)GlobalLock(h));
-
-						if (ret.size())
-							GlobalUnlock(h);
-					}
-
-					return ret;
-				}
 				if (IsClipboardFormatAvailable(CF_UNICODETEXT))
 				{
 					fm::String ret;
@@ -62,7 +47,40 @@ namespace fm
 
 					if (h)
 					{
-						ret = fm::String((LPWSTR)GlobalLock(h));
+						char *ptr = (char*)GlobalLock(h);
+						
+						if (ptr)
+						{
+							int buflen = 0;
+							
+							for (char *it = ptr;*it || *(it+1);it+=2,buflen+=2);
+							
+							// change UTF16-LE to UTF16-BE
+							char *buf = new char[buflen];
+							C(buflen/2)
+								buf[i*2+0] = ptr[i*2+1],
+								buf[i*2+1] = ptr[i*2+0];
+							
+							ret = fm::String::fromUtf16(buf,buf+buflen);
+							
+							delete[] buf;
+							
+							GlobalUnlock(h);
+						}
+					}
+					
+					return ret;
+				}
+				
+				// fallback if no unicode clipdata
+				if (IsClipboardFormatAvailable(CF_TEXT))
+				{
+					fm::String ret;
+					HANDLE h = GetClipboardData(CF_TEXT);
+
+					if (h)
+					{
+						ret = fm::String((LPCSTR)GlobalLock(h));
 
 						if (ret.size())
 							GlobalUnlock(h);

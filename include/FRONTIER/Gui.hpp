@@ -36,11 +36,11 @@ namespace Fgui
 
 #include <FRONTIER/Gui/Text.hpp>
 #include <FRONTIER/Gui/Widget.hpp>
-#include <FRONTIER/Gui/Button.hpp>
 #include <FRONTIER/Gui/Layout.hpp>
 #include <FRONTIER/Gui/EditText.hpp>
 #include <FRONTIER/Gui/Activity.hpp>
 #include <FRONTIER/Gui/GuiWindow.hpp>
+#include <FRONTIER/Gui/PushButton.hpp>
 #include <FRONTIER/Gui/GuiElement.hpp>
 #include <FRONTIER/Gui/SimpleLayout.hpp>
 #include <FRONTIER/Gui/LinearLayout.hpp>

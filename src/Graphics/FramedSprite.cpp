@@ -84,8 +84,11 @@ namespace fg
     /////////////////////////////////////////////////////////////
     FramedSprite &FramedSprite::setSize(const fm::vec2 &size)
     {
-        m_size = size;
-        buildVertices();
+		if (m_size != size)
+		{			
+			m_size = size;
+			buildVertices();
+		}
         return *this;
     }
 
@@ -139,11 +142,11 @@ namespace fg
 
 
     /////////////////////////////////////////////////////////////
-    void FramedSprite::onDraw(ShaderManager &shader) const
+    void FramedSprite::onDraw(ShaderManager &shader)
     {
         if (!m_tex) return;
 
-        shader.getModelStack().push().mul(fm::MATRIX::translation(m_pos));
+        shader.getModelStack().push().mul(fm::MATRIX::translation((fm::vec2i)m_pos));
         shader.getTexUVStack().push().mul(m_tex->getPixToUnitMatrix());
         shader.useTexture(m_tex);
         shader.draw(m_draw);

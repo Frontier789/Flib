@@ -58,20 +58,6 @@ namespace fg
     }
 
 	////////////////////////////////////////////////////////////
-    void ShaderManager::setCamera(fm::Camera *camera,const std::string &projMat,const std::string &viewMat,const std::string &plyPos,const std::string &plyView)
-    {
-        m_cam = camera;
-
-        m_matNames[0] = projMat;
-        m_matNames[1] = viewMat;
-        m_matNames[2] = plyPos;
-        m_matNames[3] = plyView;
-
-        C(m_matIds.size())
-            m_matIds[i] = (m_matNames[i].length() ? 0 : 2);
-    }
-
-	////////////////////////////////////////////////////////////
     void ShaderManager::associate(const std::string &attrName,int point,bool overWrite)
     {
         if (overWrite)
@@ -115,6 +101,31 @@ namespace fg
                 setUniform(m_texUseNames[texIndex],(tex ? 1 : 0));
         }
     }
+    
+	////////////////////////////////////////////////////////////
+	void ShaderManager::setCamera(fm::Camera *cam)
+	{
+		m_cam = cam;
+	}
+	
+	////////////////////////////////////////////////////////////
+	void ShaderManager::setCamera(fm::Camera *cam,const std::string &projMat,const std::string &viewMat,const std::string &plyPos,const std::string &plyView)
+	{
+		setCamera(cam);
+
+        m_matNames[0] = projMat;
+        m_matNames[1] = viewMat;
+        m_matNames[2] = plyPos;
+        m_matNames[3] = plyView;
+
+        C(m_matIds.size())
+            m_matIds[i] = (m_matNames[i].length() ? 0 : 2);
+	}
+	////////////////////////////////////////////////////////////
+	fm::Camera *ShaderManager::getCamera()
+	{
+		return m_cam;
+	}
 
 	////////////////////////////////////////////////////////////
     void ShaderManager::clearAssociations()
@@ -210,6 +221,14 @@ namespace fg
 				glDrawElements(draw.primitive,draw.indexCount,draw.componentType,fm::nullPtr);
 			else
 				glDrawArrays(draw.primitive,draw.drawBeg,draw.drawLen);
+        }
+
+        for (std::map<int,std::string>::const_iterator it = m_assocPoints.begin();it != m_assocPoints.end();++it)
+        {
+			if (data.hasAttr((fg::Assoc::Point)it->first) && hasAttribute(it->second))
+			{
+				enableAttribPointer(it->second,false);
+			}
         }
     }
 

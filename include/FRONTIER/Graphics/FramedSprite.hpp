@@ -44,7 +44,7 @@ namespace fg
     public:
 
         /////////////////////////////////////////////////////////////
-        explicit FramedSprite(fm::Ref<const fg::Texture> tex,
+		explicit FramedSprite(fm::Ref<const fg::Texture> tex = fm::nullPtr,
                               const fm::rect2s &texRect  = fm::rect2s(),
                               const fm::vec2s &frameSize = fm::vec2s(),
                               const fm::vec2 &pos  = fm::vec2(),
@@ -71,7 +71,7 @@ namespace fg
         const fm::vec2s &getFrameSize() const;
 
         /////////////////////////////////////////////////////////////
-        void onDraw(ShaderManager &shader) const;
+        void onDraw(ShaderManager &shader);
 
         /////////////////////////////////////////////////////////////
         void onUpdate(const fm::Time &dt = fm::Time::Zero);
