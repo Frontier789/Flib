@@ -78,7 +78,6 @@ namespace fw
 			bool m_enableRepeat; ///< Indicates whether key repeat is enabled
 			bool m_cursorInside; ///< True iff the mouse is inside the window
 			bool m_acceptDrop;   ///< True iff files can be dropped into the window
-			WPARAM m_lastDown;   ///< Contains the last pressed key
 			LONG m_style;        ///< Internal variable used when going to fullscreen
 			LONG m_exStyle;      ///< Internal variable used when going to fullscreen
 			HICON m_icon;        ///< The last set icon

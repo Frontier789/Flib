@@ -2,6 +2,7 @@
 #define FRONTIER_TEXT_HPP_INCLUDED
 #include <FRONTIER/Graphics/DrawData.hpp>#include <FRONTIER/Gui/GuiElement.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
+#include <FRONTIER/System/Ref.hpp>
 #define FRONTIER_TEXT
 
 namespace fgui
@@ -10,39 +11,40 @@ namespace fgui
     {
     protected:
         ////////////////////////////////////////////////////////////
-        fg::DrawData m_draw;
-        fm::String m_text;
-        const fg::Font *m_font;
         const fg::Texture *m_tex;
+        const fg::Font *m_font;
+        fg::DrawData m_draw;
         fm::Size m_charSize;
-        int m_align;
-        fm::vec4 m_clr;
         bool m_needRecalc;
+        fm::String m_text;
+        fm::vec4 m_clr;
+        int m_align;
 
         ////////////////////////////////////////////////////////////
         virtual void recalc();
 
     public:
         ////////////////////////////////////////////////////////////
-        explicit Text(const fm::vec2 &pos,
+        explicit Text(const RelPos &pos,
                       const fm::String &id = "unnamed",
                       Layout *parent = fm::nullPtr,
                       const fm::String &text = "",
-                      const fg::Font *font = fm::nullPtr,
+                      fm::Ref<const fg::Font> font = fm::nullPtr,
                       fm::Size characterSize = 12,
                       int align = 0,
                       fm::vec4 clr = fm::vec4::Black);
 
         ////////////////////////////////////////////////////////////
         explicit Text(const fm::String &text,
-                      fg::Font *font = fm::nullPtr,
+                      fm::Ref<const fg::Font> font = fm::nullPtr,
                       fm::Size characterSize = 12,
                       int align = 0,
                       fm::vec4 clr = fm::vec4::Black);
 
         ////////////////////////////////////////////////////////////
         virtual void onDraw(fg::ShaderManager &shader);
-        virtual void onUpdate(float dt = 0.f);
+		virtual void onUpdate(const fm::Time &dt = fm::Time::Zero);
+		virtual void setResMan(ResourceManager *resMan);
 
         ////////////////////////////////////////////////////////////
         virtual void setSize(const fm::vec2 &size);
@@ -53,7 +55,7 @@ namespace fgui
         const fm::String &getText() const;
 
         ////////////////////////////////////////////////////////////
-        virtual void setFont(const fg::Font *font);
+        virtual void setFont(fm::Ref<const fg::Font> font);
         const fg::Font *getFont() const;
 
         ////////////////////////////////////////////////////////////

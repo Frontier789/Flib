@@ -40,6 +40,7 @@ namespace fm
 #include <FRONTIER/Config.hpp>
 #include <FRONTIER/System/Ref.hpp>
 #include <FRONTIER/System/Rect.hpp>
+#include <FRONTIER/System/Swap.hpp>
 #include <FRONTIER/System/Time.hpp>
 #include <FRONTIER/System/Math.hpp>
 #include <FRONTIER/System/Clock.hpp>

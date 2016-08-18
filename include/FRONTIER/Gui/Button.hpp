@@ -24,7 +24,7 @@ namespace fgui
         virtual void onPress(bool on);
 
     public:
-        Button(const fm::vec2 &pos,
+        Button(const RelPos &pos,
                const fm::vec2 &size,
                const fm::String &id = "unnamed",
                Layout *parent = fm::nullPtr,

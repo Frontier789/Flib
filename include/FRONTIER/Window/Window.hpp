@@ -104,19 +104,20 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		enum WindowStyle {
-			None        = 0x000, // The window is borderless
-			Menu        = 0x001, // The window is borderless and not shown in the taskbar
-			Close       = 0x002, // The window has a close button (adds Border and Titlebar)
-			Border      = 0x004, // The window has border
-			Resize      = 0x008, // The window is resizeable (adds Border)
-			Hidden      = 0x010, // The window is not set visible when created
-			Toolbar     = 0x020, // The window is a floating toolbar
-			Minimize    = 0x040, // The window has minimize button (adds Border and Titlebar)
-			Maximize    = 0x080, // The window has maximize button (adds Border and Titlebar)
-			Titlebar    = 0x100, // The window has titlebar (adds Border)
-			Fullscreen  = 0x200, // The window is fullscreen
-			SkipTaskbar = 0x400, // The window is not shown in the taskbar
-			Default     = 0x1CE  // The window is an ordinary window
+			None           = 0x000, // The window is borderless
+			Menu           = 0x001, // The window is borderless and not shown in the taskbar
+			Close          = 0x002, // The window has a close button (adds Border and Titlebar)
+			Border         = 0x004, // The window has border
+			Resize         = 0x008, // The window is resizeable (adds Border)
+			Hidden         = 0x010, // The window is not set visible when created
+			Toolbar        = 0x020, // The window is a floating toolbar
+			Minimize       = 0x040, // The window has minimize button (adds Border and Titlebar)
+			Maximize       = 0x080, // The window has maximize button (adds Border and Titlebar)
+			Titlebar       = 0x100, // The window has titlebar (adds Border)
+			Fullscreen     = 0x200, // The window is fullscreen
+			SkipTaskbar    = 0x400, // The window is not shown in the taskbar
+			Default        = 0x1CE, // The window is an ordinary window
+			DefaultFixSize = 0x146  // The window is an ordinary window
 		};
 
 		/////////////////////////////////////////////////////////////

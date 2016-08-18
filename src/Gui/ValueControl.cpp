@@ -3,14 +3,16 @@
 namespace fgui
 {
     ////////////////////////////////////////////////////////////
-    ValueControl::ValueControl(const fm::vec2 &pos,
+    ValueControl::ValueControl(const RelPos &pos,
                                const fm::vec2 &size,
                                const fm::String &id,
                                Layout *parent,
                                const fm::String &text,
-                               const fg::Font *font,
-                               fm::Size characterSize) : EditText(pos,size,id,parent,text,font,characterSize),
-                                                         m_lastValid("")
+                               fm::Ref<const fg::Font> font,
+                               fm::Size characterSize,
+                               const fm::Delegate<void,ValueControl *> &callback) : EditText(pos,size,id,parent,text,font,characterSize),
+																					m_callback(callback),
+																					m_lineNum(0)
     {
 
     }
@@ -18,11 +20,74 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     ValueControl::ValueControl(const fm::String &text,
                                const fm::vec2 &size,
-                               fg::Font *font,
-                               fm::Size characterSize) : EditText(text,size,font,characterSize),
-                                                         m_lastValid("")
+                               fm::Ref<const fg::Font> font,
+                               fm::Size characterSize,
+                               const fm::Delegate<void,ValueControl *> &callback) : EditText(text,size,font,characterSize),
+																					m_callback(callback),
+																					m_lineNum(0)
     {
 
+    }
+
+    ////////////////////////////////////////////////////////////
+    ValueControl::ValueControl(const fm::vec2 &size,
+                               fm::Ref<const fg::Font> font,
+                               fm::Size characterSize,
+                               const fm::Delegate<void,ValueControl *> &callback) : EditText(size,font,characterSize),
+																					m_callback(callback),
+																					m_lineNum(0)
+    {
+
+    }
+
+	////////////////////////////////////////////////////////////
+	ValueControl::ValueControl(float width,
+							   int lines,
+							   const fm::Delegate<void,ValueControl *> &callback,
+							   fm::Ref<const fg::Font> font,
+							   fm::Size characterSize) : EditText(fm::vec2(width,0),font,characterSize),
+														 m_callback(callback),
+														 m_lineNum(lines)
+	{
+		
+	}
+
+	////////////////////////////////////////////////////////////
+	ValueControl::ValueControl(float width,
+							   const fm::Delegate<void,ValueControl *> &callback,
+							   fm::Ref<const fg::Font> font,
+							   fm::Size characterSize) : EditText(fm::vec2(width,0),font,characterSize),
+														 m_callback(callback),
+														 m_lineNum(1)
+	{
+		
+	}
+    
+    ////////////////////////////////////////////////////////////
+	void ValueControl::setCallback(const fm::Delegate<void,ValueControl *> &callback)
+	{
+		m_callback = callback;
+	}
+	
+    ////////////////////////////////////////////////////////////
+	void ValueControl::setFont(fm::Ref<const fg::Font> font)
+	{
+		EditText::setFont(font);
+		
+		if (m_lineNum)
+		{
+			fg::Metrics met = font->getMetrics();
+			m_realSize.h = met.lineGap * m_lineNum;
+			m_userSize = m_realSize;
+		}
+	}
+	
+    ////////////////////////////////////////////////////////////
+    void ValueControl::setSize(const fm::vec2 &size)
+    {
+		m_lineNum = 0;
+		
+		EditText::setSize(size);
     }
 
     ////////////////////////////////////////////////////////////
@@ -74,11 +139,13 @@ namespace fgui
         {
             if (isTextValid(getDataString()))
             {
-                fm::String line = getLine(0);
-                correctText(line);
-                setText(line);
+                fm::String str = getDataString();
+                correctText(str);
+                setText(str);
 
-                m_lastValid.swap(line);
+                m_lastValid.swap(str);
+                
+                m_callback(this);
 
                 onDataChange();
 

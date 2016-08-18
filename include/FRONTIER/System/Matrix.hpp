@@ -819,7 +819,7 @@ namespace fm
 		/// @return The perspective matrix
 		///
 		/////////////////////////////////////////////////////////////
-		matrix<4,4,float> perspective(const Angle &fieldOfView,float aspect,float Znear,float Zfar,StorageOrder storeOrder=RowMajor);
+		matrix<4,4,float> perspective(const Angle &fieldOfView,float aspect,float Znear = .1,float Zfar = 100,StorageOrder storeOrder = RowMajor);
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -836,7 +836,7 @@ namespace fm
 		/// @return The orthogonal projection matrix
 		///
 		/////////////////////////////////////////////////////////////
-		matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal,float farVal,StorageOrder storeOrder=RowMajor);
+		matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal = -1,float farVal = 1,StorageOrder storeOrder = RowMajor);
 
 
 		/////////////////////////////////////////////////////////////
@@ -1013,7 +1013,7 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		template<StorageOrder storeOrder>
-		matrix<4,4,float> perspective(const Angle &fieldOfView,float aspect,float Znear,float Zfar);
+		matrix<4,4,float> perspective(const Angle &fieldOfView,float aspect,float Znear = .1,float Zfar = 100);
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -1033,7 +1033,7 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		template<StorageOrder storeOrder>
-		matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal,float farVal);
+		matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal = -1,float farVal = 1);
 
 
 		/////////////////////////////////////////////////////////////

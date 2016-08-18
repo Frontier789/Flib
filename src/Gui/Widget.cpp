@@ -4,7 +4,7 @@
 namespace fgui
 {
     ////////////////////////////////////////////////////////////
-    Widget::Widget(const fm::vec2 &pos,
+    Widget::Widget(const RelPos &pos,
                    const fm::vec2 &size,
                    const fm::String &id,
                    Layout *parent,

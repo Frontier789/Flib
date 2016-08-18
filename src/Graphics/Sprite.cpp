@@ -107,7 +107,7 @@ namespace fg
 
 
     /////////////////////////////////////////////////////////////
-    void Sprite::onDraw(ShaderManager &shader) const
+    void Sprite::onDraw(ShaderManager &shader)
     {
         if (!m_tex) return;
 

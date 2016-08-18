@@ -346,11 +346,10 @@ namespace fw
 					// manually filter keyrepeat
 					if (!m_enableRepeat)
 					{
-						if (m_lastDown == wParam)
+						if (bool(lParam & 1l << 30l))
 							return 0;
-						else
-							m_lastDown = wParam;
 					}
+					
 					Event ev(Event::KeyPressed);
 					ev.key.code  = keyFromVK(wParam,lParam);
 					ev.key.ctrl  = (GetKeyState(VK_CONTROL) & 0x8000);
@@ -365,7 +364,6 @@ namespace fw
 				case WM_KEYUP:
 				{
 					// remember to reset the last pressed key when released
-					m_lastDown = 0;
 					Event ev(Event::KeyReleased);
 					ev.key.code  = keyFromVK(wParam,lParam);
 					ev.key.ctrl  = (GetKeyState(VK_CONTROL) & 0x8000);
@@ -720,7 +718,6 @@ namespace fw
 						   m_enableRepeat(false),
 						   m_cursorInside(false),
 						   m_acceptDrop(false),
-						   m_lastDown(0),
 						   m_icon(NULL),
 						   m_isOpened(false),
 						   m_eventCallback(NULL),
@@ -740,7 +737,6 @@ namespace fw
 																																				   m_enableRepeat(false),
 																																				   m_cursorInside(false),
 																																				   m_acceptDrop(false),
-																																				   m_lastDown(0),
 																																				   m_icon(NULL),
 																																				   m_isOpened(false),
 																																				   m_eventCallback(NULL),
@@ -856,7 +852,6 @@ namespace fw
 			m_showCursor = true;
 			m_enableRepeat = false;
 			m_resizeable = true;
-			m_lastDown = 0;
 
 			// convert style to dword
 			DWORD createStyle = getDWORDfromStyle(style);
@@ -932,7 +927,20 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		bool Window::open(unsigned int w,unsigned int h,const fm::String &title,unsigned int style,Wapi::Window *parent,HWND container)
 		{
-			return open(CW_USEDEFAULT,CW_USEDEFAULT,w,h,title,style,parent,container);
+			int x,y;
+			
+			if (getDWORDfromStyle(style) & WS_OVERLAPPED)
+			{
+				x = CW_USEDEFAULT;
+				y = CW_USEDEFAULT;
+			}
+			else
+			{
+				x = GetSystemMetrics(SM_CXSCREEN)/2 - w/2;
+				y = GetSystemMetrics(SM_CYSCREEN)/2 - h/2;
+			}
+			
+			return open(x,y,w,h,title,style,parent,container);
 		}
 
 		////////////////////////////////////////////////////////////

@@ -57,5 +57,6 @@ namespace fg
 #include <FRONTIER/Graphics/RenderStates.hpp>
 #include <FRONTIER/Graphics/ShaderManager.hpp>
 #include <FRONTIER/Graphics/IndexArrayHolder.hpp>
+#include <FRONTIER/Graphics/FixedShaderManager.hpp>
 
 #endif // FRONTIER_GRAPICS_MODULE_HPP_INCLUDED

@@ -109,9 +109,6 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the Font from a ttf file
 		///
-		/// If the file cannot be loaded or does not contain a valid
-		/// ttf font then an error is prompted to fg_log and object becomes invalid
-		///
 		/// @param fileName The name of the ttf file
 		/// @param size The initial size
 		///
@@ -122,9 +119,6 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the Font from a ttf file that loaded in memory
-		///
-		/// If @a fileContent contains an invalid
-		/// ttf font then an error is prompted to fg_log and object becomes invalid
 		///
 		/// @param fileContent A pointer to the beggining of the file in memory
 		/// @param fileSizeInBytes The number of bytes in the loaded file

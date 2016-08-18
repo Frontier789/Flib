@@ -12,7 +12,7 @@ namespace fgui
         Layout();
 
         /////////////////////////////////////////////////////////////
-        Layout(const fm::vec2 &pos,
+        Layout(const RelPos &pos,
                const fm::vec2 &size,
                const fm::String &id = "unnamed",
                Layout *parent = fm::nullPtr,
@@ -41,6 +41,7 @@ namespace fgui
         virtual const GuiElement *elementAt(fm::Size index) const;
 
         /////////////////////////////////////////////////////////////
+		virtual void        prepareElement(GuiElement *newElement);
         virtual fm::Size    findElement(const GuiElement *element) const;
         virtual void        addElement(GuiElement *newElement);
         virtual void        swapElement(fm::Size index0,fm::Size index1);
@@ -54,6 +55,7 @@ namespace fgui
         /////////////////////////////////////////////////////////////
         virtual void onDraw(fg::ShaderManager &shader);
         virtual void onUpdate(const fm::Time &dt = fm::Time::Zero);
+		virtual void setResMan(ResourceManager *resMan);
 
         /////////////////////////////////////////////////////////////
         Layout &operator<<(GuiElement *newElement);

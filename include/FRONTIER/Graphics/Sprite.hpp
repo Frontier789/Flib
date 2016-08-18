@@ -65,7 +65,7 @@ namespace fg
         const fg::Texture *getTexture() const;
 
         /////////////////////////////////////////////////////////////
-        void onDraw(ShaderManager &shader) const;
+        void onDraw(ShaderManager &shader);
 
         /////////////////////////////////////////////////////////////
         void onUpdate(const fm::Time &dt = fm::Time::Zero);

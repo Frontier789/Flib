@@ -25,6 +25,6 @@ namespace fgui
                              int spacing = 0, /* 0 tight  1 mono */
                              fm::Size spacesInTab = 4,
                              const fm::String &newLine = "\n",
-                             const fm::String &notDrawn = "\n\t\r \b");
+                             const fm::String &notDrawn = "\n\r\b");
     }
 }

@@ -20,8 +20,15 @@ endif
 
 LIBS:=-lf $(LIBS)
 CXX=g++
-CXXFLAGS=-O3 -pedantic -Werror -Wno-long-long -s
 MKDIR=mkdir
+
+ifeq ($(LINKFLAGS),)
+ LINKFLAGS=-s
+endif
+
+ifeq ($(COMPILEFLAGS),)
+ COMPILEFLAGS=-O3 -pedantic -Werror -Wno-long-long
+endif
 
 ifeq ($(EXEC),)
  EXEC=exec
@@ -31,17 +38,20 @@ ifeq ($(FPATH),)
  FPATH=..
 endif
 
+ifeq ($(CPP_FILES),)
+ CPP_FILES=$(notdir $(wildcard *.cpp))
+endif
+
 TARGET=$(EXEC)$(EXEC_EXT)
-CPP_FILES=$(notdir $(wildcard *.cpp))
 O_FILES=$(addprefix $(OBJDIR)/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 all: $(TARGET)
 
 $(TARGET): $(O_FILES) $(FPATH)/$(LIBNAME)/libf.a
-	$(CXX) $(CXXFLAGS) -L $(FPATH)/$(LIBNAME) -o $(TARGET) $(O_FILES) $(LIBS)
+	$(CXX) $(LINKFLAGS) -L $(FPATH)/$(LIBNAME) -o $(TARGET) $(O_FILES) $(LIBS)
 
 $(OBJDIR)/%.o: %.cpp | $(OBJDIR)
-	$(CXX) $(CXXFLAGS) -I $(FPATH)/include -c $< -o $@
+	$(CXX) $(COMPILEFLAGS) -I $(FPATH)/include -c $< -o $@
 
 $(OBJDIR):
 	$(MKDIR) $(OBJDIR)

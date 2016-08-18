@@ -7,6 +7,7 @@
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
+#include <FRONTIER/System/Rect.hpp>
 #include <vector>
 
 namespace fgui

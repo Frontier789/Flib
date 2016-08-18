@@ -1,8 +1,10 @@
 #include <FRONTIER/Graphics/IndexArrayHolder.hpp>
+#include <FRONTIER/Gui/ResourceManager.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/Util/Clipboard.hpp>
 #include <FRONTIER/Window/Event.hpp>
 #include <FRONTIER/Gui/EditText.hpp>
+#include <FRONTIER/System/Rect.hpp>
 #include <algorithm>
 
 #include "TextToDraw.hpp"
@@ -437,12 +439,12 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    EditText::EditText(const fm::vec2 &pos,
+    EditText::EditText(const RelPos &pos,
                        const fm::vec2 &size,
                        const fm::String &id,
                        Layout *parent,
                        const fm::String &text,
-                       const fg::Font *font,
+					   fm::Ref<const fg::Font> font,
                        fm::Size characterSize) : Widget(pos,size,id,parent),
                                                  m_tex(fm::nullPtr),
                                                  m_font(fm::nullPtr),
@@ -466,7 +468,7 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     EditText::EditText(const fm::String &text,
                        const fm::vec2 &size,
-                       fg::Font *font,
+                       fm::Ref<const fg::Font> font,
                        fm::Size characterSize) : Widget(fm::vec2(),size,"unnamed",fm::nullPtr),
                                                  m_tex(fm::nullPtr),
                                                  m_font(fm::nullPtr),
@@ -485,6 +487,29 @@ namespace fgui
     {
         setFont(font);
         setText(text);
+    }
+
+    ////////////////////////////////////////////////////////////
+    EditText::EditText(const fm::vec2 &size,
+                       fm::Ref<const fg::Font> font,
+                       fm::Size characterSize) : Widget(fm::vec2(),size,"unnamed",fm::nullPtr),
+                                                 m_tex(fm::nullPtr),
+                                                 m_font(fm::nullPtr),
+                                                 m_charSize(characterSize),
+                                                 m_monoSpace(true),
+                                                 m_editable(true),
+                                                 m_freeView(false),
+                                                 m_insert(true),
+                                                 m_rightDrag(false),
+                                                 m_dragMode(NoDrag),
+                                                 m_lastClick(fm::String::npos,fm::String::npos),
+                                                 m_recalcChars(true),
+                                                 m_recalcCarets(true),
+                                                 m_recalcSelect(true)
+
+    {
+        setFont(font);
+        setText("");
     }
 
     ////////////////////////////////////////////////////////////
@@ -1220,7 +1245,7 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    void EditText::onUpdate(float dt)
+	void EditText::onUpdate(const fm::Time &dt)
     {
         (void)dt;
 
@@ -1243,6 +1268,18 @@ namespace fgui
             recalcSelect();
         }
     }
+        
+    ////////////////////////////////////////////////////////////
+	void EditText::setResMan(ResourceManager *resMan)
+	{
+		GuiElement::setResMan(resMan);
+		
+		if (resMan)
+		{
+			fg::Font *font = (fg::Font*)resMan->get("defFont");
+			if (font) setFont(font);
+		}
+	}
 
     ////////////////////////////////////////////////////////////
     void EditText::setSize(const fm::vec2 &size)
@@ -1303,9 +1340,9 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    void EditText::setFont(const fg::Font *font)
+	void EditText::setFont(fm::Ref<const fg::Font> font)
     {
-        if (m_font == font) return;
+		if (font == m_font) return;
 
         m_font = font;
 

@@ -1,3 +1,4 @@
+#include <FRONTIER/Gui/ResourceManager.hpp>
 #include <FRONTIER/Gui/Layout.hpp>
 
 namespace fgui
@@ -10,7 +11,7 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    Layout::Layout(const fm::vec2 &pos,
+    Layout::Layout(const RelPos &pos,
                    const fm::vec2 &size,
                    const fm::String &id,
                    Layout *parent,
@@ -73,6 +74,18 @@ namespace fgui
     {
        return ((Layout*)this)->elementAt(index);
     }
+	
+    ////////////////////////////////////////////////////////////
+	void Layout::prepareElement(GuiElement *newElement)
+	{
+        if (newElement)
+        {
+			if (newElement->getParent() != this)
+				newElement->setParent(this);
+			
+			newElement->setResMan(getResMan());
+		}
+	}
 
     ////////////////////////////////////////////////////////////
     fm::Size Layout::findElement(const GuiElement *element) const
@@ -87,6 +100,7 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     void Layout::addElement(GuiElement *newElement)
     {
+    	prepareElement(newElement);
         insertElement(elementCount(),newElement);
     }
 
@@ -115,6 +129,7 @@ namespace fgui
     void Layout::setElement(fm::Size index,GuiElement *newElement)
     {
         delElement(index);
+        prepareElement(newElement);
         insertElement(index,newElement);
     }
 
@@ -167,6 +182,19 @@ namespace fgui
                 e->onUpdate(dt);
         }
     }
+    
+    ////////////////////////////////////////////////////////////
+	void Layout::setResMan(ResourceManager *resMan)
+	{
+		GuiElement::setResMan(resMan);
+		
+		C(elementCount())
+        {
+            GuiElement *e = elementAt(i);
+            if (e)
+                e->setResMan(resMan);
+        }
+	}
 
     ////////////////////////////////////////////////////////////
     Layout &Layout::operator<<(GuiElement *newElement)

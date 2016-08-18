@@ -1,41 +1,44 @@
+#include <FRONTIER/Gui/ResourceManager.hpp>
+#include <FRONTIER/Graphics/Texture.hpp>
+#include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/Gui/Text.hpp>
 #include "TextToDraw.hpp"
 
 namespace fgui
 {
     ////////////////////////////////////////////////////////////
-    Text::Text(const fm::vec2 &pos,
+    Text::Text(const RelPos &pos,
                const fm::String &id,
                Layout *parent,
                const fm::String &text,
-               const fg::Font *font,
+               fm::Ref<const fg::Font> font,
                fm::Size characterSize,
                int align,
                fm::vec4 clr) : GuiElement(pos,fm::vec2(),id,parent),
-                               m_text(text),
-                               m_font(font),
                                m_tex(fm::nullPtr),
+                               m_font(font),
                                m_charSize(characterSize),
-                               m_align(align),
+                               m_needRecalc(true),
+                               m_text(text),
                                m_clr(clr),
-                               m_needRecalc(true)
+                               m_align(align)
     {
 
     }
 
     ////////////////////////////////////////////////////////////
     Text::Text(const fm::String &text,
-               fg::Font *font,
+               fm::Ref<const fg::Font> font,
                fm::Size characterSize,
                int align,
                fm::vec4 clr) : GuiElement(fm::vec2(),fm::vec2(),"unnamed",fm::nullPtr),
-                               m_text(text),
-                               m_font(font),
                                m_tex(fm::nullPtr),
+                               m_font(font),
                                m_charSize(characterSize),
-                               m_align(align),
+                               m_needRecalc(true),
+                               m_text(text),
                                m_clr(clr),
-                               m_needRecalc(true)
+                               m_align(align)
     {
 
     }
@@ -70,7 +73,7 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    void Text::onUpdate(float dt)
+	void Text::onUpdate(const fm::Time &dt)
     {
         (void)dt;
 
@@ -80,6 +83,18 @@ namespace fgui
             recalc();
         }
     }
+        
+    ////////////////////////////////////////////////////////////
+	void Text::setResMan(ResourceManager *resMan)
+	{
+		GuiElement::setResMan(resMan);
+		
+		if (resMan)
+		{
+			fg::Font *font = (fg::Font*)resMan->get("defFont");
+			if (font) setFont(font);
+		}
+	}
 
     ////////////////////////////////////////////////////////////
     void Text::setSize(const fm::vec2 &size)
@@ -113,7 +128,7 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    void Text::setFont(const fg::Font *font)
+    void Text::setFont(fm::Ref<const fg::Font> font)
     {
         if (m_font == font) return;
 

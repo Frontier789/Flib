@@ -20,11 +20,11 @@ namespace fgui
         fm::Delegate<void,Widget &,fm::vec2,fw::Mouse::Button> onRelease;
 
         ////////////////////////////////////////////////////////////
-		Widget(const fm::vec2 &pos = fm::vec2(),
-               const fm::vec2 &size = fm::vec2(),
-               const fm::String &id = "unnamed",
-               Layout *parent = fm::nullPtr,
-               bool enabled = true);
+		explicit Widget(const RelPos &pos = RelPos(),
+						const fm::vec2 &size = fm::vec2(),
+						const fm::String &id = "unnamed",
+						Layout *parent = fm::nullPtr,
+						bool enabled = true);
 
         ////////////////////////////////////////////////////////////
         explicit Widget(const fm::vec2 &size,

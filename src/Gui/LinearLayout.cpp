@@ -1,21 +1,27 @@
 #include <FRONTIER/Gui/LinearLayout.hpp>
+#include <FRONTIER/System/Swap.hpp>
 
 namespace fgui
 {
     ////////////////////////////////////////////////////////////
     LinearLayout::LinearLayout() : Layout(fm::vec2(),fm::vec2(),"unnamed",fm::nullPtr),
-                                   m_ori(Vertical)
+                                   m_ori(Vertical),
+                                   m_needRecalc(false),
+                                   m_align(Left)
     {
 
     }
 
     ////////////////////////////////////////////////////////////
-    LinearLayout::LinearLayout(const fm::vec2 &pos,
+    LinearLayout::LinearLayout(const RelPos &pos,
                                const fm::vec2 &size,
                                Orientation ori,
                                const fm::String &id,
-                               Layout *parent) : Layout(pos,size,id,parent),
-                                                     m_ori(ori)
+                               Layout *parent,
+                               int align) : Layout(pos,size,id,parent),
+                                            m_ori(ori),
+											m_needRecalc(false),
+											m_align(align)
     {
 
     }
@@ -24,8 +30,11 @@ namespace fgui
     LinearLayout::LinearLayout(const fm::vec2 &size,
                                Orientation ori,
                                const fm::String &id,
-                               Layout *parent) : Layout(fm::vec2(),size,id,parent),
-                                                     m_ori(ori)
+                               Layout *parent,
+                               int align) : Layout(fm::vec2(),size,id,parent),
+                                            m_ori(ori),
+											m_needRecalc(false),
+											m_align(align)
     {
 
     }
@@ -33,16 +42,32 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     LinearLayout::LinearLayout(Orientation ori,
                                const fm::String &id,
-                               Layout *parent) : Layout(fm::vec2(),fm::vec2(),id,parent),
-                                                     m_ori(ori)
+                               Layout *parent,
+                               int align) : Layout(fm::vec2(),fm::vec2(),id,parent),
+                                            m_ori(ori),
+											m_needRecalc(false),
+											m_align(align)
     {
 
     }
 
     ////////////////////////////////////////////////////////////
     LinearLayout::LinearLayout(const fm::String &id,
-                               Layout *parent) : Layout(fm::vec2(),fm::vec2(),id,parent),
-                                                     m_ori(Vertical)
+                               Layout *parent,
+                               int align) : Layout(fm::vec2(),fm::vec2(),id,parent),
+                                            m_ori(Vertical),
+											m_needRecalc(false),
+											m_align(align)
+    {
+
+    }
+
+    ////////////////////////////////////////////////////////////
+    LinearLayout::LinearLayout(Orientation ori,
+                               int align) : Layout(fm::vec2(),fm::vec2(),"unnamed",fm::nullPtr),
+                                            m_ori(ori),
+											m_needRecalc(false),
+											m_align(align)
     {
 
     }
@@ -73,27 +98,24 @@ namespace fgui
         if (m_elements.size() <= index)
         {
             m_elements.resize(index+1,fm::nullPtr);
+            m_elemAligns.resize(index+1,m_align);
         }
         else
         {
             m_elements.push_back(fm::nullPtr);
+            m_elemAligns.push_back(m_align);
         }
 
         fm::Size i = m_elements.size()-1;
         while (i > index)
         {
-            GuiElement *tmp = m_elements[i];
-            m_elements[i]   = m_elements[i-1];
-            m_elements[i-1] = tmp;
+        	fm::swap(m_elements[i-1],m_elements[i]);
+        	fm::swap(m_elemAligns[i-1],m_elemAligns[i]);
 
             --i;
         }
 
         m_elements[i] = newElement;
-        newElement->setParent(this);
-
-        if (newElement && newElement->getParent() != this)
-            newElement->setParent(this);
 
         m_needRecalc = true;
     }
@@ -107,10 +129,12 @@ namespace fgui
 
             while (index+1 < m_elements.size())
             {
-                m_elements[index] = m_elements[index+1];
+				m_elements[index]   = m_elements[index+1];
+				m_elemAligns[index] = m_elemAligns[index+1];
             }
 
             m_elements.pop_back();
+            m_elemAligns.pop_back();
 
             return ret;
         }
@@ -119,6 +143,36 @@ namespace fgui
 
         return fm::nullPtr;
     }
+        
+	/////////////////////////////////////////////////////////////
+	void LinearLayout::setAlign(int align)
+	{
+		m_align = align;
+		C(m_elemAligns.size()) m_elemAligns[i] = align;
+		
+		m_needRecalc = true;
+	}
+
+	////////////////////////////////////////////////////////////
+	void LinearLayout::setAlign(fm::Size id,int align)
+	{
+		if (m_elemAligns.size() > id)
+			m_elemAligns[id] = align;
+		
+		m_needRecalc = true;
+	}
+
+    ////////////////////////////////////////////////////////////
+	int LinearLayout::getAlign(fm::Size id) const
+	{
+		return m_elemAligns[id];
+	}
+
+    ////////////////////////////////////////////////////////////
+	int LinearLayout::getAlign() const
+	{
+		return m_align;
+	}
 
 
     ////////////////////////////////////////////////////////////
@@ -146,7 +200,7 @@ namespace fgui
     void LinearLayout::onUpdate(const fm::Time &dt)
     {
         Layout::onUpdate(dt);
-
+        
         if (m_needRecalc)
         {
             m_needRecalc = false;
@@ -210,9 +264,15 @@ namespace fgui
                 fm::vec2 p;
                 p[addSide] = offset + used;
 
+				if (m_elemAligns[i] == 1)
+					p[maxSide] += (m_realSize[maxSide] - s[maxSide])/2;
+					
+				if (m_elemAligns[i] == 2)
+					p[maxSide] += m_realSize[maxSide] - s[maxSide];
+
                 e->setPos(p);
 
-                used += ratio*s[addSide];
+                used += ratio*s[addSide];                
             }
         }
     }

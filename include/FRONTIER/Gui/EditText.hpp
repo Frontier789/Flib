@@ -3,6 +3,7 @@
 #include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
 #include <FRONTIER/System/Clock.hpp>
+#include <FRONTIER/System/Ref.hpp>
 #include <FRONTIER/Gui/Widget.hpp>
 #define FRONTIER_EDITTEXT
 
@@ -140,18 +141,23 @@ namespace fgui
 
     public:
         ////////////////////////////////////////////////////////////
-        EditText(const fm::vec2 &pos,
+        EditText(const RelPos &pos,
                  const fm::vec2 &size,
                  const fm::String &id = "unnamed",
                  Layout *parent = fm::nullPtr,
                  const fm::String &text = "",
-                 const fg::Font *font = fm::nullPtr,
+                 fm::Ref<const fg::Font> font = fm::nullPtr,
                  fm::Size characterSize = 12);
 
         ////////////////////////////////////////////////////////////
         EditText(const fm::String &text,
                  const fm::vec2 &size,
-                 fg::Font *font = fm::nullPtr,
+                 fm::Ref<const fg::Font> font = fm::nullPtr,
+                 fm::Size characterSize = 12);
+
+        ////////////////////////////////////////////////////////////
+        EditText(const fm::vec2 &size,
+                 fm::Ref<const fg::Font> font = fm::nullPtr,
                  fm::Size characterSize = 12);
 
         ////////////////////////////////////////////////////////////
@@ -167,7 +173,8 @@ namespace fgui
 
         ////////////////////////////////////////////////////////////
         virtual void onDraw(fg::ShaderManager &shader);
-        virtual void onUpdate(float dt = 0.f);
+		virtual void onUpdate(const fm::Time &dt = fm::Time::Zero);
+		virtual void setResMan(ResourceManager *resMan);
 
         ////////////////////////////////////////////////////////////
         virtual void setSize(const fm::vec2 &size);
@@ -177,7 +184,7 @@ namespace fgui
         fm::String getText(const fm::String &eol = "\n") const;
 
         ////////////////////////////////////////////////////////////
-        virtual void setFont(const fg::Font *font);
+		virtual void setFont(fm::Ref<const fg::Font> font);
         const fg::Font *getFont() const;
 
         ////////////////////////////////////////////////////////////

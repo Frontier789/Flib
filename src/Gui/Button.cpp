@@ -16,7 +16,7 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    Button::Button(const fm::vec2 &pos,
+    Button::Button(const RelPos &pos,
                    const fm::vec2 &size,
                    const fm::String &id,
                    Layout *parent,

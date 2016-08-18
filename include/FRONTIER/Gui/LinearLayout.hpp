@@ -13,11 +13,21 @@ namespace fgui
             Vertical,
             Horizontal
         };
+        
+		enum Align {
+			Left   = 0,
+			Middle = 1,
+			Right  = 2,
+			Up     = 0,
+			Down   = 2
+		};
 
     protected:
-        Orientation m_ori;
         std::vector<GuiElement*> m_elements;
+		std::vector<int> m_elemAligns;
+        Orientation m_ori;
         bool m_needRecalc;
+		int m_align;
 
         /////////////////////////////////////////////////////////////
         void recalc();
@@ -26,26 +36,34 @@ namespace fgui
         LinearLayout();
 
         /////////////////////////////////////////////////////////////
-        LinearLayout(const fm::vec2 &pos,
+        LinearLayout(const RelPos &pos,
                      const fm::vec2 &size,
                      Orientation ori = Vertical,
                      const fm::String &id = "unnamed",
-                     Layout *parent = fm::nullPtr);
+                     Layout *parent = fm::nullPtr,
+                     int align = Left);
 
         /////////////////////////////////////////////////////////////
         explicit LinearLayout(const fm::vec2 &size,
                               Orientation ori = Vertical,
                               const fm::String &id = "unnamed",
-                              Layout *parent = fm::nullPtr);
+                              Layout *parent = fm::nullPtr,
+                              int align = Left);
 
         /////////////////////////////////////////////////////////////
         explicit LinearLayout(Orientation ori,
                               const fm::String &id = "unnamed",
-                              Layout *parent = fm::nullPtr);
+                              Layout *parent = fm::nullPtr,
+                              int align = Left);
 
         /////////////////////////////////////////////////////////////
         explicit LinearLayout(const fm::String &id,
-                              Layout *parent = fm::nullPtr);
+                              Layout *parent = fm::nullPtr,
+                              int align = Left);
+
+        /////////////////////////////////////////////////////////////
+        explicit LinearLayout(Orientation ori,
+                              int align = Left);
 
         /////////////////////////////////////////////////////////////
         virtual ~LinearLayout();
@@ -55,6 +73,12 @@ namespace fgui
         virtual GuiElement *elementAt(fm::Size index);
         virtual void        insertElement(fm::Size index,GuiElement *newElement);
         virtual GuiElement *remElement(fm::Size index);
+        
+        /////////////////////////////////////////////////////////////
+		virtual void setAlign(int align);
+		virtual void setAlign(fm::Size id,int align);
+		int getAlign(fm::Size id) const;
+		int getAlign() const;
 
         /////////////////////////////////////////////////////////////
         virtual void setSize(const fm::vec2 &size);

@@ -330,7 +330,7 @@ namespace fw
 		/// @see BlendMode
 		///
 		/////////////////////////////////////////////////////////////
-		void setBlend(BlendMode mode);
+		static void setBlend(BlendMode mode);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the depthtest mode of the current context

@@ -9,20 +9,33 @@
 #include <FRONTIER/Window/Event.hpp>
 #include <FRONTIER/System/Time.hpp>
 #include <FRONTIER/Config.hpp>
+#define FRONTIER_GUIELEMENT
 
 namespace fgui
 {
     class Layout;
-
+	class ResourceManager;
+	
+	class RelPos
+	{
+	public:
+		fm::vec2 pix;
+		fm::vec2 parentRel;
+		fm::vec2 childRel;
+		
+		RelPos(fm::vec2 pix = fm::vec2(),fm::vec2 parentRel = fm::vec2(),fm::vec2 childRel = fm::vec2());
+	};
+	
     class GuiElement : public fg::Drawable
     {
     protected:
         ////////////////////////////////////////////////////////////
-        fm::vec2 m_pos;
+		ResourceManager *m_resMan;
         fm::vec2 m_userSize;
         fm::vec2 m_realSize;
         Layout *m_parent;
         fm::String m_id;
+        RelPos m_pos;
         bool m_enabled;
         bool m_active;
 
@@ -31,7 +44,7 @@ namespace fgui
         GuiElement();
 
         ////////////////////////////////////////////////////////////
-        GuiElement(const fm::vec2 &pos,
+        GuiElement(const RelPos &pos,
                    const fm::vec2 &size,
                    const fm::String &id = "unnamed",
                    Layout *parent = fm::nullPtr,
@@ -72,7 +85,11 @@ namespace fgui
         bool isEnabled() const;
 
         ////////////////////////////////////////////////////////////
-        virtual void setPos(const fm::vec2 &pos);
+		virtual void setResMan(ResourceManager *resMan);
+        ResourceManager *getResMan() const;
+
+        ////////////////////////////////////////////////////////////
+        virtual void setPos(const RelPos &pos);
         fm::vec2 getPosInParent() const;
         fm::vec2 getPos() const;
 
