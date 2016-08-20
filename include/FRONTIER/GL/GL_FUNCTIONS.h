@@ -19,7 +19,9 @@
 #include <FRONTIER/System/macros/API.h>
 	
 	#ifdef __GNUC__
-		#define __stdcall __attribute__((stdcall))
+		#ifndef __stdcall
+			#define __stdcall __attribute__((stdcall))
+		#endif
 	#endif
 	
 	#ifndef APIENTRY

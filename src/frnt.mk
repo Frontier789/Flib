@@ -4,7 +4,9 @@ AR=ar
 CD=cd
 RM=rm
 
-override CXXFLAGS+=-Wno-long-long -Wfatal-errors -Wall -Wextra -Os -pedantic 
+ifeq ($(CXXFLAGS),)
+ CXXFLAGS=-Wno-long-long -Wfatal-errors -Wall -Wextra -Os -pedantic 
+endif
 #override CXXFLAGS+= -pg -g -fno-inline-functions -Werror
 override CXXFLAGS+=-DFRONTIER_LIBBUILD -DFRONTIER_PROTECT_SHARED_VARIABLES
 
