@@ -459,6 +459,12 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		String substr(fm::Size pos = 0,fm::Size len = String::npos) const;
 
+		/////////////////////////////////////////////////////////////
+		/// @brief Clear the string
+		///
+		/////////////////////////////////////////////////////////////
+		void clear();
+
 		/* iterator */
 
 		/////////////////////////////////////////////////////////////
@@ -607,16 +613,16 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	String operator+(const String &str1, const String &str2);
 
-	String toString(char               num);
-	String toString(unsigned char      num);
-	String toString(short              num);
-	String toString(unsigned short     num);
-	String toString(int                num);
-	String toString(unsigned int       num);
-	String toString(long               num);
-	String toString(unsigned long      num);
-	String toString(long long          num);
-	String toString(unsigned long long num);
+	String toString(char               num,fm::Size base = 10);
+	String toString(unsigned char      num,fm::Size base = 10);
+	String toString(short              num,fm::Size base = 10);
+	String toString(unsigned short     num,fm::Size base = 10);
+	String toString(int                num,fm::Size base = 10);
+	String toString(unsigned int       num,fm::Size base = 10);
+	String toString(long               num,fm::Size base = 10);
+	String toString(unsigned long      num,fm::Size base = 10);
+	String toString(long long          num,fm::Size base = 10);
+	String toString(unsigned long long num,fm::Size base = 10);
 }
 
 #endif // FRONTIER_STRING_HPP_INCLUDED

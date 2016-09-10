@@ -66,3 +66,9 @@ namespace fm
 		return *this;
 	}
 }
+
+////////////////////////////////////////////////////////////
+std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_ostream<char, std::char_traits<char> > &out,const fm::Error &err)
+{
+	return out << err.toString();
+}

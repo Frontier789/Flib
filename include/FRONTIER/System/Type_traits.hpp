@@ -19,11 +19,13 @@
 #include <FRONTIER/System/type_traits/Is_floating_point.hpp>
 #include <FRONTIER/System/type_traits/Is_member_pointer.hpp>
 #include <FRONTIER/System/type_traits/Remove_volatile.hpp>
+#include <FRONTIER/System/type_traits/Underlying_type.hpp>
 #include <FRONTIER/System/type_traits/Remove_pointer.hpp>
 #include <FRONTIER/System/type_traits/Has_components.hpp>
 #include <FRONTIER/System/type_traits/Will_result_in.hpp>
 #include <FRONTIER/System/type_traits/Is_arithmetic.hpp>
 #include <FRONTIER/System/type_traits/Is_reference.hpp>
+#include <FRONTIER/System/type_traits/Is_container.hpp>
 #include <FRONTIER/System/type_traits/Remove_const.hpp>
 #include <FRONTIER/System/type_traits/Is_integral.hpp>
 #include <FRONTIER/System/type_traits/Is_function.hpp>

@@ -81,6 +81,8 @@ namespace fgui
     void Text::recalc()
     {
         const fm::String *line = &m_text;
+        
+        m_draw.reset();
 
         priv::getDrawFromText(m_draw,&line,1,m_font,m_charSize,&m_tex,&m_realSize,fm::rect2i(),m_clr);
     }

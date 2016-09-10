@@ -146,7 +146,7 @@ namespace fg
     {
         if (!m_tex) return;
 
-        shader.getModelStack().push().mul(fm::MATRIX::translation((fm::vec2i)m_pos));
+        shader.getModelStack().push().mul(fm::MATRIX::translation(fm::vec2i(m_pos)));
         shader.getTexUVStack().push().mul(m_tex->getPixToUnitMatrix());
         shader.useTexture(m_tex);
         shader.draw(m_draw);

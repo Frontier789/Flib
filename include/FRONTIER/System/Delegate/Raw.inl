@@ -244,6 +244,58 @@ namespace fm
 	{
 		return Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>(object);
 	}
+	
+	
+	
+	
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV),const typename Identity<Object>::type &object)
+	{
+		return Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>(funcPtr,object);
+	}
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const,const typename Identity<Object>::type &object)
+	{
+		return Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>(funcPtr,object);
+	}
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV),typename Identity<Object>::type *object)
+	{
+		return Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>(funcPtr,object);
+	}
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const,const typename Identity<Object>::type *object)
+	{
+		return Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>(funcPtr,object);
+	}
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV))
+	{
+		return Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>(funcPtr);
+	}
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const)
+	{
+		return Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>(funcPtr);
+	}
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(const Object &object,typename Enable_if<priv::IsCallable<Object,R FRONTIER_DELEGATE_TEMPLATE_LIST>::value,int>::type *)
+	{
+		return Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST>(object);
+	}
 }
 
 #include <FRONTIER/System/Delegate/Undef.hpp>

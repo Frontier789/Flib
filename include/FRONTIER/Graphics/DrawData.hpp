@@ -19,7 +19,6 @@
 
 #include <FRONTIER/System/type_traits/Enable_if.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
-#include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/Primitive.hpp>
 #include <FRONTIER/GL/Is_GLDataType.hpp>
 #include <FRONTIER/System/macros/API.h>
@@ -56,7 +55,7 @@ namespace fg
 
 	typedef Assoc::Point AssociationPoint;
 
-	class FRONTIER_API DrawData : public fm::NonCopyable
+	class FRONTIER_API DrawData
 	{
 	public:
 

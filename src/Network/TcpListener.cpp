@@ -15,35 +15,36 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Network/TcpListener.hpp>
+#include <FRONTIER/System/Error.hpp>
 
 namespace fn
 {
-    bool TcpListener::listen(const IpAddress &ip)
+    fm::Result TcpListener::listen(const IpAddress &ip)
     {
-        if (!m_socket.create(ip.isIpv6())) return false;
-        if (!m_socket.bind(ip)) return false;
-        if (!m_socket.listen()) return false;
+        if (fm::Error err = m_socket.create(ip.isIpv6())) return err;
+        if (fm::Error err = m_socket.bind(ip)) return err;
+        if (fm::Error err = m_socket.listen()) return err;
 
-        return true;
+        return fm::Result();
     }
-    bool TcpListener::listen(const IpAddress &ip,fm::Uint16 port)
+    fm::Result TcpListener::listen(const IpAddress &ip,fm::Uint16 port)
     {
-        if (!m_socket.create(ip.isIpv6())) return false;
-        if (!m_socket.bind(IpAddress(ip,port))) return false;
-        if (!m_socket.listen()) return false;
+        if (fm::Error err = m_socket.create(ip.isIpv6())) return err;
+        if (fm::Error err = m_socket.bind(IpAddress(ip,port))) return err;
+        if (fm::Error err = m_socket.listen()) return err;
 
-        return true;
+        return fm::Result();
     }
-    bool TcpListener::listen(fm::Uint16 port,bool useIpv6)
+    fm::Result TcpListener::listen(fm::Uint16 port,bool useIpv6)
     {
-        if (!m_socket.create(useIpv6)) return false;
-        if (!m_socket.bind(IpAddress::localHost(port,useIpv6))) return false;
-        if (!m_socket.listen()) return false;
+        if (fm::Error err = m_socket.create(useIpv6)) return err;
+        if (fm::Error err = m_socket.bind(IpAddress::localHost(port,useIpv6))) return err;
+		if (fm::Error err = m_socket.listen()) return err;
 
-        return true;
+        return fm::Result();
     }
 
-    bool TcpListener::accept(TcpSocket &soc)
+    fm::Result TcpListener::accept(TcpSocket &soc)
     {
         return m_socket.accept(soc);
     }

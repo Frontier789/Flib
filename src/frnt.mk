@@ -5,9 +5,13 @@ CD=cd
 RM=rm
 
 ifeq ($(CXXFLAGS),)
- CXXFLAGS=-Wno-long-long -Wfatal-errors -Wall -Wextra -Os -pedantic 
+ CXXFLAGS=-Wno-long-long -Wfatal-errors -Wall -Wextra -pedantic 
 endif
-#override CXXFLAGS+= -pg -g -fno-inline-functions -Werror
+ifeq ($(DEBUG),1)
+ override CXXFLAGS+= -O0 -g -fno-inline-functions -Werror
+else
+ override CXXFLAGS+= -Os
+endif
 override CXXFLAGS+=-DFRONTIER_LIBBUILD -DFRONTIER_PROTECT_SHARED_VARIABLES
 
 ifeq ($(LIBNAME),)

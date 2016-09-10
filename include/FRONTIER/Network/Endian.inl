@@ -14,22 +14,50 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-namespace fm
+#ifndef FRONTIER_ENDIAN_INL_INCLUDED
+#define FRONTIER_ENDIAN_INL_INCLUDED
+#include <FRONTIER/System/macros/SIZE.hpp>
+
+namespace fn
 {
-	/////////////////////////////////////////////////////////////
-	namespace util
+	namespace priv
 	{
-		/////////////////////////////////////////////////////////////
-		namespace fileSys
+		class EndianDetect
 		{
-			/////////////////////////////////////////////////////////////
-			std::deque<Entry> ls(const fm::String &pattern,bool recursive,bool (*filter)(const Entry &))
+		public:
+			bool big;
+			
+			EndianDetect()
 			{
-				(void)pattern;
-				(void)recursive;
-				(void)filter;
-				return std::deque<Entry>();
+				const int one = 1;
+				const char sig = *(char*)&one;
+				
+				big = (sig == 0);
 			}
+			
+			static EndianDetect endianDetect;
+		};
+	}
+	
+	template<typename T> 
+	inline T htonc(const T& num)
+	{
+		if (priv::EndianDetect::endianDetect.big) return num; // for big endian machine just return the input
+
+		T ret = num;
+		for (fm::Size i = 0;i<sizeof(T);++i)
+		{
+			*((char*)&ret + i) = *((char*)&num + sizeof(T) - 1 - i);
 		}
+		
+		return ret;
+	}
+	
+	template<typename T> 
+	inline T ntohc(const T& num)
+	{
+		return htonc(num);
 	}
 }
+
+#endif // FRONTIER_ENDIAN_INL_INCLUDED

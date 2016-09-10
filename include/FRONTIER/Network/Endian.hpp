@@ -14,22 +14,64 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-namespace fm
+#ifndef FRONTIER_ENDIAN_HPP_INCLUDED
+#define FRONTIER_ENDIAN_HPP_INCLUDED
+
+#include <FRONTIER/System/macros/TYPES.hpp>
+
+namespace fn
 {
-	/////////////////////////////////////////////////////////////
-	namespace util
-	{
-		/////////////////////////////////////////////////////////////
-		namespace fileSys
-		{
-			/////////////////////////////////////////////////////////////
-			std::deque<Entry> ls(const fm::String &pattern,bool recursive,bool (*filter)(const Entry &))
-			{
-				(void)pattern;
-				(void)recursive;
-				(void)filter;
-				return std::deque<Entry>();
-			}
-		}
-	}
+	bool littleEndian();
+	
+	template<class T> 
+	inline T htonc(const T& num);
+	
+	template<class T> 
+	inline T ntohc(const T& num);
+	
+	/** faster specialisations **/
+	
+	template<> 
+	fm::Uint8 htonc(const fm::Uint8& num);
+	
+	template<> 
+	fm::Uint16 htonc(const fm::Uint16& num);
+	
+	template<> 
+	fm::Uint32 htonc(const fm::Uint32& num);
+	
+	template<> 
+	fm::Int8 htonc(const fm::Int8& num);
+	
+	template<> 
+	fm::Int16 htonc(const fm::Int16& num);
+	
+	template<> 
+	fm::Int32 htonc(const fm::Int32& num);
+	
+	template<> 
+	fm::Uint8 ntohc(const fm::Uint8& num);
+	
+	template<> 
+	fm::Uint16 ntohc(const fm::Uint16& num);
+	
+	template<> 
+	fm::Uint32 ntohc(const fm::Uint32& num);
+	
+	template<> 
+	fm::Int8 ntohc(const fm::Int8& num);
+	
+	template<> 
+	fm::Int16 ntohc(const fm::Int16& num);
+	
+	template<> 
+	fm::Int32 ntohc(const fm::Int32& num);
+	
+	/** ------------- **/
 }
+
+#endif // FRONTIER_ENDIAN_HPP_INCLUDED
+
+#ifndef FRONTIER_DONT_INCLUDE_INL
+	#include <FRONTIER/Network/Endian.inl>
+#endif // FRONTIER_DONT_INCLUDE_INL

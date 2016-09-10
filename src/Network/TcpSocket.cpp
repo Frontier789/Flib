@@ -18,27 +18,24 @@
 
 namespace fn
 {
-    bool TcpSocket::create(bool ipv6)
+    fm::Result TcpSocket::create(bool ipv6)
     {
         return m_soc.create(ipv6,true);
     }
-    void TcpSocket::destroy()
-    {
-        m_soc.destroy();
-    }
+    
     void TcpSocket::close()
     {
         m_soc.close();
     }
 
-    bool TcpSocket::connect(const IpAddress &ip)
+    fm::Result TcpSocket::connect(const IpAddress &ip)
     {
         if (!isValid())
             create(ip.isIpv6());
 
         return m_soc.connect(ip);
     }
-    bool TcpSocket::connect(const IpAddress &ip,fm::Uint16 port)
+    fm::Result TcpSocket::connect(const IpAddress &ip,fm::Uint16 port)
     {
         if (!isValid())
             create(ip.isIpv6());
@@ -46,18 +43,18 @@ namespace fn
         return m_soc.connect(ip,port);
     }
 
-    bool TcpSocket::bind(const IpAddress &ip)
+    fm::Result TcpSocket::bind(const IpAddress &ip)
     {
         if (!isValid())
             create(ip.isIpv6());
 
         return m_soc.bind(ip);
     }
-    bool TcpSocket::listen()
+    fm::Result TcpSocket::listen()
     {
         return m_soc.listen();
     }
-    bool TcpSocket::accept(TcpSocket &soc) const
+    fm::Result TcpSocket::accept(TcpSocket &soc) const
     {
         return m_soc.accept(soc.m_soc);
     }
@@ -76,13 +73,21 @@ namespace fn
         return m_soc.getRemoteAddress();
     }
 
-    bool TcpSocket::send(const void *data,fm::Size byteCount)
+    fm::Result TcpSocket::send(const void *data,fm::Size byteCount)
     {
         return m_soc.send(data,byteCount);
     }
-    bool TcpSocket::recv(void *data,fm::Size byteCount)
+	fm::Result TcpSocket::send(const Message &msg)
+    {
+        return m_soc.send(msg);
+    }
+    fm::Result TcpSocket::recv(void *data,fm::Size byteCount)
     {
         return m_soc.recv(data,byteCount);
+    }
+	fm::Result TcpSocket::recv(Message &msg)
+    {
+        return m_soc.recv(msg);
     }
 
     SocketID TcpSocket::getID() const

@@ -14,22 +14,38 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#ifndef FRONTIER_UNDERLYING_TYPE_HPP_INCLUDED
+#define FRONTIER_UNDERLYING_TYPE_HPP_INCLUDED
+#include <FRONTIER/System/type_traits/Type_if.hpp>
+#include <FRONTIER/System/macros/TYPES.hpp>
+#define FRONTIER_UNDERLYING_TYPE
+
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
-	namespace util
-	{
-		/////////////////////////////////////////////////////////////
-		namespace fileSys
+	/// @brief Has a member type 'type' that matches the underlying type of enum type T
+	/// 
+	/// @ingroup System
+	/// 
+	/////////////////////////////////////////////////////////////
+	template<class T>
+    class Underlying_type
+    {
+		/// @cond DOXYGEN_HIDE
+		template<class U>
+		class Is_unsigned
 		{
-			/////////////////////////////////////////////////////////////
-			std::deque<Entry> ls(const fm::String &pattern,bool recursive,bool (*filter)(const Entry &))
-			{
-				(void)pattern;
-				(void)recursive;
-				(void)filter;
-				return std::deque<Entry>();
-			}
-		}
-	}
+		public:
+			enum {
+				value = U(-1) < U(0)
+			};			
+		};
+		/// @endcond
+    public:
+		typedef /** @cond DOXYGEN_HIDE */ typename Type_if<Is_unsigned<T>::value,
+										  typename priv::TypeSelectorEqual<priv::Uintlist,sizeof(T)*fm::priv::bits_per_byte::value>::type,
+										  typename priv::TypeSelectorEqual<priv:: Intlist,sizeof(T)*fm::priv::bits_per_byte::value>::type>:: /** @endcond */ type type; ///< The undelying integer type
+    };
 }
+
+#endif // FRONTIER_UNDERLYING_TYPE_HPP_INCLUDED

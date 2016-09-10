@@ -58,5 +58,10 @@ namespace fm
 		
 		return "Error (" + id + "." + detail + ") hapenned in " + file + " on line " + fm::toString(line).str() + " whilst calling " + func + " details: " + desc;
 	}
+}
 
+////////////////////////////////////////////////////////////
+std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_ostream<char, std::char_traits<char> > &out,const fm::Result &result)
+{
+	return out << result.toString();
 }

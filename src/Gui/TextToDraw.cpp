@@ -15,7 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/IndexArrayHolder.hpp>
-#include <FRONTIER/System/macros/Size.hpp>
+#include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/System/NullPtr.hpp>

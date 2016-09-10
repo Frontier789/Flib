@@ -111,4 +111,17 @@ namespace fm
 	};
 }
 
+namespace std
+{
+    template<typename,typename>
+    class basic_ostream;
+    template<typename,typename>
+    class basic_istream;
+    template<typename>
+    class char_traits;
+}
+
+////////////////////////////////////////////////////////////
+std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_ostream<char, std::char_traits<char> > &out,const fm::Error &err);
+
 #endif // FRONTIER_ERROR_HPP_INCLUDED

@@ -67,6 +67,7 @@ namespace fgui
         fm::Size            remElement(GuiElement *element);
         virtual void        delElement(fm::Size index);
         virtual void        delElement(GuiElement *element);
+        virtual void        clear();
 
         /////////////////////////////////////////////////////////////
         virtual void onDraw(fg::ShaderManager &shader);

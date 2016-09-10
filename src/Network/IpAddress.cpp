@@ -107,15 +107,15 @@ namespace fn
 
         reset();
 
-        if (!port)
+        fm::Size beg = address.find(":");
+
+        if (beg != fm::String::npos)
         {
-            fm::Size beg = address.find(":");
+            fm::Size last = address.find_last_of(":");
 
-            if (beg != fm::String::npos)
+            if (beg == last)
             {
-                fm::Size last = address.find_last_of(":");
-
-                if (beg == last)
+                if (!port)
                 {
                     for (fm::Size i = beg+1;i<address.size();++i)
                     {
@@ -125,21 +125,23 @@ namespace fn
 
                         port = port*10 + c-'0';
                     }
-
-                    realAddr = address.substr(0,beg);
                 }
-                else
+                realAddr = address.substr(0,beg);
+            }
+            else
+            {
+                bool per = true;
+                fm::Size lt = address.find_last_of('/');
+
+                if (lt == fm::String::npos)
                 {
-                    bool per = true;
-                    fm::Size lt = address.find_last_of('/');
+                    lt  = address.find_last_of(']');
+                    per = false;
+                }
 
-                    if (lt == fm::String::npos)
-                    {
-                        lt  = address.find_last_of(']');
-                        per = false;
-                    }
-
-                    if (lt != fm::String::npos)
+                if (lt != fm::String::npos)
+                {
+                    if (!port)
                     {
                         for (fm::Size i = lt+1;i<address.size();++i)
                         {
@@ -155,12 +157,14 @@ namespace fn
 
                             port = port*10 + c-'0';
                         }
-
-                        realAddr = address.substr(0,lt);
                     }
+
+                    realAddr = address.substr(0,lt);
                 }
             }
         }
+        else 
+            realAddr = address;
 
         fn::priv::loadAddr(realAddr,port,((sockaddr_storage*)m_data),preferIpv6);
 
@@ -261,9 +265,9 @@ namespace fn
         if (isValid())
         {
             if (isIpv4())
-                return ((sockaddr_in*)getData())->sin_port;
+                return ntohs(((sockaddr_in*)getData())->sin_port);
             else
-                return ((sockaddr_in6*)getData())->sin6_port;
+                return ntohs(((sockaddr_in6*)getData())->sin6_port);
         }
 
         return 0;

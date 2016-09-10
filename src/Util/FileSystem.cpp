@@ -47,6 +47,6 @@ namespace fm
 #ifdef FRONTIER_OS_WINDOWS
 	#include "Wapi/WapiFileSystem.cpp"
 #else //
-	#warning Implementation does not support clipboard
+	#warning Implementation does not support filesystem
 	#include "Generic/GenericFileSystem.cpp"
 #endif

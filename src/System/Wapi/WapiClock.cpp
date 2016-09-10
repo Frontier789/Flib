@@ -22,7 +22,12 @@ public:
 	LARGE_INTEGER ticksPerSecond;
 	TicksPerSecondHolder()
 	{
+		HANDLE thread  = GetCurrentThread();
+		DWORD_PTR mask = SetThreadAffinityMask(thread, 1);
+		
 		QueryPerformanceFrequency(&ticksPerSecond);
+		
+		SetThreadAffinityMask(thread,mask);
 	}
 };
 
@@ -30,7 +35,13 @@ const TicksPerSecondHolder tpsh;
 
 fm::Time getCurrentTime()
 {
-	LARGE_INTEGER actTime;
-	QueryPerformanceCounter(&actTime);
+	HANDLE thread  = GetCurrentThread();
+    DWORD_PTR mask = SetThreadAffinityMask(thread, 1);
+
+    LARGE_INTEGER actTime;
+    QueryPerformanceCounter(&actTime);
+
+    SetThreadAffinityMask(thread,mask);
+
 	return fm::seconds(((double)actTime.QuadPart) / ((double)tpsh.ticksPerSecond.QuadPart));
 }

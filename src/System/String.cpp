@@ -537,6 +537,12 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
+	void String::clear()
+	{
+		m_str = std::basic_string<fm::Uint32>();
+	}
+
+	/////////////////////////////////////////////////////////////
 	String::iterator String::begin()
 	{
 		return m_str.begin();
@@ -670,71 +676,79 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	String toString(char num)
+	String toString(char num,fm::Size base)
 	{
-		return toString((long long)num);
+		return toString((long long)num,base);
 	}
 
 	/////////////////////////////////////////////////////////////
-	String toString(unsigned char num)
+	String toString(unsigned char num,fm::Size base)
 	{
-		return toString((unsigned long long)num);
+		return toString((unsigned long long)num,base);
 	}
 
 	/////////////////////////////////////////////////////////////
-	String toString(short num)
+	String toString(short num,fm::Size base)
 	{
-		return toString((long long)num);
+		return toString((long long)num,base);
 	}
 
 	/////////////////////////////////////////////////////////////
-	String toString(unsigned short num)
+	String toString(unsigned short num,fm::Size base)
 	{
-		return toString((unsigned long long)num);
+		return toString((unsigned long long)num,base);
 	}
 
 	/////////////////////////////////////////////////////////////
-	String toString(int num)
+	String toString(int num,fm::Size base)
 	{
-		return toString((long long)num);
+		return toString((long long)num,base);
 	}
 
 	/////////////////////////////////////////////////////////////
-	String toString(unsigned int num)
+	String toString(unsigned int num,fm::Size base)
 	{
-		return toString((unsigned long long)num);
+		return toString((unsigned long long)num,base);
 	}
 
 	/////////////////////////////////////////////////////////////
-	String toString(long num)
+	String toString(long num,fm::Size base)
 	{
-		return toString((long long)num);
+		return toString((long long)num,base);
 	}
 
 	/////////////////////////////////////////////////////////////
-	String toString(unsigned long num)
+	String toString(unsigned long num,fm::Size base)
 	{
-		return toString((long long)num);
+		return toString((long long)num,base);
 	}
 
 	/////////////////////////////////////////////////////////////
-	String toString(long long num)
+	String toString(long long num,fm::Size base)
 	{
 		if (num < 0)
-			return "-"+toString((unsigned long long)(-num));
+			return "-"+toString((unsigned long long)(-num),base);
 
-		return toString((unsigned long long)num);
+		return toString((unsigned long long)num,base);
 	}
 
 	/////////////////////////////////////////////////////////////
-	String toString(unsigned long long ull)
+	String toString(unsigned long long ull,fm::Size base)
 	{
 	    if (!ull) return "0";
+	    
+	    const char chars[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 		String ret;
 		while (ull)
-			ret = char('0'+ull%10)+ret,
-			ull /= 10;
+		{
+			fm::Uint32 index = ull%base;
+			
+			if (index < sizeof(chars)/sizeof(*chars))
+				ret = chars[index] + ret,
+			
+			ull /= base;
+		}
 
 		return ret;
 	}

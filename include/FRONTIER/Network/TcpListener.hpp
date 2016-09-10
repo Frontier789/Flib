@@ -18,6 +18,7 @@
 #define FRONTIER_TCPLISTENER_HPP_INCLUDED
 
 #include <FRONTIER/Network/TcpSocket.hpp>
+#include <FRONTIER/System/Result.hpp>
 
 namespace fn
 {
@@ -26,11 +27,11 @@ namespace fn
         TcpSocket m_socket;
     public:
 
-        bool listen(const IpAddress &ip);
-        bool listen(const IpAddress &ip,fm::Uint16 port);
-        bool listen(fm::Uint16 port,bool useIpv6 = false);
+        fm::Result listen(const IpAddress &ip);
+        fm::Result listen(const IpAddress &ip,fm::Uint16 port);
+        fm::Result listen(fm::Uint16 port,bool useIpv6 = false);
 
-        bool accept(TcpSocket &soc);
+        fm::Result accept(TcpSocket &soc);
 
         bool isValid() const;
 

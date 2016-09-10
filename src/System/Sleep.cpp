@@ -37,7 +37,9 @@ namespace fm
 			#if __cplusplus >= 201103L
 				std::this_thread::sleep_for(std::chrono::microseconds(duration.asMicroseconds());
 			#elif defined(FRONTIER_OS_WINDOWS)
+				timeBeginPeriod(1);
 				::Sleep(duration.asMilliseconds());
+				timeEndPeriod(1);
 			#else
 				usleep(duration.asMicroseconds());
 			#endif

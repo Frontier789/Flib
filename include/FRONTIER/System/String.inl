@@ -146,14 +146,15 @@ namespace fm
 		
 		while (first != last) 
 		{
-			fm::Uint16 c = fm::Uint16(fm::Uint8(*first++) << 8) + fm::Uint8(*first++);
+			fm::Uint16 c = fm::Uint16(fm::Uint8(*first) << 8) + fm::Uint8(*(first+1));
+			first += 2;
 			
 			if (c < 0xE000)
 				ret += (fm::Uint32)c;
 			else
 			{
 				if ((c & 0xfffffc00) == 0xd800 && first < last && (*first & 0xfffffc00) == 0xdc00)
-					ret += fm::Uint32(c) << 10 + fm::Uint8(*first++) - 0x35fdc00;
+					ret += (fm::Uint32(c) << 10) + fm::Uint8(*first++) - 0x35fdc00;
 				else
 					ret += invalidSign;
 			}

@@ -18,6 +18,7 @@
 #define FRONTIER_SOCKET_HPP_INCLUDED
 
 #include <FRONTIER/Network/IpAddress.hpp>
+#include <FRONTIER/System/Result.hpp>
 
 namespace fn
 {
@@ -30,36 +31,45 @@ namespace fn
         typedef int SocketID;
 
     #endif
+    
+	class Message;
 
     class Socket
     {
         SocketID m_id;
+		bool m_blocking;
     public:
 
         Socket();
         ~Socket();
 
-        bool create(bool ipv6 = false,bool tcp = true);
-        void destroy();
+        fm::Result create(bool ipv6 = false,bool tcp = true);
         void close();
 
-        bool connect(const IpAddress &ip);
-        bool connect(const IpAddress &ip,fm::Uint16 port);
+        fm::Result connect(const IpAddress &ip);
+        fm::Result connect(const IpAddress &ip,fm::Uint16 port);
 
-        bool bind(const IpAddress &ip);
-        bool listen();
-        bool accept(Socket &soc) const;
+        fm::Result bind(const IpAddress &ip);
+        fm::Result listen();
+        fm::Result accept(Socket &soc) const;
 
         bool isValid() const;
         operator bool() const;
+        
+		void setBlocking(bool blocking = true);
+		bool isBlocking() const;
 
         IpAddress getRemoteAddress() const;
 
-        bool send(const void *data,fm::Size byteCount);
-        bool sendTo(const void *data,fm::Size byteCount,const IpAddress &targetIp);
+		fm::Result send(const Message &msg);
+        fm::Result send(const void *data,fm::Size byteCount);
+        fm::Result sendTo(const Message &msg,const IpAddress &targetIp);
+        fm::Result sendTo(const void *data,fm::Size byteCount,const IpAddress &targetIp);
 
-        bool recv(void *data,fm::Size byteCount);
-        bool recvFrom(void *data,fm::Size byteCount,IpAddress &sourceIp);
+		fm::Result recv(Message &msg);
+        fm::Result recv(void *data,fm::Size byteCount);
+		fm::Result recvFrom(Message &msg,IpAddress &sourceIp);
+        fm::Result recvFrom(void *data,fm::Size byteCount,IpAddress &sourceIp);
 
         SocketID getID() const;
     };

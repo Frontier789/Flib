@@ -109,8 +109,8 @@ namespace fm
 	inline bool rect<T>::intersects(const rect<T> &other) const
 	{
 		rect<T> tmp1=*this,tmp2=other;
-		makeRectSizeUnsigned(tmp1);
-		makeRectSizeUnsigned(tmp2);
+		priv::makeRectSizeUnsigned(tmp1);
+		priv::makeRectSizeUnsigned(tmp2);
 		return (priv::max(tmp1.pos.x,tmp2.pos.x) <= priv::min(tmp1.pos.x+tmp1.size.w,tmp2.pos.x+tmp2.size.w) &&
 				priv::max(tmp1.pos.y,tmp2.pos.y) <= priv::min(tmp1.pos.y+tmp1.size.h,tmp2.pos.y+tmp2.size.h));
 	}
@@ -121,8 +121,8 @@ namespace fm
 	inline bool rect<T>::intersects(const rect<T> &other,rect<T> &intersection) const
 	{
 		rect<T> tmp1=*this,tmp2=other;
-		makeRectSizeUnsigned(tmp1);
-		makeRectSizeUnsigned(tmp2);
+		priv::makeRectSizeUnsigned(tmp1);
+		priv::makeRectSizeUnsigned(tmp2);
 		rect<T> ret(vec2(priv::max(tmp1.pos.x,tmp2.pos.x),
 						 priv::max(tmp1.pos.y,tmp2.pos.y)),vec2(priv::min(tmp1.pos.x+tmp1.size.w,tmp2.pos.x+tmp2.size.w) - priv::max(tmp1.pos.x,tmp2.pos.x),
 																priv::min(tmp1.pos.y+tmp1.size.h,tmp2.pos.y+tmp2.size.h) - priv::max(tmp1.pos.y,tmp2.pos.y)));

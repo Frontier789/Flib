@@ -26,24 +26,25 @@ namespace fn
         Socket m_soc;
     public:
 
-        bool create(bool ipv6 = false);
-        void destroy();
+        fm::Result create(bool ipv6 = false);
         void close();
 
-        bool connect(const IpAddress &ip);
-        bool connect(const IpAddress &ip,fm::Uint16 port);
+        fm::Result connect(const IpAddress &ip);
+        fm::Result connect(const IpAddress &ip,fm::Uint16 port);
 
-        bool bind(const IpAddress &ip);
-        bool listen();
-        bool accept(TcpSocket &soc) const;
+        fm::Result bind(const IpAddress &ip);
+        fm::Result listen();
+        fm::Result accept(TcpSocket &soc) const;
 
         bool isValid() const;
         operator bool() const;
 
         IpAddress getRemoteAddress() const;
 
-        bool send(const void *data,fm::Size byteCount);
-        bool recv(void *data,fm::Size byteCount);
+        fm::Result send(const void *data,fm::Size byteCount);
+		fm::Result send(const Message &msg);
+        fm::Result recv(void *data,fm::Size byteCount);
+		fm::Result recv(Message &msg);
 
         SocketID getID() const;
     };

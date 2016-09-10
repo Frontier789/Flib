@@ -137,6 +137,34 @@ namespace fm
     template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
 	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> makeDelegate(const Object &object,typename Enable_if<priv::IsCallable<Object,R FRONTIER_DELEGATE_TEMPLATE_LIST>::value,int>::type * = 0);
 
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV),const typename Identity<Object>::type &object);
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const,const typename Identity<Object>::type &object);
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV),typename Identity<Object>::type *object);
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const,const typename Identity<Object>::type *object);
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV));
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(R (Object::*funcPtr)(FRONTIER_DELEGATE_TEMPLATE_CALL_CONV) const);
+
+    /////////////////////////////////////////////////////////////
+    template<class R FRONTIER_DELEGATE_TEMPLATE_PARAMS_INL,class Object>
+	inline Delegate<R FRONTIER_DELEGATE_TEMPLATE_LIST> delegate(const Object &object,typename Enable_if<priv::IsCallable<Object,R FRONTIER_DELEGATE_TEMPLATE_LIST>::value,int>::type * = 0);
+
 }
 
 #include <FRONTIER/System/Delegate/Undef.hpp>

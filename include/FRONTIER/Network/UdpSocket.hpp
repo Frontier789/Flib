@@ -26,19 +26,20 @@ namespace fn
         Socket m_soc;
     public:
 
-        bool create(bool ipv6 = false);
-        void destroy();
+        fm::Result create(bool ipv6 = false);
         void close();
 
-        bool bind(const IpAddress &ip);
+        fm::Result bind(const IpAddress &ip);
 
         bool isValid() const;
         operator bool() const;
 
         IpAddress getRemoteAddress() const;
 
-        bool sendTo(const void *data,fm::Size byteCount,const IpAddress &targetIp);
-        bool recvFrom(void *data,fm::Size byteCount,IpAddress &sourceIp);
+        fm::Result sendTo(const void *data,fm::Size byteCount,const IpAddress &targetIp);
+		fm::Result sendTo(const Message &msg,const IpAddress &targetIp);
+        fm::Result recvFrom(void *data,fm::Size byteCount,IpAddress &sourceIp);
+		fm::Result recvFrom(Message &msg,IpAddress &sourceIp);
 
         SocketID getID() const;
     };

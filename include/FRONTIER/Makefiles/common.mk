@@ -3,17 +3,17 @@ include $(dir $(lastword $(MAKEFILE_LIST)))/detect_os.mk
 ifeq ($(PLATFORM),Windows) 
  EXEC_EXT=.exe
  OBJDIR=Wobj
- LIBS=-lOpenGL32 -lgdi32
+ LIBS+=-lOpenGL32 -lgdi32 -lwinmm -lws2_32
 else
  ifeq ($(PLATFORM),Linux)
   EXEC_EXT=
   OBJDIR=Lobj
-  LIBS=-lGL -lX11 -lpthread
+  LIBS+=-lGL -lX11 -lpthread
  else
   ifeq ($(PLATFORM),Android)
   EXEC_EXT=
   OBJDIR=Aobj
-  LIBS=-lpthread
+  LIBS+=-lpthread
   endif
  endif
 endif

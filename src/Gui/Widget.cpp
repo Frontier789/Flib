@@ -16,7 +16,10 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Gui/Widget.hpp>
 #include <FRONTIER/System/Rect.hpp>
-
+/*
+#include <iostream>
+using namespace std;
+*/
 namespace fgui
 {
     ////////////////////////////////////////////////////////////
@@ -70,8 +73,11 @@ namespace fgui
             ev.type == fw::Event::MouseEntered ||
             ev.type == fw::Event::MouseLeft)
         {
+            
             fm::vec2 p  = fm::vec2i(ev.motion);
             bool inside = contains(p);
+			
+			// if (getId() != "unnamed") cout << getId().str() << " received move (" << p << "," << inside << ")" << endl;
             
             if (!m_mouseIn && inside)
             {
@@ -161,12 +167,14 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     void Widget::handleEnter(fm::vec2 p)
     {
+		// if (getId() != "unnamed") cout << "Widget::handleEnter w/ id = " << getId().str() << endl;
         onEnter(*this,p);
     }
 
     ////////////////////////////////////////////////////////////
     void Widget::handleLeave(fm::vec2 p)
     {
+		// if (getId() != "unnamed") cout << "Widget::handleLeave w/ id = " << getId().str() << endl;
         onLeave(*this,p);
     }
 
@@ -179,12 +187,14 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     void Widget::handlePress(fm::vec2 p,fw::Mouse::Button btn)
     {
+		// if (getId() != "unnamed") cout << "Widget::handlePress w/ id = " << getId().str() << endl;
         onPress(*this,p,btn);
     }
 
     ////////////////////////////////////////////////////////////
     void Widget::handleRelease(fm::vec2 p,fw::Mouse::Button btn)
     {
+		// if (getId() != "unnamed") cout << "Widget::handleRelease w/ id = " << getId().str() << endl;
         onRelease(*this,p,btn);
     }
         

@@ -160,7 +160,7 @@ namespace fg
 
     //////////////////////////////////////////////////////////////////////////
     DrawData::DrawCall &DrawData::DrawCall::operator=(const DrawData::DrawCall &drawCall)
-    {
+	{
         primitive = drawCall.primitive;
         indexCount = drawCall.indexCount;
         drawBeg = drawCall.drawBeg;

@@ -12,7 +12,9 @@ namespace fg
                                             m_pos(pos)
     {
         setTexRect(texRect);
-        setSize(size);
+		
+		if (size.area())
+			setSize(size);
     }
 
     /////////////////////////////////////////////////////////////
@@ -112,7 +114,7 @@ namespace fg
         if (!m_tex) return;
 
         shader.getModelStack().push().mul(fm::MATRIX::translation(m_pos)*fm::MATRIX::scaling(m_size));
-        shader.getTexUVStack().push().mul(m_tex->getPixToUnitMatrix()*fm::MATRIX::scaling((fm::vec2)m_texRect.size)*fm::MATRIX::translation((fm::vec2)m_texRect.pos));
+        shader.getTexUVStack().push().mul(m_tex->getPixToUnitMatrix()*fm::MATRIX::translation((fm::vec2)m_texRect.pos)*fm::MATRIX::scaling((fm::vec2)m_texRect.size));
         shader.useTexture(m_tex);
         shader.draw(m_draw);
         shader.useTexture(fm::nullPtr);
