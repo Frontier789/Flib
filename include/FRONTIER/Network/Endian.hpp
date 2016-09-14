@@ -18,10 +18,11 @@
 #define FRONTIER_ENDIAN_HPP_INCLUDED
 
 #include <FRONTIER/System/macros/TYPES.hpp>
+#include <FRONTIER/System/macros/API.h>
 
 namespace fn
 {
-	bool littleEndian();
+	bool FRONTIER_API littleEndian();
 	
 	template<class T> 
 	inline T htonc(const T& num);

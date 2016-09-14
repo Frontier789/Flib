@@ -53,20 +53,20 @@ namespace fn
 #endif // winOS
 
 #ifdef FRONTIER_OS_LINUX
-
+#include <string.h>
 #include <errno.h>
 
 namespace fn
 {
 	fm::Error getLastError(const char *netFunc,const char *file,int line)
 	{
-		int error = errno;
+		int err = errno;
 		
-		int errors[] = {                         EACCESS,                  EAFNOSUPPORT,         EPROTONOSUPPORT,                                    EINVAL,            EMFILE,            ENFILE,           EADDRNOTAVAIL,                EALREADY,        ECONNREFUSED,                      ENETUNREACH,                  EHOSTUNREACH,                           ECONNRESET,               EOPNOTSUPP,                         ECONNABORTED,              ENOTCONN};
+		int errors[] = {                          EACCES,                  EAFNOSUPPORT,         EPROTONOSUPPORT,                                    EINVAL,            EMFILE,            ENFILE,           EADDRNOTAVAIL,                EALREADY,        ECONNREFUSED,                      ENETUNREACH,                  EHOSTUNREACH,                           ECONNRESET,               EOPNOTSUPP,                         ECONNABORTED,              ENOTCONN};
 		std::string descs[] = {"Operation not permitted","Address family not supported","Protocol not supported","Invalid value specified in internal code","Out of resources","Out of resources","Address already in use","Address already in use","Connection refused","Destination network unreachable","Destination host unreachable","Connection was reset by remote host","Operation not supported","Connection was reset by remote host","Socket not connected"};
 		std::string types[] = {              "Forbidden",                "NotSupported",          "NotSupported",                           "InternalError",        "OutOfRes",        "OutOfRes",          "AlreadyInUse",          "AlreadyInUse", "ConnectionRefused",                "DestUnreachable",             "DestUnreachable",                           "ConReset",           "NotSupported",                           "ConReset",        "NotConnected"};
 		
-		char *errDesc = strerror(error);
+		char *errDesc = strerror(err);
 		
 		C(sizeof(errors)/sizeof(*errors))
 			if (err == errors[i])

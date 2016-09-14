@@ -24,6 +24,7 @@
 #include <FRONTIER/System/type_traits/Is_enum.hpp>
 #include <FRONTIER/System/macros/TYPES.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/System/String.hpp>
 #include <utility>
 #include <vector>
@@ -31,7 +32,7 @@
 
 namespace fn
 {
-	class Message
+	class FRONTIER_API Message
 	{
 		mutable std::vector<fm::Uint8> m_data;
 		mutable fm::Size m_readPos;

@@ -50,6 +50,7 @@ namespace fm
 		/// @param desc A human-readable description of the error
 		/// @param file The file in which the error was raised
 		/// @param func The function in which th error happened
+		/// @param line The line on which the function was called
 		///
 		/////////////////////////////////////////////////////////////
 		Error(const std::string &id = "",

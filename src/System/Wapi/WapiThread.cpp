@@ -27,7 +27,7 @@ namespace fm
 	        class DataPass
 	        {
             public:
-                fm::Delegate<void,fm::Thread*> delegate;
+				fm::Delegate<void,fm::Thread &> callback;
                 fm::Thread *thread;
 	        };
 	    }
@@ -37,11 +37,11 @@ namespace fm
 		{
 		    priv::DataPass *data = (priv::DataPass*)param;
 
-			if (data->delegate)
+			if (data->callback)
 			{
 			    fm::Thread::setCurrentThread(data->thread);
 
-				data->delegate.call(data->thread);
+				data->callback.call(*data->thread);
 			}
 			
 			delete data;
@@ -71,13 +71,13 @@ namespace fm
 			}
 		}
 		/////////////////////////////////////////////////////////////
-		fm::Result Thread::setEntry(const fm::Delegate<void,fm::Thread *> &runner,fm::Thread *owner)
+		fm::Result Thread::setEntry(const fm::Delegate<void,fm::Thread &> &runner,fm::Thread *owner)
 		{
 			// clean the mess
 			cleanUp();
 
 			priv::DataPass *data = new priv::DataPass;
-            data->delegate = runner;
+            data->callback = runner;
 			data->thread   = owner;
 
 			// create the new handle
@@ -173,6 +173,14 @@ namespace fm
 			}
 
 			return false;
+		}
+			
+        /////////////////////////////////////////////////////////////
+		fm::Size Thread::getHarwareConcurrency()
+		{
+			SYSTEM_INFO si;
+			GetSystemInfo(&si);
+			return si.dwNumberOfProcessors;
 		}
 	}
 }

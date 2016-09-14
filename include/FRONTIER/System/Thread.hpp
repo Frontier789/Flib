@@ -53,10 +53,10 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Constructor with entry point
 		///
-		/// @param delegate The entry point
+		/// @param callback The entry point
 		///
 		/////////////////////////////////////////////////////////////
-		Thread(const fm::Delegate<void,Thread *> &delegate);
+		Thread(const fm::Delegate<void,Thread &> &callback);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -72,12 +72,12 @@ namespace fm
 		/// If the thread is running when this call is made
 		/// fm::Thread::requestExit and fm::Thread::join are called.
 		///
-		/// @param delegate The starting point of the new thread
+		/// @param callback The starting point of the new thread
 		///
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result create(const fm::Delegate<void,Thread *> &delegate);
+		fm::Result create(const fm::Delegate<void,Thread &> &callback);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Starts running the thread
@@ -163,6 +163,14 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		const void *getImpl() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the number of threads that are able t run concurrently
+		///
+		/// @return The number of threads that are able t run concurrently
+		///
+		/////////////////////////////////////////////////////////////
+		static fm::Size getHarwareConcurrency();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Forcefully stops the thread

@@ -59,9 +59,9 @@ namespace fm
 	}
 
     /////////////////////////////////////////////////////////////
-    Thread::Thread(const fm::Delegate<void,Thread *> &delegate) : m_impl(new priv::Thread)
+    Thread::Thread(const fm::Delegate<void,Thread &> &callback) : m_impl(new priv::Thread)
     {
-        create(delegate);
+        create(callback);
     }
 
 	/////////////////////////////////////////////////////////////
@@ -72,13 +72,13 @@ namespace fm
 	}
 
     /////////////////////////////////////////////////////////////
-    fm::Result Thread::create(const fm::Delegate<void,Thread *> &delegate)
+    fm::Result Thread::create(const fm::Delegate<void,Thread &> &callback)
 	{
         requestExit();
 
         join();
 
-        return ((priv::Thread*)m_impl)->setEntry(delegate,this);
+        return ((priv::Thread*)m_impl)->setEntry(callback,this);
     }
 
 	/////////////////////////////////////////////////////////////
@@ -139,6 +139,12 @@ namespace fm
 	bool Thread::forceExit()
 	{
         return ((priv::Thread*)m_impl)->forceExit();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Size Thread::getHarwareConcurrency()
+	{
+		return priv::Thread::getHarwareConcurrency();
 	}
 }
 

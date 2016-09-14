@@ -36,7 +36,7 @@ namespace fm
 	        class DataPass
 	        {
             public:
-                fm::Delegate<void,fm::Thread *> delegate;
+                fm::Delegate<void,fm::Thread &> callback;
                 fm::Thread *thread;
 	        };
 	    }
@@ -46,7 +46,7 @@ namespace fm
 			static void *startThread(void *param);              ///< The entry point of a new thread
 			pthread_t *m_id;                                    ///< The id of the thread
 			void cleanUp();                                     ///< Internal cleaning function
-			fm::Result setEntry(const fm::Delegate<void,fm::Thread *> &runner,fm::Thread *owner); ///< Internal runner function
+			fm::Result setEntry(const fm::Delegate<void,fm::Thread &> &runner,fm::Thread *owner); ///< Internal runner function
 			priv::DataPass *m_caller;
 			bool m_running;
 			mutable fm::Mutex m_exitMutex;
@@ -78,6 +78,9 @@ namespace fm
 
             /////////////////////////////////////////////////////////////
 			bool forceExit();
+			
+            /////////////////////////////////////////////////////////////
+			static fm::Size getHarwareConcurrency();
 
 			friend class fm::Thread;
 		};

@@ -40,7 +40,7 @@ namespace fm
 {
 	template<class>
 	class vector2;
-	
+
 	class String;
 }
 
@@ -50,7 +50,7 @@ namespace fg
 
 	//////////////////////////////////
 	/// @brief Font class that implements <a href="http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02#Creating_a_texture_atlas">Font atlas</a> technique
-	/// 
+	///
 	//////////////////////////////////
 	class FRONTIER_API Font
 	{
@@ -75,7 +75,7 @@ namespace fg
 			bool operator<(const Identifier &other) const;
 		};
 
-		
+
 		fm::Size *m_refCount;     ///< How many instances does reference this object
 		FontRenderer *m_renderer; ///< A pointer to a fg::Font::Renderer that does the rendering part
 		mutable std::map<unsigned int,TextureAtlas<Identifier> > *m_texAtlases; ///< Maps characer sizes to different font atlases
@@ -95,6 +95,8 @@ namespace fg
 		/// @brief Default constructor
 		///
 		/// If @a copy is invalid (uninitialized) then this the object will be invalid (uninitialized)
+		///
+		/// @param copy The font to copy
 		///
 		/////////////////////////////////////////////////////////////
 		Font(const Font &copy);
@@ -175,7 +177,7 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		Image renderGlyph(const fm::Uint32 &letter,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown = fm::nullPtr) const;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if a given glyph is present in the font
 		///
@@ -237,7 +239,7 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		const Texture &getTexture() const;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the image of a glyph manually
 		///
@@ -251,7 +253,7 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		Glyph upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type = Glyph::Regular,const fm::vec2s &leftdown = fm::vec2s(),unsigned int characterSize = 0);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Swap the content of the two objects
 		///
@@ -263,7 +265,7 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		reference swap(Font &font);
-		
+
 	private:
 		/////////////////////////////////////////////////////////////
 		/// @brief Internal function used to clean up the resources
@@ -281,7 +283,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	/// @class fg::Font
 	/// @ingroup Graphics
-	/// 
+	///
 	/// Example:
 	/// @code
 	/// fg::Font::Renderer arial;

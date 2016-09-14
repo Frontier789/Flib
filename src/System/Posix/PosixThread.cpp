@@ -18,6 +18,7 @@
 #include <FRONTIER/System/Clock.hpp>
 #include <FRONTIER/System/Sleep.hpp>
 #include <pthread.h>
+#include <unistd.h>
 #include <signal.h>
 #include <errno.h>
 
@@ -29,7 +30,6 @@ namespace fm
 {
 	namespace Posix
 	{
-
 		/////////////////////////////////////////////////////////////
 		void *Thread::startThread(void *param)
 		{
@@ -43,7 +43,7 @@ namespace fm
 			{
 			    fm::Thread::setCurrentThread(caller->thread);
 
-				caller->delegate.call(caller->thread);
+				caller->callback.call(*caller->thread);
 			}
 
 			return 0;
@@ -75,7 +75,7 @@ namespace fm
 		}
 
 		/////////////////////////////////////////////////////////////
-		fm::Result Thread::setEntry(const fm::Delegate<void,fm::Thread *> &runner,fm::Thread *owner)
+		fm::Result Thread::setEntry(const fm::Delegate<void,fm::Thread &> &runner,fm::Thread *owner)
 		{
 			// clean the mess
 			cleanUp();
@@ -86,7 +86,7 @@ namespace fm
 			// copy the caller function
 			delete m_caller;
 			m_caller = new priv::DataPass;
-			m_caller->delegate = runner;
+			m_caller->callback = runner;
 			m_caller->thread = owner;
 
 			return fm::Result();
@@ -175,6 +175,16 @@ namespace fm
 			#endif
 			}
 			return true;
+		}
+
+		/////////////////////////////////////////////////////////////
+		fm::Size Thread::getHarwareConcurrency()
+		{
+		#if defined(_SC_NPROCESSORS_ONLN)
+			return sysconf(_SC_NPROCESSORS_ONLN);
+		#elif defined(_SC_NPROC_ONLN)
+			return sysconf(_SC_NPROC_ONLN);
+		#endif
 		}
 	}
 }

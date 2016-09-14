@@ -20,6 +20,8 @@
 #include <FRONTIER/Network/Endian.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
 #include "fnGetLastError.hpp"
+#include <unistd.h>
+#include <fcntl.h>
 
 #ifdef FRONTIER_OS_WINDOWS
 namespace fn
@@ -56,11 +58,13 @@ namespace fn
 
 
 #ifdef FRONTIER_OS_LINUX
+#include <netinet/tcp.h>
+
 namespace fn
 {
 	void setBlocking(SocketID id,bool blocking)
 	{
-		int status = fcntl(sock, F_GETFL);
+		int status = fcntl(id, F_GETFL);
 		
 		if (blocking)
 			fcntl(id, F_SETFL, status &~ O_NONBLOCK);
@@ -120,21 +124,14 @@ namespace fn
             m_id = FRONTIER_INVALID_SOCKET;
         }
     }
-/*
-    void Socket::closeCarefully()
+
+    void Socket::shutdown(bool read,bool write)
     {
-        if (isValid())
+		if (isValid() && (read || write))
         {
-            shutdown(m_id, 2); // CHECK_FOR_ERROR
-
-            char tmp;
-            this->recv((void*)&tmp,sizeof(tmp));
-
-            FRONTIER_CLOSE_SOCKET(m_id);
-
-            m_id = FRONTIER_INVALID_SOCKET;
+			shutdown(m_id, read ? (write ? 2 : 0) : 1);
         }
-    }*/
+    }
 
     fm::Result Socket::connect(const IpAddress &ip)
     {
@@ -319,6 +316,9 @@ namespace fn
 
             if (received == FRONTIER_SOCKET_ERROR)
                 return FRONTIER_FN_GETLASTERROR("recv");
+               
+			if (received == 0)
+				return fm::Error("NetError","Closed","Socket was closed on the other end","recv",__FILE__,__LINE__);
 
             buf += received;
             byteCount -= received;

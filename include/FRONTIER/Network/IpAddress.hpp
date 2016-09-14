@@ -19,12 +19,13 @@
 
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/NullPtr.hpp>
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/System/macros/SIZE.hpp>
 #include <FRONTIER/System/macros/TYPES.hpp>
 
 namespace fn
 {
-    class IpAddress
+	class FRONTIER_API IpAddress
     {
         void *m_data;
         void init(const fm::String &addr,fm::Uint16 port,bool preferIpv6);

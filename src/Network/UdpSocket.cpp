@@ -66,6 +66,16 @@ namespace fn
     {
         return m_soc.recvFrom(msg,sourceIp);
     }
+	
+	const Socket &UdpSocket::getSocket() const
+	{
+		return m_soc;
+	}
+	
+	Socket &UdpSocket::getSocket()
+	{
+		return m_soc;
+	}
 
     SocketID UdpSocket::getID() const
     {

@@ -17,14 +17,18 @@
 #ifndef FRONTIER_TCPLISTENER_HPP_INCLUDED
 #define FRONTIER_TCPLISTENER_HPP_INCLUDED
 
-#include <FRONTIER/Network/TcpSocket.hpp>
+#include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/Network/Socket.hpp>
 #include <FRONTIER/System/Result.hpp>
 
 namespace fn
 {
-    class TcpListener
+	class TcpSocket;
+	
+	class FRONTIER_API TcpListener
     {
-        TcpSocket m_socket;
+    public:
+        Socket m_socket;
     public:
 
         fm::Result listen(const IpAddress &ip);
@@ -32,6 +36,11 @@ namespace fn
         fm::Result listen(fm::Uint16 port,bool useIpv6 = false);
 
         fm::Result accept(TcpSocket &soc);
+
+		const Socket &getSocket() const;
+		Socket &getSocket();
+		
+        SocketID getID() const;
 
         bool isValid() const;
 

@@ -41,7 +41,7 @@ namespace fm
 			HANDLE m_id;                                        ///< The id of the thread
 			mutable volatile LONG m_isExiting;                  ///< Stores whether the thread is are exiting
 			void cleanUp();                                     ///< Internal cleaning function
-			fm::Result setEntry(const fm::Delegate<void,fm::Thread *> &runner,fm::Thread *owner); ///< Internal runner function
+			fm::Result setEntry(const fm::Delegate<void,fm::Thread &> &runner,fm::Thread *owner); ///< Internal runner function
 		public:
 			typedef Thread &reference;
 			typedef const Thread &const_reference;
@@ -69,6 +69,9 @@ namespace fm
 
             /////////////////////////////////////////////////////////////
 			bool pause(); //// Only for windows
+			
+            /////////////////////////////////////////////////////////////
+			static fm::Size getHarwareConcurrency();
 
 			friend class fm::Thread;
 		};

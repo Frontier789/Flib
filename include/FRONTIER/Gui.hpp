@@ -29,7 +29,7 @@
 /// @brief Namespace used to hold gui related classes
 ///
 /////////////////////////////////////////////////////////////
-namespace Fgui
+namespace fgui
 {
 
 }

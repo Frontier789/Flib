@@ -17,12 +17,14 @@
 #ifndef FRONTIER_TCPSOCKET_HPP_INCLUDED
 #define FRONTIER_TCPSOCKET_HPP_INCLUDED
 
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Network/Socket.hpp>
 
 namespace fn
 {
-    class TcpSocket
+	class FRONTIER_API TcpSocket
     {
+    public:
         Socket m_soc;
     public:
 
@@ -46,7 +48,12 @@ namespace fn
         fm::Result recv(void *data,fm::Size byteCount);
 		fm::Result recv(Message &msg);
 
+		const Socket &getSocket() const;
+		Socket &getSocket();
+		
         SocketID getID() const;
+        
+		friend class TcpListener;
     };
 }
 

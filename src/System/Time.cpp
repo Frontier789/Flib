@@ -95,6 +95,9 @@ namespace fm
 	const Time Time::Zero = Time(0,Microseconds);
 
 	/////////////////////////////////////////////////////////////
+	const Time Time::Inf = Time(-1,Seconds);
+
+	/////////////////////////////////////////////////////////////
 	Time operator+(const Time &left,const Time &right)
 	{
 		return microseconds(left.asMicroseconds()+right.asMicroseconds());

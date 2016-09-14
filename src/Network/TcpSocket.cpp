@@ -89,6 +89,16 @@ namespace fn
     {
         return m_soc.recv(msg);
     }
+	
+	const Socket &TcpSocket::getSocket() const
+	{
+		return m_soc;
+	}
+	
+	Socket &TcpSocket::getSocket()
+	{
+		return m_soc;
+	}
 
     SocketID TcpSocket::getID() const
     {

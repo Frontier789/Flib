@@ -18,6 +18,7 @@
 #define FRONTIER_SOCKET_HPP_INCLUDED
 
 #include <FRONTIER/Network/IpAddress.hpp>
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/System/Result.hpp>
 
 namespace fn
@@ -34,7 +35,7 @@ namespace fn
     
 	class Message;
 
-    class Socket
+	class FRONTIER_API Socket
     {
         SocketID m_id;
 		bool m_blocking;
@@ -45,6 +46,7 @@ namespace fn
 
         fm::Result create(bool ipv6 = false,bool tcp = true);
         void close();
+		void shutdown(bool read = true,bool write = true);
 
         fm::Result connect(const IpAddress &ip);
         fm::Result connect(const IpAddress &ip,fm::Uint16 port);

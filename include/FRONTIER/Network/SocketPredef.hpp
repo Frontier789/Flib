@@ -17,7 +17,15 @@
 #include <FRONTIER/System/macros/OS.h>
 
 #ifdef FRONTIER_OS_WINDOWS
-#define _WIN32_WINNT 0x501
+
+#ifndef _WIN32_WINNT
+ #define _WIN32_WINNT 0x501
+#endif
+#if _WIN32_WINNT < 0x501
+ #undef _WIN32_WINNT
+ #define _WIN32_WINNT 0x501
+#endif
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
 

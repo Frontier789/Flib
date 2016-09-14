@@ -17,11 +17,12 @@
 #ifndef FRONTIER_UDPSOCKET_HPP_INCLUDED
 #define FRONTIER_UDPSOCKET_HPP_INCLUDED
 
+#include <FRONTIER/System/macros/API.h>
 #include <FRONTIER/Network/Socket.hpp>
 
 namespace fn
 {
-    class UdpSocket
+	class FRONTIER_API UdpSocket
     {
         Socket m_soc;
     public:
@@ -40,6 +41,9 @@ namespace fn
 		fm::Result sendTo(const Message &msg,const IpAddress &targetIp);
         fm::Result recvFrom(void *data,fm::Size byteCount,IpAddress &sourceIp);
 		fm::Result recvFrom(Message &msg,IpAddress &sourceIp);
+		
+		const Socket &getSocket() const;
+		Socket &getSocket();
 
         SocketID getID() const;
     };
