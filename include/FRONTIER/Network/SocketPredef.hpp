@@ -26,6 +26,10 @@
  #define _WIN32_WINNT 0x501
 #endif
 
+#ifndef FD_SETSIZE
+ #define FD_SETSIZE 1024
+#endif
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
 

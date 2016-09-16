@@ -22,30 +22,18 @@
 
 namespace fn
 {
-	class FRONTIER_API UdpSocket
+	class FRONTIER_API UdpSocket : public Socket
     {
-        Socket m_soc;
     public:
 
         fm::Result create(bool ipv6 = false);
-        void close();
-
+        
         fm::Result bind(const IpAddress &ip);
-
-        bool isValid() const;
-        operator bool() const;
-
-        IpAddress getRemoteAddress() const;
 
         fm::Result sendTo(const void *data,fm::Size byteCount,const IpAddress &targetIp);
 		fm::Result sendTo(const Message &msg,const IpAddress &targetIp);
-        fm::Result recvFrom(void *data,fm::Size byteCount,IpAddress &sourceIp);
-		fm::Result recvFrom(Message &msg,IpAddress &sourceIp);
-		
-		const Socket &getSocket() const;
-		Socket &getSocket();
-
-        SocketID getID() const;
+		fm::Result recvFrom(void *data,fm::Size byteCount,fm::Ref<IpAddress> sourceIp = fm::nullPtr);
+		fm::Result recvFrom(Message &msg,fm::Ref<IpAddress> sourceIp = fm::nullPtr);
     };
 }
 

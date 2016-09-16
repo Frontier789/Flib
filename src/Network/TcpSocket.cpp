@@ -20,12 +20,7 @@ namespace fn
 {
     fm::Result TcpSocket::create(bool ipv6)
     {
-        return m_soc.create(ipv6,true);
-    }
-    
-    void TcpSocket::close()
-    {
-        m_soc.close();
+        return getImpl().create(ipv6,true);
     }
 
     fm::Result TcpSocket::connect(const IpAddress &ip)
@@ -33,14 +28,14 @@ namespace fn
         if (!isValid())
             create(ip.isIpv6());
 
-        return m_soc.connect(ip);
+        return getImpl().connect(ip);
     }
     fm::Result TcpSocket::connect(const IpAddress &ip,fm::Uint16 port)
     {
         if (!isValid())
             create(ip.isIpv6());
 
-        return m_soc.connect(ip,port);
+        return getImpl().connect(ip,port);
     }
 
     fm::Result TcpSocket::bind(const IpAddress &ip)
@@ -48,61 +43,32 @@ namespace fn
         if (!isValid())
             create(ip.isIpv6());
 
-        return m_soc.bind(ip);
+        return getImpl().bind(ip);
     }
     fm::Result TcpSocket::listen()
     {
-        return m_soc.listen();
+        return getImpl().listen();
     }
     fm::Result TcpSocket::accept(TcpSocket &soc) const
     {
-        return m_soc.accept(soc.m_soc);
-    }
-
-    bool TcpSocket::isValid() const
-    {
-        return m_soc.isValid();
-    }
-    TcpSocket::operator bool() const
-    {
-        return isValid();
-    }
-
-    IpAddress TcpSocket::getRemoteAddress() const
-    {
-        return m_soc.getRemoteAddress();
+        return getImpl().accept(soc.getImpl());
     }
 
     fm::Result TcpSocket::send(const void *data,fm::Size byteCount)
     {
-        return m_soc.send(data,byteCount);
+        return getImpl().send(data,byteCount);
     }
 	fm::Result TcpSocket::send(const Message &msg)
     {
-        return m_soc.send(msg);
+        return getImpl().send(msg);
     }
     fm::Result TcpSocket::recv(void *data,fm::Size byteCount)
     {
-        return m_soc.recv(data,byteCount);
+        return getImpl().recv(data,byteCount);
     }
 	fm::Result TcpSocket::recv(Message &msg)
     {
-        return m_soc.recv(msg);
-    }
-	
-	const Socket &TcpSocket::getSocket() const
-	{
-		return m_soc;
-	}
-	
-	Socket &TcpSocket::getSocket()
-	{
-		return m_soc;
-	}
-
-    SocketID TcpSocket::getID() const
-    {
-        return m_soc.getID();
+        return getImpl().recv(msg);
     }
 }
 

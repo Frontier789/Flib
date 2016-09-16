@@ -25,12 +25,9 @@ namespace fn
 {
 	class TcpSocket;
 	
-	class FRONTIER_API TcpListener
+	class FRONTIER_API TcpListener : public Socket
     {
     public:
-        Socket m_socket;
-    public:
-
         fm::Result listen(const IpAddress &ip);
         fm::Result listen(const IpAddress &ip,fm::Uint16 port);
         fm::Result listen(fm::Uint16 port,bool useIpv6 = false);

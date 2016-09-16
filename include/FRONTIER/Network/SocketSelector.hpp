@@ -14,32 +14,42 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_TCPSOCKET_HPP_INCLUDED
-#define FRONTIER_TCPSOCKET_HPP_INCLUDED
+#ifndef FRONTIER_SOCKETSELECTOR_HPP_INCLUDED
+#define FRONTIER_SOCKETSELECTOR_HPP_INCLUDED
 
+#include <FRONTIER/Network/UdpSocket.hpp>
 #include <FRONTIER/System/macros/API.h>
-#include <FRONTIER/Network/Socket.hpp>
+#include <FRONTIER/System/NullPtr.hpp>
+#include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/System/Time.hpp>
+#include <FRONTIER/System/Ref.hpp>
+#include <vector>
 
 namespace fn
 {
-	class FRONTIER_API TcpSocket : public Socket
-    {
-    public:
-
-        fm::Result create(bool ipv6 = false);
-
-        fm::Result connect(const IpAddress &ip);
-        fm::Result connect(const IpAddress &ip,fm::Uint16 port);
-
-        fm::Result bind(const IpAddress &ip);
-        fm::Result listen();
-        fm::Result accept(TcpSocket &soc) const;
-
-        fm::Result send(const void *data,fm::Size byteCount);
-		fm::Result send(const Message &msg);
-        fm::Result recv(void *data,fm::Size byteCount);
-		fm::Result recv(Message &msg);
-    };
+	class Socket;
+	
+	class FRONTIER_API SocketSelector
+	{
+		UdpSocket m_stopperSoc;
+		std::vector<Socket *> m_sockets;
+	public:
+		
+		SocketSelector();
+		
+		SocketSelector &addSocket(Socket &socket);
+		SocketSelector &remSocket(Socket &socket);
+		
+		fm::Result select(const fm::Time &timeout = fm::Time::Inf,fm::Ref<fm::Size> readyCount = fm::nullPtr);
+		
+		void stop();
+		void clear();
+		fm::Size getSize();
+		
+		static fm::Size getMaxSize();
+	};
+	
+	SocketSelector &operator<<(SocketSelector &selector,Socket &socket);
 }
 
-#endif // FRONTIER_TCPSOCKET_HPP_INCLUDED
+#endif // FRONTIER_SOCKETSELECTOR_HPP_INCLUDED

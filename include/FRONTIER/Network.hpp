@@ -34,10 +34,13 @@ namespace fn
 
 }
 
+#include <FRONTIER/Network/SocketSelector.hpp>
 #include <FRONTIER/Network/TcpListener.hpp>
 #include <FRONTIER/Network/IpAddress.hpp>
 #include <FRONTIER/Network/TcpSocket.hpp>
 #include <FRONTIER/Network/UdpSocket.hpp>
+#include <FRONTIER/Network/Message.hpp>
+#include <FRONTIER/Network/Endian.hpp>
 #include <FRONTIER/Network/Socket.hpp>
 
 #endif // FRONTIER_NETWORK_MODULE_HPP_INCLUDED

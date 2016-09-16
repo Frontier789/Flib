@@ -20,66 +20,31 @@ namespace fn
 {
     fm::Result UdpSocket::create(bool ipv6)
     {
-        return m_soc.create(ipv6,false);
-    }
-    
-    void UdpSocket::close()
-    {
-        m_soc.close();
+        return getImpl().create(ipv6,false);
     }
 
     fm::Result UdpSocket::bind(const IpAddress &ip)
     {
-        if (!isValid())
-            create(ip.isIpv6());
+        create(ip.isIpv6());
 
-        return m_soc.bind(ip);
-    }
-
-    bool UdpSocket::isValid() const
-    {
-        return m_soc.isValid();
-    }
-    UdpSocket::operator bool() const
-    {
-        return m_soc.isValid();
-    }
-
-    IpAddress UdpSocket::getRemoteAddress() const
-    {
-        return m_soc.getRemoteAddress();
+        return getImpl().bind(ip);
     }
 
     fm::Result UdpSocket::sendTo(const void *data,fm::Size byteCount,const IpAddress &targetIp)
     {
-        return m_soc.sendTo(data,byteCount,targetIp);
+        return getImpl().sendTo(data,byteCount,targetIp);
     }
 	fm::Result UdpSocket::sendTo(const Message &msg,const IpAddress &targetIp)
     {
-        return m_soc.sendTo(msg,targetIp);
+        return getImpl().sendTo(msg,targetIp);
     }
-    fm::Result UdpSocket::recvFrom(void *data,fm::Size byteCount,IpAddress &sourceIp)
+    fm::Result UdpSocket::recvFrom(void *data,fm::Size byteCount,fm::Ref<IpAddress> sourceIp)
     {
-        return m_soc.recvFrom(data,byteCount,sourceIp);
+        return getImpl().recvFrom(data,byteCount,sourceIp);
     }
-	fm::Result UdpSocket::recvFrom(Message &msg,IpAddress &sourceIp)
+	fm::Result UdpSocket::recvFrom(Message &msg,fm::Ref<IpAddress> sourceIp)
     {
-        return m_soc.recvFrom(msg,sourceIp);
-    }
-	
-	const Socket &UdpSocket::getSocket() const
-	{
-		return m_soc;
-	}
-	
-	Socket &UdpSocket::getSocket()
-	{
-		return m_soc;
-	}
-
-    SocketID UdpSocket::getID() const
-    {
-        return m_soc.getID();
+        return getImpl().recvFrom(msg,sourceIp);
     }
 }
 

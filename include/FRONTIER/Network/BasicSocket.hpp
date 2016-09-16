@@ -14,23 +14,49 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_SOCKET_HPP_INCLUDED
-#define FRONTIER_SOCKET_HPP_INCLUDED
+#ifndef FRONTIER_BASICSOCKET_HPP_INCLUDED
+#define FRONTIER_BASICSOCKET_HPP_INCLUDED
 
-#include <FRONTIER/Network/BasicSocket.hpp>
+#include <FRONTIER/Network/IpAddress.hpp>
 #include <FRONTIER/System/macros/API.h>
+#include <FRONTIER/System/NullPtr.hpp>
+#include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/System/Ref.hpp>
 
 namespace fn
 {
-	class FRONTIER_API Socket
+    #ifdef FRONTIER_OS_WINDOWS
+
+        typedef unsigned int SocketID;
+
+    #elif defined(FRONTIER_OS_LINUX)
+
+        typedef int SocketID;
+
+    #endif
+    
+	class Message;
+
+	class FRONTIER_API BasicSocket
     {
-    protected:
-        BasicSocket m_impl;
-		fm::Result create(bool ipv6,bool tcp);
-        
+        SocketID m_id;
+		bool m_blocking;
+		bool m_ready;
     public:
+
+        BasicSocket();
+        ~BasicSocket();
+
+        fm::Result create(bool ipv6 = false,bool tcp = true);
         void close();
 		void shutdown(bool read = true,bool write = true);
+
+        fm::Result connect(const IpAddress &ip);
+        fm::Result connect(const IpAddress &ip,fm::Uint16 port);
+
+        fm::Result bind(const IpAddress &ip);
+        fm::Result listen();
+        fm::Result accept(BasicSocket &soc) const;
 
         bool isValid() const;
         operator bool() const;
@@ -40,15 +66,22 @@ namespace fn
 
         IpAddress getRemoteAddress() const;
 		IpAddress getLocalAddress()  const;
+
+		fm::Result send(const Message &msg);
+        fm::Result send(const void *data,fm::Size byteCount);
+        fm::Result sendTo(const Message &msg,const IpAddress &targetIp);
+        fm::Result sendTo(const void *data,fm::Size byteCount,const IpAddress &targetIp);
+
+		fm::Result recv(Message &msg);
+        fm::Result recv(void *data,fm::Size byteCount);
+		fm::Result recvFrom(Message &msg,fm::Ref<IpAddress> sourceIp = fm::nullPtr);
+        fm::Result recvFrom(void *data,fm::Size byteCount,fm::Ref<IpAddress> sourceIp = fm::nullPtr);
         
 		bool isReady() const;
 		void setReady(bool ready = true);
 
         SocketID getID() const;
-        
-		BasicSocket &getImpl();
-		const BasicSocket &getImpl() const;
     };
 }
 
-#endif // FRONTIER_SOCKET_HPP_INCLUDED
+#endif // FRONTIER_BASICSOCKET_HPP_INCLUDED
