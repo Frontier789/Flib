@@ -247,7 +247,7 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Glyph Font::upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type,const fm::vec2s &leftdown,unsigned int characterSize)
+	Glyph Font::upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type,const fm::vec2i &leftdown,unsigned int characterSize)
 	{
 		return (*m_texAtlases)[characterSize ? characterSize : m_renderer->getCharacterSize()].upload(img,Identifier(letter,type),leftdown);
 	}

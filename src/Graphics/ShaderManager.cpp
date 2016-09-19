@@ -103,13 +103,13 @@ namespace fg
     }
     
 	////////////////////////////////////////////////////////////
-	void ShaderManager::setCamera(fm::Camera *cam)
+	void ShaderManager::setCamera(fm::Ref<fm::Camera> cam)
 	{
 		m_cam = cam;
 	}
 	
 	////////////////////////////////////////////////////////////
-	void ShaderManager::setCamera(fm::Camera *cam,const std::string &projMat,const std::string &viewMat,const std::string &plyPos,const std::string &plyView)
+	void ShaderManager::setCamera(fm::Ref<fm::Camera> cam,const std::string &projMat,const std::string &viewMat,const std::string &plyPos,const std::string &plyView)
 	{
 		setCamera(cam);
 

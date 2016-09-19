@@ -106,6 +106,7 @@ namespace fm
 	typedef BigUint<Uint64> Uint128;
 	typedef BigUint<BigUint<Uint64> > Uint256;
 	typedef BigUint<BigUint<BigUint<Uint64> > > Uint512;
+	typedef BigUint<BigUint<BigUint<BigUint<Uint64> > > > Uint1024;
 }
 
 #endif // FRONTIER_BIGUINT_HPP_INCLUDED

@@ -306,7 +306,7 @@ namespace fg
 		m_currentSize = size;
 
 		// tell FreeType to switch size
-		FT_Set_Pixel_Sizes(*((FT_Face*)m_ftFaceData),m_currentSize,0);
+		FT_Set_Pixel_Sizes(*((FT_Face*)m_ftFaceData),0,m_currentSize);
 
 		FT_Face face = (*((FT_Face*)m_ftFaceData));
 

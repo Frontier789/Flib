@@ -29,7 +29,8 @@ namespace fgui
                    Layout *parent,
                    bool enabled) : GuiElement(pos,size,id,parent,enabled),
                                    m_mouseIn(false),
-                                   m_pressed(false)
+                                   m_pressed(false),
+                                   m_pressedRight(false)
     {
 
     }
@@ -73,7 +74,6 @@ namespace fgui
             ev.type == fw::Event::MouseEntered ||
             ev.type == fw::Event::MouseLeft)
         {
-            
             fm::vec2 p  = fm::vec2i(ev.motion);
             bool inside = contains(p);
 			
@@ -108,7 +108,7 @@ namespace fgui
         {
             fm::vec2 p  = fm::vec2i(ev.mouse);
             bool inside = contains(p);
-
+			
             if (inside)
             {
 				if (!m_mouseIn)

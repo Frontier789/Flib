@@ -62,8 +62,8 @@ namespace fg
         virtual void useTexture(fm::Ref<const fg::Texture> tex,fm::Size texIndex = 0);
         
         ////////////////////////////////////////////////////////////
-        virtual void setCamera(fm::Camera *cam);
-        virtual void setCamera(fm::Camera *cam,const std::string &projMat,const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
+        virtual void setCamera(fm::Ref<fm::Camera> cam);
+        virtual void setCamera(fm::Ref<fm::Camera> cam,const std::string &projMat,const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
 		fm::Camera *getCamera();
 
         ////////////////////////////////////////////////////////////

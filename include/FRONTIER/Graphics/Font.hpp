@@ -252,7 +252,7 @@ namespace fg
 		/// @return The glyph of the uploaded image
 		///
 		/////////////////////////////////////////////////////////////
-		Glyph upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type = Glyph::Regular,const fm::vec2s &leftdown = fm::vec2s(),unsigned int characterSize = 0);
+		Glyph upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type = Glyph::Regular,const fm::vec2i &leftdown = fm::vec2i(),unsigned int characterSize = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Swap the content of the two objects
