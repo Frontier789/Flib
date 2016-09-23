@@ -164,23 +164,25 @@ namespace fg
     }
 
 	////////////////////////////////////////////////////////////
-    void ShaderManager::prepareDraw(const fg::DrawData &data)
+    fm::Result ShaderManager::prepareDraw(const fg::DrawData &data)
     {
     	update();
     	
         bind();
+        
+		fm::Error err;
 
         if (m_matIds[4] == 1)
-            setUniform(m_matNames[4],m_stacks[0].top());
+			err += glCheck(setUniform(m_matNames[4],m_stacks[0].top()));
 
         if (m_matIds[5] == 1)
-            setUniform(m_matNames[5],fm::MATRIX::inverse(m_stacks[0].top()).transpose());
+            err += glCheck(setUniform(m_matNames[5],fm::MATRIX::inverse(m_stacks[0].top()).transpose()));
 
         if (m_matIds[6] == 1)
-            setUniform(m_matNames[6],m_stacks[1].top());
+            err += glCheck(setUniform(m_matNames[6],m_stacks[1].top()));
 
         if (m_matIds[7] == 1)
-            setUniform(m_matNames[7],m_stacks[2].top());
+            err += glCheck(setUniform(m_matNames[7],m_stacks[2].top()));
 
         for (std::map<int,std::string>::const_iterator it = m_assocPoints.begin();it != m_assocPoints.end();++it)
         {
@@ -189,39 +191,45 @@ namespace fg
 				const fg::DrawData::Attribute &attr = data[(fg::Assoc::Point)it->first];
 
 				fg::Buffer::bind(attr.buf,fg::ArrayBuffer),
-				setAttribPointer(it->second,attr.components,attr.componentType,false,fm::nullPtr,attr.stride);
+				err += setAttribPointer(it->second,attr.components,attr.componentType,false,fm::nullPtr,attr.stride);
 			}
         }
+        
+		return err;
     }
 
 	////////////////////////////////////////////////////////////
-    void ShaderManager::draw(const fg::DrawData &data)
+    fm::Result ShaderManager::draw(const fg::DrawData &data)
     {
-		draw(data,0,data.getDrawCount());
+		return draw(data,0,data.getDrawCount());
     }
 
 	////////////////////////////////////////////////////////////
-    void ShaderManager::draw(const fg::DrawData &data,fm::Size indexSet)
+    fm::Result ShaderManager::draw(const fg::DrawData &data,fm::Size indexSet)
     {
-        draw(data,indexSet,1);
+		return draw(data,indexSet,1);
     }
 
 	////////////////////////////////////////////////////////////
-    void ShaderManager::draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount)
+    fm::Result ShaderManager::draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount)
     {
-        prepareDraw(data);
+		fm::Error err;
+		
+		if (err = prepareDraw(data)) return err;
 
         C(indexCount)
         {
 			const fg::DrawData::DrawCall &draw = data.getDraw(indexBeg+i);
 
 			fg::Buffer::bind(draw.buf,fg::IndexBuffer);
-
+			
 			if (draw.componentType)
-				glDrawElements(draw.primitive,draw.indexCount,draw.componentType,fm::nullPtr);
+				err = glCheck(glDrawElements(draw.primitive,draw.indexCount,draw.componentType,fm::nullPtr));
 			else
-				glDrawArrays(draw.primitive,draw.drawBeg,draw.drawLen);
+				err = glCheck(glDrawArrays(draw.primitive,draw.drawBeg,draw.drawLen));
         }
+        
+		err += glCheck((void)0);
 
         for (std::map<int,std::string>::const_iterator it = m_assocPoints.begin();it != m_assocPoints.end();++it)
         {
@@ -230,6 +238,10 @@ namespace fg
 				enableAttribPointer(it->second,false);
 			}
         }
+        
+		err += glCheck((void)0);
+        
+		return err;
     }
 
 	////////////////////////////////////////////////////////////

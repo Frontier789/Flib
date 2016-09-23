@@ -24,7 +24,7 @@ namespace fg
     class FixedShaderManager : public fg::ShaderManager
     {
         ////////////////////////////////////////////////////////////
-        void prepareDraw(const fg::DrawData &data);
+        fm::Result prepareDraw(const fg::DrawData &data);
 
         const fg::Texture *m_activeTex;
 
@@ -41,7 +41,7 @@ namespace fg
 
         ////////////////////////////////////////////////////////////
         void update();
-        void draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount);
+        fm::Result draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount);
     };
 }
 

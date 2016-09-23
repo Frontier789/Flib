@@ -21,7 +21,7 @@
 
 namespace fn
 {
-	Message::Message() : m_data(sizeof(fm::Size)/sizeof(fm::Uint8),0),
+	Message::Message() : m_data(sizeof(fm::Uint32)/sizeof(fm::Uint8),0),
 						 m_readPos(0)
 	{
 		
@@ -39,36 +39,36 @@ namespace fn
 
 	fm::Uint8 *Message::getDataPtr()
 	{
-		return &m_data[sizeof(fm::Size)/sizeof(fm::Uint8)];
+		return &m_data[sizeof(fm::Uint32)/sizeof(fm::Uint8)];
 	}
 	
 	const fm::Uint8 *Message::getDataPtr() const
 	{
-		return &m_data[sizeof(fm::Size)/sizeof(fm::Uint8)];
+		return &m_data[sizeof(fm::Uint32)/sizeof(fm::Uint8)];
 	}
 		
-	fm::Size Message::getSize() const
+	fm::Uint32 Message::getSize() const
 	{
 		return m_data.size();
 	}
 		
-	fm::Size Message::getDataSize() const
+	fm::Uint32 Message::getDataSize() const
 	{
-		return m_data.size() - sizeof(fm::Size)/sizeof(fm::Uint8);
+		return m_data.size() - sizeof(fm::Uint32)/sizeof(fm::Uint8);
 	}
 	
 	void Message::prepareSend() const
 	{
 		fm::Uint8 *ptr = &m_data[0];
 		
-		fm::Size *sptr = (fm::Size*)ptr;
+		fm::Uint32 *sptr = (fm::Uint32*)ptr;
 		
 		(*sptr) = fn::htonc(getSize());
 	}
 	
 	void Message::clear()
 	{
-		m_data = std::vector<fm::Uint8>(sizeof(fm::Size)/sizeof(fm::Uint8),0);
+		m_data = std::vector<fm::Uint8>(sizeof(fm::Uint32)/sizeof(fm::Uint8),0);
 	}
 	
 	void Message::swap(Message &msg)
@@ -76,7 +76,7 @@ namespace fn
 		m_data.swap(msg.m_data);
 	}
 		
-	Message &Message::append(const void *ptr,fm::Size byteCount)
+	Message &Message::append(const void *ptr,fm::Uint32 byteCount)
 	{
 		if (byteCount)
 		{
@@ -89,18 +89,18 @@ namespace fn
 		return *this;
 	}
 		
-	const Message &Message::read(void *ptr,fm::Size byteCount) const
+	const Message &Message::read(void *ptr,fm::Uint32 byteCount) const
 	{
-		fm::Size realRead = fm::min(getDataSize() - m_readPos,byteCount);
+		fm::Uint32 realRead = fm::min(getDataSize() - m_readPos,byteCount);
 		
-		std::memcpy(ptr,&m_data[sizeof(fm::Size)+m_readPos],realRead);
+		std::memcpy(ptr,&m_data[sizeof(fm::Uint32)+m_readPos],realRead);
 		
 		m_readPos += realRead;
 		
 		return *this;	
 	}
 	
-	Message &Message::read(void *ptr,fm::Size byteCount)
+	Message &Message::read(void *ptr,fm::Uint32 byteCount)
 	{
 		((const Message *)this)->read(ptr,byteCount);
 		

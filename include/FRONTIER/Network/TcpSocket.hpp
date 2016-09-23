@@ -35,9 +35,9 @@ namespace fn
         fm::Result listen();
         fm::Result accept(TcpSocket &soc) const;
 
-        fm::Result send(const void *data,fm::Size byteCount);
+        fm::Result send(const void *data,fm::Uint32 byteCount);
 		fm::Result send(const Message &msg);
-        fm::Result recv(void *data,fm::Size byteCount);
+        fm::Result recv(void *data,fm::Uint32 byteCount);
 		fm::Result recv(Message &msg);
     };
 }

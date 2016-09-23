@@ -36,6 +36,13 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class Container>
+	Collector<T,Container>::Collector(const T &element) : m_container(1,element)
+	{
+
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class Container>
 	T &Collector<T,Container>::operator[](const fm::Size &i)
 	{
 		return m_container[i];
@@ -68,28 +75,28 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class Container>
-	typename Container::iterator Collector<T,Container>::begin()
+	typename Collector<T,Container>::iterator Collector<T,Container>::begin()
 	{
 		return m_container.begin();
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class Container>
-	typename Container::const_iterator Collector<T,Container>::begin() const
+	typename Collector<T,Container>::const_iterator Collector<T,Container>::begin() const
 	{
 		return m_container.begin();
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class Container>
-	typename Container::iterator Collector<T,Container>::end()
+	typename Collector<T,Container>::iterator Collector<T,Container>::end()
 	{
 		return m_container.end();
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class Container>
-	typename Container::const_iterator Collector<T,Container>::end() const
+	typename Collector<T,Container>::const_iterator Collector<T,Container>::end() const
 	{
 		return m_container.end();
 	}

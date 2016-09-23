@@ -30,7 +30,7 @@ namespace fn
         return getImpl().bind(ip);
     }
 
-    fm::Result UdpSocket::sendTo(const void *data,fm::Size byteCount,const IpAddress &targetIp)
+    fm::Result UdpSocket::sendTo(const void *data,fm::Uint32 byteCount,const IpAddress &targetIp)
     {
         return getImpl().sendTo(data,byteCount,targetIp);
     }
@@ -38,7 +38,7 @@ namespace fn
     {
         return getImpl().sendTo(msg,targetIp);
     }
-    fm::Result UdpSocket::recvFrom(void *data,fm::Size byteCount,fm::Ref<IpAddress> sourceIp)
+    fm::Result UdpSocket::recvFrom(void *data,fm::Uint32 byteCount,fm::Ref<IpAddress> sourceIp)
     {
         return getImpl().recvFrom(data,byteCount,sourceIp);
     }

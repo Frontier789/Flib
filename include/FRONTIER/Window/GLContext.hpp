@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_GLCONTEXT_INCLUDED
 #define FRONTIER_GLCONTEXT_INCLUDED
+#include <FRONTIER/Graphics/FrameBuffer.hpp>
 #include <FRONTIER/Window/WindowPredef.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/macros/SIZE.hpp>
@@ -38,33 +39,6 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
-	/// @brief Encodes types of blending
-	///
-	/// By default blending is not used (same as Overwrite)
-	///
-	/////////////////////////////////////////////////////////////
-	enum BlendMode {
-		Overwrite, ///< Destination = Input
-		Additive,  ///< Destination = Destination + Input
-		Alpha      ///< Destination = Destination*(1-Input.a) + Input*Input.a
-	};
-
-	/////////////////////////////////////////////////////////////
-	/// @brief Encodes types of depth testing
-	///
-	/// By default depth test is not used
-	///
-	/////////////////////////////////////////////////////////////
-	enum DepthTestMode {
-		Less,    ///< Writes the fragment iff it's distance is smaller than the current in the depth buffer
-		LEqual,  ///< Writes the fragment iff it's distance is smaller or equal than the current in the depth buffer
-		GEqual,  ///< Writes the fragment iff it's distance is greater or equal than the current in the depth buffer
-		Greater, ///< Writes the fragment iff it's distance is greater than the current in the depth buffer
-		Always,  ///< Always writes the fragment in the depth buffer
-		Unused   ///< Does not perform depth test
-	};
-
-	/////////////////////////////////////////////////////////////
 	/// @brief GLContext
 	///
 	/// @ingroup Window
@@ -72,8 +46,8 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API GLContext : public fm::NonCopyable
 	{
-		priv::GLContext *m_context;
-		DepthTestMode m_depthTestMode;
+		priv::GLContext *m_context;    ///< The undelying implementation
+		fg::DepthTestMode m_depthTestMode; ///< The current depth test mode
 	public:
 
 		typedef GLContext &reference;
@@ -330,7 +304,7 @@ namespace fw
 		/// @see BlendMode
 		///
 		/////////////////////////////////////////////////////////////
-		static void setBlend(BlendMode mode);
+		static void setBlend(fg::BlendMode mode);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the depthtest mode of the current context
@@ -340,7 +314,7 @@ namespace fw
 		/// @see DepthTestMode
 		///
 		/////////////////////////////////////////////////////////////
-		void setDepthTest(DepthTestMode mode);
+		void setDepthTest(fg::DepthTestMode mode);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy the content of the currently bound render target to the cpu

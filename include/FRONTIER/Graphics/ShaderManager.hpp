@@ -39,7 +39,7 @@ namespace fg
     protected:
         std::vector<fm::MatrixStack<4,4,float> > m_stacks;
         void clearData();
-        virtual void prepareDraw(const fg::DrawData &data);
+        virtual fm::Result prepareDraw(const fg::DrawData &data);
 
         fm::Camera *m_cam;
         std::vector<std::string> m_matNames;
@@ -70,9 +70,9 @@ namespace fg
         void clearAssociations();
         void clearTextures();
         virtual void update();
-        void draw(const fg::DrawData &data);
-        void draw(const fg::DrawData &data,fm::Size indexSet);
-        virtual void draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount);
+        fm::Result draw(const fg::DrawData &data);
+        fm::Result draw(const fg::DrawData &data,fm::Size indexSet);
+        virtual fm::Result draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount);
 
         ////////////////////////////////////////////////////////////
         fm::MatrixStack<4,4,float> &getModelStack();

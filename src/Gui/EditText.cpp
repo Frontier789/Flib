@@ -1299,7 +1299,7 @@ namespace fgui
 
         GuiElement::onDraw(shader);
 
-        fw::Window::setBlend(fw::Alpha);
+        fw::Window::setBlend(fg::Alpha);
         
 		if (m_bckg)
 		{

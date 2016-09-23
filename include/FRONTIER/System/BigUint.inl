@@ -26,7 +26,12 @@ namespace fm
 		template <typename T>
 		void divide(BigUint<T> n,BigUint<T> d,BigUint<T> &q,BigUint<T> &rem) 
 		{
-			if (d != 0)
+			if (d == 0)
+			{
+				rem = 0;
+				q = -1;
+			}
+			else
 			{
 				BigUint<T> x    = 1;
 				BigUint<T> quot = 0;

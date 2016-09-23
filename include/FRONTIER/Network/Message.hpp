@@ -35,7 +35,7 @@ namespace fn
 	class FRONTIER_API Message
 	{
 		mutable std::vector<fm::Uint8> m_data;
-		mutable fm::Size m_readPos;
+		mutable fm::Uint32 m_readPos;
 	public:
 		
 		Message();
@@ -45,18 +45,18 @@ namespace fn
 		fm::Uint8 *getDataPtr();
 		const fm::Uint8 *getDataPtr() const;
 		
-		fm::Size getSize() const;
-		fm::Size getDataSize() const;
+		fm::Uint32 getSize() const;
+		fm::Uint32 getDataSize() const;
 		
 		void prepareSend() const;
 		
 		void clear();
 		void swap(Message &msg);
 		
-		Message &append(const void *ptr,fm::Size byteCount);
+		Message &append(const void *ptr,fm::Uint32 byteCount);
 		
-		const Message &read(void *ptr,fm::Size byteCount) const;
-		Message &read(void *ptr,fm::Size byteCount);
+		const Message &read(void *ptr,fm::Uint32 byteCount) const;
+		Message &read(void *ptr,fm::Uint32 byteCount);
 		
 		bool eof() const;
 	};
@@ -92,7 +92,7 @@ namespace fn
 	template<class A,class B>
 	inline Message &operator<<(Message &msg,const std::pair<A,B> &pr);
 	
-	template<class T,fm::Size N>
+	template<class T,fm::Uint32 N>
 	inline Message &operator<<(Message &msg,const T (&t)[N]);
 	
 	
@@ -135,7 +135,7 @@ namespace fn
 	template<class A,class B>
 	inline Message &operator>>(Message &msg,std::pair<A,B> &pr);
 	
-	template<class T,fm::Size N>
+	template<class T,fm::Uint32 N>
 	inline Message &operator>>(Message &msg,T (&t)[N]);
 }
 

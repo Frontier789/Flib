@@ -44,6 +44,33 @@ namespace fg
 	class Texture;
 
 	/////////////////////////////////////////////////////////////
+	/// @brief Encodes types of blending
+	///
+	/// By default blending is not used (same as Overwrite)
+	///
+	/////////////////////////////////////////////////////////////
+	enum BlendMode {
+		Overwrite, ///< Destination = Input
+		Additive,  ///< Destination = Destination + Input
+		Alpha      ///< Destination = Destination*(1-Input.a) + Input*Input.a
+	};
+
+	/////////////////////////////////////////////////////////////
+	/// @brief Encodes types of depth testing
+	///
+	/// By default depth test is not used
+	///
+	/////////////////////////////////////////////////////////////
+	enum DepthTestMode {
+		Less,    ///< Writes the fragment iff it's distance is smaller than the current in the depth buffer
+		LEqual,  ///< Writes the fragment iff it's distance is smaller or equal than the current in the depth buffer
+		GEqual,  ///< Writes the fragment iff it's distance is greater or equal than the current in the depth buffer
+		Greater, ///< Writes the fragment iff it's distance is greater than the current in the depth buffer
+		Always,  ///< Always writes the fragment in the depth buffer
+		Unused   ///< Does not perform depth test
+	};
+
+	/////////////////////////////////////////////////////////////
 	///
 	/// 	@brief Class used to crae and handle OpenGL <a href="http://www.opengl.org/wiki/Framebuffer_Object">Framebuffers</a>
 	///
@@ -54,6 +81,7 @@ namespace fg
 		void init(); ///< Internal function used at setup
 		fm::Size m_width;  ///< The width of the FrameBuffer
 		fm::Size m_height; ///< The height of the FrameBuffer
+		DepthTestMode m_depthTestMode; ///< The current depth test mode
 	public:
 		typedef FrameBuffer &reference;
 		typedef const FrameBuffer &const_reference;
@@ -117,7 +145,7 @@ namespace fg
 		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
 		///
 		/////////////////////////////////////////////////////////////
-		explicit FrameBuffer(const Texture *colorAttachments,fm::Size count = 1,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
+		explicit FrameBuffer(const Texture **colorAttachments,fm::Size count = 1,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the framebuffer from attachments and depth buffer
@@ -145,7 +173,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setColorAttachments(const Texture *colorAttachments,fm::Size count = 1);
+		fm::Result setColorAttachments(const Texture **colorAttachments,fm::Size count = 1);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the framebuffer's depth attachment
@@ -167,7 +195,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result create(const Texture *colorAttachments,fm::Size count = 1,const DepthBuffer &depthBuf = DepthBuffer::noDepthBuffer);
+		fm::Result create(const Texture **colorAttachments,fm::Size count = 1,const DepthBuffer &depthBuf = DepthBuffer::noDepthBuffer);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the framebuffer from attachments and depth buffer
@@ -197,6 +225,40 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		static fm::Result bind(const FrameBuffer &fbo);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Clears the specified buffers
+		/// 
+		/// The depth buffer gets cleared if the depth test mode is not set to Unused
+		/// 
+		/// @param colorBuffer If true the color buffer will be cleared with the set clear-color
+		///
+		/// @see setClearColor
+		///
+		/////////////////////////////////////////////////////////////
+		void clear(bool colorBuffer = true);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Clears the specified buffers
+		///
+		/// @param colorBuffer If true the color buffer will be cleared with the set clear-color
+		/// @param depthBuffer If true the depth buffer will be cleared with the specified value
+		/// @param stencilBuffer If true the stencil buffer will be cleared with the specified value
+		///
+		/// @see setClearColor
+		///
+		/////////////////////////////////////////////////////////////
+		void clear(bool colorBuffer,bool depthBuffer,bool stencilBuffer = false);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the depthtest mode
+		///
+		/// @param mode The new depth-test mode
+		///
+		/// @see DepthTestMode
+		///
+		/////////////////////////////////////////////////////////////
+		void setDepthTest(DepthTestMode mode);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Test if framebuffers are available

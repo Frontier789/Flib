@@ -102,6 +102,14 @@ namespace fg
 		loadFromFile(filename);
 	}
 
+	////////////////////////////////////////////////////////////
+	Texture::Texture(const fm::vec2s &size) : m_isRepeated(false),
+                                              m_isSmooth(false)
+
+	{
+		create(size);
+	}
+
 	/// destructor /////////////////////////////////////////////////////////
 	Texture::~Texture()
 	{

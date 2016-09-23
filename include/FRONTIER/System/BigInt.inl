@@ -180,8 +180,10 @@ namespace fm
 	{
 		BaseUint negBit = (BaseUint(1) << BaseUint(sizeof(BaseUint)*8-1));
 		
-		bool neg   = (hi    & negBit);
-		bool biNeg = (bi.hi & negBit);
+		bool neg   = (hi    & negBit) != 0;
+		bool biNeg = (bi.hi & negBit) != 0;
+		
+		if (neg != biNeg) return neg;
 		
 		BigInt<BaseUint> a = (neg ? -(*this) : *this);
 		BigInt<BaseUint> b = (neg ? -bi : bi);
@@ -360,6 +362,8 @@ namespace fm
 	template<class BaseUint>
     BigInt<BaseUint> &BigInt<BaseUint>::operator<<=(const BigInt& rhs) 
     {
+		if (rhs < 0) return (*this) >>= -rhs;
+    	
 		BaseUint n = rhs.lo;
 
 		if (n >= sizeof(BigInt<BaseUint>)*8) 
@@ -397,6 +401,8 @@ namespace fm
 	template<class BaseUint>
     BigInt<BaseUint> &BigInt<BaseUint>::operator>>=(const BigInt<BaseUint> &rhs) 
     {
+		if (rhs < 0) return (*this) <<= -rhs;
+    	
 		BaseUint n = rhs.lo;
 
 		if (n >= sizeof(BigInt<BaseUint>)*8) 

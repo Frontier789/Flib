@@ -106,9 +106,9 @@ namespace fg
 		fm::Size m_texCounter; ///< The counter used when activating texture slots
 		fm::Uint32 m_defVao;   ///< Default vao for core profiles
 		fm::Result link(); ///< Internal function used to link the compiled shaders to the shader program
-		void init(); ///< Internal function used at setup
-		void freeSubShaders(); ///< Internal function used at clean-up
-		virtual void clearData(); ///< clear uniforms, attributes, textures etc
+		void init();       ///< Internal function used at setup
+		fm::Result freeSubShaders(); ///< Internal function used at clean-up
+		virtual void clearData();    ///< clear uniforms, attributes, textures etc
 
     public:
         typedef Shader &reference;
@@ -156,6 +156,22 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
         fm::Result loadFromFiles(const std::string &vertexShaderFile,const std::string &fragmentShaderFile);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the shader program from files
+		///
+		/// It is assumed that the first file contains the source
+		/// of the vertex shader while the second one contains the source of
+		/// the fragment shader
+		///
+		/// @param vertexShaderFile Name of the file that contains the vertex shader source
+		/// @param geometryShaderFile Name of the file that contains the geometry shader source
+		/// @param fragmentShaderFile Name of the file that contains the fragment shader source
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+        fm::Result loadFromFiles(const std::string &vertexShaderFile,const std::string &geometryShaderFile,const std::string &fragmentShaderFile);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the shader program from sources stored in memory
@@ -221,8 +237,10 @@ namespace fg
 		/// @param name The name of the attribute
 		/// @param enable True to enable false to disable
 		/// 
+		/// @return The error-state of the function
+		/// 
 		/////////////////////////////////////////////////////////////
-		void enableAttribPointer(const std::string &name,bool enable = true);
+		fm::Result enableAttribPointer(const std::string &name,bool enable = true);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Find the "id" of an attribute

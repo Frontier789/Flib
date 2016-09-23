@@ -96,15 +96,17 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	FrameBuffer::FrameBuffer() : m_depthBufID(0),
 								 m_width(0),
-								 m_height(0)
+								 m_height(0),
+								 m_depthTestMode(Unused)
 	{
 
 	}
 
 	////////////////////////////////////////////////////////////
-	FrameBuffer::FrameBuffer(const Texture *colorAttachments,fm::Size count,const DepthBuffer &depthBuf) : m_depthBufID(0),
-																										   m_width(0),
-																										   m_height(0)
+	FrameBuffer::FrameBuffer(const Texture **colorAttachments,fm::Size count,const DepthBuffer &depthBuf) : m_depthBufID(0),
+																											m_width(0),
+																										    m_height(0),
+																											m_depthTestMode(Unused)
 	{
 		create(colorAttachments,count,depthBuf);
 	}
@@ -112,9 +114,12 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	FrameBuffer::FrameBuffer(const Texture &colorAttachment,const DepthBuffer &depthBuf) : m_depthBufID(0),
 																						   m_width(0),
-																						   m_height(0)
+																						   m_height(0),
+																						   m_depthTestMode(Unused)
 	{
-		create(&colorAttachment,1,depthBuf);
+		const Texture *ptr = &colorAttachment;
+		
+		create(&ptr,1,depthBuf);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -128,7 +133,7 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result FrameBuffer::create(const Texture *colorAttachments,fm::Size count,const DepthBuffer &depthBuf)
+	fm::Result FrameBuffer::create(const Texture **colorAttachments,fm::Size count,const DepthBuffer &depthBuf)
 	{
 		fm::Error err;
 		
@@ -140,11 +145,13 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	fm::Result FrameBuffer::create(const Texture &colorAttachment,const DepthBuffer &depthBuf)
 	{
-		return create(&colorAttachment,1,depthBuf);
+		const Texture *ptr = &colorAttachment;
+		
+		return create(&ptr,1,depthBuf);
 	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result FrameBuffer::setColorAttachments(const Texture *colorAttachments,fm::Size count)
+	fm::Result FrameBuffer::setColorAttachments(const Texture **colorAttachments,fm::Size count)
 	{
 		init();
 
@@ -156,23 +163,29 @@ namespace fg
 		ObjectBinder binder(getGlId());
 		C(count)
 		{
-			if (err = glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, (colorAttachments+i)->getTexTarget(), (colorAttachments+i)->getGlId(), 0)))
+			const Texture *ptr = *(colorAttachments+i);
+			
+			if (err = glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, ptr->getTexTarget(), ptr->getGlId(), 0)))
 				return err;
 
-			fm::vec2s size = (colorAttachments+i)->getRealSize();
+			fm::vec2s size = ptr->getRealSize();
 
 			if (!i || size.w < m_width ) m_width  = size.w;
 			if (!i || size.h < m_height) m_height = size.h;
 		}
-
-		/*
-		GLenum *DrawBuffers;
-		DrawBuffers = new GLenum[count];
-		C(count)
-			*(DrawBuffers+i) = GL_COLOR_ATTACHMENT0+i;
-		glCheck(glDrawBuffers(count, DrawBuffers));
-		delete[] DrawBuffers;
-		*/
+		
+		if (::priv::so_loader.getProcAddr("glDrawBuffers") != fm::nullPtr)
+		{
+			GLenum *drawBuffers = new GLenum[count];
+			C(count)
+				drawBuffers[i] = GL_COLOR_ATTACHMENT0+i;
+			err += glCheck(glDrawBuffers(count, drawBuffers));
+			delete[] drawBuffers;
+			
+			if (err) return err;
+		}
+		
+		
 		return checkFramebufferStatus("FrameBuffer.setColorAttachments",__FILE__,__LINE__);
 	}
 
@@ -239,6 +252,38 @@ namespace fg
 	fm::Result FrameBuffer::bind(const FrameBuffer &fbo)
 	{
 		return bind(&fbo);
+	}
+
+	/////////////////////////////////////////////////////////////
+	void FrameBuffer::clear(bool colorBuffer,bool depthBuffer,bool stencilBuffer)
+	{
+		if (colorBuffer || depthBuffer || stencilBuffer)
+			glClear((colorBuffer ? GL_COLOR_BUFFER_BIT : 0)|(depthBuffer ? GL_DEPTH_BUFFER_BIT : 0)|(stencilBuffer ? GL_STENCIL_BUFFER_BIT : 0));
+	}
+
+	/////////////////////////////////////////////////////////////
+	void FrameBuffer::clear(bool colorBuffer)
+	{
+		clear(colorBuffer,m_depthTestMode != Unused,false);
+	}
+
+	/////////////////////////////////////////////////////////////
+	void FrameBuffer::setDepthTest(DepthTestMode mode)
+	{
+		bind();
+		
+		if (mode != Unused)
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
+
+		if (mode == Less)    glDepthFunc(GL_LESS);
+		if (mode == LEqual)  glDepthFunc(GL_LEQUAL);
+		if (mode == GEqual)  glDepthFunc(GL_GEQUAL);
+		if (mode == Greater) glDepthFunc(GL_GREATER);
+		if (mode == Always)  glDepthFunc(GL_ALWAYS);
+		
+		m_depthTestMode = mode;
 	}
 
 	////////////////////////////////////////////////////////////

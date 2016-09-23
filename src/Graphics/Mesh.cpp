@@ -155,7 +155,7 @@ namespace fg
 
         return ret;
     }
-/*
+
 	/////////////////////////////////////////////////////////////
     Mesh Mesh::getCylinder(float radius,float height, fm::Size W,fm::Size H, const fm::Delegate<float,float &,float &> &rfunc)
 	{
@@ -163,7 +163,7 @@ namespace fg
 		ret.pts.resize((W+1)*2 + 2 + H*(W+1));
 		ret.uvs.resize(ret.pts.size());
 		ret.primitive = fg::Triangles;
-		ret.indicess.resize(W*2*3 + W*(H-1)*2*3);
+		ret.indices.resize(W*2*3 + W*(H-1)*2*3);
 
         fm::Size ptsi = 0;
         fm::Size uvsi = 0;
@@ -180,9 +180,9 @@ namespace fg
 		    ret.pts[ptsi++] = fm::vec3(p.x,height/2,p.y);
 		    if (i < W)
             {
-                ret.inds[indi++] = 0;
-                ret.inds[indi++] = i+1;
-                ret.inds[indi++] = i+2;
+                ret.indices[indi++] = 0;
+                ret.indices[indi++] = i+1;
+                ret.indices[indi++] = i+2;
             }
 		}
 
@@ -197,13 +197,33 @@ namespace fg
 		    ret.pts[ptsi++] = fm::vec3(p.x,-height/2,p.y);
 		    if (i < W)
             {
-                ret.inds[indi++] = W+2;
-                ret.inds[indi++] = W+2+i+1;
-                ret.inds[indi++] = W+2+i+2;
+                ret.indices[indi++] = W+2;
+                ret.indices[indi++] = W+2+i+1;
+                ret.indices[indi++] = W+2+i+2;
             }
 		}
+		
+		Cxy(W+1,H)
+		{
+			float xp = x/float(W);
+			float yp = y/float(H-1);
+			
+			float r = (rfunc ? rfunc(xp,yp) : 1.f);
+			
+			fm::vec2 p = fm::pol2(radius*r,fm::deg(xp*360));
+			ret.pts[ptsi++] = fm::vec3(p.x,height*yp - height/2,p.y);
+			
+			fm::vec2s inds[] = {fm::vec2s(0,0),fm::vec2s(1,0),fm::vec2s(1,1),
+								fm::vec2s(0,0),fm::vec2s(1,1),fm::vec2s(0,1)};
+			
+			if (x < W && y < H-1)
+				C(6)
+					ret.indices[indi++] = (W+1)*2+2 + (x+inds[i].x)*H + (y+inds[i].y);
+		}
+		
+		return ret;
 	}
-*/
+
 	class Comparator
     {
         bool almostEqual(float a,float b)

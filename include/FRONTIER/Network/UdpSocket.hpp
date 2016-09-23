@@ -30,9 +30,9 @@ namespace fn
         
         fm::Result bind(const IpAddress &ip);
 
-        fm::Result sendTo(const void *data,fm::Size byteCount,const IpAddress &targetIp);
+        fm::Result sendTo(const void *data,fm::Uint32 byteCount,const IpAddress &targetIp);
 		fm::Result sendTo(const Message &msg,const IpAddress &targetIp);
-		fm::Result recvFrom(void *data,fm::Size byteCount,fm::Ref<IpAddress> sourceIp = fm::nullPtr);
+		fm::Result recvFrom(void *data,fm::Uint32 byteCount,fm::Ref<IpAddress> sourceIp = fm::nullPtr);
 		fm::Result recvFrom(Message &msg,fm::Ref<IpAddress> sourceIp = fm::nullPtr);
     };
 }

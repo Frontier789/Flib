@@ -127,7 +127,7 @@ namespace fw
 
 	/////////////////////////////////////////////////////////////
 	GLContext::GLContext() : m_context(new priv::GLContext),
-							 m_depthTestMode(fw::Unused)
+							 m_depthTestMode(fg::Unused)
 	{
 
 	}
@@ -260,37 +260,37 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	void GLContext::clear(bool colorBuffer)
 	{
-		clear(colorBuffer,m_depthTestMode != fw::Unused,false);
+		clear(colorBuffer,m_depthTestMode != fg::Unused,false);
 	}
 
 	/////////////////////////////////////////////////////////////
-	void GLContext::setBlend(BlendMode mode)
+	void GLContext::setBlend(fg::BlendMode mode)
 	{
-		if (mode == Overwrite)
+		if (mode == fg::Overwrite)
 			glDisable(GL_BLEND);
 			
-		if (mode == Additive)
+		if (mode == fg::Additive)
 			glEnable(GL_BLEND),
 			glBlendFunc(GL_ONE,GL_ONE);
 			
-		if (mode == Alpha)
+		if (mode == fg::Alpha)
 			glEnable(GL_BLEND),
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	/////////////////////////////////////////////////////////////
-	void GLContext::setDepthTest(DepthTestMode mode)
+	void GLContext::setDepthTest(fg::DepthTestMode mode)
 	{
-		if (mode != Unused)
+		if (mode != fg::Unused)
 			glEnable(GL_DEPTH_TEST);
 		else
 			glDisable(GL_DEPTH_TEST);
 
-		if (mode == Less)    glDepthFunc(GL_LESS);
-		if (mode == LEqual)  glDepthFunc(GL_LEQUAL);
-		if (mode == GEqual)  glDepthFunc(GL_GEQUAL);
-		if (mode == Greater) glDepthFunc(GL_GREATER);
-		if (mode == Always)  glDepthFunc(GL_ALWAYS);
+		if (mode == fg::Less)    glDepthFunc(GL_LESS);
+		if (mode == fg::LEqual)  glDepthFunc(GL_LEQUAL);
+		if (mode == fg::GEqual)  glDepthFunc(GL_GEQUAL);
+		if (mode == fg::Greater) glDepthFunc(GL_GREATER);
+		if (mode == fg::Always)  glDepthFunc(GL_ALWAYS);
 		
 		m_depthTestMode = mode;
 	}

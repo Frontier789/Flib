@@ -30,9 +30,12 @@ namespace fm
 	class Collector
 	{
 		mutable Container m_container; ///< The underlying container
+		// mutable T **m_pointers; ///< The underlying pointer holder
 	public:
 		typedef Collector<T,Container> &reference;
 		typedef const Collector<T,Container> &const_reference;
+		typedef typename Container::iterator iterator;
+		typedef typename Container::const_iterator const_iterator;
 			
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
@@ -43,9 +46,19 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy constructor
 		/// 
+		/// @param copy The collector to copy
+		/// 
 		/////////////////////////////////////////////////////////////
 		template<class Container2>
 		Collector(const Collector<T,Container2> &copy);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct the container with one element in it
+		/// 
+		/// @param element The one element
+		/// 
+		/////////////////////////////////////////////////////////////
+		Collector(const T &element);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Access a given element in the collection
@@ -94,7 +107,7 @@ namespace fm
 		/// @return The begining
 		/// 
 		/////////////////////////////////////////////////////////////
-		typename Container::iterator begin();
+		iterator begin();
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the begining of the underlying container
@@ -104,7 +117,7 @@ namespace fm
 		/// @return The begining
 		/// 
 		/////////////////////////////////////////////////////////////
-		typename Container::const_iterator begin() const;
+		const_iterator begin() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the ending of the underlying container
@@ -114,7 +127,7 @@ namespace fm
 		/// @return The ending
 		/// 
 		/////////////////////////////////////////////////////////////
-		typename Container::iterator end();
+		iterator end();
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the ending of the underlying container
@@ -124,7 +137,7 @@ namespace fm
 		/// @return The ending
 		/// 
 		/////////////////////////////////////////////////////////////
-		typename Container::const_iterator end() const;
+		const_iterator end() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Append the back of the container

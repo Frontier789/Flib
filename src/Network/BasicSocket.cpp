@@ -252,7 +252,7 @@ namespace fn
 		return send(msg.getPtr(),msg.getSize());
     }
 
-    fm::Result BasicSocket::send(const void *data,fm::Size byteCount)
+    fm::Result BasicSocket::send(const void *data,fm::Uint32 byteCount)
     {
 		if (!isValid()) return fm::Error("NetError","Uninitialized","send called on uninitialized socket","send",__FILE__,__LINE__);
 
@@ -276,10 +276,12 @@ namespace fn
 	{
 		msg.prepareSend();
 		
-		return sendTo(msg.getPtr(),msg.getSize(),targetIp);
+		if (fm::Error err = sendTo(msg.getPtr(),sizeof(fm::Uint32),targetIp)) return err;
+		
+		return sendTo(msg.getDataPtr(),msg.getDataSize(),targetIp);
     }
 
-    fm::Result BasicSocket::sendTo(const void *data,fm::Size byteCount,const IpAddress &targetIp)
+    fm::Result BasicSocket::sendTo(const void *data,fm::Uint32 byteCount,const IpAddress &targetIp)
     {
 		if (!isValid()) return fm::Error("NetError","Uninitialized","sendTo called on uninitialized socket","sendTo",__FILE__,__LINE__);
 		if (!targetIp.isValid()) return fm::Error("NetError","Uninitialized","sendTo called on uninitialized ip","sendTo",__FILE__,__LINE__);
@@ -304,22 +306,22 @@ namespace fn
     {
 		msg.clear();
 		
-		fm::Size s;
+		fm::Uint32 s;
 		if (fm::Error e = recv(&s,sizeof(s)))
 		{
 			return e;
 		}
 		
-		*((fm::Size*)msg.getPtr()) = s;
+		*((fm::Uint32*)msg.getPtr()) = s;
 		
 		s = fn::ntohc(s);
 		
-		msg.append(fm::nullPtr,s-sizeof(fm::Size));
+		msg.append(fm::nullPtr,s-sizeof(s));
 		
-		return recv(((fm::Uint8*)msg.getPtr())+sizeof(fm::Size),s-sizeof(fm::Size));
+		return recv(msg.getDataPtr(),s-sizeof(s));
     }
 	
-    fm::Result BasicSocket::recv(void *data,fm::Size byteCount)
+    fm::Result BasicSocket::recv(void *data,fm::Uint32 byteCount)
     {
 		if (!isValid()) return fm::Error("NetError","Uninitialized","recv called on uninitialized socket","recv",__FILE__,__LINE__);
 
@@ -346,7 +348,7 @@ namespace fn
     {
 		msg.clear();
 		
-		fm::Size s;
+		fm::Uint32 s;
 		if (fm::Error e = recvFrom(&s,sizeof(s),sourceIp))
 		{
 			return e;
@@ -354,12 +356,14 @@ namespace fn
 		
 		s = fn::ntohc(s);
 		
-		*((fm::Size*)msg.getPtr()) = s;
+		*((fm::Uint32*)msg.getPtr()) = s;
 		
-		return recvFrom(msg.getPtr(),msg.getSize()-sizeof(fm::Size),sourceIp);
+		msg.append(fm::nullPtr,s-sizeof(s));
+		
+		return recvFrom(msg.getDataPtr(),s-sizeof(s),sourceIp);
     }
 
-    fm::Result BasicSocket::recvFrom(void *data,fm::Size byteCount,fm::Ref<IpAddress> sourceIp)
+    fm::Result BasicSocket::recvFrom(void *data,fm::Uint32 byteCount,fm::Ref<IpAddress> sourceIp)
     {
 		if (!isValid()) return fm::Error("NetError","Uninitialized","recvFrom called on uninitialized socket","recvFrom",__FILE__,__LINE__);
 
@@ -380,16 +384,10 @@ namespace fn
 			ptr = (sockaddr*)&tmpaddr;
 		}
 
-        while (byteCount)
-        {
-            int received = ::recvfrom(m_id, buf, byteCount, 0, ptr, &tmpsize);
+		int received = ::recvfrom(m_id, buf, byteCount, 0, ptr, &tmpsize);
 
-            if (received == FRONTIER_SOCKET_ERROR)
-                return FRONTIER_FN_GETLASTERROR("recvfrom");
-
-            buf += received;
-            byteCount -= received;
-        }
+		if (received == FRONTIER_SOCKET_ERROR)
+			return FRONTIER_FN_GETLASTERROR("recvfrom");
 
         return fm::Result();
     }

@@ -95,7 +95,7 @@ namespace fgui
 
         GuiElement::onDraw(shader);
 
-        fw::Window::setBlend(fw::Alpha);
+        fw::Window::setBlend(fg::Alpha);
 
         shader.getModelStack().push().mul(fm::MATRIX::translation(fm::vec2i(getPos())));
         shader.getColorStack().push(fm::MATRIX::scaling(fm::vec3(m_clr)));

@@ -62,7 +62,7 @@ namespace fg
 			// retrieve error log
 			err += glCheck(glGetShaderInfoLog(s, logSize, NULL, &logData[0]));
 			
-			err = fm::Error("GLSLError","glCompileShader","Error compiling shader type "+fm::toString(type).str()+" : "+logData,"compileSubShader",__FILE__,__LINE__);
+			err += fm::Error("GLSLError","glCompileShader","Error compiling shader type "+fm::toString(type).str()+" : "+logData,"compileSubShader",__FILE__,__LINE__);
 			ret = 0;
 			
 			// free allocated memory
@@ -145,6 +145,7 @@ namespace fg
 
 			// retrieve error log
 			err += glCheck(glGetProgramInfoLog(getGlId(), logSize, NULL, &logData[0]));
+			err += fm::Error("GLSLError","glLinkProgram","Error linking shader"+fm::String(": ")+logData,"link",__FILE__,__LINE__);
 
 			// free allocated memory
 			delete[] logData;
@@ -204,12 +205,18 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	void Shader::freeSubShaders()
+	fm::Result Shader::freeSubShaders()
 	{
+		fm::Error err;
+		
 		C(m_subShaders.size())
 			if (glIsShader(m_subShaders[i]))
-				glDetachShader(getGlId(),m_subShaders[i]),
-				glDeleteShader(m_subShaders[i]);
+			{
+				if (err = glCheck(glDetachShader(getGlId(),m_subShaders[i]))) return err;
+				if (err = glCheck(glDeleteShader(m_subShaders[i]))) return err;
+			}
+		
+		return err;
 	}
 
 	/// functions /////////////////////////////////////////////////////////
@@ -218,20 +225,57 @@ namespace fg
 		// init GlId
 		init();
 		if (!getGlId())
-			return fm::Error("ShaderError","CalledWith0ID","Shader::link called with 0 id","link",__FILE__,__LINE__);
-
-		// refill sub shaders
-		freeSubShaders();
-		m_subShaders.resize(count);
+			return fm::Error("ShaderError","CalledWith0ID","Shader::loadFromFiles called with 0 id","loadFromFiles",__FILE__,__LINE__);
 		
-		fm::Error err;
+		unsigned int realCount = 0;
+		
 		C(count)
 		{
-			if (err = compileSubShaderFromFile(files[i],types[i],m_subShaders[i]))
-				return err;
+			if (files[i].size()) realCount++;
 		}
-
-
+		
+		const std::string *filesptr  = files;
+		const unsigned int *typesptr = types;
+		
+		if (realCount != count)
+		{
+			std::string *realFiles  = new std::string[realCount];
+			unsigned int *realTypes = new unsigned int[realCount];
+			
+			filesptr = realFiles;
+			typesptr = realTypes;
+			
+			unsigned int curI = 0;
+			C(count)
+			{
+				if (files[i].size())
+				{
+					realFiles[curI] = files[i],
+					realTypes[curI] = types[i];
+					
+					++curI;
+				}
+			}
+		}
+		
+		// refill sub shaders
+		freeSubShaders();
+		m_subShaders.resize(realCount);
+		
+		fm::Error err;
+		C(realCount)
+		{
+			err += compileSubShaderFromFile(filesptr[i],typesptr[i],m_subShaders[i]);
+		}
+		
+		if (realCount != count)
+		{
+			delete[] filesptr;
+			delete[] typesptr;			
+		}
+		
+		if (err) return err;
+		
 		return link();
 	}
 
@@ -242,19 +286,57 @@ namespace fg
 		// init GlId
 		init();
 		if (!getGlId())
-			return fm::Error("ShaderError","CalledWith0ID","Shader::link called with 0 id","link",__FILE__,__LINE__);
-
-		// refill sub shaders
-		freeSubShaders();
-		m_subShaders.resize(count);
+			return fm::Error("ShaderError","CalledWith0ID","Shader::loadFromMemory called with 0 id","loadFromMemory",__FILE__,__LINE__);
 		
-		fm::Error err;
+		unsigned int realCount = 0;
+		
 		C(count)
 		{
-			if (err = compileSubShader(data[i],types[i],m_subShaders[i]))
-				return err;
+			if (data[i].size()) realCount++;
 		}
-
+		
+		const std::string *dataptr = data;
+		const unsigned int *typesptr = types;
+		
+		if (realCount != count)
+		{
+			std::string *realData   = new std::string[realCount];
+			unsigned int *realTypes = new unsigned int[realCount];
+			
+			dataptr = realData;
+			typesptr = realTypes;
+			
+			unsigned int curI = 0;
+			C(count)
+			{
+				if (data[i].size())
+				{
+					realData[curI]  = data[i],
+					realTypes[curI] = types[i];
+					
+					++curI;
+				}
+			}
+		}
+		
+		// refill sub shaders
+		freeSubShaders();
+		m_subShaders.resize(realCount);
+		
+		fm::Error err;
+		C(realCount)
+		{
+			err += compileSubShader(dataptr[i],typesptr[i],m_subShaders[i]);
+		}
+		
+		if (realCount != count)
+		{
+			delete[] dataptr;
+			delete[] typesptr;			
+		}
+		
+		if (err) return err;
+		
 		return link();
 	}
 
@@ -267,15 +349,24 @@ namespace fg
 
 		return loadFromFiles(files,types,2);
 	}
+	
+	////////////////////////////////////////////////////////////
+	fm::Result Shader::loadFromFiles(const std::string &vertexShaderFile,const std::string &geometryShaderFile,const std::string &fragmentShaderFile)
+	{
+		std::string files[] = {vertexShaderFile,geometryShaderFile,fragmentShaderFile};
+		unsigned int types[] = {GL_VERTEX_SHADER,GL_GEOMETRY_SHADER,GL_FRAGMENT_SHADER};
+
+		return loadFromFiles(files,types,3);
+	}
 
 
 	////////////////////////////////////////////////////////////
-	fm::Result Shader::loadFromMemory(const std::string &vertexShaderFile,const std::string &fragmentShaderFile)
+	fm::Result Shader::loadFromMemory(const std::string &vertexShaderData,const std::string &fragmentShaderData)
 	{
-		std::string files[] = {vertexShaderFile,fragmentShaderFile};
+		std::string data[] = {vertexShaderData,fragmentShaderData};
 		unsigned int types[] = {GL_VERTEX_SHADER,GL_FRAGMENT_SHADER};
 
-		return loadFromMemory(files,types,2);
+		return loadFromMemory(data,types,2);
 	}
 
 
@@ -335,17 +426,17 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	void Shader::enableAttribPointer(const std::string &name,bool enable)
+	fm::Result Shader::enableAttribPointer(const std::string &name,bool enable)
 	{
 		int location = getAttribLocation(name);
 
 		if (location == -1)
-			return;
+			return fm::Error("GLError","AttrNotFound","Attribute "+name+" couldn't be found","getAttribLocation",__FILE__,__LINE__);
 
 		if (enable)
-			glEnableVertexAttribArray(location);
+			return glCheck(glEnableVertexAttribArray(location));
 		else
-			glDisableVertexAttribArray(location);
+			return glCheck(glDisableVertexAttribArray(location));
 	}
 
 

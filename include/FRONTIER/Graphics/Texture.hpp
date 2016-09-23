@@ -110,6 +110,14 @@ namespace fg
 		explicit Texture(const std::string &filename);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Create a OpenGL texture with given size and uninitialized data
+		///
+		/// @param size The requested size
+		///
+		/////////////////////////////////////////////////////////////
+		explicit Texture(const fm::vec2s &size);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
 		///
 		/// Automatically deletes the OpenGL id

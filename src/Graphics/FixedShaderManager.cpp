@@ -67,7 +67,7 @@ namespace fg
     }
 
 	////////////////////////////////////////////////////////////
-    void FixedShaderManager::prepareDraw(const fg::DrawData &data)
+    fm::Result FixedShaderManager::prepareDraw(const fg::DrawData &data)
     {
     	if (Shader::isAvailable())
 		{
@@ -131,10 +131,12 @@ namespace fg
 			if (attr.components == 3) // GL only accepts 3d normals
 				glNormalPointer(attr.componentType,attr.stride,fm::nullPtr);
 		}
+		
+		return glCheck((void)0);
     }
 
 	////////////////////////////////////////////////////////////
-    void FixedShaderManager::draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount)
+    fm::Result FixedShaderManager::draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount)
     {
         prepareDraw(data);
 
@@ -157,5 +159,7 @@ namespace fg
 		
 		if (m_activeTex)
 			glDisable(GL_TEXTURE_2D);
+		
+		return glCheck((void)0);
     }
 }

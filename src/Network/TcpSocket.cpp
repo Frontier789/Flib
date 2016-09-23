@@ -54,7 +54,7 @@ namespace fn
         return getImpl().accept(soc.getImpl());
     }
 
-    fm::Result TcpSocket::send(const void *data,fm::Size byteCount)
+    fm::Result TcpSocket::send(const void *data,fm::Uint32 byteCount)
     {
         return getImpl().send(data,byteCount);
     }
@@ -62,7 +62,7 @@ namespace fn
     {
         return getImpl().send(msg);
     }
-    fm::Result TcpSocket::recv(void *data,fm::Size byteCount)
+    fm::Result TcpSocket::recv(void *data,fm::Uint32 byteCount)
     {
         return getImpl().recv(data,byteCount);
     }
