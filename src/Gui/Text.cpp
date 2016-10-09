@@ -127,8 +127,14 @@ namespace fgui
 		
 		if (resMan)
 		{
-			fg::Font *font = (fg::Font*)resMan->get("defFont");
+			fg::Font *font = (fg::Font*)resMan->get("defTextFont");
 			if (font) setFont(font);
+			
+			fm::vec4 *clr = (fm::vec4*)resMan->get("defTextColor");
+			if (clr) setColor(*clr);
+			
+			fm::Size *charSize = (fm::Size*)resMan->get("defTextSize");
+			if (charSize) setCharSize(*charSize);
 		}
 	}
 

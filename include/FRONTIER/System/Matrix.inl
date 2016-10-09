@@ -486,7 +486,12 @@ namespace fm
 				for (fm::Size dx=0;dx<N;dx++)
 					for (fm::Size dy=0;dy<N;dy++)
 						if (dx!=x && dy!=y)
-							mx[d%(N-1)][int(d/(N-1))] = mat[dx][dy],d++;
+						{
+							mx[d%(N-1)][int(d/(N-1))] = mat[dx][dy];
+							
+							d++;
+						}
+						
 				ret[x][y] = det<N-1>(mx);
 			}
 			return ret;
@@ -773,15 +778,14 @@ namespace std
 {
     template<typename,typename>
     class basic_ostream;
+
     template<typename,typename>
     class basic_istream;
-    template<typename>
-    class char_traits;
 }
 
 ////////////////////////////////////////////////////////////
-template<fm::Size W,fm::Size H,class T>
-inline std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_ostream<char, std::char_traits<char> > &out, const fm::matrix<W,H,T> &mat)
+template<fm::Size W,fm::Size H,class T,class CharT,class CharTraitT>
+inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::matrix<W,H,T> &mat)
 {
 	Cx(W)
 	{
@@ -795,8 +799,8 @@ inline std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_
 }
 
 ////////////////////////////////////////////////////////////
-template<fm::Size W,fm::Size H,class T>
-inline std::basic_istream<char, std::char_traits<char> > &operator>>(std::basic_istream<char, std::char_traits<char> > &in, fm::matrix<W,H,T> &mat)
+template<fm::Size W,fm::Size H,class T,class CharT,class CharTraitT>
+inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::matrix<W,H,T> &mat)
 {
 	Cx(W) Cy(H)
 		in>>mat[x][y];

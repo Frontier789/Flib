@@ -17,6 +17,7 @@
 #ifndef FRONTIER_SHADER_INL_INCLUDED
 #define FRONTIER_SHADER_INL_INCLUDED
 #include <FRONTIER/GL/Is_GLDataType.hpp>
+#include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Error.hpp>
 
 namespace fg
@@ -48,8 +49,8 @@ namespace fg
 														const fm::vertex<pt,ct,tpt,nt> *pointer)
 	{
 		fm::Error err;
-		if (err = setAttribPointer(posName,&pointer[0].pos,priv::getStride<pt,ct,tpt,nt>())) return err;
-		if (err = setAttribPointer(clrName,&pointer[0].clr,priv::getStride<pt,ct,tpt,nt>())) return err;
+		err = setAttribPointer(posName,&pointer[0].pos,priv::getStride<pt,ct,tpt,nt>()); if (err) return err;
+		err = setAttribPointer(clrName,&pointer[0].clr,priv::getStride<pt,ct,tpt,nt>()); if (err) return err;
 		
 		return fm::Result();
 	}
@@ -62,9 +63,9 @@ namespace fg
 											   const fm::vertex<pt,ct,tpt,nt> *pointer)
 	{
 		fm::Error err;
-		if (err = setAttribPointer(posName   ,&pointer[0].pos   ,priv::getStride<pt,ct,tpt,nt>())) return err;
-		if (err = setAttribPointer(clrName   ,&pointer[0].clr   ,priv::getStride<pt,ct,tpt,nt>())) return err;
-		if (err = setAttribPointer(texPosName,&pointer[0].texPos,priv::getStride<pt,ct,tpt,nt>())) return err;
+		err = setAttribPointer(posName   ,&pointer[0].pos   ,priv::getStride<pt,ct,tpt,nt>()); if (err) return err;
+		err = setAttribPointer(clrName   ,&pointer[0].clr   ,priv::getStride<pt,ct,tpt,nt>()); if (err) return err;
+		err = setAttribPointer(texPosName,&pointer[0].texPos,priv::getStride<pt,ct,tpt,nt>()); if (err) return err;
 		
 		return fm::Result();
 	}
@@ -77,10 +78,10 @@ namespace fg
 													  const std::string &normName,const fm::vertex<pt,ct,tpt,nt> *pointer)
 	{
 		fm::Error err;
-		if (err = setAttribPointer(posName   ,&pointer[0].pos   ,priv::getStride<pt,ct,tpt,nt>())) return err;
-		if (err = setAttribPointer(clrName   ,&pointer[0].clr   ,priv::getStride<pt,ct,tpt,nt>())) return err;
-		if (err = setAttribPointer(texPosName,&pointer[0].texPos,priv::getStride<pt,ct,tpt,nt>())) return err;
-		if (err = setAttribPointer(normName  ,&pointer[0].norm  ,priv::getStride<pt,ct,tpt,nt>())) return err;
+		err = setAttribPointer(posName   ,&pointer[0].pos   ,priv::getStride<pt,ct,tpt,nt>()); if (err) return err;
+		err = setAttribPointer(clrName   ,&pointer[0].clr   ,priv::getStride<pt,ct,tpt,nt>()); if (err) return err;
+		err = setAttribPointer(texPosName,&pointer[0].texPos,priv::getStride<pt,ct,tpt,nt>()); if (err) return err;
+		err = setAttribPointer(normName  ,&pointer[0].norm  ,priv::getStride<pt,ct,tpt,nt>()); if (err) return err;
 		
 		return fm::Result();
 	}
@@ -125,6 +126,17 @@ namespace fg
 	inline fm::Result Shader::setUniform(const std::string &name,const fm::mat4 &m)
 	{
 		return setUniform(name,m,storeOrder);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,fm::Size N>
+	inline fm::Result Shader::setUniform(const std::string &name,const T (&values)[N])
+	{
+		for (fm::Size i = 0;i<N;++i)
+		{
+			if (fm::Error e = setUniform( (name + "[" + fm::toString(i) + "]").str() , values[i] ))
+				return e;
+		}
 	}
 }
 

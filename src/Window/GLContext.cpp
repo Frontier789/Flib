@@ -35,6 +35,11 @@
 	#include "Xlib/XlibGLContext.cpp"
 #endif
 
+// On Linux 'Always' is a macro and conflicts with fg::Always
+#ifdef Always
+	#undef Always
+#endif
+
 namespace fw
 {
 	namespace priv

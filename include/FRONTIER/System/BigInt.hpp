@@ -103,6 +103,13 @@ namespace fm
 	};
 	
 	//////////////////////////////////////////////////////////////////////////
+	namespace priv
+	{
+		template <typename T>
+		void divide(BigInt<T> n,BigInt<T> d,BigInt<T> &q,BigInt<T> &rem);
+	}
+	
+	//////////////////////////////////////////////////////////////////////////
 	typedef BigInt<Uint64> Int128;
 	typedef BigInt<BigUint<Uint64> > Int256;
 	typedef BigInt<BigUint<BigUint<Uint64> > > Int512;

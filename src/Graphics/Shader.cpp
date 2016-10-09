@@ -212,8 +212,8 @@ namespace fg
 		C(m_subShaders.size())
 			if (glIsShader(m_subShaders[i]))
 			{
-				if (err = glCheck(glDetachShader(getGlId(),m_subShaders[i]))) return err;
-				if (err = glCheck(glDeleteShader(m_subShaders[i]))) return err;
+				if ((err = glCheck(glDetachShader(getGlId(),m_subShaders[i])))) return err;
+				if ((err = glCheck(glDeleteShader(m_subShaders[i])))) return err;
 			}
 		
 		return err;
@@ -616,12 +616,10 @@ namespace fg
 				}
 				else
                     return fm::Error("GLSLError","NoSuchUniform",name+" texture couldn't be found in shader","setUniform",__FILE__,__LINE__);
-				
-
-				err += glCheck(glActiveTexture(GL_TEXTURE0));
-				err += glCheck(glUseProgram(program));
-
 			}
+			
+			err += glCheck(glActiveTexture(GL_TEXTURE0));
+			err += glCheck(glUseProgram(program));
 		}
 		return err;
 	}

@@ -14,46 +14,29 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_IS_CONTAINER_HPP_INCLUDED
-#define FRONTIER_IS_CONTAINER_HPP_INCLUDED
-#include <FRONTIER/System/type_traits/YesNo.hpp>
-#define FRONTIER_IS_CONTAINER
+#include <FRONTIER/Graphics/FloatTexture.hpp>
+#include <FRONTIER/OpenGL.hpp>
 
-namespace fm
+namespace fg
 {
-	/////////////////////////////////////////////////////////////
-	/// @brief Has a member enum 'value' that is true if the template parameter is a container type (has const_iterator, begin and end)
-	/// 
-	/// @ingroup System
-	/// 
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	class Is_container
-	{
-		template<class Type,Type t>
-		class SFINAE
-		{
-			
-		};
-		
-		template<class U> 
-		static fm::priv::Yes TestBeg(SFINAE<typename U::const_iterator (U::*)() const,&U::begin>*);
-		
-		template<class U> 
-		static fm::priv::No  TestBeg(...);
-		
-		template<class U> 
-		static fm::priv::Yes TestEnd(SFINAE<typename U::const_iterator (U::*)() const,&U::end>*);
-		
-		template<class U> 
-		static fm::priv::No  TestEnd(...);
-		/// @endcond
-		
-	public:
-		enum {
-			value /** @cond DOXYGEN_HIDE */ = ((sizeof(TestBeg<T>(0)) == sizeof(fm::priv::Yes)) && (sizeof(TestEnd<T>(0)) == sizeof(fm::priv::Yes))) /** @endcond */ ///< True iff T::const_iterator is a type
-		};
-	};
-}
+	////////////////////////////////////////////////////////////
+	fm::Int32  FloatTexture::getInternalFormat() const {return GL_RGBA32F;}
 
-#endif // FRONTIER_IS_CONTAINER_HPP_INCLUDED
+	/// constructor /////////////////////////////////////////////////////////
+	FloatTexture::FloatTexture() : Texture::Texture()
+	{
+
+	}
+
+	////////////////////////////////////////////////////////////
+	FloatTexture::FloatTexture(const FloatTexture &copy) : Texture::Texture(copy)
+	{
+
+	}
+
+	////////////////////////////////////////////////////////////
+	FloatTexture::FloatTexture(const Image &img) : Texture::Texture(img)
+	{
+
+	}
+}

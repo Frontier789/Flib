@@ -118,11 +118,14 @@ namespace fgui
 		fm::vec4 m_cursorColor;
         fg::Metrics m_metrics;
         fm::vec2 m_pixViewPos;
+		fm::vec4 m_caretColor;
 		fm::vec2 m_frameSize;
 		fm::Clock m_blinkClk;
+		fm::vec4 m_highlight;
         fm::Size m_charSize;
         fm::vec2 m_viewPos;
         bool m_recordUndo;
+		fm::vec4 m_color;
         bool m_monoSpace;
         bool m_editable;
         bool m_freeView;
@@ -239,6 +242,21 @@ namespace fgui
         ////////////////////////////////////////////////////////////
         virtual void setCharSize(fm::Size charSize);
         fm::Size getCharSize() const;
+
+        ////////////////////////////////////////////////////////////
+        virtual void setColor(fm::vec4 clr);
+        fm::vec4 getColor() const;
+
+        ////////////////////////////////////////////////////////////
+        virtual void setHighlight(fm::vec4 clr);
+        fm::vec4 getHighlight() const;
+        
+        ////////////////////////////////////////////////////////////
+        virtual void setCaretColor(fm::vec4 clr);
+        fm::vec4 getCaretColor() const;
+        
+        ////////////////////////////////////////////////////////////
+		virtual void setBlinkCallback(const fm::Delegate<fm::vec4,const fm::Clock &> &callback);
 
         ////////////////////////////////////////////////////////////
         fm::vec2 getViewPos() const;

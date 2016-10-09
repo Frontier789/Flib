@@ -137,7 +137,7 @@ namespace fg
 	{
 		fm::Error err;
 		
-		if (err = setColorAttachments(colorAttachments,count)) return err;
+		if ((err = setColorAttachments(colorAttachments,count))) return err;
 		
 		return setDepthBuffer(depthBuf);
 	}
@@ -165,7 +165,7 @@ namespace fg
 		{
 			const Texture *ptr = *(colorAttachments+i);
 			
-			if (err = glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, ptr->getTexTarget(), ptr->getGlId(), 0)))
+			if ((err = glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, ptr->getTexTarget(), ptr->getGlId(), 0))))
 				return err;
 
 			fm::vec2s size = ptr->getRealSize();

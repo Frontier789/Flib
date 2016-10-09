@@ -19,6 +19,7 @@
 #include <FRONTIER/GL/Is_GLDataType.hpp>
 #include <FRONTIER/System/macros/C.hpp>
 #include <FRONTIER/Graphics/Mesh.hpp>
+#include <cstring>
 
 namespace fg
 {
@@ -294,15 +295,41 @@ namespace fg
 		if (mesh.bitans.size())
 			m_attrs[Assoc::Bitangent].set(&mesh.bitans[0],mesh.bitans.size());
 
-		if (mesh.indices.size())
+		if (mesh.faces.size())
 		{
-			m_drawCalls.push_back(DrawCall());
-			m_drawCalls.back().set(&mesh.indices[0],mesh.indices.size(),mesh.primitive);
+			fm::Size counts[]  = {0,0,0,0,0,0,0};
+			fm::Size offsets[] = {0,0,0,0,0,0,0};
+			
+			C(mesh.faces.size())
+			{
+				counts[int(mesh.faces[i].primitive)] += mesh.faces[i].indices.size();
+			}
+			
+			std::vector<fm::Uint32> drawIndices[7];
+			
+			C(7) drawIndices[i].resize(counts[i]);
+			
+			C(mesh.faces.size())
+			{
+				int id = int(mesh.faces[i].primitive);
+				
+				std::memcpy(&drawIndices[id][offsets[id]],&mesh.faces[i].indices[0],sizeof(mesh.faces[i].indices[0])*mesh.faces[i].indices.size());
+				
+				offsets[id] += mesh.faces[i].indices.size();
+			}
+			
+			C(7)
+				if (counts[i])
+				{
+					m_drawCalls.push_back(DrawCall());
+					m_drawCalls.back().set(&drawIndices[i][0],drawIndices[i].size(),fg::Primitive(i));				
+				}
+			
 		}
 		else
 		{
 			m_drawCalls.push_back(DrawCall());
-			m_drawCalls.back().set(0,mesh.pts.size(),mesh.primitive);
+			m_drawCalls.back().set(0,mesh.pts.size(),fg::Triangles);
 		}
 
 		return *this;

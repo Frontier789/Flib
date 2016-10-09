@@ -176,6 +176,15 @@ namespace fg
 
 		return err;
 	}
+	
+	////////////////////////////////////////////////////////////
+	fm::Result Texture::create(fm::Size width,fm::Size height,const fm::vec4 &color)
+	{
+		Image tmpImg;
+		tmpImg.create(width,height,color*255);
+		
+		return loadFromImage(tmpImg);
+	}
 
 	////////////////////////////////////////////////////////////
 	fm::Result Texture::create(const fm::vec2s &size)
@@ -184,12 +193,18 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
+	fm::Result Texture::create(const fm::vec2s &size,const fm::vec4 &color)
+	{
+		return create(size.w,size.h,color);
+	}
+
+	////////////////////////////////////////////////////////////
 	fm::Result Texture::loadFromImage(const Image &img)
 	{
 		fm::Error err;
 
 		// resize texture to needed size
-		if (err = create(img.getSize()))
+		if ((err = create(img.getSize())))
 			return err;
 		else
 		{
@@ -210,7 +225,7 @@ namespace fg
 		Image img;
 		fm::Error err;
 
-		if (err = img.loadFromFile(filename)) return err;
+		if ((err = img.loadFromFile(filename))) return err;
 
 		return loadFromImage(img);
 	}

@@ -267,7 +267,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with two attributes
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
 		///
 		/// After successfully calling this function
@@ -289,7 +289,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with three attributes
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
 		///
 		/// After successfully calling this function
@@ -313,7 +313,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with four attributes
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
 		///
 		/// After successfully calling this function
@@ -339,7 +339,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one attributes
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
 		///
 		/// After successfully calling this function
@@ -364,7 +364,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with a one dimensional attribute
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
 		///
 		/// After successfully calling this function
@@ -385,7 +385,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec2 attributes
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
 		///
 		/// After successfully calling this function
@@ -406,7 +406,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec3 attributes
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
 		///
 		/// After successfully calling this function
@@ -427,7 +427,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec4 attributes
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
 		///
 		/// After successfully calling this function
@@ -448,7 +448,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the pointer data associated with one vec4 attributes
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
 		///
 		/// After successfully calling this function
@@ -468,13 +468,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a float uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The value of the uniform
@@ -487,13 +482,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a vec2 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -507,13 +497,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a vec3 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -528,13 +513,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a vec4 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -550,13 +530,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an int uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The value of the uniform
@@ -569,13 +544,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an ivec2 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -589,13 +559,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an ivec3 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -610,13 +575,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an ivec4 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param x The x value of the uniform
@@ -632,13 +592,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an vec2 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param v The value of the uniform
@@ -651,13 +606,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an vec3 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param v The value of the uniform
@@ -670,13 +620,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an vec4 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param v The value of the uniform
@@ -689,13 +634,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an mat3 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param m The value of the uniform
@@ -709,13 +649,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an mat3 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param m The value of the uniform
@@ -729,13 +664,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an mat4 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param m The value of the uniform
@@ -749,13 +679,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an mat4 uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param m The value of the uniform
@@ -769,13 +694,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of color uniform (vec4)
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param c The value of the uniform
@@ -788,13 +708,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a sampler2D uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform
@@ -807,13 +722,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a sampler2D uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform (NULL means unbound)
@@ -826,13 +736,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a samplerCube uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform
@@ -845,13 +750,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a samplerCube uniform
 		///
-		/// If the shader program is invalid no error will be prompted
+		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
-		///
-		/// if @a name does not
-		/// correspond to an active uniform in
-		/// the shader program an error is prompted to
-		/// fg_log
 		///
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform (NULL means unbound)
@@ -860,6 +760,23 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Result setUniform(const std::string &name,const CubeTexture *tex);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of an array of uniforms
+		///
+		/// If the shader program is invalid no error will be returnes
+		/// and the shader program will not be modified
+		/// 
+		/// The elements od the input array are forwarded one by one as name + "[" + 0..N-1 + "]"
+		/// 
+		/// @param name The name of the uniform
+		/// @param value The values
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T,fm::Size N>
+		fm::Result setUniform(const std::string &name,const T (&values)[N]);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a shader program for usage

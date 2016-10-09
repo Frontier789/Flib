@@ -20,13 +20,13 @@
 
 /// @cond DOXYGEN_HIDE
 #define IS_INTEGRAL_CREATE_TRUE_CASE(TYPE)  \
-template<>                     			    \
-class Is_integral<TYPE>        			    \
-{                              				\
-public:                        				\
-	enum{                      				\
-		value = true             				\
-	};                         				\
+template<>                                  \
+class Is_integral<TYPE>                     \
+{                                           \
+public:                                     \
+    enum{                                   \
+        value = true                        \
+    };                                      \
 }
 /// @endcond
 namespace fm

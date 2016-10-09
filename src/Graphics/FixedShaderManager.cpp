@@ -26,7 +26,7 @@ namespace fg
     }
 
 	////////////////////////////////////////////////////////////
-    void FixedShaderManager::setCamera(fm::Camera *camera,
+    void FixedShaderManager::setCamera(fm::Ref<fm::Camera> camera,
 									   const std::string &projMat,
 									   const std::string &viewMat,
 									   const std::string &plyPos,

@@ -18,6 +18,7 @@
 #define FRONTIER_WILL_RESULT_IN_HPP_INCLUDED
 #include <FRONTIER/System/type_traits/Is_same.hpp>
 #include <FRONTIER/System/type_traits/Type_if.hpp>
+#include <FRONTIER/System/type_traits/YesNo.hpp>
 
 /////////////////////////////////////////////////////////////
 /// @brief Resulves to true iff evaulating expr would result in type
@@ -25,10 +26,10 @@
 /// @ingroup System
 /// 
 /////////////////////////////////////////////////////////////
-#define FRONTIER_WILL_RESULT_IN(expr,type) (sizeof(fm::priv::will_result_in_helper<type>(expr))==sizeof(fm::priv::charX2))
+#define FRONTIER_WILL_RESULT_IN(expr,type) (sizeof(fm::priv::will_result_in_helper<type>(expr))==sizeof(fm::priv::Yes))
 
 #ifndef FRONTIER_VECTOR_RETURN_TYPE_FIRST
-	#define FRONTIER_FIND_RETURN_TYPE(T1,T2,op) typename fm::Type_if<(sizeof(fm::priv::will_result_in_helper<T2>( *(T1*)0 op *(T2*)0 ))==sizeof(fm::priv::charX2)),T2,T1>::type
+	#define FRONTIER_FIND_RETURN_TYPE(T1,T2,op) typename fm::Type_if<(sizeof(fm::priv::will_result_in_helper<T2>( *(T1*)0 op *(T2*)0 ))==sizeof(fm::priv::Yes)),T2,T1>::type
 #else
 	#define FRONTIER_FIND_RETURN_TYPE(T1,T2,op) T1
 #endif
@@ -37,13 +38,8 @@ namespace fm
 {
 	namespace priv
 	{
-		class charX2
-		{
-			char a[2];
-		};
-
 		template<class EXPECTED,class T>
-		typename fm::Type_if<fm::Is_same<EXPECTED,T>::value,charX2,char>::type will_result_in_helper(const T &a);
+		typename fm::Type_if<fm::Is_same<EXPECTED,T>::value,fm::priv::Yes,fm::priv::No>::type will_result_in_helper(const T &a);
 	}
 }
 

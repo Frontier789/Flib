@@ -250,6 +250,12 @@ namespace fgui
     {
         (void)child;
     }
+    
+    ////////////////////////////////////////////////////////////
+    void Layout::setActive(bool active)
+    {
+        GuiElement::setActive(active);
+    }
 
     ////////////////////////////////////////////////////////////
     void Layout::setActive(GuiElement *element)

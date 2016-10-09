@@ -401,18 +401,3 @@ namespace fn
         return ret;
     }
 }
-
-////////////////////////////////////////////////////////////
-std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_ostream<char, std::char_traits<char> > &out, const fn::IpAddress &ip)
-{
-	return out << ip.toString().str();
-}
-
-////////////////////////////////////////////////////////////
-std::basic_istream<char, std::char_traits<char> > &operator>>(std::basic_istream<char, std::char_traits<char> > &in, fn::IpAddress &ip)
-{
-	std::string str;
-	in >> str;
-	ip = fm::String::fromUtf8(str);
-	return in;
-}

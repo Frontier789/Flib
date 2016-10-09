@@ -103,9 +103,9 @@ namespace fm
 		{
 			m_updateViewMat = false;
 
-			// m_viewMat = fm::MATRIX::lookAt(m_pos,m_pos+m_viewDir,u());
+			m_viewMat = fm::MATRIX::lookAt(m_pos,m_pos+m_viewDir,u());
 
-			m_viewMat = (fm::Quat(vec3(1,0,0),m_pitch)*fm::Quat(vec3(0,1,0),m_yaw)).getMatrix()*fm::MATRIX::translation(-m_pos);
+			// m_viewMat = (fm::Quat(vec3(1,0,0),m_pitch)*fm::Quat(vec3(0,1,0),m_yaw)).getMatrix()*fm::MATRIX::translation(-m_pos);
 		}
 
 		return m_viewMat;
@@ -266,8 +266,8 @@ namespace fm
 	{
 		m_pitch = pitch;
 
-		if (m_pitch.asDegs() >  90) m_pitch = fm::deg( 90);
-		if (m_pitch.asDegs() < -90) m_pitch = fm::deg(-90);
+		if (m_pitch.asDegs() >  89.99) m_pitch = fm::deg( 89.99);
+		if (m_pitch.asDegs() < -89.99) m_pitch = fm::deg(-89.99);
 
 		dirFromAngles();
 
@@ -275,15 +275,14 @@ namespace fm
 
 		return *this;
 	}
-
+	
 	/////////////////////////////////////////////////////////////
 	Camera::reference Camera::setYaw(const Angle &yaw)
 	{
-		double degs = yaw.asDeg();
-		double round = degs - fm::Int64(degs/360)*360.0;
+		double round = yaw.asDeg();
 
 		if (round < -180) round = 360+round;
-		if (round >  180) round = 360-round;
+		else if (round >  180) round = round-360;
 
 		m_yaw = fm::deg(round);
 
@@ -305,5 +304,32 @@ namespace fm
 	{
 		return setYaw(m_yaw+delta);
 	}
-
+	
+	/////////////////////////////////////////////////////////////
+	Camera::reference Camera::setNear(float znear)
+	{
+		m_znear = znear;
+		
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Camera::reference Camera::setFar(float zfar)
+	{
+		m_zfar = zfar;
+		
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	float Camera::getNear() const
+	{
+		return m_znear;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	float Camera::getFar() const
+	{
+		return m_zfar;
+	}
 }

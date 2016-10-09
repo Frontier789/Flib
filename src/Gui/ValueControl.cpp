@@ -28,7 +28,7 @@ namespace fgui
                                fm::Size characterSize,
                                const fm::Delegate<void,ValueControl *> &callback) : EditText(pos,size,id,parent,text,font,characterSize),
 																					m_callback(callback),
-																					m_lineNum(0)
+																					m_lineNum(size.area() ? 0 : 1)
     {
 
     }
@@ -40,7 +40,7 @@ namespace fgui
                                fm::Size characterSize,
                                const fm::Delegate<void,ValueControl *> &callback) : EditText(size,text,font,characterSize),
 																					m_callback(callback),
-																					m_lineNum(0)
+																					m_lineNum(size.area() ? 0 : 1)
     {
 
     }
@@ -79,10 +79,10 @@ namespace fgui
 	{
 		EditText::setFont(font);
 		
-		if (m_lineNum)
+		if (m_lineNum && font)
 		{
 			fg::Metrics met = font->getMetrics();
-			m_realSize.h = met.lineGap * m_lineNum;
+			m_realSize.h = met.lineGap * m_lineNum + getFrameSize().h*2;
 			m_userSize = m_realSize;
 		}
 	}
@@ -90,9 +90,29 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     void ValueControl::setSize(const fm::vec2 &size)
     {
-		m_lineNum = 0;
+		float h = size.h;
 		
-		EditText::setSize(size);
+		if (m_lineNum && getFont())
+		{
+			float lineH = getFont()->getMetrics().lineGap * m_lineNum + getFrameSize().h*2;
+			
+			if (lineH > h) h = lineH;
+		}
+    	
+		EditText::setSize(fm::vec2(size.w,h));
+    }
+    
+    ////////////////////////////////////////////////////////////
+    void ValueControl::setCharSize(fm::Size charSize)
+    {
+    	EditText::setCharSize(charSize);
+    	
+		if (m_lineNum && getFont())
+		{
+			fg::Metrics met = getFont()->getMetrics();
+			m_realSize.h = met.lineGap * m_lineNum + getFrameSize().h*2;
+			m_userSize = m_realSize;
+		}
     }
 
     ////////////////////////////////////////////////////////////

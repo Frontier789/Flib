@@ -14,65 +14,62 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_VERTEXSTATE_HPP_INCLUDED
-#define FRONTIER_VERTEXSTATE_HPP_INCLUDED
-
-#include <FRONTIER/System/macros/dont_include_inl_begin>
-#include <FRONTIER/System/NonCopyable.hpp>
-#include <FRONTIER/Graphics/GlObject.hpp>
-#include <FRONTIER/System/macros/dont_include_inl_end>
-#include <FRONTIER/System/macros/API.h>
-
-#define FRONTIER_VERTEXSTATE
-
+#ifndef FRONTIER_FLOATTEXTURE_HPP_INCLUDED
+#define FRONTIER_FLOATTEXTURE_HPP_INCLUDED
+#include <FRONTIER/Graphics/Texture.hpp>
+#define FRONTIER_FLOATTEXTURE
 
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	/// @brief Stores vertex state data on gpu
+	/// @brief A special texture that stores the data in floating point representation
 	///
+	/// @ingroup Graphics
+	/// @see fg::Texture
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API VertexState : public fg::GlObject, public fm::NonCopyable
+	class FRONTIER_API FloatTexture : public Texture
 	{
-		void init(); ///< internal initializer function
+		fm::Int32 getInternalFormat() const; ///< Internal function
 	public:
+		typedef FloatTexture &reference;
+		typedef const FloatTexture &const_reference;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		///
+		/// Leaves the texture uninitialized thus invalid
+		///
 		/////////////////////////////////////////////////////////////
-		VertexState();
+		FloatTexture();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Default destructor
+		/// @brief Copy constructor
+		///
+		/// Copies the whole texture back to client memory
+		/// and sends the data to a new texture unit
+		/// it is a S-L-O-W operation
+		///
+		/// If @a copy is invalid then the texture is leaved invalid
+		///
+		/// @param copy The texture to be copied
 		///
 		/////////////////////////////////////////////////////////////
-		~VertexState();
+		explicit FloatTexture(const FloatTexture &copy);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Bind the vertex state object for usage
+		/// @brief Create a OpenGL texture from image
+		///
+		/// This function sends the client-side data (the image)
+		/// to OpenGL
+		///
+		/// If @a img has an invalid size (w or h is 0) or its width or height
+		/// is bigger than getMaximumSize() then an error is prompted to fg_log
+		/// and the texture is leaved invalid
+		///
+		/// @param img The image to send to OpenGL
 		///
 		/////////////////////////////////////////////////////////////
-		void bind();
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Bind a vertex state object for usage
-		///
-		/// @param vao The vertex state object to be bound
-		///
-		/////////////////////////////////////////////////////////////
-		static void bind(VertexState *vao);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Check if vertex state objects are available
-		///
-		/// @return True iff vertex state objects are available
-		///
-		/////////////////////////////////////////////////////////////
-		static bool isAvailable();
+		explicit FloatTexture(const Image &img);
 	};
-
-	typedef VertexState VertexArray;
 }
-
-#endif // FRONTIER_VERTEXSTATE_HPP_INCLUDED
+#endif

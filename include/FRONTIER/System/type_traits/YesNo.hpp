@@ -14,46 +14,22 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_IS_CONTAINER_HPP_INCLUDED
-#define FRONTIER_IS_CONTAINER_HPP_INCLUDED
-#include <FRONTIER/System/type_traits/YesNo.hpp>
-#define FRONTIER_IS_CONTAINER
+#ifndef FRONTIER_YESNO_HPP_INCLUDED
+#define FRONTIER_YESNO_HPP_INCLUDED
 
 namespace fm
 {
-	/////////////////////////////////////////////////////////////
-	/// @brief Has a member enum 'value' that is true if the template parameter is a container type (has const_iterator, begin and end)
-	/// 
-	/// @ingroup System
-	/// 
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	class Is_container
+	namespace priv
 	{
-		template<class Type,Type t>
-		class SFINAE
+		class CharX2
 		{
-			
+		public:
+			char a[2];
 		};
-		
-		template<class U> 
-		static fm::priv::Yes TestBeg(SFINAE<typename U::const_iterator (U::*)() const,&U::begin>*);
-		
-		template<class U> 
-		static fm::priv::No  TestBeg(...);
-		
-		template<class U> 
-		static fm::priv::Yes TestEnd(SFINAE<typename U::const_iterator (U::*)() const,&U::end>*);
-		
-		template<class U> 
-		static fm::priv::No  TestEnd(...);
-		/// @endcond
-		
-	public:
-		enum {
-			value /** @cond DOXYGEN_HIDE */ = ((sizeof(TestBeg<T>(0)) == sizeof(fm::priv::Yes)) && (sizeof(TestEnd<T>(0)) == sizeof(fm::priv::Yes))) /** @endcond */ ///< True iff T::const_iterator is a type
-		};
-	};
+
+		typedef CharX2 Yes; ///< Used as return type for sfinae functions
+		typedef char   No;  ///< Used as return type for sfinae functions
+	}
 }
 
-#endif // FRONTIER_IS_CONTAINER_HPP_INCLUDED
+#endif // FRONTIER_YESNO_HPP_INCLUDED

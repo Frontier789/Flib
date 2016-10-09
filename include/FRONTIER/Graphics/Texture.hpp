@@ -111,11 +111,20 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create a OpenGL texture with given size and uninitialized data
-		///
+		/// 
 		/// @param size The requested size
 		///
 		/////////////////////////////////////////////////////////////
 		explicit Texture(const fm::vec2s &size);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Create a OpenGL texture with given size and uninitialized data
+		///
+		/// @param size The requested size
+		/// @param color The color to fill with
+		///
+		/////////////////////////////////////////////////////////////
+		explicit Texture(const fm::vec2s &size,const fm::vec4 &color);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -128,8 +137,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief (re)create the texture with given size
 		///
-		/// If @a width or @a height is 0 or bigger than getMaximumSize()
-		/// an error is prompted to fg_log and the texture is not modified
+		/// If width or height is 0 or bigger than getMaximumSize()
+		/// an error is returned
 		///
 		/// The content of the texture is undefined after successfully calling this
 		/// function and should be filled by fg::Texture::update or any other method
@@ -146,8 +155,23 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief (re)create the texture with given size
 		///
+		/// If width or height is 0 or bigger than getMaximumSize()
+		/// an error is returned
+		///
+		/// @param width The requested width
+		/// @param height The requested height
+		/// @param color The color to fill with
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result create(fm::Size width,fm::Size height,const fm::vec4 &color);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief (re)create the texture with given size
+		///
 		/// If size.w or size.h is 0 or bigger than getMaximumSize()
-		/// an error is prompted to fg_log and the texture is not modified
+		/// an error is returned
 		///
 		/// The content of the texture is undefined after successfully calling this
 		/// function and should be filled by fg::Texture::update or any other method
@@ -159,6 +183,20 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Result create(const fm::vec2s &size);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief (re)create the texture with given size
+		///
+		/// If size.w or size.h is 0 or bigger than getMaximumSize()
+		/// an error is returned
+		///
+		/// @param size The requested size
+		/// @param color The color to fill with
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result create(const fm::vec2s &size,const fm::vec4 &color);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create a OpenGL texture from image

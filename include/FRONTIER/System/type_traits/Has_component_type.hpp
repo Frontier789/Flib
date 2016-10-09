@@ -17,6 +17,7 @@
 #ifndef FRONTIER_HAS_COMPONENTS_HPP_INCLUDED
 #define FRONTIER_HAS_COMPONENTS_HPP_INCLUDED
 #include <FRONTIER/System/type_traits/Enable_if.hpp>
+#include <FRONTIER/System/type_traits/YesNo.hpp>
 #define FRONTIER_HAS_COMPONENTS
 
 namespace fm
@@ -31,14 +32,6 @@ namespace fm
 	class Has_ComponentsType
 	{
 		/// @cond DOXYGEN_HIDE
-		class charX2
-		{
-			char a[2];
-		};
-		
-		typedef charX2 NO;
-		typedef char   YES;
-		
 		template<class Type>
 		class SFINAE
 		{
@@ -46,15 +39,15 @@ namespace fm
 		};
 		
 		template<class U> 
-		static YES Test(SFINAE<typename U::component_type>*);
+		static fm::priv::Yes Test(SFINAE<typename U::component_type>*);
 		
 		template<class U> 
-		static NO  Test(...);
+		static fm::priv::No  Test(...);
 		/// @endcond
 		
 	public:
 		enum {
-			value /** @cond DOXYGEN_HIDE */ = sizeof(Test<T>(0)) == sizeof(YES)/** @endcond */ ///< True iff T::component_type is a type
+			value /** @cond DOXYGEN_HIDE */ = sizeof(Test<T>(0)) == sizeof(fm::priv::Yes)/** @endcond */ ///< True iff T::component_type is a type
 		};
 	};
 }

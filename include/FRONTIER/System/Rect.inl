@@ -215,20 +215,19 @@ namespace std
 {
     template<typename,typename>
     class basic_ostream;
+
     template<typename,typename>
     class basic_istream;
-    template<typename>
-    class char_traits;
 }
 
-template<class T>
-inline std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_ostream<char, std::char_traits<char> > &out, const fm::rect<T> &rct)
+template<class T,class CharT,class CharTraitT>
+inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::rect<T> &rct)
 {
 	return out<<rct.pos<<' '<<rct.size;
 }
 
-template<class T>
-inline std::basic_istream<char, std::char_traits<char> > &operator>>(std::basic_istream<char, std::char_traits<char> > &in, fm::rect<T> &rct)
+template<class T,class CharT,class CharTraitT>
+inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::rect<T> &rct)
 {
 	return in>>rct.pos>>rct.size;
 }

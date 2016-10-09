@@ -65,6 +65,7 @@ namespace fgui
         /////////////////////////////////////////////////////////////
 		virtual void setFont(fm::Ref<const fg::Font> font);
         virtual void setSize(const fm::vec2 &size);
+        virtual void setCharSize(fm::Size charSize);
         
         /////////////////////////////////////////////////////////////
         virtual bool handleEvent(const fw::Event &ev);

@@ -40,3 +40,4 @@ namespace fm
 }
 
 #endif // FRONTIER_NULLPTR_INL_INCLUDED
+

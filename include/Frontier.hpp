@@ -21,6 +21,8 @@
 #include <FRONTIER/Network.hpp>
 #include <FRONTIER/Graphics.hpp>
 #include <FRONTIER/System/Thread.hpp>
+#include <FRONTIER/System/BigUint.hpp>
+#include <FRONTIER/System/BigInt.hpp>
 
 using namespace fgui;
 using namespace fm;

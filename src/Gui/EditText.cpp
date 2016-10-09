@@ -134,7 +134,7 @@ namespace fgui
         priv::getDrawFromText(m_charsDraw,&ptr[0],m_lines.size(),
                               m_font,m_charSize,&m_tex,
                               fm::nullPtr,fm::rect2i(getViewPos(),getInnerSize()),
-                              fm::vec4::Black,m_monoSpace ? 1 : 0);
+                              m_color,m_monoSpace ? 1 : 0);
     }
 
     ////////////////////////////////////////////////////////////
@@ -199,7 +199,7 @@ namespace fgui
                     p.y = fm::min(fm::max(p.y,0.f),size.h);
 
                     pts.push_back(p);
-                    clr.push_back(fm::vec4(.75,.75,.75));
+                    clr.push_back(m_highlight);
                 }
 
                 C(3) inds.push_back(quadID*4 + i);
@@ -486,9 +486,12 @@ namespace fgui
                                              m_bckg(bckg),
                                              m_tex(fm::nullPtr),
                                              m_font(fm::nullPtr),
+                                             m_caretColor(fm::vec4::Black),
                                              m_frameSize(frameSize),
+                                             m_highlight(fm::vec4(.75,.75,.75)),
                                              m_charSize(characterSize),
                                              m_recordUndo(true),
+                                             m_color(fm::vec4::Black),
                                              m_monoSpace(true),
                                              m_editable(true),
                                              m_freeView(false),
@@ -515,9 +518,12 @@ namespace fgui
                                              m_bckg(bckg),
                                              m_tex(fm::nullPtr),
                                              m_font(fm::nullPtr),
+                                             m_caretColor(fm::vec4::Black),
                                              m_frameSize(frameSize),
+                                             m_highlight(fm::vec4(.75,.75,.75)),
                                              m_charSize(characterSize),
                                              m_recordUndo(true),
+                                             m_color(fm::vec4::Black),
                                              m_monoSpace(true),
                                              m_editable(true),
                                              m_freeView(false),
@@ -1351,7 +1357,7 @@ namespace fgui
             recalcSelect();
         }
         
-		fm::vec4 c = m_blinkCallback(m_blinkClk);
+		fm::vec4 c = m_caretColor * m_blinkCallback(m_blinkClk);
 		if (c != m_cursorColor)
 		{
 			m_cursorColor = c;
@@ -1366,15 +1372,23 @@ namespace fgui
 		
 		if (resMan)
 		{
-			fg::Font *font = (fg::Font*)resMan->get("defFont");
-			
-            if (font) 
-                setFont(font);
+			fg::Font *font = (fg::Font*)resMan->get("defTextFont");
+			if (font) setFont(font);
             
             fg::FramedSprite *bckg = (fg::FramedSprite*)resMan->get("defEditTextBckg");
-            
-            if (bckg)
-                setBackground(bckg);
+			if (bckg) setBackground(bckg);
+			
+			fm::vec4 *clr = (fm::vec4*)resMan->get("defTextColor");
+			if (clr) setColor(*clr);
+			
+			fm::vec4 *highlight = (fm::vec4*)resMan->get("defTextHighlight");
+			if (highlight) setHighlight(*highlight);
+			
+			fm::Size *charSize = (fm::Size*)resMan->get("defTextSize");
+			if (charSize) setCharSize(*charSize);
+			
+			fm::vec4 *caretColor = (fm::vec4*)resMan->get("defTextCaretColor");
+			if (caretColor) setCaretColor(*caretColor);
         }
         else
             setBackground(fm::nullPtr);
@@ -1590,6 +1604,53 @@ namespace fgui
     {
         return m_viewPos;
     }
+
+	////////////////////////////////////////////////////////////
+	void EditText::setColor(fm::vec4 clr)
+	{
+		m_color = clr;
+		m_recalcChars = true;
+	}
+	
+	////////////////////////////////////////////////////////////
+	fm::vec4 EditText::getColor() const
+	{
+		return m_color;
+	}
+
+	////////////////////////////////////////////////////////////
+	void EditText::setHighlight(fm::vec4 clr)
+	{
+		m_highlight = clr;
+		m_recalcSelect = true;
+	}
+	
+	////////////////////////////////////////////////////////////
+	fm::vec4 EditText::getHighlight() const
+	{
+		return m_highlight;
+	}
+        
+	////////////////////////////////////////////////////////////
+	void EditText::setCaretColor(fm::vec4 clr)
+	{
+		m_caretColor = clr;
+		m_recalcCarets = true;
+	}
+	
+	////////////////////////////////////////////////////////////
+	fm::vec4 EditText::getCaretColor() const
+	{
+		return m_caretColor;
+	}
+	
+	////////////////////////////////////////////////////////////
+	void EditText::setBlinkCallback(const fm::Delegate<fm::vec4,const fm::Clock &> &callback)
+	{
+		m_blinkCallback = callback;
+		m_blinkClk.restart();
+		updateCaretColors();
+	}
 
     ////////////////////////////////////////////////////////////
     void EditText::setViewPos(fm::vec2 p)
@@ -1910,7 +1971,7 @@ namespace fgui
 		
 		// return fm::vec4(0,0,0,(std::cos((ms%2000)/2000.0 * 3.14159265358979 * 2)/2 + .5));
 		
-        if (ms < 400) return fm::vec4(0,0,0,1);
+        if (ms < 400) return fm::vec4(1,1,1,1);
         
 		float t = (ms / 400.0) / 2;
 		
@@ -1921,7 +1982,7 @@ namespace fgui
 		t = 1-t;
 		t = (3 - 2*t)*t*t;
 		
-		return fm::vec4(0,0,0,t);
+		return fm::vec4(1,1,1,t);
 	}
 
     ////////////////////////////////////////////////////////////

@@ -444,24 +444,24 @@ namespace fm
 }
 
 
+
 namespace std
 {
     template<typename,typename>
     class basic_ostream;
+
     template<typename,typename>
     class basic_istream;
-    template<typename>
-    class char_traits;
 }
 
-template<class T>
-inline std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_ostream<char, std::char_traits<char> > &out, const fm::vector4<T> &vec)
+template<class T,class CharT,class CharTraitT>
+inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::vector4<T> &vec)
 {
 	return out<<vec.x<<' '<<vec.y<<' '<<vec.z<<' '<<vec.w;
 }
 
-template<class T>
-inline std::basic_istream<char, std::char_traits<char> > &operator>>(std::basic_istream<char, std::char_traits<char> > &in, fm::vector4<T> &vec)
+template<class T,class CharT,class CharTraitT>
+inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::vector4<T> &vec)
 {
 	return in>>vec.x>>vec.y>>vec.z>>vec.w;
 }

@@ -83,6 +83,7 @@ namespace fgui
         virtual void childChanged(GuiElement *child);
 
         /////////////////////////////////////////////////////////////
+        virtual void setActive(bool active);
         virtual void setActive(GuiElement *element);
         const GuiElement *getActive() const;
 

@@ -287,7 +287,9 @@ namespace fm
 		/// @brief Set the pitch of the camera
 		///
 		/// value gets clamed into [-90,90]
-		///
+		/// 
+		/// @param pitch The new pitch
+		/// 
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
@@ -297,6 +299,8 @@ namespace fm
 		/// @brief Set the yaw of the camera
 		///
 		/// value gets clamed into [-180,180]
+		/// 
+		/// @param pitch The new yaw
 		///
 		/// @return Reference to itself
 		///
@@ -307,6 +311,8 @@ namespace fm
 		/// @brief Add to the pitch of the camera
 		///
 		/// the resulting value gets clamed into [-90,90]
+		/// 
+		/// @param delta The difference to add
 		///
 		/// @return Reference to itself
 		///
@@ -317,11 +323,49 @@ namespace fm
 		/// @brief Add to the yaw of the camera
 		///
 		/// the resulting value gets clamed into [-180,180]
+		/// 
+		/// @param delta The difference to add
 		///
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
 		reference addYaw(const Angle &delta);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the near clipping plane distance
+		/// 
+		/// @param znear The new near value
+		/// 
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference setNear(float znear);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the far clipping plane distance
+		/// 
+		/// @param zfar The new near value
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference setFar(float zfar);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the current near clipping plane
+		///
+		/// @return The current near value
+		///
+		/////////////////////////////////////////////////////////////
+		float getNear() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the current far clipping plane
+		///
+		/// @return The current far value
+		///
+		/////////////////////////////////////////////////////////////
+		float getFar() const;
 	};
 }
 

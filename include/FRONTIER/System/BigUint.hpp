@@ -17,7 +17,7 @@
 #ifndef FRONTIER_BIGUINT_HPP_INCLUDED
 #define FRONTIER_BIGUINT_HPP_INCLUDED
 #include <FRONTIER/System/macros/TYPES.hpp>
-#define FRONTIER_BIGINT
+#define FRONTIER_BIGUINT
 #include <string>
 
 namespace fm
@@ -101,6 +101,13 @@ namespace fm
 		const BaseUint &getLoUint() const;
 		const BaseUint &getHiUint() const;
 	};
+	
+	//////////////////////////////////////////////////////////////////////////
+	namespace priv
+	{
+		template <typename T>
+		void divideU(BigUint<T> n,BigUint<T> d,BigUint<T> &q,BigUint<T> &rem);
+	}
 	
 	//////////////////////////////////////////////////////////////////////////
 	typedef BigUint<Uint64> Uint128;

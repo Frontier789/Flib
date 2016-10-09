@@ -27,6 +27,7 @@
 
 #define FRONTIER_MESH
 #include <vector>
+#include <deque>
 
 namespace fg
 {
@@ -43,16 +44,24 @@ namespace fg
 		std::vector<fm::vec3> norms;
 		std::vector<fm::vec3> tans;
 		std::vector<fm::vec3> bitans;
-
-		std::vector<fm::Uint32> indices;
-		fg::Primitive primitive;
+		
+		class Face
+		{
+		public:
+			std::vector<fm::Uint32> indices;
+			fg::Primitive primitive;
+			
+			Face(fg::Primitive primitive = fg::Triangles,fm::Size indexCount = 0);
+		};
+		
+		std::deque<Face> faces;
 		
 		Mesh();
 		
 		Mesh copy();
 		reference swap(Mesh &target);
 
-		void calcNormals();
+		void calcNormals(bool joinIdenticalVertices = true);
 		void calcTangents();
 		void disjoinFaces();
 

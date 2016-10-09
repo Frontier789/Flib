@@ -28,13 +28,13 @@ namespace fm
 		{
 			T negBit = (T(1) << T(sizeof(T)*8-1));
 			
-			bool nNeg = (n.getHiUint() & negBit);
-			bool dNeg = (d.getHiUint() & negBit);
+			bool nNeg = (n.getHiUint() & negBit) != 0;
+			bool dNeg = (d.getHiUint() & negBit) != 0;
 			
 			if (nNeg) n = -n;
 			if (dNeg) d = -d;
 			
-			fm::priv::divide(BigUint<T>(n),BigUint<T>(d),*((BigUint<T>*)&q),*((BigUint<T>*)&rem));
+			fm::priv::divideU(BigUint<T>(n),BigUint<T>(d),*((BigUint<T>*)&q),*((BigUint<T>*)&rem));
 			
 			if ((nNeg && !dNeg) || (!nNeg && dNeg)) q = -q;
 			if (nNeg) rem = -rem;
@@ -545,27 +545,26 @@ namespace std
 {
     template<typename,typename>
     class basic_ostream;
+    
     template<typename,typename>
     class basic_istream;
-    template<typename>
-    class char_traits;
 }
 
 ////////////////////////////////////////////////////////////
-template<class BaseUint>
-inline std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_ostream<char, std::char_traits<char> > &out, const fm::BigInt<BaseUint> &bi)
+template<class BaseUint,class CharT,class CharTraitT>
+inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::BigInt<BaseUint> &bi)
 {
 	return out << bi.toString();
 }
 
 ////////////////////////////////////////////////////////////
-template<class BaseUint>
-inline std::basic_istream<char, std::char_traits<char> > &operator>>(std::basic_istream<char, std::char_traits<char> > &in, fm::BigInt<BaseUint> &bi)
+template<class BaseUint,class CharT,class CharTraitT>
+inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::BigInt<BaseUint> &bi)
 {
 	std::string str;
 	in>>str;
 	
-	bi = BigInt<BaseUint>(str);
+	bi = fm::BigInt<BaseUint>(str);
 	
 	return in;
 }

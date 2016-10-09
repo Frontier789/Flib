@@ -215,7 +215,7 @@ namespace fg
     {
 		fm::Error err;
 		
-		if (err = prepareDraw(data)) return err;
+		if ((err = prepareDraw(data))) return err;
 
         C(indexCount)
         {

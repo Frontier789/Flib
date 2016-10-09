@@ -19,6 +19,7 @@
 #include <FRONTIER/System/type_traits/Is_integral.hpp>
 #include <FRONTIER/System/type_traits/Enable_if.hpp>
 #include <FRONTIER/System/type_traits/Is_enum.hpp>
+#include <FRONTIER/System/type_traits/YesNo.hpp>
 #define FRONTIER_HAS_COMPONENTS
 
 namespace fm
@@ -33,25 +34,17 @@ namespace fm
 	class Has_components
 	{
 		/// @cond DOXYGEN_HIDE
-		class charX2
-		{
-			char a[2];
-		};
-		
-		typedef charX2 NO;
-		typedef char   YES;
-		
 		template<class U> 
 		static typename fm::Enable_if<fm::Is_enum<typename U::components>::value || 
-									  fm::Is_integral<typename U::components>,YES>::type Test(void*);
+									  fm::Is_integral<typename U::components>,fm::priv::Yes>::type Test(void*);
 		
 		template<class U> 
-		static NO Test(...);
+		static fm::priv::No Test(...);
 		/// @endcond
 		
 	public:
 		enum {
-			value /** @cond DOXYGEN_HIDE */ = sizeof(Test<T>(0)) == sizeof(YES)/** @endcond */ ///< True iff T::components is a enum or a integral type
+			value /** @cond DOXYGEN_HIDE */ = sizeof(Test<T>(0)) == sizeof(fm::priv::Yes)/** @endcond */ ///< True iff T::components is a enum or a integral type
 		};
 	};
 }

@@ -24,7 +24,7 @@ namespace fm
 	namespace priv 
 	{
 		template <typename T>
-		void divide(BigUint<T> n,BigUint<T> d,BigUint<T> &q,BigUint<T> &rem) 
+		void divideU(BigUint<T> n,BigUint<T> d,BigUint<T> &q,BigUint<T> &rem) 
 		{
 			if (d == 0)
 			{
@@ -269,7 +269,7 @@ namespace fm
 		while (cpy.lo != 0 || cpy.hi != 0) 
     	{
 			BigUint<BaseUint> rem;
-			priv::divide(cpy, BigUint<BaseUint>(base), cpy, rem);
+			priv::divideU(cpy, BigUint<BaseUint>(base), cpy, rem);
 			
 			int index = priv::ToInt<BigUint<BaseUint> >::get(rem);
 			
@@ -453,7 +453,7 @@ namespace fm
 	BigUint<BaseUint> &BigUint<BaseUint>::operator/=(const BigUint &bi) 
 	{
 		BigUint<BaseUint> rem;
-		priv::divide(*this, bi, *this, rem);
+		priv::divideU(*this, bi, *this, rem);
 		
 		return *this;
     }
@@ -463,7 +463,7 @@ namespace fm
 	BigUint<BaseUint> &BigUint<BaseUint>::operator%=(const BigUint &b) 
 	{
 		BigUint<BaseUint> q;
-		priv::divide(*this, b, q, *this);
+		priv::divideU(*this, b, q, *this);
 		return *this;
     }
 
@@ -650,27 +650,26 @@ namespace std
 {
     template<typename,typename>
     class basic_ostream;
+    
     template<typename,typename>
     class basic_istream;
-    template<typename>
-    class char_traits;
 }
 
 ////////////////////////////////////////////////////////////
-template<class BaseUint>
-inline std::basic_ostream<char, std::char_traits<char> > &operator<<(std::basic_ostream<char, std::char_traits<char> > &out, const fm::BigUint<BaseUint> &bi)
+template<class BaseUint,class CharT,class CharTraitT>
+inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::BigUint<BaseUint> &bi)
 {
 	return out << bi.toString();
 }
 
 ////////////////////////////////////////////////////////////
-template<class BaseUint>
-inline std::basic_istream<char, std::char_traits<char> > &operator>>(std::basic_istream<char, std::char_traits<char> > &in, fm::BigUint<BaseUint> &bi)
+template<class BaseUint,class CharT,class CharTraitT>
+inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::BigUint<BaseUint> &bi)
 {
 	std::string str;
 	in>>str;
 	
-	bi = BigInt<BaseUint>(str);
+	bi = fm::BigInt<BaseUint>(str);
 	
 	return in;
 }
