@@ -18,6 +18,7 @@
 #define FRONTIER_WIDGET_HPP_INCLUDED
 #include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/Gui/GuiElement.hpp>
+#include <FRONTIER/Window/Event.hpp>
 #define FRONTIER_WIDGET
 
 namespace fgui
@@ -28,6 +29,8 @@ namespace fgui
         bool m_mouseIn;
         bool m_pressed;
 		bool m_pressedRight;
+		fw::Mouse::Cursor m_cursor;
+		
     public:
         ////////////////////////////////////////////////////////////
         fm::Delegate<void,Widget &,fm::vec2> onEnter;
@@ -72,6 +75,10 @@ namespace fgui
         ////////////////////////////////////////////////////////////
 		bool getPressed() const;
 		bool getMouseIn() const;
+        
+        ////////////////////////////////////////////////////////////
+		virtual void setCursor(fw::Mouse::Cursor cursor);
+		fw::Mouse::Cursor getCursor() const;
 
         ////////////////////////////////////////////////////////////
         virtual bool contains(fm::vec2 p) const;

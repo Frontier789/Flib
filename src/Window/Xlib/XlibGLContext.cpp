@@ -83,6 +83,7 @@ namespace fw
 		#endif
 		
 		std::deque< ::Window> xwins;
+		std::deque< fw::Mouse::Cursor> xCurrCursors;
 		
 		void regXWin(::Window win)
 		{
@@ -91,6 +92,7 @@ namespace fw
 			#endif
 			
 			xwins.push_back(win);
+			xCurrCursors.push_back(fw::Mouse::Arrow);
 			
 			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 			priv::globXwinMutex.unLock();
@@ -108,6 +110,10 @@ namespace fw
 				{
 					xwins[i] = xwins.back();
 					xwins.pop_back();
+					
+					xCurrCursors[i] = xCurrCursors.back();
+					xCurrCursors.pop_back();
+					
 					break;
 				}
 			
@@ -125,7 +131,7 @@ namespace fw
 			CurHolder() : disp(0)
 			{
 				C(sizeof(curs)/sizeof(*curs))
-					curs[i] = None;
+					curs[i] = ::None;
 			}
 			
 			~CurHolder()
@@ -185,7 +191,12 @@ namespace fw
 		
 		if (priv::globDisp)
 			C(priv::xwins.size())
-				XDefineCursor(priv::globDisp,priv::xwins[i],priv::curHolder.fetch(cursor));
+				if (priv::xCurrCursors[i] != cursor)
+				{
+					priv::xCurrCursors[i] = cursor;
+					
+					XDefineCursor(priv::globDisp,priv::xwins[i],priv::curHolder.fetch(cursor));
+				}
 		
 		
 		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES

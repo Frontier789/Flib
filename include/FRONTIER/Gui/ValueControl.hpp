@@ -81,7 +81,7 @@ namespace fgui
         virtual void onDataChange();
 
         /////////////////////////////////////////////////////////////
-        const fm::String &getDataString() const;
+        fm::String getDataString() const;
     };
 }
 

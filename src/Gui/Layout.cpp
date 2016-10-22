@@ -76,7 +76,7 @@ namespace fgui
 
         C(elementCount())
         {
-            GuiElement *e = elementAt(i);
+			GuiElement *e = elementAt(elementCount() - 1 - i);
             if (e && e != m_active)
                 if (e->handleEvent(ev))
                     return true;

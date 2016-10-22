@@ -30,7 +30,8 @@ namespace fgui
                    bool enabled) : GuiElement(pos,size,id,parent,enabled),
                                    m_mouseIn(false),
                                    m_pressed(false),
-                                   m_pressedRight(false)
+                                   m_pressedRight(false),
+                                   m_cursor(fw::Mouse::Arrow)
     {
 
     }
@@ -42,7 +43,8 @@ namespace fgui
                    bool enabled) : GuiElement(fm::vec2(),size,id,parent,enabled),
                                    m_mouseIn(false),
                                    m_pressed(false),
-                                   m_pressedRight(false)
+                                   m_pressedRight(false),
+                                   m_cursor(fw::Mouse::Arrow)
     {
 
     }
@@ -53,7 +55,8 @@ namespace fgui
                    bool enabled) : GuiElement(id,parent,enabled),
                                    m_mouseIn(false),
                                    m_pressed(false),
-                                   m_pressedRight(false)
+                                   m_pressedRight(false),
+                                   m_cursor(fw::Mouse::Arrow)
     {
 
     }
@@ -128,6 +131,10 @@ namespace fgui
 
                 return true;
             }
+            else
+            {
+				setActive(false);
+            }
 
             return false;
         }
@@ -167,6 +174,8 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     void Widget::handleEnter(fm::vec2 p)
     {
+    	fw::Mouse::setCursor(getCursor());
+    	
 		// if (getId() != "unnamed") cout << "Widget::handleEnter w/ id = " << getId().str() << endl;
         onEnter(*this,p);
     }
@@ -181,6 +190,9 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     void Widget::handleHover(fm::vec2 p)
     {
+		if (isActive() || contains(p))
+			fw::Mouse::setCursor(getCursor());
+    	
         onHover(*this,p);
     }
 
@@ -208,6 +220,18 @@ namespace fgui
 	bool Widget::getMouseIn() const
 	{
 		return m_mouseIn;
+	}
+	
+	////////////////////////////////////////////////////////////
+	void Widget::setCursor(fw::Mouse::Cursor cursor)
+	{
+		m_cursor = cursor;
+	}
+	
+	////////////////////////////////////////////////////////////
+	fw::Mouse::Cursor Widget::getCursor() const
+	{
+		return m_cursor;
 	}
 
     ////////////////////////////////////////////////////////////

@@ -505,6 +505,7 @@ namespace fgui
     {
         setFont(font);
         setText(text);
+        Widget::setCursor(fw::Mouse::IBeam);
     }
 
     ////////////////////////////////////////////////////////////
@@ -538,6 +539,7 @@ namespace fgui
     {
         setFont(font);
         setText(text);
+        Widget::setCursor(fw::Mouse::IBeam);
     }
 
     ////////////////////////////////////////////////////////////
@@ -1742,25 +1744,16 @@ namespace fgui
         float dUp   = m_metrics.lineGap;
         float dDown = m_metrics.lineGap*2;
 
-        if (p.y + dDown > v.y + size.h) v.y = p.y + dDown - size.h;
-		else if (p.y - dUp   < v.y)          v.y = p.y - dUp;
+		if      (p.y - dUp  <= v.y)          v.y = p.y - dUp;
+		else if (p.y + dDown > v.y + size.h) v.y = p.y + dDown - size.h;
+		if      (p.y - dUp  <= v.y)          v.y = p.y - dUp;
 
-        if (p.x + spaceW*1.5 > v.x + size.w) v.x = p.x + spaceW*1.5 - size.w;
-		else if (p.x - spaceW     < v.x)          v.x = p.x - spaceW;
+		if (p.x + spaceW*1.5  > v.x + size.w) v.x = p.x + spaceW*1.5 - size.w;
+		else if (p.x - spaceW < v.x)          v.x = p.x - spaceW;
 		
 		p.x = fm::max<float>(p.x,0);
 		p.y = fm::max<float>(p.y,0);
-/*
-        if (v.h <= 2*m_metrics.lineGap)
-            dUp   = 0,
-            dDown = m_metrics.lineGap;
 
-        if (p.y - dUp   < v.y)          v.y = p.y - dUp;
-        if (p.y + dDown > v.y + size.h) v.y = p.y + dDown - size.h;
-
-        if (p.x - spaceW     < v.x)          v.x = p.x - spaceW;
-        if (p.x + spaceW*1.5 > v.x + size.w) v.x = p.x + spaceW*1.5 - size.w;
-*/
         setViewPos(v);
     }
 
@@ -1971,9 +1964,9 @@ namespace fgui
 		
 		// return fm::vec4(0,0,0,(std::cos((ms%2000)/2000.0 * 3.14159265358979 * 2)/2 + .5));
 		
-        if (ms < 400) return fm::vec4(1,1,1,1);
+        if (ms < 420) return fm::vec4(1,1,1,1);
         
-		float t = (ms / 400.0) / 2;
+		float t = (ms / 420.0) / 2;
 		
 		t = t - fm::Uint64(t);
 		t = t*2;

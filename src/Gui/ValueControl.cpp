@@ -160,11 +160,12 @@ namespace fgui
     ////////////////////////////////////////////////////////////
     bool ValueControl::handleKey(fw::KeyboardEvent key)
     {
-        if (key.code == fw::Keyboard::Enter)
+		if (key.code == fw::Keyboard::Enter && !key.ctrl)
         {
-            if (isTextValid(getDataString()))
+            fm::String str = getDataString();
+            
+            if (isTextValid(str))
             {
-                fm::String str = getDataString();
                 correctText(str);
                 setText(str);
 
@@ -200,8 +201,17 @@ namespace fgui
     }
 
     ////////////////////////////////////////////////////////////
-    const fm::String &ValueControl::getDataString() const
+    fm::String ValueControl::getDataString() const
     {
-        return getLine(0);
+		fm::String ret;
+		
+		C(getLineCount())
+		{
+			if (i) ret += '\n';
+			
+			ret += getLine(i);
+		}
+		
+        return ret;
     }
 }
