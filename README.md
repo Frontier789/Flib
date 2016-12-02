@@ -1,5 +1,5 @@
 <h1>Flib v0.8</h1>
-<p align="center"><b>====<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Red_circle.svg/200px-Red_circle.svg.png" width="20"/>====</b></p>
+<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="15"/>====</b></p>
 <h2>Description</h2>
 
 Classes for managing windows and creating OpenGL contexts (for Windows and Linux)
