@@ -26,7 +26,7 @@
 #include <FRONTIER/System/util/dont_include_inl_end>
 
 #include <type_traits>
-#include <cstdint>
+#include <cstddef>
 
 #define FRONTIER_MATRIX
 namespace fm

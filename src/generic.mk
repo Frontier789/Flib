@@ -1,9 +1,10 @@
 F_CURRENT_MODULE_A=$(F_O_FILES_DIR)/libf-$(call F_LOWERCASE,$(F_CURRENT_MODULE)).a
 
 F_CPP_FILES=$(wildcard $(F_CURRENT_MODULE)/*.cpp)
-F_STATIC_O_FILES=$(F_O_FILES_DIR)/static/$(F_CURRENT_MODULE)/$(notdir $(F_CPP_FILES:.cpp=.o))
+F_CURRENT_STATIC_O_FILES=$(F_O_FILES_DIR)/static/$(F_CURRENT_MODULE)/$(notdir $(F_CPP_FILES:.cpp=.o))
 
-all: $(F_CURRENT_MODULE_A)
+F_STATIC_O_FILES+=$(F_CURRENT_STATIC_O_FILES)
+F_MODULE_A_FILES+=$(F_CURRENT_MODULE_A)
 
 ####  ####  ####  #####  ####  ####  ####
 #                                       #
@@ -11,7 +12,7 @@ all: $(F_CURRENT_MODULE_A)
 #                                       #
 ####  ####  ####  #####  ####  ####  ####
 
-$(F_CURRENT_MODULE_A): $(F_STATIC_O_FILES)
+$(F_CURRENT_MODULE_A): $(F_CURRENT_STATIC_O_FILES)
 	$(AR) $@ $^
 
 ####  ####  ####  #####  ####  ####  ####
