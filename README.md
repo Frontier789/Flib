@@ -1,5 +1,5 @@
 <h1>Flib v0.8</h1>
-<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="15"/>====</b></p>
+<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Description</h2>
 
 Classes for managing windows and creating OpenGL contexts (for Windows and Linux)
@@ -7,7 +7,7 @@ Automatic OpenGL functions loading
 Wrapper classes for OpenGL objects (Texture, FrameBuffer, Shader etc)
 Templated math classes (Vector, Matrix)
 
-<p align="center"><b>====:o:====</b></p>
+<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Compilation</h2>
 
 cd to /src
@@ -18,7 +18,7 @@ cd to /src
 |  Linux  | make -f makefile.linux |
 | Android |make -f makefile.android|
 
-<p align="center"><b>====:o:====</b></p>
+<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Citation</h2>
 The source uses two public domain libraries and a GPLv2 library:
 <ol>
@@ -42,4 +42,4 @@ The source uses two public domain libraries and a GPLv2 library:
 		</ul>
 	</li>
 </ol>
-<p align="center"><b>====:o:====</b></p>
+<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
