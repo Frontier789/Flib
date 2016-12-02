@@ -1,5 +1,6 @@
 include $(dir $(lastword $(MAKEFILE_LIST)))/common.mk
 
+# platform dependent libs
 ifeq ($(F_PLATFORM),Windows)
  F_LINK_LIBS+=-lOpenGL32 -lgdi32 -lwinmm -lws2_32
  F_O_DIR=libW
@@ -17,22 +18,27 @@ endif
 
 F_LINK_LIBS:=-lf $(F_LINK_LIBS)
 
+# linker flags
 ifeq ($(LDFLAGS),)
  LDFLAGS=-s
 endif
 
+# compile falgs
 ifeq ($(CXXFLAGS),)
  CXXFLAGS=-std=gnu++11 -O3 -pedantic -Werror
 endif
 
+# executable name
 ifeq ($(EXEC),)
  EXEC=exec
 endif
 
+# path to flib root
 ifeq ($(FPATH),)
  FPATH=..
 endif
 
+# cpp files to compile
 ifeq ($(F_CPP_FILES),)
  F_CPP_FILES=$(notdir $(wildcard *.cpp))
 endif
@@ -46,7 +52,7 @@ $(TARGET): $(O_FILES) $(FPATH)/$(F_LIB_DIR_NAME)/libf.a
 	$(CXX) $(LDFLAGS) -L $(FPATH)/$(F_LIB_DIR_NAME) -o $(TARGET) $(O_FILES) $(LIBS)
 
 $(F_O_DIR)/%.o: %.cpp | $(F_O_DIR)
-	$(CXX) $(CXXFLAGS) -I $(FPATH)/include -c $< -o $@
+	$(CXX) $(CXXFLAGS) -I $(FPATH)/include -c $< -o $@ $(F_LINK_LIBS)
 
 $(F_O_DIR):
 	$(MKDIR) $(F_O_DIR)

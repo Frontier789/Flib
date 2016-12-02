@@ -58,6 +58,13 @@ namespace fm
 			m_data[x][y] = *((const T*)data+x*H+y);
 	}
 	
+	////////////////////////////////////////////////////////////
+	template<size_t W,size_t H,class T>
+	inline matrix<W,H,T>::matrix(const T &diagonal,const T &rest)
+	{
+		reset(diagonal,rest);
+	}
+	
 	/// constructors /////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
 	inline matrix<W,H,T>::matrix(const matrix<W,H,T> &mat)
@@ -125,17 +132,32 @@ namespace fm
 	inline typename matrix<W,H,T>::reference matrix<W,H,T>::reset()
 	{
 		Cx(W)Cy(H)
-			m_data[x][y] = T(x == y);
+			m_data[x][y] = T(int(x == y));
 			
 		return *this;
 	}
 
 	////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
-	inline typename matrix<W,H,T>::reference matrix<W,H,T>::reset(T all)
+	inline typename matrix<W,H,T>::reference matrix<W,H,T>::reset(const T &all)
 	{
 		Cx(W)Cy(H)
 			m_data[x][y] = all;
+			
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////
+	template<size_t W,size_t H,class T>
+	inline typename matrix<W,H,T>::reference matrix<W,H,T>::reset(const T &diag,const T &rest)
+	{
+		Cx(W)Cy(H)
+		{
+			if (x == y)
+				m_data[x][y] = diag;
+			else
+				m_data[x][y] = rest;
+		}
 			
 		return *this;
 	}
@@ -178,7 +200,7 @@ namespace fm
 	{
 		matrix<W2,H2,T2> ret;
 		Cx(W)Cy(H)
-			ret[x][y] = (x<W2 && y<H2) ? T2(m_data[x][y]) : T2(x == y);
+			ret[x][y] = (x<W2 && y<H2) ? T2(m_data[x][y]) : T2(int(x == y));
 			
 		return ret;
 	}
@@ -481,10 +503,10 @@ namespace fm
 	template<size_t W,size_t H,class T,class T2>
 	inline auto operator+(const matrix<W,H,T> &left,const matrix<W,H,T2> &right) -> matrix<W,H,decltype(left[0][0]+right[0][0])>
 	{
-		matrix<W,H,decltype(left[0][0]+right[0][0])> ret;
+		matrix<W,H,decltype(left[0][0]+right[0][0])> ret = left;
 		
 		Cx(W)Cy(H)
-			ret[x][y] = left[x][y] + right[x][y];
+			ret[x][y] = ret[x][y] + right[x][y];
 		
 		return ret;
 	}
@@ -493,10 +515,10 @@ namespace fm
 	template<size_t W,size_t H,class T,class T2>
 	inline auto operator-(const matrix<W,H,T> &left,const matrix<W,H,T2> &right) -> matrix<W,H,decltype(left[0][0]-right[0][0])>
 	{
-		matrix<W,H,decltype(left[0][0]-right[0][0])> ret;
+		matrix<W,H,decltype(left[0][0]-right[0][0])> ret = left;
 		
 		Cx(W)Cy(H)
-			ret[x][y] = left[x][y] - right[x][y];
+			ret[x][y] = ret[x][y] - right[x][y];
 		
 		return ret;
 	}
@@ -505,10 +527,10 @@ namespace fm
 	template<size_t W,size_t H,class T>
 	inline auto operator-(const matrix<W,H,T> &mat) -> matrix<W,H,decltype(-mat[0][0])>
 	{
-		matrix<W,H,decltype(-mat[0][0])> ret;
+		matrix<W,H,decltype(-mat[0][0])> ret = mat;
 		
 		Cx(W)Cy(H)
-			ret[x][y] = -mat[x][y];
+			ret[x][y] = -ret[x][y];
 		
 		return ret;
 	}
@@ -574,6 +596,7 @@ namespace fm
 		return false;
 	}
 	
+	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	auto operator*(const matrix<2,2,T> &mat,const vector2<T2> &vec) -> vector2<decltype(mat[0][0]*vec[0])>
@@ -600,6 +623,35 @@ namespace fm
 												   mat[2][0]*vec.x + mat[2][1]*vec.y + mat[2][2]*vec.z + mat[2][3]*vec.w,
 												   mat[3][0]*vec.x + mat[3][1]*vec.y + mat[3][2]*vec.z + mat[3][3]*vec.w);
 	}
+	
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const vector2<T2> &vec,const matrix<2,2,T> &mat) -> vector2<decltype(vec[0]*mat[0][0])>
+	{
+		return vector2<decltype(mat[0][0]*vec[0])>(mat[0][0]*vec.x + mat[0][1]*vec.x,
+												   mat[1][0]*vec.y + mat[1][1]*vec.y);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const vector3<T2> &vec,const matrix<3,3,T> &mat) -> vector3<decltype(vec[0]*mat[0][0])>
+	{
+		return vector3<decltype(mat[0][0]*vec[0])>(mat[0][0]*vec.x + mat[0][1]*vec.x + mat[0][2]*vec.x,
+												   mat[1][0]*vec.y + mat[1][1]*vec.y + mat[1][2]*vec.y,
+												   mat[2][0]*vec.z + mat[2][1]*vec.z + mat[2][2]*vec.z);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const vector4<T2> &vec,const matrix<4,4,T> &mat) -> vector4<decltype(vec[0]*mat[0][0])>
+	{
+		return vector4<decltype(mat[0][0]*vec[0])>(mat[0][0]*vec.x + mat[0][1]*vec.x + mat[0][2]*vec.x + mat[0][3]*vec.x,
+												   mat[1][0]*vec.y + mat[1][1]*vec.y + mat[1][2]*vec.y + mat[1][3]*vec.y,
+												   mat[2][0]*vec.z + mat[2][1]*vec.z + mat[2][2]*vec.z + mat[2][3]*vec.z,
+												   mat[3][0]*vec.w + mat[3][1]*vec.w + mat[3][2]*vec.w + mat[3][3]*vec.w);
+	}
+	
 
 	/// square matrix methods /////////////////////////////////////////////////////////
 	namespace MATRIX

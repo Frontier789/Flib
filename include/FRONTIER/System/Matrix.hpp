@@ -89,6 +89,14 @@ namespace fm
 		matrix(const T (&data)[W][H]);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Default constructor
+		///
+		/// Initializes matrix to have @a diagonal on the main diagonal and @a rest on the rest
+		///
+		/////////////////////////////////////////////////////////////
+		matrix(const T &diagonal,const T &rest);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Copy constructor
 		///
 		/// @param mat The matrix to be copied
@@ -193,12 +201,28 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Set all fields to @a all
 		///
-		/// Sets value at [i][j] to all
-		///
+		/// Sets value at [i][j] to @a all
+		/// 
+		/// @param all The value to use
+		/// 
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference reset(T all);
+		reference reset(const T &all);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set matrix to <a href="http://en.wikipedia.org/wiki/Identity_matrix">identity</a>
+		///
+		/// Sets value at [i][i] to @a diag
+		/// Sets value at [i][j] if i!=j to @a rest
+		/// 
+		/// @param diag The value to be present on the main diagonal
+		/// @param rest The value to be present outside the main diagonal
+		/// 
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference reset(const T &diag,const T &rest);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Flips the matrix around its main diagonal ( <a href="http://en.wikipedia.org/wiki/Transpose_matrix">matrix transpose</a>)
