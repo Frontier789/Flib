@@ -1,6 +1,5 @@
 #include <Frontier.hpp>
 #include <iostream>
-#include <iomanip>
 
 using namespace std;
 
@@ -44,8 +43,8 @@ int main()
 	
 	cout << "k = " << endl << k << endl << endl;
 	cout << "k^-1 = " << endl << k.inverse() << endl << endl;
-	cout << "(k^-1)*k = " << endl << fixed << k.inverse()*k << defaultfloat << endl << endl;
-	
+	cout << "(k^-1)*k = " << endl << fixed << k.inverse()*k << endl << endl;
+	cout.unsetf(ios_base::fixed);
 	
 	cout << "what about a matrix of strings?" << endl;
 	
