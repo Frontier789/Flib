@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_LAMBDADELEGATE_INL_INCLUDED
 #define FRONTIER_LAMBDADELEGATE_INL_INCLUDED
+#include <type_traits>
 
 namespace fm
 {
@@ -90,6 +91,13 @@ namespace fm
 							  sizeof(test<LambdaT,FirstArg,ArgsTail...>( lambda,firstArg,argsTail... )) == sizeof(YES)
 							 >::template call<LambdaT,R,FirstArg,ArgsTail...>(lambda,firstArg,argsTail...);
 			}
+			
+			static inline R call(LambdaT *lambda,FirstArg firstArg,ArgsTail... argsTail)
+			{
+				CallForwarder<
+							  sizeof(test<LambdaT,FirstArg,ArgsTail...>( *lambda,firstArg,argsTail... )) == sizeof(YES)
+							 >::template call<LambdaT,R,FirstArg,ArgsTail...>(*lambda,firstArg,argsTail...);
+			}
 		};
 	}
 	
@@ -97,7 +105,8 @@ namespace fm
 	template<class LambdaT,class R,class... Args>
 	R LambdaDelegate<LambdaT,R,Args...>::call(Args... callArgs) const
 	{
-		return (R)priv::LambdaCaller<LambdaT,R,Args...>::call(m_lambda,callArgs...);
+		typedef typename std::remove_pointer<LambdaT>::type RealLambda;
+		return (R)priv::LambdaCaller<RealLambda,R,Args...>::call(m_lambda,callArgs...);
 	}
 	
 	/////////////////////////////////////////////////////////////

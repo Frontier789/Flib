@@ -49,10 +49,10 @@ O_FILES=$(addprefix $(F_O_DIR)/,$(notdir $(F_CPP_FILES:.cpp=.o)))
 all: $(TARGET)
 
 $(TARGET): $(O_FILES) $(FPATH)/$(F_LIB_DIR_NAME)/libf.a
-	$(CXX) $(LDFLAGS) -L $(FPATH)/$(F_LIB_DIR_NAME) -o $(TARGET) $(O_FILES) $(LIBS)
+	$(CXX) $(LDFLAGS) -L $(FPATH)/$(F_LIB_DIR_NAME) -o $(TARGET) $(O_FILES) $(F_LINK_LIBS)
 
 $(F_O_DIR)/%.o: %.cpp | $(F_O_DIR)
-	$(CXX) $(CXXFLAGS) -I $(FPATH)/include -c $< -o $@ $(F_LINK_LIBS)
+	$(CXX) $(CXXFLAGS) -I $(FPATH)/include -c $< -o $@ 
 
 $(F_O_DIR):
 	$(MKDIR) $(F_O_DIR)
