@@ -110,7 +110,7 @@
 
 	#endif
 
-	#ifndef FRONTIER_OS_UNKNOWN
+	#ifndef FRONTIER_OS_KNOWN
 		#define FRONTIER_OS_UNKNOWN
 	#endif
 
