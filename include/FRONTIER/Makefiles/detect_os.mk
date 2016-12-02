@@ -3,6 +3,8 @@ ifeq ($(OS),Windows_NT)
  F_LIB_DIR_NAME=libWin
  F_PLATFORM=Windows
  F_EXEC_EXT=.exe
+ F_RM=cmd //C del //Q //F
+ F_RRM=cmd //C rmdir //Q //S
 else
  
  #Check for android specific variables
@@ -10,10 +12,14 @@ else
   F_LIB_DIR_NAME=libAnd
   F_PLATFORM=Android
   F_EXEC_EXT=
+  F_RM = rm -f
+  F_RRM = rm -f -r
  else
   #assume plain linux w/ xlib and posix
   F_LIB_DIR_NAME=libLinux
   F_PLATFORM=Linux
   F_EXEC_EXT=
+  F_RM = rm -f
+  F_RRM = rm -f -r
  endif
 endif

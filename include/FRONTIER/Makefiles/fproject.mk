@@ -37,7 +37,7 @@ ifeq ($(F_CPP_FILES),)
  F_CPP_FILES=$(notdir $(wildcard *.cpp))
 endif
 
-TARGET=$(EXEC)
+TARGET=$(EXEC)$(F_EXEC_EXT)
 O_FILES=$(addprefix $(F_O_DIR)/,$(notdir $(F_CPP_FILES:.cpp=.o)))
 
 all: $(TARGET)

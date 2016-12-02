@@ -6,6 +6,8 @@ CXXFLAGS=-std=gnu++11
 
 # common tools
 MKDIR=mkdir
+RRM=$(F_RRM)
+RM=$(F_RM)
 AR=ar rcs
 CD=cd
 
