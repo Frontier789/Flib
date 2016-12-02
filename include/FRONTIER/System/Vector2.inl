@@ -16,56 +16,50 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_VECTOR2_INL_INCLUDED
 #define FRONTIER_VECTOR2_INL_INCLUDED
-#include <FRONTIER/System/Math.hpp>
+#include <cmath>
 
 namespace fm
 {
-
 	template<class T>
 	inline vector2<T>::vector2() : x(T()),
 	                               y(T())
 	{
-
+	
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector2<T>::vector2(const T &XY) : x(XY),
 	                                      	  y(XY)
 	{
-
+	
 	}
-
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector2<T>::vector2(const T &X,const T &Y) : x(X),
 	                                      				y(Y)
 	{
-
+	
 	}
-
+	
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector2<T>::vector2(const T (&XY)[2]) : x(XY[0]),
 	                                               y(XY[1])
 	{
-
+	
 	}
-
-
+	
 	////////////////////////////////////////////////////////////
 	template<class T>
 	template<class T2>
 	inline vector2<T>::vector2(const vector2<T2> &other) : x(T(other.x)),
 	                                                       y(T(other.y))
 	{
-
+	
 	}
-
-
+	
 	////////////////////////////////////////////////////////////
 	template<class T>
 	template<class T2>
@@ -74,7 +68,6 @@ namespace fm
 	{
 
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -93,14 +86,12 @@ namespace fm
 						  y < T(0) ? y*T(-1) : y);
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline T vector2<T>::length() const
 	{
-		return fm::sqrt3(x*x+y*y);
+		return std::sqrt(x*x+y*y);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -109,15 +100,13 @@ namespace fm
 		return x*x+y*y;
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector2<T> vector2<T>::norm() const
 	{
-		T lth=LENGTH();
-		return (lth==1 || lth==0) ? *this : (*this)*fm::invsqrt3(lth);
+		T lth = LENGTH();
+		return (lth==T(1) || lth==T(0)) ? *this : (*this)/std::sqrt(lth);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -127,15 +116,13 @@ namespace fm
 		return  *this;
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector2<T> vector2<T>::sgn() const
 	{
-		T lth=LENGTH();
-		return (lth==1 || lth==0) ? *this : (*this)*fm::invsqrt3(lth);
+		T lth = LENGTH();
+		return (lth==1 || lth==0) ? *this : (*this)/std::sqrt(lth);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -144,7 +131,6 @@ namespace fm
 		return other * this->dot(other) / other.LENGTH();
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector2<T> vector2<T>::reflectOn(typename vector2<T>::const_reference other) const
@@ -152,51 +138,13 @@ namespace fm
 		return other * this->dot(other) / other.LENGTH() * T(2) - (*this);
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector2<T> vector2<T>::inv() const
 	{
 		return vector2<T>(T(1)/x,T(1)/y);
 	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector2<T> vector2<T>::byComp(typename vector2<T>::const_reference other) const
-	{
-		return vector2<T>(x * other.x,
-						  y * other.y);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector2<T> vector2<T>::byComp(const T &X,const T &Y) const
-	{
-		return vector2<T>(x * X,
-						  y * Y);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector2<T> vector2<T>::byCompInv(typename vector2<T>::const_reference other) const
-	{
-		return vector2<T>(x / other.x,
-						  y / other.y);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector2<T> vector2<T>::byCompInv(const T &X,const T &Y) const
-	{
-		return vector2<T>(x / X,
-						  y / Y);
-	}
-
-
+	
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline T vector2<T>::dot(typename vector2<T>::const_reference other) const
@@ -204,151 +152,33 @@ namespace fm
 		return x*other.x + y*other.y;
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector2<T> vector2<T>::perp() const
 	{
 		return vector2<T>(y*T(-1),x);
 	}
-
+	
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline T vector2<T>::area() const
 	{
 		return w*h;
 	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline vector2<T> vector2<T>::load(const T2 &other)
-	{
-		return vector2<T>(other.x,other.y);
-	}
-
-
+	
 	////////////////////////////////////////////////////////////
 	template<class T>
-	template<class T2>
-	inline vector2<T> vector2<T>::loadxy(const T2 &other)
-	{
-		return vector2<T>(other.x,other.y);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline vector2<T> vector2<T>::loadwh(const T2 &other)
-	{
-		return vector2<T>(other.w,other.h);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline T2 vector2<T>::convert() const
-	{
-		return T2(x,y);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline T2 vector2<T>::convertxy() const
-	{
-		T2 ret;
-		ret.x = x;
-		ret.y = y;
-		return ret;
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline T2 vector2<T>::convertwh() const
-	{
-		T2 ret;
-		ret.w = x;
-		ret.h = y;
-		return ret;
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline T &vector2<T>::minxy()
+	inline T &vector2<T>::min()
 	{
 		return x<y ? x : y;
 	}
 
-
-
 	////////////////////////////////////////////////////////////
 	template<class T>
-	inline const T &vector2<T>::minxy() const
-	{
-		return x<y ? x : y;
-	}
-
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline T &vector2<T>::minwh()
-	{
-		return x<y ? x : y;
-	}
-
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline const T &vector2<T>::minwh() const
-	{
-		return x<y ? x : y;
-	}
-
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline T &vector2<T>::maxxy()
+	inline T &vector2<T>::max()
 	{
 		return x>y ? x : y;
 	}
-
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline const T &vector2<T>::maxxy() const
-	{
-		return x>y ? x : y;
-	}
-
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline T &vector2<T>::maxwh()
-	{
-		return x>y ? x : y;
-	}
-
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline const T &vector2<T>::maxwh() const
-	{
-		return x>y ? x : y;
-	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -358,74 +188,117 @@ namespace fm
 		y = Y;
 		return *this;
 	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline typename vector2<T>::reference vector2<T>::operator()(typename vector2<T>::const_reference other)
-	{
-		x = other.x;
-		y = other.y;
-		return *this;
-	}
-
+	
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline T &vector2<T>::operator[](unsigned int index)
 	{
 		return *((T*)this+index);
 	}
-
+	
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline const T &vector2<T>::operator[](unsigned int index) const
 	{
 		return *((T*)this+index);
 	}
-
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+	
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector2<T> &vector2<T>::operator*=(const T &scalar)
+	template<class T,class T2>
+	inline auto operator+(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x+right.x)>
 	{
-		x*=scalar;
-		y*=scalar;
-		return *this;
+		return vector2<decltype(left.x+right.x)>(left.x+right.x,
+												 left.y+right.y);
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector2<T> &vector2<T>::operator/=(const T &scalar)
+	template<class T,class T2>
+	inline auto operator-(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x-right.x)>
 	{
-		x/=scalar;
-		y/=scalar;
-		return *this;
+		return vector2<decltype(left.x-right.x)>(left.x-right.x,
+												 left.y-right.y);
 	}
-}
 
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator*(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x*right.x)>
+	{
+		return vector2<decltype(left.x*right.x)>(left.x*right.x,
+												 left.y*right.y);
+	}
 
-namespace std
-{
-    template<typename,typename>
-    class basic_ostream;
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator/(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x/right.x)>
+	{
+		return vector2<decltype(left.x/right.x)>(left.x/right.x,
+												 left.y/right.y);
+	}
 
-    template<typename,typename>
-    class basic_istream;
-}
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator%(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x%right.x)>
+	{
+		return vector2<decltype(left.x%right.x)>(left.x%right.x,
+												 left.y%right.y);
+	}
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x b                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const vector2<T> &left,const T2 &right) -> vector2<decltype(left.x*right)>
+	{
+		return vector2<decltype(left.x*right)>(left.x*right,
+											   left.y*right);
+	}
 
-template<class T,class CharT,class CharTraitT>
-inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::vector2<T> &vec)
-{
-	return out<<vec.x<<' '<<vec.y;
-}
-
-template<class T,class CharT,class CharTraitT>
-inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::vector2<T> &vec)
-{
-	return in>>vec.x>>vec.y;
-}
-
-namespace fm
-{
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const T2 &left,const vector2<T> &right) -> vector2<decltype(left*right.x)>
+	{
+		return vector2<decltype(left*right.x)>(left*right.x,
+											   left*right.y);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator/(const vector2<T> &left,const T2 &right) -> vector2<decltype(left.x/right)>
+	{
+		return vector2<decltype(left.x/right)>(left.x/right,
+											   left.y/right);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator%(const vector2<T> &left,const T2 &right) -> vector2<decltype(left.x%right)>
+	{
+		return vector2<decltype(left.x%right)>(left.x%right,
+											   left.y%right);
+	}
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x= B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector2<T> &operator+=(vector2<T> &left,const vector2<T2> &right)
@@ -463,59 +336,20 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,+)> operator+(const vector2<T> &left,const vector2<T2> &right)
+	inline vector2<T> &operator%=(vector2<T> &left,const vector2<T2> &right)
 	{
-		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,+)>(left.x+right.x,
-															left.y+right.y);
+		left.x%=right.x;
+		left.y%=right.y;
+		return left;
 	}
 
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,-)> operator-(const vector2<T> &left,const vector2<T2> &right)
-	{
-		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,-)>(left.x-right.x,
-															left.y-right.y);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector2<T> &left,const vector2<T2> &right)
-	{
-		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)>(left.x*right.x,
-															left.y*right.y);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector2<T> &left,const vector2<T2> &right)
-	{
-		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,/)>(left.x/right.x,
-															left.y/right.y);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector2<T> &left,const T2 &right)
-	{
-		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)>(left.x*right,
-															left.y*right);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector2<T> &left,const T2 &right)
-	{
-		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,/)>(left.x/right,
-															left.y/right);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const T &left,const vector2<T2> &right)
-	{
-		return vector2<FRONTIER_FIND_RETURN_TYPE(T,T2,*)>(left*right.x,
-															left*right.y);
-	}
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A eq B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
@@ -530,16 +364,44 @@ namespace fm
 	{
 		return left.x!=right.x || left.y!=right.y;
 	}
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+						 x A                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline vector2<T> operator-(const vector2<T> &vec)
+	auto operator-(const vector2<T> &vec) -> vector2<decltype(-vec.x)>
 	{
-		return vector2<T>(vec.x*T(-1),
-						  vec.y*T(-1));
+		return vector2<decltype(-vec.x)>(vec.x*T(-1),
+										 vec.y*T(-1));
 	}
 
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	auto operator+(const vector2<T> &vec) -> vector2<decltype(+vec.x)>
+	{
+		return vector2<decltype(-vec.x)>(vec.x*T(1),
+										 vec.y*T(1));
+	}
 }
+
+#include <FRONTIER/System/util/PredefStreams.hpp>
+
+template<class T,class CharT,class CharTraitT>
+inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::vector2<T> &vec)
+{
+	return out<<vec.x<<' '<<vec.y;
+}
+template<class T,class CharT,class CharTraitT>
+inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::vector2<T> &vec)
+{
+	return in>>vec.x>>vec.y;
+}
+
 namespace std
 {
 	template<class T>
@@ -547,11 +409,11 @@ namespace std
 	{
 		return vec.length();
 	}
-
 	template<class T>
 	fm::vector2<T> sgn(const fm::vector2<T> &vec)
 	{
 		return vec.sgn();
 	}
 }
+
 #endif

@@ -16,14 +16,14 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_VECTOR3_HPP_INCLUDED
 #define FRONTIER_VECTOR3_HPP_INCLUDED
-#include <FRONTIER/System/type_traits/Will_result_in.hpp>
-#include <FRONTIER/System/macros/ONLYFORDOXY.hpp>
+#include <FRONTIER/System/util/RequireCpp11.hpp>
 #define FRONTIER_VECTOR3
+
 namespace fm
 {
 	template<class> class vector4;
 	template<class> class vector3;
-	template<class> class vector2;
+	template<class> class vector3;
 
 
 	/////////////////////////////////////////////////////////////
@@ -128,7 +128,7 @@ namespace fm
 		/// @param XYZ x,y and z coordinates
 		///
 		/////////////////////////////////////////////////////////////
-		explicit vector3(const T &XYZ);
+		vector3(const T &XYZ);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct 3D vector from three coordinates
@@ -311,63 +311,7 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		vector3<T> inv() const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Multiplies the vector by @a target
-		///
-		/// The multiplication is performed on all
-		/// components invidually
-		///
-		/// @param target The vector to multiply by
-		///
-		/// @return The product vector
-		///
-		/////////////////////////////////////////////////////////////
-		vector3<T> byComp(const_reference target) const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Multiplies the vector's components
-		///
-		/// The multiplication is performed on all
-		/// components invidually
-		///
-		/// @param X Multiply x by @a X
-		/// @param Y Multiply y by @a Y
-		/// @param Z Multiply z by @a Z
-		///
-		/// @return The product vector
-		///
-		/////////////////////////////////////////////////////////////
-		vector3<T> byComp(const T &X,const T &Y,const T &Z) const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the inverse of a multiplication
-		///
-		/// The multiplication is performed on all
-		/// components invidually and then the inversion
-		///
-		/// @param target The vector to multiply by
-		///
-		/// @return The result vector
-		///
-		/////////////////////////////////////////////////////////////
-		vector3<T> byCompInv(const_reference target) const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the inverse of a multiplication
-		///
-		/// The multiplication is performed on all
-		/// components invidually and then the inversion
-		///
-		/// @param X Multiply x by @a X
-		/// @param Y Multiply y by @a Y
-		/// @param Z Multiply z by @a Z
-		///
-		/// @return The result vector
-		///
-		/////////////////////////////////////////////////////////////
-		vector3<T> byCompInv(const T &X,const T &Y,const T &Z) const;
-
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the <a href="http://en.wikipedia.org/wiki/Dot_product">dot product</a> of two vectors
 		///
@@ -377,44 +321,7 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		T dot(const_reference other) const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Convert 3D vector to template class using constructor
-		///
-		/// This functions fails to compile ifdef
-		/// T2 doesn't have a constructor which takes three Ts
-		///
-		/// @return Converted instance of T2
-		///
-		/////////////////////////////////////////////////////////////
-		template<class T2>
-		T2 convert() const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Convert 3D vector to template class with x,y,z fields
-		///
-		/// This functions fails to compile ifdef
-		/// T2 doesn't have x, y and z fields
-		///
-		/// @return Converted instance of T2
-		///
-		/////////////////////////////////////////////////////////////
-		template<class T2>
-		T2 convertxyz() const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Convert 3D vector to template class with r,g,b fields
-		///
-		/// This functions fails to compile ifdef
-		/// T2 doesn't have r, g and b fields
-		///
-		/// @return Converted instance of T2
-		///
-		/////////////////////////////////////////////////////////////
-		template<class T2>
-		T2 convertrgb() const;
-
-
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Overload of binary operator ()
 		///
@@ -426,17 +333,6 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		reference operator()(const T &X,const T &Y,const T &Z);
-
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Overload of binary operator ()
-		///
-		/// @param other The vector's new value
-		///
-		/// @return Reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference operator()(const_reference other);
 
         /////////////////////////////////////////////////////////////
         /// @brief Overload of binary operator []
@@ -457,84 +353,148 @@ namespace fm
         ///
         /////////////////////////////////////////////////////////////
         const T &operator[](unsigned int index) const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Overload of binary operator *=
-		///
-		/// @param scalar The multiplicant
-		///
-		/// @return Reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference operator*=(const T &scalar);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Overload of binary operator /=
-		///
-		/// @param scalar The divisor
-		///
-		/// @return Reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference operator/=(const T &scalar);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Convert template class with x y and z fields to 3D vector
-		///
-		/// This functions fails to compile ifdef
-		/// T2 doesn't have x, y and z fields
-		///
-		/// @param other The vector to convert
-		///
-		/// @return The converted vector
-		///
-		/////////////////////////////////////////////////////////////
-		template<class T2>
-		static vector3<T> load(const T2 &other);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Convert template class with x,y,z fields to 3D vector
-		///
-		/// This functions fails to compile ifdef
-		/// T2 doesn't have x, y and z fields
-		///
-		/// @param other The vector to convert
-		///
-		/// @return The converted vector
-		///
-		/////////////////////////////////////////////////////////////
-		template<class T2>
-		static vector3<T> loadxyz(const T2 &other);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Convert template class with r g b fields to 3D vector
-		///
-		/// This functions fails to compile ifdef
-		/// T2 doesn't have r, g and b fields
-		///
-		/// @param other The vector to convert
-		///
-		/// @return The converted vector
-		///
-		/////////////////////////////////////////////////////////////
-		template<class T2>
-		static vector3<T> loadrgb(const T2 &other);
 	};
-
-#ifndef FRONTIER_ONLY_FOR_DOXYGEN
-
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+	
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector3
-	/// @brief Overload of binary operator +=
+	/// @brief Overload of binary operator +
 	///
 	/// @param left Left operand (vector)
 	/// @param right Right operand (vector)
 	///
-	/// @return Reference to @a left
+	/// @return Memberwise addition of @a left and @a right
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	vector3<T> &operator+=(vector3<T> &left,const vector3<T2> &right);
+	auto operator+(const vector3<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x+right.x)>;
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector3
+	/// @brief Overload of binary operator -
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise subtraction of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator-(const vector3<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x-right.x)>;
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector3
+	/// @brief Overload of binary operator *
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise multiplication of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const vector3<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x*right.x)>;
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector3
+	/// @brief Overload of binary operator /
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise division of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator/(const vector3<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x/right.x)>;
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector3
+	/// @brief Overload of binary operator %
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise modulo of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator%(const vector3<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x%right.x)>;
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x b                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector3
+	/// @brief Overload of binary operator *
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (scalar)
+	///
+	/// @return Memberwise multiplication of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const vector3<T> &left,const T2 &right) -> vector3<decltype(left.x*right)>;
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector3
+	/// @brief Overload of binary operator *
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (scalar)
+	///
+	/// @return Memberwise multiplication of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const T2 &left,const vector3<T> &right) -> vector3<decltype(left*right.x)>;
+	
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector3
+	/// @brief Overload of binary operator /
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (scalar)
+	///
+	/// @return Memberwise division of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator/(const vector3<T> &left,const T2 &right) -> vector3<decltype(left.x/right)>;
+	
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector3
+	/// @brief Overload of binary operator %
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (scalar)
+	///
+	/// @return Memberwise modulo of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator%(const vector3<T> &left,const T2 &right) -> vector3<decltype(left.x%right)>;
+	
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x= B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector3
@@ -577,94 +537,71 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector3
-	/// @brief Overload of binary operator +
+	/// @brief Overload of binary operator %=
 	///
 	/// @param left Left operand (vector)
 	/// @param right Right operand (vector)
 	///
-	/// @return Memberwise addition of @a left and @a right
+	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,+)> operator+(const vector3<T> &left,const vector3<T2> &right);
+	vector3<T> &operator%=(vector3<T> &left,const vector3<T2> &right);
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x= b                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector3
-	/// @brief Overload of binary operator -
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return Memberwise substraction of @a left and @a right
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,-)> operator-(const vector3<T> &left,const vector3<T2> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector3
-	/// @brief Overload of binary operator *
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return Memberwise addition of @a left and @a right
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector3<T> &left,const vector3<T2> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector3
-	/// @brief Overload of binary operator /
-	///
-	/// @param left Left operand (vector)
-	/// @param right Right operand (vector)
-	///
-	/// @return Memberwise substraction of @a left and @a right
-	///
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector3<T> &left,const vector3<T2> &right);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::vector3
-	/// @brief Overload of binary operator *
+	/// @brief Overload of binary operator *=
 	///
 	/// @param left Left operand (vector)
 	/// @param right Right operand (scalar)
 	///
-	/// @return Memberwise addition of @a left and @a right
+	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector3<T> &left,const T2 &right);
+	vector3<T> &operator*=(vector3<T> &left,const T2 &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector3
-	/// @brief Overload of binary operator /
+	/// @brief Overload of binary operator /=
 	///
 	/// @param left Left operand (vector)
 	/// @param right Right operand (scalar)
 	///
-	/// @return Memberwise substraction of @a left and @a right
+	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector3<T> &left,const T2 &right);
+	vector3<T> &operator/=(vector3<T> &left,const T2 &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector3
-	/// @brief Overload of binary operator *
+	/// @brief Overload of binary operator %=
 	///
-	/// @param left Left operand (scalar)
-	/// @param right Right operand (vector)
+	/// @param left Left operand (vector)
+	/// @param right Right operand (scalar)
 	///
-	/// @return Memberwise multiplication of @a right by @a left
+	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const T &left,const vector3<T2> &right);
+	vector3<T> &operator%=(vector3<T> &left,const T2 &right);
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A eq B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector3
@@ -673,7 +610,7 @@ namespace fm
 	/// @param left Left operand (vector)
 	/// @param right Right operand (vector)
 	///
-	/// @return True if @a left and @a right are the same
+	/// @return True if @a left equals @a right
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
@@ -686,11 +623,19 @@ namespace fm
 	/// @param left Left operand (vector)
 	/// @param right Right operand (vector)
 	///
-	/// @return True if @a left and @a right are not the same
+	/// @return True if @a left not equals @a right
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	bool operator!=(const vector3<T> &left,const vector3<T> &right);
+	bool operator!=(const vector3<T> &left,const vector3<T2> &right);
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+						  x A                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector3
@@ -702,9 +647,19 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	vector3<T> operator-(const vector3<T> &vec);
+	auto operator-(const vector3<T> &vec) -> vector3<decltype(-vec.x)>;
 
-#endif
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector3
+	/// @brief Overload of unary operator +
+	///
+	/// @param vec Vector to negate
+	///
+	/// @return Memberwise negation of @a vec
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	auto operator+(const vector3<T> &vec) -> vector3<decltype(+vec.x)>;
 
 	typedef vector3<float> 	      vec3;
 	typedef vector3<int>   	      vec3i;
@@ -712,7 +667,6 @@ namespace fm
 	typedef vector3<float> 	      vec3f;
 	typedef vector3<double>       vec3d;
 	typedef vector3<unsigned int> vec3u;
-
 }
 
 namespace std
@@ -729,81 +683,3 @@ namespace std
 #ifndef FRONTIER_DONT_INCLUDE_INL
 	#include <FRONTIER/System/Vector3.inl>
 #endif
-
-////////////////////////////////////////////////////////////
-/// @class fm::vector3
-/// @ingroup System
-///
-/// fm::vector3 is a templated class for manipulating 3D
-/// vectors, it can also be used to represent color, position etc.
-///
-/// The template parameter T is the type of the coordinates. It
-/// can be any type that supports arithmetic operations (+, -, /, *)
-/// and comparisons (==, !=), for example int or float.
-///
-/// The most common specializations are typedefed:
-/// @li fm::vector3<float> is fm::vec3
-/// @li fm::vector3<float> is fm::vec3f
-/// @li fm::vector3<int> is fm::vec3i
-/// @li fm::vector3<unsigned int> is fm::vec3u
-///
-/// The fm::vector3 class posesses a simple yet feature rich interface, its x, y and z members
-/// can be accessed directly and they have aliases such as r,g,b,x,y,z and it
-/// contains mathematical function like dot product, cross product, length, etc.
-///
-/// Usage example:
-/// @code
-/// fm::vec3 v(5,4,2);
-///	std::cout<<v.x<<" "; //
-/// std::cout<<v.r<<" "; // these print the same value (5)
-///	std::cout<<std::endl;
-///
-/// fm::vec3 v1(1,2,3),v2(4,5.5555,6.0606),v3;
-/// v3 = v1 + v2*5.41f;
-/// std::cout<<v3<<std::endl;
-///
-///
-/// class OtherVectorType
-/// {
-///	public:
-///		float x,y,z;
-/// };
-///
-/// OtherVectorType otherVec;
-/// otherVec.x = 42.2;
-/// otherVec.y = -13;
-/// otherVec.z = 13.05;
-/// fm::vec3 v=fm::vec3::loadxyz(otherVec);
-/// std::cout<<v<<std::endl;
-///
-/// OtherVectorType otherVec2;
-/// fm::vec3 v(-42,42.5,0.1);
-/// otherVec2=v.convertxyz<OtherVectorType>();
-/// std::cout<<otherVec2.x<<" "<<otherVec2.y<<" "<<otherVec2.z<<std::endl;
-///
-///
-/// // Functions
-/// fm::vec3 v(-5,5.55,-5);
-/// v.unsign();
-/// std::cout<<v<<std::endl;
-///
-/// std::cout<<"example:"<<std::endl;
-/// std::cout<<"\tlength    : "<<fm::vec2(5,4,-2.1).length()<<std::endl;
-/// std::cout<<"\tLENGTH    : "<<fm::vec2(5,4,-2.1).LENGTH()<<std::endl;
-/// std::cout<<"\tnorm      : "<<fm::vec2(5,4,-2.1).norm()<<std::endl;
-/// std::cout<<"\tsgn       : "<<fm::vec2(5,4,-2.1).sgn()<<std::endl;
-/// std::cout<<"\tcross     : "<<fm::vec2(5,4,-2.1).cross(fm::vec3(1,2,3))<<std::endl;
-/// std::cout<<"\tprojTo    : "<<fm::vec2(5,4,-2.1).projTo(fm::vec2(1,0))<<std::endl;
-/// std::cout<<"\treflectOn : "<<fm::vec2(5,4,-2.1).reflectOn(fm::vec2(1,0))<<std::endl;
-/// std::cout<<"\tinv	    : "<<fm::vec2(5,4,-2.1).inv()<<std::endl;
-/// std::cout<<"\tbyComp    : "<<fm::vec2(5,4,-2.1).byComp(fm::vec2(7,4))<<std::endl;
-/// std::cout<<"\tbyCompInv : "<<fm::vec2(5,4,-2.1).byCompInv(fm::vec2(2,4))<<std::endl;
-/// std::cout<<"\tdot 		: "<<fm::vec2(5,4,-2.1).dot(fm::vec2(-1,1))<<std::endl;
-///
-///
-/// @endcode
-///
-/// @see fm::vector2
-/// @see fm::vector4
-///
-////////////////////////////////////////////////////////////

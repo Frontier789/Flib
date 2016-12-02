@@ -37,31 +37,13 @@ namespace fm
 
 }
 
-#include <FRONTIER/Config.hpp>
+#include <FRONTIER/System/Ice.hpp>
 #include <FRONTIER/System/Ref.hpp>
-#include <FRONTIER/System/Rect.hpp>
-#include <FRONTIER/System/Swap.hpp>
-#include <FRONTIER/System/Time.hpp>
-#include <FRONTIER/System/Math.hpp>
-#include <FRONTIER/System/Clock.hpp>
-#include <FRONTIER/System/Error.hpp>
 #include <FRONTIER/System/Angle.hpp>
-#include <FRONTIER/System/Sleep.hpp>
-#include <FRONTIER/System/Result.hpp>
-#include <FRONTIER/System/String.hpp>
-#include <FRONTIER/System/Polar2.hpp>
-#include <FRONTIER/System/Polar3.hpp>
 #include <FRONTIER/System/Matrix.hpp>
-#include <FRONTIER/System/Vertex.hpp>
-#include <FRONTIER/System/Camera.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
-#include <FRONTIER/System/NullPtr.hpp>
 #include <FRONTIER/System/Delegate.hpp>
-#include <FRONTIER/System/Collector.hpp>
-#include <FRONTIER/System/Quaternion.hpp>
-#include <FRONTIER/System/NonCopyable.hpp>
-#include <FRONTIER/System/Transformable.hpp>
 
 #endif // FRONTIER_SYSTEM_MODULE_HPP_INCLUDED

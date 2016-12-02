@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////// <!--
+//////////////////////////////////////////////////////////////////////////
 /// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
@@ -13,7 +13,37 @@
 ///                                                                    ///
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
-////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/System.hpp>
+//////////////////////////////////////////////////////////////////////////
+#ifndef FRONTIER_API_H_INCLUDED
+#define FRONTIER_API_H_INCLUDED
+#include <FRONTIER/System/util/OS.h>
 
-using namespace fm;
+	#ifdef FRONTIER_DYNAMIC
+
+		#ifdef FRONTIER_OS_WINDOWS
+			
+			#ifdef FRONTIER_LIBBUILD
+				#define FRONTIER_API __declspec(dllexport)
+			#else 
+				#define FRONTIER_API __declspec(dllimport)
+			#endif
+			
+			#ifdef _MSC_VER
+				#pragma warning(disable : 4251)
+			#endif
+
+		#else
+			
+			#if defined(__GNUC__) && __GNUC__ >= 4
+				#define FRONTIER_API __attribute__ ((__visibility__ ("default")))
+			#else
+				#define FRONTIER_API
+			#endif
+
+		#endif
+
+	#else
+		#define FRONTIER_API
+	#endif
+	
+#endif // FRONTIER_API_H_INCLUDED

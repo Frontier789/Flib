@@ -1,22 +1,17 @@
-<h1>Flib v0.8</h1>
+<h1>Flib v1.1</h1>
 <p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Description</h2>
 
 Classes for managing windows and creating OpenGL contexts (for Windows and Linux)
 Automatic OpenGL functions loading
 Wrapper classes for OpenGL objects (Texture, FrameBuffer, Shader etc)
-Templated math classes (Vector, Matrix)
+Template classes (Vectors, Matrices, Polar vectors, Delegates)
 
 <p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Compilation</h2>
 
 cd to /src
-
-|    OS   |     Invoke command     |
-|:-------:|:----------------------:|
-| Windows |  make -f makefile.win  |
-|  Linux  | make -f makefile.linux |
-| Android |make -f makefile.android|
+call make
 
 <p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Citation</h2>

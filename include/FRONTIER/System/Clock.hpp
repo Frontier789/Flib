@@ -16,9 +16,11 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_CLOCK_HPP_INCLUDED
 #define FRONTIER_CLOCK_HPP_INCLUDED
-#include <FRONTIER/System/macros/API.h>
-#include <FRONTIER/System/Time.hpp>
+
+#include <FRONTIER/System/util/API.h>
+
 #define FRONTIER_CLOCK
+
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
@@ -27,10 +29,10 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Clock
 	{
-		Time m_startTime; ///< The time since we check the elapsed time
-		Time m_pauseTime; ///< The time when we stopped
+		double m_startTime; ///< The time since we check the elapsed time
+		double m_pauseTime; ///< The time when we stopped
 	public:
-		typedef Time component_type;
+		typedef double component_type;
 		typedef Clock &reference;
 		typedef const Clock &const_reference;
 		enum {
@@ -70,11 +72,11 @@ namespace fm
 		///
 		/// Initializes Clock with @a startTime elapsed time and if @a paused is true paused
 		/// 
-		/// @param startTime Elapsed time to initialize with
+		/// @param startSeconds Elapsed time to initialize with
 		/// @param paused If true then the Clock is paused by default
 		/// 
 		/////////////////////////////////////////////////////////////
-		Clock(const Time &startTime,bool paused = false);
+		Clock(double startSeconds,bool paused = false);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get time since started
@@ -82,10 +84,10 @@ namespace fm
 		/// If the Clock paused then this function will return the difference between
 		/// the startTime and pauseTime
 		/// 
-		/// @return Elapsed time
+		/// @return Elapsed time in seconds
 		/// 
 		/////////////////////////////////////////////////////////////
-		Time getTime() const;
+		double getSeconds() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Pause the clock
@@ -114,28 +116,20 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Restart the clock
 		/// 
-		/// @return Reference to itself
+		/// @return The elapsed time in seconds
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference restart();
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Restart the clock and get the time
-		/// 
-		/// @return Elapsed time
-		/// 
-		/////////////////////////////////////////////////////////////
-		Time restartGetTime();
+		double restart();
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the elapsed time
 		/// 
-		/// @param elapsed The elapsed time to use
+		/// @param elapsedSeconds The elapsed time in seconds to use
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference setTime(const Time &elapsed);
+		reference setTime(double elapsedSeconds);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if the Clock is paused
@@ -153,19 +147,3 @@ namespace fm
 	};
 }
 #endif //FRONTIER_CLOCK_HPP_INCLUDED
-
-////////////////////////////////////////////////////////////
-/// @class fm::Clock
-/// @ingroup System
-///
-/// Usage example:
-/// @code
-///
-/// fm::Clock clk;
-/// unsigned long k=1;
-/// for (int i=0;i<50000000;i++) //do some work
-/// 	k*=(i%5)*(i%5);
-/// std::cout<<clk.getTime().asMilliseconds()<<"ms elapsed"<<std::endl;
-/// 
-/// @endcode
-////////////////////////////////////////////////////////////

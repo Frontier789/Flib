@@ -16,36 +16,225 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_DELEGATE_HPP_INCLUDED
 #define FRONTIER_DELEGATE_HPP_INCLUDED
-#include <FRONTIER/System/type_traits/Enable_if.hpp>
-#include <FRONTIER/System/type_traits/Identity.hpp>
-#include <FRONTIER/System/NonCopyable.hpp>
-#include <FRONTIER/System/NullPtr.hpp>
+#include <FRONTIER/System/DelegateImpl/BaseDelegate.hpp>
+#define FRONTIER_DELEGATE
 
 namespace fm
 {
-    namespace priv
-    {
-        class NoClass {};
-    }
+	/////////////////////////////////////////////////////////////
+	/// @brief Delegate class used to encapsulate a function call
+	///
+	/////////////////////////////////////////////////////////////
+	template<class R,class... Args>
+	class Delegate
+	{
+		BaseDelegate<R,Args...> *m_impl; ///< The implementation of the delegate
+		
+	public:
+		typedef Delegate<R,Args...> &reference;
+		typedef const Delegate<R,Args...> &const_reference;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Default constructor
+		/// 
+		/// Does not assign function
+		/// 
+		/////////////////////////////////////////////////////////////
+		Delegate();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct from basic delegate
+		/// 
+		/// Does not assign function
+		/// 
+		/////////////////////////////////////////////////////////////
+		Delegate(BaseDelegate<R,Args...> *newBaseDelegate);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy constructor
+		/// 
+		/// @param copy The object to copy
+		/// 
+		/////////////////////////////////////////////////////////////
+		Delegate(const Delegate<R,Args...> &copy);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Move constructor
+		/// 
+		/// @param move The object to move
+		/// 
+		/////////////////////////////////////////////////////////////
+		Delegate(Delegate<R,Args...> &&move);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Default destructor
+		/// 
+		/////////////////////////////////////////////////////////////
+		~Delegate();
+		
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a lambda
+		/// 
+		/// @param func The function to assign
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class LambdaT>
+		Delegate(LambdaT lambda);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a function
+		/// 
+		/// @param func The function to assign
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class AltR,class... CallArgs>
+		Delegate(AltR (*funcptr)(CallArgs...));
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a function
+		/// 
+		/// @param memFunc The function to assign
+		/// @param object The object the function will be called on
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class ObjectType,class AltR,class... CallArgs>
+		Delegate(AltR (ObjectType::*memFunc)(CallArgs...),ObjectType object = ObjectType());
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a function
+		/// 
+		/// @param memFunc The function to assign
+		/// @param object The object the function will be called on
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class ObjectType,class AltR,class... CallArgs>
+		Delegate(AltR (ObjectType::*memFunc)(CallArgs...) const,ObjectType object = ObjectType());
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a function
+		/// 
+		/// @param memFunc The function to assign
+		/// @param pointer Pointer to the object the function will be called on
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class ObjectType,class AltR,class... CallArgs>
+		Delegate(AltR (ObjectType::*memFunc)(CallArgs...),ObjectType *object);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a function
+		/// 
+		/// @param memFunc The function to assign
+		/// @param pointer Pointer to the object the function will be called on
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class ObjectType,class AltR,class... CallArgs>
+		Delegate(AltR (ObjectType::*memFunc)(CallArgs...),const ObjectType *object) = delete;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a function
+		/// 
+		/// @param memFunc The function to assign
+		/// @param pointer Pointer to the object the function will be called on
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class ObjectType,class AltR,class... CallArgs>
+		Delegate(AltR (ObjectType::*memFunc)(CallArgs...) const,const ObjectType *object);
+		
+		
+		/*
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a function
+		/// 
+		/// @param memFunc The function to assign
+		/// @param object The object the function will be called on
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class ObjectType,class = int,class = typename std::enable_if<std::is_same<decltype(&ObjectType::operator()),R (ObjectType::*)(Args...)>::value >::type >
+		Delegate(ObjectType object);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a function
+		/// 
+		/// @param memFunc The function to assign
+		/// @param object The object the function will be called on
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class ObjectType,class = int,class = int,class = typename std::enable_if<std::is_same<decltype(&ObjectType::operator()),R (ObjectType::*)(Args...) const>::value >::type >
+		Delegate(ObjectType object);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a function
+		/// 
+		/// @param memFunc The function to assign
+		/// @param object The object the function will be called on
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class ObjectType,class = typename std::enable_if<std::is_same<decltype(&ObjectType::operator()),R (ObjectType::*)(Args...)>::value >::type >
+		Delegate(ObjectType *objPtr);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a function
+		/// 
+		/// @param memFunc The function to assign
+		/// @param object The object the function will be called on
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class ObjectType,class = int,class = typename std::enable_if<std::is_same<decltype(&ObjectType::operator()),R (ObjectType::*)(Args...) const>::value >::type >
+		Delegate(const ObjectType *objPtr);
+		*/
+		
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Call the assigned function
+		/// 
+		/// @param callArgs The arguments to pass to the function
+		/// @param extraArgs Extra arguments (discarded)
+		/// 
+		/// @return The result to the assigned function or R() if no function was assigned
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class... ExtraArgs>
+		R call(Args... callArgs,ExtraArgs... extraArgs) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Call the assigned function
+		/// 
+		/// @param callArgs The arguments to pass to the function
+		/// @param extraArgs Extra arguments (discarded)
+		/// 
+		/// @return The result to the assigned function or R() if no function was assigned
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class... ExtraArgs>
+		R operator()(Args... callArgs,ExtraArgs... extraArgs) const;
+		
+		
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy assignment
+		/// 
+		/// @param copy The object to copy
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		Delegate<R,Args...> &operator=(const Delegate<R,Args...> &copy);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Move assignment
+		/// 
+		/// @param move The object to move
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		Delegate<R,Args...> &operator=(Delegate<R,Args...> &&move);
+	};
 }
 
-#define FRONTIER_DELEGATE_TO_INCLUDE <FRONTIER/System/Delegate/Raw.hpp>
-#include <FRONTIER/System/Delegate/Make.hpp>
-#undef FRONTIER_DELEGATE_TO_INCLUDE
-
-
-
-#endif //FRONTIER_DELEGATE_HPP_INCLUDED
+#endif // FRONTIER_DELEGATE_HPP_INCLUDED
 
 #ifndef FRONTIER_DONT_INCLUDE_INL
-
-    #ifndef FRONTIER_DELEGATE_INL_INCLUDED
-    #define FRONTIER_DELEGATE_INL_INCLUDED
-
-        #define FRONTIER_DELEGATE_TO_INCLUDE <FRONTIER/System/Delegate/Raw.inl>
-        #include <FRONTIER/System/Delegate/Make.hpp>
-        #undef FRONTIER_DELEGATE_TO_INCLUDE
-
-    #endif // FRONTIER_DELEGATE_INL_INCLUDED
-
-#endif // FRONTIER_DONT_INCLUDE_INL
+	#include <FRONTIER/System/Delegate.inl>
+#endif

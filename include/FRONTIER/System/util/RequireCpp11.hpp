@@ -14,6 +14,9 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/System.hpp>
 
-using namespace fm;
+#if __cplusplus < 201103L
+
+	#error C++11 Required for this library
+
+#endif

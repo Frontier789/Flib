@@ -14,6 +14,10 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/System.hpp>
-
-using namespace fm;
+namespace std
+{
+    template<typename,typename>
+    class basic_ostream;
+    template<typename,typename>
+    class basic_istream;
+}

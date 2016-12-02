@@ -14,6 +14,45 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/System.hpp>
+#ifndef FRONTIER_ARGUMENTLIST_HPP_INCLUDED
+#define FRONTIER_ARGUMENTLIST_HPP_INCLUDED
+#define FRONTIER_ARGUMENTLIST
 
-using namespace fm;
+namespace fm
+{
+	template<class...>
+	class ArgumentList
+	{
+	public:
+		enum {
+			size = 0
+		};
+		
+		typedef void Head;
+		typedef ArgumentList<> Tail;
+		
+		template<template<class...> class ApplyTo>
+		using Apply = ApplyTo<>;
+	};
+
+	/////////////////////////////////////////////////////////////
+	/// @brief Class used to handle a template argument list
+	///
+	/////////////////////////////////////////////////////////////
+	template<class FirstArg,class... Args>
+	class ArgumentList<FirstArg,Args...>
+	{
+	public:
+		enum {
+			size = ArgumentList<Args...>::size + 1 ///< The length of the argument list
+		};
+		
+		typedef FirstArg Head; ///< The first class of the argument list
+		typedef ArgumentList<Args...> Tail; ///< The list formed from the argument list by taking out the first class
+		
+		template<template<class...> class ApplyTo>
+		using Apply = ApplyTo<FirstArg,Args...>;
+	};
+}
+
+#endif // FRONTIER_ARGUMENTLIST_HPP_INCLUDED

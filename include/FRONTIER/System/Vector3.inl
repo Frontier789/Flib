@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_VECTOR3_INL_INCLUDED
 #define FRONTIER_VECTOR3_INL_INCLUDED
-#include <FRONTIER/System/Math.hpp>
+#include <cmath>
 
 namespace fm
 {
@@ -112,14 +112,12 @@ namespace fm
 		return *this;
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline T vector3<T>::length() const
 	{
-		return fm::sqrt3(x*x+y*y+z*z);
+		return std::sqrt(x*x+y*y+z*z);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -128,15 +126,13 @@ namespace fm
 		return x*x+y*y+z*z;
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector3<T> vector3<T>::norm() const
 	{
 		T lth=LENGTH();
-		return (lth==1 || lth==0) ? *this : (*this)*fm::invsqrt3(lth);
+		return (lth==T(1) || lth==T(0)) ? *this : (*this)/std::sqrt(lth);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -146,15 +142,13 @@ namespace fm
 		return  *this;
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector3<T> vector3<T>::sgn() const
 	{
 		T lth=LENGTH();
-		return (lth==1 || lth==0) ? *this : (*this)*fm::invsqrt3(lth);
+		return (lth==T(1) || lth==T(0)) ? *this : (*this)/std::sqrt(lth);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -165,14 +159,12 @@ namespace fm
                           x*other.y - y*other.x);
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector3<T> vector3<T>::projTo(typename vector3<T>::const_reference other) const
 	{
 		return other * this->dot(other) / other.LENGTH();
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -181,14 +173,12 @@ namespace fm
 		return *this - normal * this->dot(normal) / normal.LENGTH();
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector3<T> vector3<T>::reflectOn(typename vector3<T>::const_reference other) const
 	{
 		return other * this->dot(other) / other.LENGTH() * T(2) - (*this);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -197,115 +187,12 @@ namespace fm
 		return vector3<T>(T(1)/x,T(1)/y,T(1)/z);
 	}
 
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> vector3<T>::byComp(typename vector3<T>::const_reference other) const
-	{
-		return vector3<T>(x * other.x,
-						  y * other.y,
-						  z * other.z);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> vector3<T>::byComp(const T &X,const T &Y,const T &Z) const
-	{
-		return vector3<T>(x * X,
-						  y * Y,
-						  z * Z);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> vector3<T>::byCompInv(typename vector3<T>::const_reference other) const
-	{
-		return vector3<T>(x / other.x,
-						  y / other.y,
-						  z / other.z);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> vector3<T>::byCompInv(const T &X,const T &Y,const T &Z) const
-	{
-		return vector3<T>(x / X,
-						  y / Y,
-						  z / Z);
-	}
-
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline T vector3<T>::dot(typename vector3<T>::const_reference other) const
 	{
 		return x*other.x + y*other.y + z*other.z;
 	}
-
-
-	template<class T>
-	template<class T2>
-	inline vector3<T> vector3<T>::load(const T2 &other)
-	{
-		return vector3<T>(other.x,other.y,other.z);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline vector3<T> vector3<T>::loadxyz(const T2 &other)
-	{
-		return vector3<T>(other.x,other.y,other.z);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline vector3<T> vector3<T>::loadrgb(const T2 &other)
-	{
-		return vector3<T>(other.r,other.g,other.b);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline T2 vector3<T>::convert() const
-	{
-		return T2(x,y,z);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline T2 vector3<T>::convertxyz() const
-	{
-		T2 ret;
-		ret.x = x;
-		ret.y = y;
-		ret.z = z;
-		return ret;
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline T2 vector3<T>::convertrgb() const
-	{
-		T2 ret;
-		ret.r = r;
-		ret.g = g;
-		ret.b = b;
-		return ret;
-	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -314,17 +201,6 @@ namespace fm
 		x = X;
 		y = Y;
 		z = Z;
-		return *this;
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline typename vector3<T>::reference vector3<T>::operator()(typename vector3<T>::const_reference other)
-	{
-		x = other.x;
-		y = other.y;
-		z = other.z;
 		return *this;
 	}
 
@@ -341,51 +217,110 @@ namespace fm
 	{
 		return *((T*)this+index);
 	}
-
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+	
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> &vector3<T>::operator*=(const T &scalar)
+	template<class T,class T2>
+	inline auto operator+(const vector3<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x+right.x)>
 	{
-		x*=scalar;
-		y*=scalar;
-		z*=scalar;
-		return *this;
+		return vector3<decltype(left.x+right.x)>(left.x+right.x,
+												 left.y+right.y,
+												 left.z+right.z);
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector3<T> &vector3<T>::operator/=(const T &scalar)
+	template<class T,class T2>
+	inline auto operator-(const vector3<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x-right.x)>
 	{
-		x/=scalar;
-		y/=scalar;
-		z/=scalar;
-		return *this;
+		return vector3<decltype(left.x-right.x)>(left.x-right.x,
+												 left.y-right.y,
+												 left.z-right.z);
 	}
-}
 
-namespace std
-{
-    template<typename,typename>
-    class basic_ostream;
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator*(const vector3<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x*right.x)>
+	{
+		return vector3<decltype(left.x*right.x)>(left.x*right.x,
+												 left.y*right.y,
+												 left.z*right.z);
+	}
 
-    template<typename,typename>
-    class basic_istream;
-}
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator/(const vector3<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x/right.x)>
+	{
+		return vector3<decltype(left.x/right.x)>(left.x/right.x,
+												 left.y/right.y,
+												 left.z/right.z);
+	}
 
-template<class T,class CharT,class CharTraitT>
-inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::vector3<T> &vec)
-{
-	return out<<vec.x<<' '<<vec.y<<' '<<vec.z;
-}
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator%(const vector3<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x%right.x)>
+	{
+		return vector3<decltype(left.x%right.x)>(left.x%right.x,
+												 left.y%right.y,
+												 left.z%right.z);
+	}
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x b                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const vector3<T> &left,const T2 &right) -> vector3<decltype(left.x*right)>
+	{
+		return vector3<decltype(left.x*right)>(left.x*right,
+											   left.y*right,
+											   left.z*right);
+	}
 
-template<class T,class CharT,class CharTraitT>
-inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::vector3<T> &vec)
-{
-	return in>>vec.x>>vec.y>>vec.z;
-}
-
-namespace fm
-{
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const T2 &left,const vector3<T> &right) -> vector3<decltype(left*right.x)>
+	{
+		return vector3<decltype(left*right.x)>(left*right.x,
+											   left*right.y,
+											   left*right.z);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator/(const vector3<T> &left,const T2 &right) -> vector3<decltype(left.x/right)>
+	{
+		return vector3<decltype(left.x/right)>(left.x/right,
+											   left.y/right,
+											   left.z/right);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator%(const vector3<T> &left,const T2 &right) -> vector3<decltype(left.x%right)>
+	{
+		return vector3<decltype(left.x%right)>(left.x%right,
+											   left.y%right,
+											   left.z%right);
+	}
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x= B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector3<T> &operator+=(vector3<T> &left,const vector3<T2> &right)
@@ -395,7 +330,7 @@ namespace fm
 		left.z+=right.z;
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector3<T> &operator-=(vector3<T> &left,const vector3<T2> &right)
@@ -414,7 +349,7 @@ namespace fm
 		left.z*=right.z;
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector3<T> &operator/=(vector3<T> &left,const vector3<T2> &right)
@@ -424,84 +359,32 @@ namespace fm
 		left.z/=right.z;
 		return left;
 	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,+)> operator+(const vector3<T> &left,const vector3<T2> &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,+) retT;
-		return vector3<retT>(left.x+right.x,
-							 left.y+right.y,
-							 left.z+right.z);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,-)> operator-(const vector3<T> &left,const vector3<T2> &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,-) retT;
-		return vector3<retT>(left.x-right.x,
-							 left.y-right.y,
-							 left.z-right.z);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector3<T> &left,const vector3<T2> &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,*) retT;
-		return vector3<retT>(left.x*right.x,
-							 left.y*right.y,
-							 left.z*right.z);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector3<T> &left,const vector3<T2> &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,/) retT;
-		return vector3<retT>(left.x/right.x,
-							 left.y/right.y,
-							 left.z/right.z);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector3<T> &left,const T2 &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,*) retT;
-		return vector3<retT>(left.x*right,
-							 left.y*right,
-							 left.z*right);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector3<T> &left,const T2 &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,/) retT;
-		return vector3<retT>(left.x/right,
-							 left.y/right,
-							 left.z/right);
-	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline vector3<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const T &left,const vector3<T2> &right)
+	inline vector3<T> &operator%=(vector3<T> &left,const vector3<T2> &right)
 	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,*) retT;
-		return vector3<retT>(left*right.x,
-							 left*right.y,
-							 left*right.z);
+		left.x%=right.x;
+		left.y%=right.y;
+		left.z%=right.z;
+		return left;
 	}
+
 	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A eq B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline bool operator==(const vector3<T> &left,const vector3<T2> &right)
 	{
 		return left.x==right.x && left.y==right.y && left.z==right.z;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline bool operator!=(const vector3<T> &left,const vector3<T2> &right)
@@ -509,15 +392,46 @@ namespace fm
 		return left.x!=right.x || left.y!=right.y || left.z!=right.z;
 	}
 	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+						 x A                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline vector3<T> operator-(const vector3<T> &vec)
+	auto operator-(const vector3<T> &vec) -> vector3<decltype(-vec.x)>
 	{
-		return vector3<T>(vec.x*T(-1),
-						  vec.y*T(-1),
-						  vec.z*T(-1));
+		return vector3<decltype(-vec.x)>(vec.x*T(-1),
+										 vec.y*T(-1),
+										 vec.z*T(-1));
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	auto operator+(const vector3<T> &vec) -> vector3<decltype(+vec.x)>
+	{
+		return vector3<decltype(-vec.x)>(vec.x*T(1),
+										 vec.y*T(1),
+										 vec.z*T(1));
 	}
 }
+
+#include <FRONTIER/System/util/PredefStreams.hpp>
+
+template<class T,class CharT,class CharTraitT>
+inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::vector3<T> &vec)
+{
+	return out<<vec.x<<' '<<vec.y<<' '<<vec.z;
+}
+
+template<class T,class CharT,class CharTraitT>
+inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::vector3<T> &vec)
+{
+	return in>>vec.x>>vec.y>>vec.z;
+}
+
 namespace std
 {
 	template<class T>

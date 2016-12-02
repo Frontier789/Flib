@@ -25,12 +25,6 @@ namespace fm
     {
 
     }
-    /////////////////////////////////////////////////////////////
-    template<class T>
-    Ref<T>::Ref(NullPtr) : m_ptr(fm::nullPtr)
-    {
-
-    }
 
     /////////////////////////////////////////////////////////////
     template<class T>
@@ -93,7 +87,7 @@ namespace fm
     template<class T>
     Ref<T>::operator bool() const
     {
-        return m_ptr != fm::nullPtr;
+        return m_ptr != nullptr;
     }
 }
 

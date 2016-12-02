@@ -14,6 +14,39 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/System.hpp>
+#ifndef FRONTIER_BASEDELEGATE_INL_INCLUDED
+#define FRONTIER_BASEDELEGATE_INL_INCLUDED
 
-using namespace fm;
+namespace fm
+{
+	/////////////////////////////////////////////////////////////
+	template<class R,class... Args>
+	inline BaseDelegate<R,Args...>::~BaseDelegate()
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class R,class... Args>
+	inline R BaseDelegate<R,Args...>::call(Args...) const
+	{
+		return R();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class R,class... Args>
+	template<class... ExtraArgs>
+	inline R BaseDelegate<R,Args...>::call(Args... callArgs,ExtraArgs...) const
+	{
+		return call(callArgs...);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class R,class... Args>
+	inline BaseDelegate<R,Args...> *BaseDelegate<R,Args...>::makeCopy() const
+	{
+		return new BaseDelegate<R,Args...>();
+	}
+}
+
+#endif // FRONTIER_BASEDELEGATE_INL_INCLUDED

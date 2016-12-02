@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_VECTOR4_INL_INCLUDED
 #define FRONTIER_VECTOR4_INL_INCLUDED
-#include <FRONTIER/System/Math.hpp>
+#include <cmath>
 
 namespace fm
 {
@@ -146,7 +146,6 @@ namespace fm
 
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector4<T> vector4<T>::unsign()
@@ -158,14 +157,12 @@ namespace fm
 		return *this;
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline T vector4<T>::length() const
 	{
-		return fm::sqrt3(x*x+y*y+z*z+w*w);
+		return std::sqrt(x*x+y*y+z*z+w*w);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -174,15 +171,13 @@ namespace fm
 		return x*x+y*y+z*z+w*w;
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector4<T> vector4<T>::norm() const
 	{
 		T lth=LENGTH();
-		return (lth==1 || lth==0) ? *this : (*this)*fm::invsqrt3(lth);
+		return (lth==T(1) || lth==T(0)) ? *this : (*this)/std::sqrt(lth);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -192,15 +187,13 @@ namespace fm
 		return  *this;
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector4<T> vector4<T>::sgn() const
 	{
-		T lth=LENGTH();
-		return (lth==1 || lth==0) ? *this : (*this)*fm::invsqrt3(lth);
+		T lth = LENGTH();
+		return (lth==1 || lth==0) ? *this : (*this)/std::sqrt(lth);
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -208,115 +201,7 @@ namespace fm
 	{
 		return vector4<T>(T(1)/x,T(1)/y,T(1)/z,T(1)/w);
 	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector4<T> vector4<T>::byComp(typename vector4<T>::const_reference vec) const
-	{
-		return vector4<T>(x * vec.x,
-						  y * vec.y,
-						  z * vec.z,
-						  w * vec.w);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector4<T> vector4<T>::byComp(const T &X,const T &Y,const T &Z,const T &W) const
-	{
-		return vector4<T>(x * X,
-						  y * Y,
-						  z * Z,
-						  w * W);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector4<T> vector4<T>::byCompInv(typename vector4<T>::const_reference vec) const
-	{
-		return vector4<T>(x / vec.x,
-						  y / vec.y,
-						  z / vec.z,
-						  w / vec.w);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector4<T> vector4<T>::byCompInv(const T &X,const T &Y,const T &Z,const T &W) const
-	{
-		return vector4<T>(x / X,
-						  y / Y,
-						  z / Z,
-						  w / W);
-	}
-
-
-	template<class T>
-	template<class T2>
-	inline vector4<T> vector4<T>::load(const T2 &vec)
-	{
-		return vector4<T>(vec.x,vec.y,vec.z,vec.w);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline vector4<T> vector4<T>::loadxyzw(const T2 &vec)
-	{
-		return vector4<T>(vec.x,vec.y,vec.z,vec.w);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline vector4<T> vector4<T>::loadrgba(const T2 &vec)
-	{
-		return vector4<T>(vec.r,vec.g,vec.b,vec.a);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline T2 vector4<T>::convert() const
-	{
-		return T2(x,y,z,w);
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline T2 vector4<T>::convertxyzw() const
-	{
-		T2 ret;
-		ret.x = x;
-		ret.y = y;
-		ret.z = z;
-		ret.w = w;
-		return ret;
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	inline T2 vector4<T>::convertrgba() const
-	{
-		T2 ret;
-		ret.r = r;
-		ret.g = g;
-		ret.b = b;
-		ret.a = a;
-		return ret;
-	}
-
-
+	
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline vector4<T> vector4<T>::fromHex(unsigned int hex)
@@ -326,7 +211,6 @@ namespace fm
 						   *(((unsigned char*)&hex)+1) / 255.f,
 						   *(((unsigned char*)&hex)+0) / 255.f );
 	}
-
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -340,7 +224,6 @@ namespace fm
 		return ret;
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline typename vector4<T>::reference vector4<T>::operator()(const T &X,const T &Y,const T &Z)
@@ -351,7 +234,6 @@ namespace fm
 		return *this;
 	}
 
-
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline typename vector4<T>::reference vector4<T>::operator()(const T &X,const T &Y,const T &Z,const T &W)
@@ -360,18 +242,6 @@ namespace fm
 		y = Y;
 		z = Z;
 		w = W;
-		return *this;
-	}
-
-
-	////////////////////////////////////////////////////////////
-	template<class T>
-	inline typename vector4<T>::reference vector4<T>::operator()(typename vector4<T>::const_reference vec)
-	{
-		x = vec.x;
-		y = vec.y;
-		z = vec.z;
-		w = vec.w;
 		return *this;
 	}
 
@@ -388,86 +258,151 @@ namespace fm
 	{
 		return *((T*)this+index);
 	}
+	
+	template<class T> vector4<T> vector4<T>::White      = vector4<T>::fromHex(0xFFFFFFFF);
+	template<class T> vector4<T> vector4<T>::Silver     = vector4<T>::fromHex(0xBFBFBFFF);
+	template<class T> vector4<T> vector4<T>::Gray       = vector4<T>::fromHex(0x7B7B7BFF);
+	template<class T> vector4<T> vector4<T>::Grey       = vector4<T>::fromHex(0x7B7B7BFF);
+	template<class T> vector4<T> vector4<T>::Black      = vector4<T>::fromHex(0x000000FF);
+	template<class T> vector4<T> vector4<T>::Red        = vector4<T>::fromHex(0xFF0000FF);
+	template<class T> vector4<T> vector4<T>::Brown      = vector4<T>::fromHex(0x7B4000FF);
+	template<class T> vector4<T> vector4<T>::Yellow     = vector4<T>::fromHex(0xFFFF00FF);
+	template<class T> vector4<T> vector4<T>::Lime       = vector4<T>::fromHex(0x00FF00FF);
+	template<class T> vector4<T> vector4<T>::Green      = vector4<T>::fromHex(0x218C21FF);
+	template<class T> vector4<T> vector4<T>::Teal       = vector4<T>::fromHex(0x007B7BFF);
+	template<class T> vector4<T> vector4<T>::Blue       = vector4<T>::fromHex(0x0000FFFF);
+	template<class T> vector4<T> vector4<T>::Navy       = vector4<T>::fromHex(0x00007BFF);
+	template<class T> vector4<T> vector4<T>::Purple     = vector4<T>::fromHex(0x8F00D6FF);
+	template<class T> vector4<T> vector4<T>::Maroon     = vector4<T>::fromHex(0x7B0000FF);
+	template<class T> vector4<T> vector4<T>::Pink       = vector4<T>::fromHex(0xFF00FFFF);
+	template<class T> vector4<T> vector4<T>::Olive      = vector4<T>::fromHex(0x7B7B00FF);
+	template<class T> vector4<T> vector4<T>::Orange     = vector4<T>::fromHex(0xFFA300FF);
+	template<class T> vector4<T> vector4<T>::Aqua       = vector4<T>::fromHex(0x00FFFFFF);
+	template<class T> vector4<T> vector4<T>::Bone       = vector4<T>::fromHex(0xF2F2E6FF);
+	template<class T> vector4<T> vector4<T>::Tan        = vector4<T>::fromHex(0xD1B28CFF);
+	template<class T> vector4<T> vector4<T>::Charcoal   = vector4<T>::fromHex(0x444444FF);
+	template<class T> vector4<T> vector4<T>::Royal      = vector4<T>::fromHex(0x074C9EFF);
+	template<class T> vector4<T> vector4<T>::Azure      = vector4<T>::fromHex(0x007FFFFF);
+	template<class T> vector4<T> vector4<T>::Aquamarine = vector4<T>::fromHex(0x7FFFD2FF);
+	template<class T> vector4<T> vector4<T>::Forest     = vector4<T>::fromHex(0x218921FF);
+	template<class T> vector4<T> vector4<T>::Gold       = vector4<T>::fromHex(0xFFD600FF);
+	template<class T> vector4<T> vector4<T>::Coral      = vector4<T>::fromHex(0xFF7F4FFF);
+	template<class T> vector4<T> vector4<T>::Lavender   = vector4<T>::fromHex(0xB57FDBFF);
+	template<class T> vector4<T> vector4<T>::Indigo     = vector4<T>::fromHex(0x490082FF);
 
+
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+	
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector4<T> &vector4<T>::operator*=(const T &scalar)
+	template<class T,class T2>
+	inline auto operator+(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x+right.x)>
 	{
-		x*=scalar;
-		y*=scalar;
-		z*=scalar;
-		w*=scalar;
-		return *this;
+		return vector4<decltype(left.x+right.x)>(left.x+right.x,
+												 left.y+right.y,
+												 left.z+right.z,
+												 left.w+right.w);
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline vector4<T> &vector4<T>::operator/=(const T &scalar)
+	template<class T,class T2>
+	inline auto operator-(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x-right.x)>
 	{
-		x/=scalar;
-		y/=scalar;
-		z/=scalar;
-		w/=scalar;
-		return *this;
+		return vector4<decltype(left.x-right.x)>(left.x-right.x,
+												 left.y-right.y,
+												 left.z-right.z,
+												 left.w-right.w);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator*(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x*right.x)>
+	{
+		return vector4<decltype(left.x*right.x)>(left.x*right.x,
+												 left.y*right.y,
+												 left.z*right.z,
+												 left.w*right.w);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator/(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x/right.x)>
+	{
+		return vector4<decltype(left.x/right.x)>(left.x/right.x,
+												 left.y/right.y,
+												 left.z/right.z,
+												 left.w/right.w);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator%(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x%right.x)>
+	{
+		return vector4<decltype(left.x%right.x)>(left.x%right.x,
+												 left.y%right.y,
+												 left.z%right.z,
+												 left.w%right.w);
 	}
 	
-	template<class T> vector4<T> vector4<T>::White     = vector4<T>::fromHex(0xFFFFFFFF);
-	template<class T> vector4<T> vector4<T>::Silver    = vector4<T>::fromHex(0xBFBFBFFF);
-	template<class T> vector4<T> vector4<T>::Gray      = vector4<T>::fromHex(0x7B7B7BFF);
-	template<class T> vector4<T> vector4<T>::Grey      = vector4<T>::fromHex(0x7B7B7BFF);
-	template<class T> vector4<T> vector4<T>::Black     = vector4<T>::fromHex(0x000000FF);
-	template<class T> vector4<T> vector4<T>::Red       = vector4<T>::fromHex(0xFF0000FF);
-	template<class T> vector4<T> vector4<T>::Brown     = vector4<T>::fromHex(0x7B4000FF);
-	template<class T> vector4<T> vector4<T>::Yellow    = vector4<T>::fromHex(0xFFFF00FF);
-	template<class T> vector4<T> vector4<T>::Lime      = vector4<T>::fromHex(0x00FF00FF);
-	template<class T> vector4<T> vector4<T>::Green     = vector4<T>::fromHex(0x218C21FF);
-	template<class T> vector4<T> vector4<T>::Teal      = vector4<T>::fromHex(0x007B7BFF);
-	template<class T> vector4<T> vector4<T>::Blue      = vector4<T>::fromHex(0x0000FFFF);
-	template<class T> vector4<T> vector4<T>::Navy      = vector4<T>::fromHex(0x00007BFF);
-	template<class T> vector4<T> vector4<T>::Purple    = vector4<T>::fromHex(0x8F00D6FF);
-	template<class T> vector4<T> vector4<T>::Maroon    = vector4<T>::fromHex(0x7B0000FF);
-	template<class T> vector4<T> vector4<T>::Pink      = vector4<T>::fromHex(0xFF00FFFF);
-	template<class T> vector4<T> vector4<T>::Olive     = vector4<T>::fromHex(0x7B7B00FF);
-	template<class T> vector4<T> vector4<T>::Orange    = vector4<T>::fromHex(0xFFA300FF);
-	template<class T> vector4<T> vector4<T>::Aqua      = vector4<T>::fromHex(0x00FFFFFF);
-	template<class T> vector4<T> vector4<T>::Bone      = vector4<T>::fromHex(0xF2F2E6FF);
-	template<class T> vector4<T> vector4<T>::Tan       = vector4<T>::fromHex(0xD1B28CFF);
-	template<class T> vector4<T> vector4<T>::Charcoal  = vector4<T>::fromHex(0x444444FF);
-	template<class T> vector4<T> vector4<T>::Royal     = vector4<T>::fromHex(0x074C9EFF);
-	template<class T> vector4<T> vector4<T>::Azure     = vector4<T>::fromHex(0x007FFFFF);
-	template<class T> vector4<T> vector4<T>::Aquamarine= vector4<T>::fromHex(0x7FFFD2FF);
-	template<class T> vector4<T> vector4<T>::Forest    = vector4<T>::fromHex(0x218921FF);
-	template<class T> vector4<T> vector4<T>::Gold      = vector4<T>::fromHex(0xFFD600FF);
-	template<class T> vector4<T> vector4<T>::Coral     = vector4<T>::fromHex(0xFF7F4FFF);
-	template<class T> vector4<T> vector4<T>::Lavender  = vector4<T>::fromHex(0xB57FDBFF);
-	template<class T> vector4<T> vector4<T>::Indigo    = vector4<T>::fromHex(0x490082FF);
-}
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x b                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const vector4<T> &left,const T2 &right) -> vector4<decltype(left.x*right)>
+	{
+		return vector4<decltype(left.x*right)>(left.x*right,
+											   left.y*right,
+											   left.z*right,
+											   left.w*right);
+	}
 
-
-
-namespace std
-{
-    template<typename,typename>
-    class basic_ostream;
-
-    template<typename,typename>
-    class basic_istream;
-}
-
-template<class T,class CharT,class CharTraitT>
-inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::vector4<T> &vec)
-{
-	return out<<vec.x<<' '<<vec.y<<' '<<vec.z<<' '<<vec.w;
-}
-
-template<class T,class CharT,class CharTraitT>
-inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::vector4<T> &vec)
-{
-	return in>>vec.x>>vec.y>>vec.z>>vec.w;
-}
-
-namespace fm
-{
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const T2 &left,const vector4<T> &right) -> vector4<decltype(left*right.x)>
+	{
+		return vector4<decltype(left*right.x)>(left*right.x,
+											   left*right.y,
+											   left*right.z,
+											   left*right.w);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator/(const vector4<T> &left,const T2 &right) -> vector4<decltype(left.x/right)>
+	{
+		return vector4<decltype(left.x/right)>(left.x/right,
+											   left.y/right,
+											   left.z/right,
+											   left.w/right);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator%(const vector4<T> &left,const T2 &right) -> vector4<decltype(left.x%right)>
+	{
+		return vector4<decltype(left.x%right)>(left.x%right,
+											   left.y%right,
+											   left.z%right,
+											   left.w%right);
+	}
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x= B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector4<T> &operator+=(vector4<T> &left,const vector4<T2> &right)
@@ -478,7 +413,7 @@ namespace fm
 		left.w+=right.w;
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector4<T> &operator-=(vector4<T> &left,const vector4<T2> &right)
@@ -499,7 +434,7 @@ namespace fm
 		left.w*=right.w;
 		return left;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector4<T> &operator/=(vector4<T> &left,const vector4<T2> &right)
@@ -510,84 +445,26 @@ namespace fm
 		left.w/=right.w;
 		return left;
 	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector4<FRONTIER_FIND_RETURN_TYPE(T,T2,+)> operator+(const vector4<T> &left,const vector4<T2> &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,+) retT;
-		return vector4<retT>(left.x+right.x,
-						     left.y+right.y,
-						     left.z+right.z,
-						     left.w+right.w);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector4<FRONTIER_FIND_RETURN_TYPE(T,T2,-)> operator-(const vector4<T> &left,const vector4<T2> &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,-) retT;
-		return vector4<retT>(left.x-right.x,
-						     left.y-right.y,
-						     left.z-right.z,
-						     left.w-right.w);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector4<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector4<T> &left,const vector4<T2> &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,*) retT;
-		return vector4<retT>(left.x*right.x,
-						     left.y*right.y,
-						     left.z*right.z,
-						     left.w*right.w);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector4<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector4<T> &left,const vector4<T2> &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,/) retT;
-		return vector4<retT>(left.x/right.x,
-						     left.y/right.y,
-						     left.z/right.z,
-						     left.w/right.w);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector4<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const vector4<T> &left,const T2 &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,*) retT;
-		return vector4<retT>(left.x*right,
-						     left.y*right,
-						     left.z*right,
-						     left.w*right);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,class T2>
-	inline vector4<FRONTIER_FIND_RETURN_TYPE(T,T2,/)> operator/(const vector4<T> &left,const T2 &right)
-	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,/) retT;
-		return vector4<retT>(left.x/right,
-						     left.y/right,
-						     left.z/right,
-						     left.w/right);
-	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline vector4<FRONTIER_FIND_RETURN_TYPE(T,T2,*)> operator*(const T &left,const vector4<T2> &right)
+	inline vector4<T> &operator%=(vector4<T> &left,const vector4<T2> &right)
 	{
-		typedef FRONTIER_FIND_RETURN_TYPE(T,T2,*) retT;
-		return vector4<retT>(left*right.x,
-						     left*right.y,
-						     left*right.z,
-							 left*right.w);
+		left.x%=right.x;
+		left.y%=right.y;
+		left.z%=right.z;
+		left.w%=right.w;
+		return left;
 	}
+
 	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A eq B                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline bool operator==(const vector4<T> &left,const vector4<T2> &right)
@@ -602,14 +479,46 @@ namespace fm
 		return left.x!=right.x || left.y!=right.y || left.z!=right.z || left.w!=right.w;
 	}
 	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+						 x A                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline vector4<T> operator-(const vector4<T> &vec)
+	auto operator-(const vector4<T> &vec) -> vector4<decltype(-vec.x)>
 	{
-		return vector4<T>(vec.x*T(-1),
-						  vec.y*T(-1),
-						  vec.z*T(-1),
-						  vec.w*T(-1));
+		return vector4<decltype(-vec.x)>(vec.x*T(-1),
+										 vec.y*T(-1),
+										 vec.z*T(-1),
+										 vec.w*T(-1));
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	auto operator+(const vector4<T> &vec) -> vector4<decltype(+vec.x)>
+	{
+		return vector4<decltype(-vec.x)>(vec.x*T(1),
+										 vec.y*T(1),
+										 vec.z*T(1),
+										 vec.w*T(1));
 	}
 }
+
+#include <FRONTIER/System/util/PredefStreams.hpp>
+
+template<class T,class CharT,class CharTraitT>
+inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::vector4<T> &vec)
+{
+	return out<<vec.x<<' '<<vec.y<<' '<<vec.z<<' '<<vec.w;
+}
+
+template<class T,class CharT,class CharTraitT>
+inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::vector4<T> &vec)
+{
+	return in>>vec.x>>vec.y>>vec.z>>vec.w;
+}
+
 #endif

@@ -16,56 +16,27 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_ANGLE_HPP_INCLUDED
 #define FRONTIER_ANGLE_HPP_INCLUDED
-#include <FRONTIER/System/macros/API.h>
 #define FRONTIER_ANGLE
+
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to hold and convert the value of an angle
 	///
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API Angle
+	template<class T = float>
+	class Angle
 	{
-		float m_amount; ///< A float holding the angle always in radians
+		T m_amount; ///< Holds the angle in radians
+	
 	public:
-		typedef float component_type;
+		typedef T component_type;
 		typedef Angle &reference;
 		typedef const Angle &const_reference;
 		enum {
 			components = 1u ///< Public value indicating the amount of component_types in the class
 		};
-		/////////////////////////////////////////////////////////////
-		/// @brief Enumerated type used to decide if a float value
-		///		   is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-		///		   or in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-		///
-		/////////////////////////////////////////////////////////////
-		enum MeasureType{Deg     = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 DEG     = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 degs    = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 Degs    = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 DEGS    = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 Degrees = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-						 DEGREES = 0, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-
-						 Rad     = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 RAD     = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 rads    = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 Rads    = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 RADS    = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 Radians = 1, ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						 RADIANS = 1  ///< Indicates that the value is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-						};
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Public static value indicating that the constructor
-		/// 	   treats the passed float as if it
-		///		   is in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-		///		   or as if it is in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-		///
-		/////////////////////////////////////////////////////////////
-		static MeasureType globalMeasureType;
-
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		///
@@ -75,16 +46,12 @@ namespace fm
 		Angle();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct angle from value
-		///
-		/// Please note that if fm::Angle::globalMeasureType is Deg,DEG,degs,Degs,Degrees or DEGREES then
-		/// @a angle is treated as if it was in <a href="http://en.wikipedia.org/wiki/Radian">radians</a> and if fm::Angle::globalMeasureType
-		/// is Rad,RAD,rads,Rads,RADS,Radians or RADIANS then @a angle is treated as if it was in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>.
-		///
-		/// @param angle Value to initialize with
+		/// @brief Construct angle from value in radians
+		/// 
+		/// @param angle Value to initialize with (in radians)
 		///
 		/////////////////////////////////////////////////////////////
-		Angle(float angle);
+		Angle(const T &angle);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy constructor
@@ -92,51 +59,8 @@ namespace fm
 		/// @param copy Angle to copy
 		///
 		/////////////////////////////////////////////////////////////
-		Angle(const Angle &copy);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct angle from value
-		///
-		/// If @a type is Deg,DEG,degs,Degs,Degrees or DEGREES then @a angle is treated as if it was in
-		/// <a href="http://en.wikipedia.org/wiki/Radian">radians</a> and if @a type
-		/// is Rad,RAD,rads,Rads,RADS,Radians or RADIANS then @a angle is treated as if it was in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>.
-		///
-		/////////////////////////////////////////////////////////////
-		Angle(float angle,MeasureType type);
-
-
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the angle as <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-		///
-		/// @return The angle in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-		///
-		/////////////////////////////////////////////////////////////
-		float asDegrees() const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the angle as <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-		///
-		/// @return The angle in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-		///
-		/////////////////////////////////////////////////////////////
-		float asRadians() const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the angle as <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-		///
-		/// @return The angle in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-		///
-		/////////////////////////////////////////////////////////////
-		float asDegs() const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the angle as <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-		///
-		/// @return The angle in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-		///
-		/////////////////////////////////////////////////////////////
-		float asRads() const;
+		template<class T2>
+		Angle(const Angle<T2> &copy);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the angle as  <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
@@ -144,7 +68,7 @@ namespace fm
 		/// @return The angle in  <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
 		///
 		/////////////////////////////////////////////////////////////
-		float asDeg() const;
+		T asDeg() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the angle as <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
@@ -152,7 +76,16 @@ namespace fm
 		/// @return The angle in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
 		///
 		/////////////////////////////////////////////////////////////
-		float asRad() const;
+		T asRad() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the angle as <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
+		///
+		/// @return The angle in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T2>
+		operator Angle<T2>() const;
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -165,7 +98,8 @@ namespace fm
 	/// @return Result of the addition
 	///
 	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API operator+(const Angle &left,const Angle &right);
+	template<class T,class T2>
+	auto operator+(const Angle<T> &left,const Angle<T2> &right) -> Angle<decltype(left.asRad()+right.asRad())>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -177,7 +111,8 @@ namespace fm
 	/// @return Result of the substraction
 	///
 	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API operator-(const Angle &left,const Angle &right);
+	template<class T,class T2>
+	auto operator-(const Angle<T> &left,const Angle<T2> &right) -> Angle<decltype(left.asRad()-right.asRad())>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -188,43 +123,60 @@ namespace fm
 	/// @return Result of the negation
 	///
 	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API operator-(const Angle &angle);
+	template<class T>
+	auto operator-(const Angle<T> &angle) -> Angle<decltype(-angle.asRad())>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
 	/// @brief Overload of binary operator *
 	///
 	/// @param left Left operand (Angle)
-	/// @param right Right operand (float)
+	/// @param right Right operand (scalar)
 	///
 	/// @return Result of the multiplication
 	///
 	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API operator*(const Angle &left,const float &right);
+	template<class T>
+	auto operator*(const Angle<T> &left,const T &right) -> Angle<decltype(left.asRad()*right)>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
 	/// @brief Overload of binary operator *
 	///
-	/// @param left Left operand (float)
+	/// @param left Left operand (scalar)
 	/// @param right Right operand (Angle)
 	///
 	/// @return Result of the multiplication
 	///
 	/////////////////////////////////////////////////////////////
-    Angle FRONTIER_API operator*(const float &left,const Angle &right);
+	template<class T>
+	auto operator*(const T &left,const Angle<T> &right) -> Angle<decltype(left*right.asRad())>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
 	/// @brief Overload of binary operator /
 	///
 	/// @param left Left operand (Angle)
-	/// @param right Right operand (float)
+	/// @param right Right operand (scalar)
 	///
 	/// @return Result of the division
 	///
 	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API operator/(const Angle &left,const float &right);
+	template<class T>
+	auto operator/(const Angle<T> &left,const T &right) -> Angle<decltype(left.asRad()/right)>;
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::Angle
+	/// @brief Overload of binary operator /
+	///
+	/// @param left Left operand (Angle)
+	/// @param right Right operand (Angle)
+	///
+	/// @return Result of the division
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator/(const Angle<T> &left,const Angle<T2> &right) -> Angle<decltype(left.asRad()/right.asRad())>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -236,7 +188,8 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API &operator+=(Angle &left,const Angle &right);
+	template<class T>
+	Angle<T> &operator+=(Angle<T> &left,const Angle<T> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -248,43 +201,47 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API &operator-=(Angle &left,const Angle &right);
+	template<class T>
+	Angle<T> &operator-=(Angle<T> &left,const Angle<T> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
 	/// @brief Overload of binary operator *=
 	///
 	/// @param left Left operand (Angle)
-	/// @param right Right operand (float)
+	/// @param right Right operand (scalar)
 	///
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API &operator*=(Angle &left,const float &right);
+	template<class T>
+	Angle<T> &operator*=(Angle<T> &left,const T &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
 	/// @brief Overload of binary operator /=
 	///
 	/// @param left Left operand (Angle)
-	/// @param right Right operand (float)
+	/// @param right Right operand (scalar)
 	///
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API &operator/=(Angle &left,const float &right);
+	template<class T>
+	Angle<T> &operator/=(Angle<T> &left,const T &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
 	/// @brief Overload of binary operator ==
 	///
 	/// @param left Left operand (Angle)
-	/// @param right Right operand (float)
+	/// @param right Right operand (Angle)
 	///
 	/// @return True if @a left equals @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool FRONTIER_API operator==(const Angle &left,const Angle &right);
+	template<class T,class T2>
+	bool operator==(const Angle<T> &left,const Angle<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -296,7 +253,8 @@ namespace fm
 	/// @return True if @a left does not equal @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool FRONTIER_API operator!=(const Angle &left,const Angle &right);
+	template<class T,class T2>
+	bool operator!=(const Angle<T> &left,const Angle<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -308,7 +266,8 @@ namespace fm
 	/// @return True if @a left is smaller @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool FRONTIER_API operator< (const Angle &left,const Angle &right);
+	template<class T,class T2>
+	bool operator< (const Angle<T> &left,const Angle<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -320,7 +279,8 @@ namespace fm
 	/// @return True if @a left is smaller or equal @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool FRONTIER_API operator<=(const Angle &left,const Angle &right);
+	template<class T,class T2>
+	bool operator<=(const Angle<T> &left,const Angle<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -332,7 +292,8 @@ namespace fm
 	/// @return True if @a left is bigger @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool FRONTIER_API operator> (const Angle &left,const Angle &right);
+	template<class T,class T2>
+	bool operator> (const Angle<T> &left,const Angle<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -344,7 +305,8 @@ namespace fm
 	/// @return True if @a left is bigger or equal @a right
 	///
 	/////////////////////////////////////////////////////////////
-	bool FRONTIER_API operator>=(const Angle &left,const Angle &right);
+	template<class T,class T2>
+	bool operator>=(const Angle<T> &left,const Angle<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -355,7 +317,8 @@ namespace fm
 	/// @return The created instance of fm::Angle
 	///
 	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API degrees(float amount);
+	template<class T>
+	Angle<T> deg(const T &amount);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -366,29 +329,8 @@ namespace fm
 	/// @return The created instance of fm::Angle
 	///
 	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API radians(float amount);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::Angle
-	/// @brief Create a fm::Angle from @a amount degrees
-	///
-	/// @param amount The angle in <a href="http://en.wikipedia.org/wiki/Degree_%28angle%29">degrees</a>
-	///
-	/// @return The created instance of fm::Angle
-	///
-	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API deg(float amount);
-
-	/////////////////////////////////////////////////////////////
-	/// @relates fm::Angle
-	/// @brief Create a fm::Angle from @a amount radians
-	///
-	/// @param amount The angle in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-	///
-	/// @return The created instance of fm::Angle
-	///
-	/////////////////////////////////////////////////////////////
-	Angle FRONTIER_API rad(float amount);
+	template<class T>
+	Angle<T> rad(const T &amount);
 }
 
 namespace std
@@ -402,7 +344,8 @@ namespace std
 	/// @return <a href="http://en.wikipedia.org/wiki/Sine">sin</a>(angle)
 	///
 	/////////////////////////////////////////////////////////////
-    float FRONTIER_API sin(const fm::Angle &angle);
+	template<class T>
+	auto sin(const fm::Angle<T> &angle) -> decltype(sin(angle.asRad()));
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -413,7 +356,8 @@ namespace std
 	/// @return <a href="http://en.wikipedia.org/wiki/Cosine#Sine.2C_cosine_and_tangent">cos</a>(angle)
 	///
 	/////////////////////////////////////////////////////////////
-    float FRONTIER_API cos(const fm::Angle &angle);
+	template<class T>
+    auto cos(const fm::Angle<T> &angle) -> decltype(cos(angle.asRad()));
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -424,23 +368,13 @@ namespace std
 	/// @return <a href="http://en.wikipedia.org/wiki/Cosine#Sine.2C_cosine_and_tangent">tan</a>(angle)
 	///
 	/////////////////////////////////////////////////////////////
-    float FRONTIER_API tan(const fm::Angle &angle);
+	template<class T>
+    auto tan(const fm::Angle<T> &angle) -> decltype(tan(angle.asRad()));
 
 }
 
 #endif // FRONTIER_ANGLE_HPP_INCLUDED
 
-////////////////////////////////////////////////////////////
-/// @class fm::Angle
-/// @ingroup System
-///
-/// Usage example:
-/// @code
-///
-/// fm::Angle a(180);
-/// std::cout<<std::cos(a)<<std::endl;
-/// std::cout<<std::cos(fm::deg(180))<<std::endl;
-/// std::cout<<std::cos(fm::rad(fm::PI))<<std::endl;
-///
-/// @endcode
-////////////////////////////////////////////////////////////
+#ifndef FRONTIER_DONT_INCLUDE_INL
+	#include <FRONTIER/System/Angle.inl>
+#endif
