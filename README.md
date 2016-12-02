@@ -1,5 +1,5 @@
 <h1>Flib v0.8</h1>
-<p align="center"><b>====:o:====</b></p>
+<p align="center"><b>====<img src="https://photos-2.dropbox.com/t/2/AACLQ8QkdIkZc5JkDlZqYdZjT_SiLHMgBZEw74lmsUsanQ/12/146126124/png/32x32/1/_/1/2/circle.png/EPCo528YlV4gAigC/X6T3yLuf07n4PX7i64kLn63qmi2YQFlo8-SSdj6fmQ4?size=1280x960&size_mode=3"/>====</b></p>
 <h2>Description</h2>
 
 Classes for managing windows and creating OpenGL contexts (for Windows and Linux)
