@@ -656,13 +656,13 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	auto operator+(const vector2<T> &vec) -> vector2<decltype(+vec.x)>;
-
-	typedef vector2<float> 	      vec2;
-	typedef vector2<int>   	      vec2i;
-	typedef vector2<bool>         vec2b;
-	typedef vector2<float> 	      vec2f;
-	typedef vector2<double>       vec2d;
-	typedef vector2<unsigned int> vec2u;
+	
+	typedef vector2<float> 	       vec2;
+	typedef vector2<int>   	       vec2i;
+	typedef vector2<float> 	       vec2f;
+	typedef vector2<double>        vec2d;
+	typedef vector2<unsigned int>  vec2u;
+	typedef vector2<unsigned char> vec2b;
 }
 
 namespace std

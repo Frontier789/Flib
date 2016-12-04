@@ -9,12 +9,46 @@ include $(F_PATH_TO_INCLUDE)/FRONTIER/Makefiles/common.mk
 F_LIB_TARGET=$(F_LIB_DIR_NAME)
 F_O_FILES_DIR=$(F_PATH_TO_ROOT)/$(F_LIB_TARGET)
 
+# all the .a targets
 all: make_lib_files make_lib_f
 
-# include System module
-F_CURRENT_MODULE=System
-include generic.mk
+####  ####  ####  #####  ####  ####  ####
+#                                       #
+#          directory targets            #
+#                                       #
+####  ####  ####  #####  ####  ####  ####
 
+$(F_O_FILES_DIR):
+	$(MKDIR) $(F_O_FILES_DIR)
+
+$(F_O_FILES_DIR)/static: | $(F_O_FILES_DIR)
+	$(CD) $(F_O_FILES_DIR) && $(MKDIR) static
+
+F_MODULES=Graphics System
+
+####  ####  ####  ## generating targets ##  ####  ####  ####
+
+$(foreach MODULE,$(F_MODULES), \
+ $(eval F_CUR_MODULE=$(call F_UPPERCASE,$(MODULE))) \
+ \
+ $(eval F_$(F_CUR_MODULE)_CPP_FILES=$(wildcard $(MODULE)/*.cpp)) \
+ $(eval F_$(F_CUR_MODULE)_O_FILES=$(addprefix $(F_O_FILES_DIR)/static/$(MODULE)/,$(notdir $(F_$(F_CUR_MODULE)_CPP_FILES:.cpp=.o)))) \
+ $(eval F_$(F_CUR_MODULE)_MODULE_A=$(F_O_FILES_DIR)/libf-$(call F_LOWERCASE,$(MODULE)).a) \
+ \
+ $(eval F_STATIC_O_FILES+=$(F_$(F_CUR_MODULE)_O_FILES)) \
+ $(eval F_MODULE_A_FILES+=$(F_$(F_CUR_MODULE)_MODULE_A)) \
+ \
+ $(eval $(F_O_FILES_DIR)/static/$(MODULE): | $(F_O_FILES_DIR)/static ; \
+	$(CD) $(F_O_FILES_DIR) && $(CD) static && $(MKDIR) $(MODULE)) \
+ \
+ $(eval $(F_$(F_CUR_MODULE)_MODULE_A): $(F_$(F_CUR_MODULE)_O_FILES) ; \
+	$(AR) $$@ $$^ ) \
+ \
+ $(eval $(F_O_FILES_DIR)/static/$(MODULE)/%.o: $(MODULE)/%.cpp | $(F_O_FILES_DIR)/static/$(MODULE) ; \
+	$(CXX) $(CXXFLAGS) -I $(F_PATH_TO_INCLUDE) -c $$< -o $$@ ) \
+)
+
+####  ####  ####  ##                    ##  ####  ####  ####
 
 make_lib_files: $(F_MODULE_A_FILES)
 

@@ -25,8 +25,8 @@
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
+#include <FRONTIER/System/CommonTypes.hpp>
 #include <type_traits>
-#include <cstddef>
 
 #define FRONTIER_MATRIX
 namespace fm
@@ -37,7 +37,7 @@ namespace fm
 	///			   <a href="http://en.wikipedia.org/wiki/Matrix_%28mathematics%29">matricess</a>
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T = float>
+	template<Size W,Size H,class T = float>
 	class matrix
 	{
 		T m_data[W][H]; ///< 2D array holding the data of the matrix
@@ -172,7 +172,7 @@ namespace fm
 		/// @return Value at [x][y] or T(), if x is out of [0,W[ or y is out of [0,H[
 		///
 		/////////////////////////////////////////////////////////////
-		T at(size_t x,size_t y) const;
+		T at(Size x,Size y) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set element with bound check
@@ -186,7 +186,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference set(size_t x,size_t y,const T &value);
+		reference set(Size x,Size y,const T &value);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set matrix to <a href="http://en.wikipedia.org/wiki/Identity_matrix">identity</a>
@@ -256,7 +256,7 @@ namespace fm
 		/// @return Product of the multiplication
 		///
 		/////////////////////////////////////////////////////////////
-		template<size_t H2>
+		template<Size H2>
 		reference preMul(const matrix<H,H2,T> &mat);
 
 		/////////////////////////////////////////////////////////////
@@ -269,7 +269,7 @@ namespace fm
 		/// @return Converted matrix
 		///
 		/////////////////////////////////////////////////////////////
-		template<size_t W2,size_t H2,class T2>
+		template<Size W2,Size H2,class T2>
 		matrix<W2,H2,T2> convert() const;
 
 		/////////////////////////////////////////////////////////////
@@ -282,7 +282,7 @@ namespace fm
 		/// @return Converted matrix
 		///
 		/////////////////////////////////////////////////////////////
-		template<size_t W2,size_t H2>
+		template<Size W2,Size H2>
 		matrix<W2,H2,T> convert() const;
 		
 		/////////////////////////////////////////////////////////////
@@ -354,7 +354,7 @@ namespace fm
 		/// @return Pointer to the first element of the @a index -th row
 		///
 		/////////////////////////////////////////////////////////////
-		T *operator[](size_t index);
+		T *operator[](Size index);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Access(r only) a row of the matrix
@@ -367,7 +367,7 @@ namespace fm
 		/// @return Pointer to the first element of the @a index -th row
 		///
 		/////////////////////////////////////////////////////////////
-		const T *operator[](size_t index) const;
+		const T *operator[](Size index) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the data of the matrix
@@ -475,7 +475,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	auto operator*(const T &left,const matrix<W,H,T2> &right) -> matrix<W,H,decltype(left*right[0][0])>;
 
 	/////////////////////////////////////////////////////////////
@@ -488,7 +488,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	auto operator*(const matrix<W,H,T> &left,const T2 &right) -> matrix<W,H,decltype(left[0][0]*right)>;
 
 	/////////////////////////////////////////////////////////////
@@ -501,7 +501,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	auto operator/(const matrix<W,H,T> &left,const T2 &right) -> matrix<W,H,decltype(left[0][0]/right)>;
 
 	/////////////////////////////////////////////////////////////
@@ -514,7 +514,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,size_t H2,class T2>
+	template<Size W,Size H,class T,Size H2,class T2>
 	auto operator*(const matrix<W,H,T> &left,const matrix<H,H2,T2> &right) -> matrix<W,H2,decltype(left[0][0]*right[0][0])>;
 
 	/////////////////////////////////////////////////////////////
@@ -527,7 +527,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	auto operator+(const matrix<W,H,T> &left,const matrix<W,H,T2> &right) -> matrix<W,H,decltype(left[0][0]+right[0][0])>;
 
 	/////////////////////////////////////////////////////////////
@@ -540,7 +540,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	auto operator-(const matrix<W,H,T> &left,const matrix<W,H,T2> &right) -> matrix<W,H,decltype(left[0][0]-right[0][0])>;
 
 	/////////////////////////////////////////////////////////////
@@ -552,7 +552,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	auto operator-(const matrix<W,H,T> &mat) -> matrix<W,H,decltype(-mat[0][0])>;
 
 	/////////////////////////////////////////////////////////////
@@ -565,7 +565,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	matrix<W,H,T> &operator+=(matrix<W,H,T> &left,const matrix<W,H,T2> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -578,7 +578,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	matrix<W,H,T> &operator-=(matrix<W,H,T> &left,const matrix<W,H,T2> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -591,7 +591,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	matrix<W,H,T> &operator*=(matrix<W,H,T> &left,const matrix<H,H,T2> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -604,8 +604,8 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W ,size_t H ,class T,
-             size_t W2,size_t H2,class T2,class K = T,class Eq = T,class = typename std::enable_if<W == W2 && H == H2,K>::type >
+	template<Size W ,Size H ,class T,
+             Size W2,Size H2,class T2,class K = T,class Eq = T,class = typename std::enable_if<W == W2 && H == H2,K>::type >
 	bool operator==(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -618,8 +618,8 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W ,size_t H ,class T,
-             size_t W2,size_t H2,class T2,class K = T,class = typename std::enable_if<W != W2 || H != H2,K>::type >
+	template<Size W ,Size H ,class T,
+             Size W2,Size H2,class T2,class K = T,class = typename std::enable_if<W != W2 || H != H2,K>::type >
 	bool operator==(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -632,8 +632,8 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W ,size_t H ,class T,
-             size_t W2,size_t H2,class T2,class K = T,class Eq = T,class = typename std::enable_if<W == W2 && H == H2,K>::type>
+	template<Size W ,Size H ,class T,
+             Size W2,Size H2,class T2,class K = T,class Eq = T,class = typename std::enable_if<W == W2 && H == H2,K>::type>
 	bool operator!=(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right);
 
 	/////////////////////////////////////////////////////////////
@@ -646,8 +646,8 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	template<size_t W ,size_t H ,class T,
-             size_t W2,size_t H2,class T2,class K = T,class = typename std::enable_if<W != W2 || H != H2,K>::type>
+	template<Size W ,Size H ,class T,
+             Size W2,Size H2,class T2,class K = T,class = typename std::enable_if<W != W2 || H != H2,K>::type>
 	bool operator!=(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right);
 
 
@@ -869,23 +869,23 @@ namespace fm
         matrix<4,4,float> lookAt(const vec3 &cam_pos,const vec3 &target_pos,const vec3 &up_dir);
 	}
 	
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	const bool matrix<W,H,T>::isSquare = (W == H);
 
 	typedef matrix<2,2,float> mat2f;
 	typedef matrix<2,2,float> mat2;
-	typedef matrix<2,2,long> mat2u;
-	typedef matrix<2,2,int> mat2i;
+	typedef matrix<2,2,long>  mat2u;
+	typedef matrix<2,2,int>   mat2i;
 
 	typedef matrix<3,3,float> mat3f;
 	typedef matrix<3,3,float> mat3;
-	typedef matrix<3,3,long> mat3u;
-	typedef matrix<3,3,int> mat3i;
+	typedef matrix<3,3,long>  mat3u;
+	typedef matrix<3,3,int>   mat3i;
 
 	typedef matrix<4,4,float> mat4f;
 	typedef matrix<4,4,float> mat4;
-	typedef matrix<4,4,long> mat4u;
-	typedef matrix<4,4,int> mat4i;
+	typedef matrix<4,4,long>  mat4u;
+	typedef matrix<4,4,int>   mat4i;
 
 }
 

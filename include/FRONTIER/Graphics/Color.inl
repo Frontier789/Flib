@@ -14,8 +14,31 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Graphics.hpp>
-#include <FRONTIER/System.hpp>
+#ifndef FRONTIER_COLOR_INL_INCLUDED
+#define FRONTIER_COLOR_INL_INCLUDED
 
-using namespace fm;
-using namespace fg;
+namespace std
+{
+    template<typename,typename>
+    class basic_ostream;
+    
+    template<typename,typename>
+    class basic_istream;
+}
+
+template<class T,class CharT,class CharTraitT>
+inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out,const fg::Color &col)
+{
+	return out<<int(col.r)<<' '<<int(col.g)<<' '<<int(col.b)<<' '<<int(col.a);
+}
+
+template<class T,class CharT,class CharTraitT>
+inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in,fg::Color &col)
+{
+	int r,g,b,a;
+	in>>r>>g>>b>>a;
+	col(r,g,b,a);
+	return in;
+}
+
+#endif //FRONTIER_COLOR_INL_INCLUDED

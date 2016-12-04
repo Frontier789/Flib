@@ -727,12 +727,12 @@ namespace fm
 	template<class T>
 	auto operator+(const vector4<T> &vec) -> vector4<decltype(+vec.x)>;
 
-	typedef vector4<float> 	      vec4;
-	typedef vector4<int>   	      vec4i;
-	typedef vector4<bool>         vec4b;
-	typedef vector4<float> 	      vec4f;
-	typedef vector4<double>       vec4d;
-	typedef vector4<unsigned int> vec4u;
+	typedef vector4<float> 	       vec4;
+	typedef vector4<int>   	       vec4i;
+	typedef vector4<float> 	       vec4f;
+	typedef vector4<double>        vec4d;
+	typedef vector4<unsigned int>  vec4u;
+	typedef vector4<unsigned char> vec4b;
 
 }
 

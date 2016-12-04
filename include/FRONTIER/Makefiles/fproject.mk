@@ -56,3 +56,4 @@ $(F_O_DIR)/%.o: %.cpp | $(F_O_DIR)
 
 $(F_O_DIR):
 	$(MKDIR) $(F_O_DIR)
+	

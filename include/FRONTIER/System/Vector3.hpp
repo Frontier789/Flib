@@ -23,7 +23,7 @@ namespace fm
 {
 	template<class> class vector4;
 	template<class> class vector3;
-	template<class> class vector3;
+	template<class> class vector2;
 
 
 	/////////////////////////////////////////////////////////////
@@ -661,12 +661,12 @@ namespace fm
 	template<class T>
 	auto operator+(const vector3<T> &vec) -> vector3<decltype(+vec.x)>;
 
-	typedef vector3<float> 	      vec3;
-	typedef vector3<int>   	      vec3i;
-	typedef vector3<bool>         vec3b;
-	typedef vector3<float> 	      vec3f;
-	typedef vector3<double>       vec3d;
-	typedef vector3<unsigned int> vec3u;
+	typedef vector3<float> 	       vec3;
+	typedef vector3<int>   	       vec3i;
+	typedef vector3<float> 	       vec3f;
+	typedef vector3<double>        vec3d;
+	typedef vector3<unsigned int>  vec3u;
+	typedef vector3<unsigned char> vec3b;
 }
 
 namespace std

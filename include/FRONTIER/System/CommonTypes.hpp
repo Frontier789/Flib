@@ -14,8 +14,29 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Graphics.hpp>
-#include <FRONTIER/System.hpp>
+#ifndef FRONTIER_COMMONTYPES_HPP_INCLUDED
+#define FRONTIER_COMMONTYPES_HPP_INCLUDED
+#include <cstdint>
 
-using namespace fm;
-using namespace fg;
+namespace fm
+{
+	typedef std::size_t   Size;
+	typedef std::uint8_t  Uint8;
+	typedef std::uint16_t Uint16;
+	typedef std::uint32_t Uint32;
+	typedef std::uint64_t Uint64;
+	typedef std::int8_t   Int8;
+	typedef std::int16_t  Int16;
+	typedef std::int32_t  Int32;
+	typedef std::int64_t  Int64;
+	
+	template<class T> class vector2;
+	template<class T> class vector3;
+	template<class T> class vector4;
+	
+	typedef vector2<Size> vec2s;
+	typedef vector3<Size> vec3s;
+	typedef vector3<Size> vec4s;
+}
+
+#endif // FRONTIER_COMMONTYPES_HPP_INCLUDED
