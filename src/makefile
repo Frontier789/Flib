@@ -12,6 +12,9 @@ F_O_FILES_DIR=$(F_PATH_TO_ROOT)/$(F_LIB_TARGET)
 # all the .a targets
 all: make_lib_files make_lib_f
 
+# all the .a targets
+clean: del_lib
+
 ####  ####  ####  #####  ####  ####  ####
 #                                       #
 #          directory targets            #
@@ -19,7 +22,7 @@ all: make_lib_files make_lib_f
 ####  ####  ####  #####  ####  ####  ####
 
 $(F_O_FILES_DIR):
-	$(MKDIR) $(F_O_FILES_DIR)
+	$(CD) $(F_PATH_TO_ROOT) && $(MKDIR) $(F_LIB_TARGET)
 
 $(F_O_FILES_DIR)/static: | $(F_O_FILES_DIR)
 	$(CD) $(F_O_FILES_DIR) && $(MKDIR) static
@@ -56,3 +59,7 @@ make_lib_f: $(F_O_FILES_DIR)/libf.a
 
 $(F_O_FILES_DIR)/libf.a: $(F_STATIC_O_FILES) | $(F_O_FILES_DIR)
 	$(AR) $@ $^
+	
+	
+del_lib:
+	$(call F_DELETE,$(F_O_FILES_DIR))

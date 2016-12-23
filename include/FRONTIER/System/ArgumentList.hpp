@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_ARGUMENTLIST_HPP_INCLUDED
 #define FRONTIER_ARGUMENTLIST_HPP_INCLUDED
+#include <FRONTIER/System/util/RequireCpp11.hpp>
 #define FRONTIER_ARGUMENTLIST
 
 namespace fm

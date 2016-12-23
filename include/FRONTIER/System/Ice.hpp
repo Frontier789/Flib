@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_ICE_HPP_INCLUDED
 #define FRONTIER_ICE_HPP_INCLUDED
+#include <FRONTIER/System/util/RequireCpp11.hpp>
 #include <type_traits>
 #define FRONTIER_ICE
 

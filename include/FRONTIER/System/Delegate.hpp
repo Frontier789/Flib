@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_DELEGATE_HPP_INCLUDED
 #define FRONTIER_DELEGATE_HPP_INCLUDED
+#include <FRONTIER/System/util/RequireCpp11.hpp>
 #include <FRONTIER/System/DelegateImpl/BaseDelegate.hpp>
 #define FRONTIER_DELEGATE
 

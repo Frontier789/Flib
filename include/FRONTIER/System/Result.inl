@@ -14,31 +14,43 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_COMMONTYPES_HPP_INCLUDED
-#define FRONTIER_COMMONTYPES_HPP_INCLUDED
-#include <FRONTIER/System/util/RequireCpp11.hpp>
-#include <cstddef>
-#include <cstdint>
+#ifndef FRONTIER_RESULT_INL_INCLUDED
+#define FRONTIER_RESULT_INL_INCLUDED
+#include <iostream>
+using namespace std;
 
 namespace fm
 {
-	typedef std::size_t   Size;
-	typedef std::uint8_t  Uint8;
-	typedef std::uint16_t Uint16;
-	typedef std::uint32_t Uint32;
-	typedef std::uint64_t Uint64;
-	typedef std::int8_t   Int8;
-	typedef std::int16_t  Int16;
-	typedef std::int32_t  Int32;
-	typedef std::int64_t  Int64;
-	
-	template<class T> class vector2;
-	template<class T> class vector3;
-	template<class T> class vector4;
-	
-	typedef vector2<Size> vec2s;
-	typedef vector3<Size> vec3s;
-	typedef vector3<Size> vec4s;
+		/////////////////////////////////////////////////////////////
+		template<class... StringClass>
+		inline Result::Result(const std::string &type,
+							  ErrorLevel level,
+							  const std::string &error,
+							  const std::string &func,
+							  const std::string &file,
+							  fm::Size line,
+							  const StringClass &... detailsp) : type(type),
+																 level(level),
+																 error(error),
+																 func(func),
+																 file(file),
+																 line(line)
+		{
+			const std::string *ptrs[] = {&detailsp...};
+			
+			details.resize(sizeof(ptrs)/sizeof(*ptrs));
+			
+			for (fm::Size i = 0;i < details.size();++i)
+				details[i] = *ptrs[i];
+		}
 }
 
-#endif // FRONTIER_COMMONTYPES_HPP_INCLUDED
+#include <FRONTIER/System/util/PredefStreams.hpp>
+
+template<class T,class CharT,class CharTraitT>
+inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::Result &res)
+{
+	return out<<res.toString();
+}
+
+#endif // FRONTIER_RESULT_INL_INCLUDED

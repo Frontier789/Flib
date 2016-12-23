@@ -23,14 +23,11 @@
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
+#include <FRONTIER/System/Result.hpp>
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
 #include <FRONTIER/System/util/API.h>
-/*
-#include <FRONTIER/System/Result.hpp>
-#include <FRONTIER/System/Error.hpp>
-*/
 #define FRONTIER_IMAGE
 #include <string>
 
@@ -70,7 +67,7 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		Image(fm::vec2s size,Color color = Color::White);
-/*
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Load an image from a file
 		///
@@ -78,35 +75,27 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		Image(const std::string &filename);
-*/
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy a whole image
-		///
+		/// 
+		/// Operates in linear time to the number os texels
+		/// 
 		/// @param copy The source image
 		///
 		/////////////////////////////////////////////////////////////
 		Image(const Image &copy);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Move a whole image
-		///
+		/// @brief Move an image
+		/// 
+		/// Operates in constant time
+		/// 
 		/// @param move The source image
 		///
 		/////////////////////////////////////////////////////////////
 		Image(Image &&move);
-/*
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct an image as a subimage of an existing one
-		///
-		/// If @a sourceRect has a size of (0,0) it is interpreted as
-		/// copy.getSize() - sourceRect.pos
-		///
-		/// @param copy The source image
-		/// @param sourceRect The rect to be copied
-		///
-		/////////////////////////////////////////////////////////////
-		Image(const Image &copy,const fm::rect2s &sourceRect);
-*/
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the image with given size and fill with given color
 		///
@@ -131,141 +120,31 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		reference create(fm::vec2s size,const Color *texels);
-/*
+		
 		/////////////////////////////////////////////////////////////
-		/// @brief Recreate an image as a subimage of an existing one
-		///
-		/// @param copy The source image
-		/// @param sourceRect The rect to be copied
+		/// @brief Get a part of the image
+		/// 
+		/// Copies the part of the image
+		/// PArameters are clamped to the original image bounds if needed
+		/// 
+		/// @param pos The corner of the subimage
+		/// @param size the size of the requested subimage
 		///
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference create(const Image &copy,const fm::rect2s &sourceRect);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Copy from this image
-		///
-		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
-		///
-		/// @param destination The target image
-		/// @param destPos The destination position
-		/// @param sourceRect The rectangle to be copied
-		/// @param useAlpha If true then alpha-blending will be used
-		///
-		/////////////////////////////////////////////////////////////
-		void copyTo(Image &destination,fm::vec2s destPos,const fm::rect2s &sourceRect,bool useAlpha = false) const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Copy from this image
-		///
-		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
-		///
-		/// @param destination The target image
-		/// @param destX The x dimension of the destination position
-		/// @param destY The y dimension of the destination position
-		/// @param sourceRect The rectangle to be copied
-		/// @param useAlpha If true then alpha-blending will be used
-		///
-		/////////////////////////////////////////////////////////////
-		void copyTo(Image &destination,fm::Size destX,fm::Size destY,const fm::rect2s &sourceRect,bool useAlpha = false) const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Copy an image to this image
-		///
-		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
-		///
-		/// @param source The source image
-		/// @param destPos The destination position
-		/// @param sourceRect The rectangle to be copied
-		/// @param useAlpha If true then alpha-blending will be used
-		///
-		/// @return reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference copyFrom(const Image &source,fm::vec2s destPos,const fm::rect2s &sourceRect,bool useAlpha = false);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Copy an image to this image
-		///
-		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
-		///
-		/// @param source The source image
-		/// @param destX The x dimension of the destination position
-		/// @param destY The y dimension of the destination position
-		/// @param sourceRect The rectangle to be copied
-		/// @param useAlpha If true then alpha-blending will be used
-		///
-		/// @return reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference copyFrom(const Image &source,fm::Size destX,fm::Size destY,const fm::rect2s &sourceRect,bool useAlpha = false);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Copy this image
-		///
-		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
-		///
-		/// @param destination The target image
-		/// @param destPos The destination position
-		/// @param useAlpha If true then alpha-blending will be used
-		///
-		/////////////////////////////////////////////////////////////
-		void copyTo(Image &destination,fm::vec2s destPos,bool useAlpha = false) const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Copy this image
-		///
-		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
-		///
-		/// @param destination The target image
-		/// @param destX The x dimension of the destination position
-		/// @param destY The y dimension of the destination position
-		/// @param useAlpha If true then alpha-blending will be used
-		///
-		/////////////////////////////////////////////////////////////
-		void copyTo(Image &destination,fm::Size destX,fm::Size destY,bool useAlpha = false) const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Copy a whole image to this image
-		///
-		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
-		///
-		/// @param source The source image
-		/// @param destPos The destination position
-		/// @param useAlpha If true then alpha-blending will be used
-		///
-		/// @return reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference copyFrom(const Image &source,fm::vec2s destPos,bool useAlpha = false);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Copy a whole image to this image
-		///
-		/// If @a useAplha is true then <a href="http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending">alpha blending</a> will be processed
-		///
-		/// @param source The source image
-		/// @param destX The x dimension of the destination position
-		/// @param destY The y dimension of the destination position
-		/// @param useAlpha If true then alpha-blending will be used
-		///
-		/// @return reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference copyFrom(const Image &source,fm::Size destX,fm::Size destY,bool useAlpha = false);
-
+		Image getSubImage(fm::vec2s pos,fm::vec2s size) const;
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Load image from a file
 		///
-		/// Supported types are jpg, jpeg, png, gif, tga
-		/// it uses stb_image http://nothings.org
-		///
-		/// If anything goes wrong this function returns false and
-		/// a description of the error is printed to fg_log
-		///
+		/// Supported types are jpg, jpeg, png, gif, tga, bmp
+		/// this function uses stb_image http://nothings.org
+		/// 
+		/// On faliure preserves original state
+		/// 
 		/// @param filename The name of the file to load
-		///
+		/// 
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
@@ -274,11 +153,10 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Load image from a file that is loaded into memory
 		///
-		/// Supported types are jpg, jpeg, png, gif, tga
-		/// it uses stb_image http://nothings.org
-		///
-		/// If anything goes wrong this function returns false and
-		/// a description of the error is printed to fg_log
+		/// Supported types are jpg, jpeg, png, gif, tga, bmp
+		/// this function uses stb_image http://nothings.org
+		/// 
+		/// On faliure preserves original state
 		///
 		/// @param buffer A pointer to the beginning of the file in memory
 		/// @param byteCount The number of bytes in the file
@@ -287,7 +165,7 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Result loadFromMemory(const void *buffer,fm::Size byteCount);
-*/
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Save image to a file
 		///
@@ -296,45 +174,27 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		void saveToFile(const std::string &filename) const;
-/*
+		fm::Result saveToFile(const std::string &filename) const;
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Save image to a memory region
 		///
-		/// Supported types are jpg, jpeg, png, gif, tga
-		/// it uses stb_image http://nothings.org
+		/// Supported types are jpg, jpeg, png, gif, tga, bmp
+		/// this function uses stb_image http://nothings.org
 		///
-		/// If anything goes wrong this function returns NULL and
-		/// a description of the error is printed to fg_log
-		///
+		/// @param pointer The pointer to the data (allocated using new[])
 		/// @param byteCount The number of bytes returned (0 on error)
 		/// @param ext The extension of the file
 		///
-		/// @return A pointer to the data (allocated with operator new[])
+		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Uint8 *saveToMemory(fm::Size &byteCount,const std::string &ext) const;
+		fm::Result saveToMemory(fm::Uint8 *&pointer,fm::Size &byteCount,const std::string &ext = "png") const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Resize The image
-		///
-		/// If anything goes wrong this function returns NULL and
-		/// a description of the error is printed to fg_log
-		///
-		/// @param w The new width
-		/// @param h The new height
-		/// @param linearFilter Iff true linear filtering is used (nearest neighbour otherwise)
-		///
-		/// @return The resized image
-		///
-		/////////////////////////////////////////////////////////////
-		Image scale(fm::Size w,fm::Size h,bool linearFilter = true);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Resize The image
-		///
-		/// If anything goes wrong this function returns NULL and
-		/// a description of the error is printed to fg_log
+		/// 
+		/// Resizing an empty image results in completely white image
 		///
 		/// @param size The new size
 		/// @param linearFilter Iff true linear filtering is used (nearest neighbour otherwise)
@@ -343,7 +203,7 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		Image scale(fm::vec2s size,bool linearFilter = true);
-*/
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Swap the content of two images
 		///
@@ -485,6 +345,46 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		static fm::Size saveMultipleImagesToMemory(Image const* const* images,fm::Size imageCount,fm::Uint8 *(&memory),const std::string &ext);
 	*/
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Assign operator
+		/// 
+		/// @param img The image to overwrite this with
+		/// 
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference operator=(const Image &img);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Assign operator
+		/// 
+		/// @param img The image to swap this with
+		/// 
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference operator=(Image &&img);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Retrive pointer to the beginning of a row of the image
+		/// 
+		/// @param index The index of the row
+		/// 
+		/// @return Pointer to the row
+		///
+		/////////////////////////////////////////////////////////////
+		Color *operator[](fm::Size index);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Retrive pointer to the beginning of a row of the image
+		/// 
+		/// @param index The index of the row
+		/// 
+		/// @return Pointer to the row
+		///
+		/////////////////////////////////////////////////////////////
+		const Color *operator[](fm::Size index) const;
 	};
 }
 #endif

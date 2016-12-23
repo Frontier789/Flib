@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_MATRIX_HPP_INCLUDED
 #define FRONTIER_MATRIX_HPP_INCLUDED
+#include <FRONTIER/System/util/RequireCpp11.hpp>
 
 #include <FRONTIER/System/util/dont_include_inl_begin>
 

@@ -16,7 +16,11 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_ANGLE_HPP_INCLUDED
 #define FRONTIER_ANGLE_HPP_INCLUDED
+#include <FRONTIER/System/util/RequireCpp11.hpp>
 #define FRONTIER_ANGLE
+#include <cmath>
+
+#define F_PI 3.141592653589793238
 
 namespace fm
 {
@@ -136,8 +140,8 @@ namespace fm
 	/// @return Result of the multiplication
 	///
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	auto operator*(const Angle<T> &left,const T &right) -> Angle<decltype(left.asRad()*right)>;
+	template<class T,class T2>
+	auto operator*(const Angle<T> &left,const T2 &right) -> Angle<decltype(left.asRad()*right)>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -149,8 +153,8 @@ namespace fm
 	/// @return Result of the multiplication
 	///
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	auto operator*(const T &left,const Angle<T> &right) -> Angle<decltype(left*right.asRad())>;
+	template<class T,class T2>
+	auto operator*(const T2 &left,const Angle<T> &right) -> Angle<decltype(left*right.asRad())>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -318,7 +322,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	Angle<T> deg(const T &amount);
+	auto deg(const T &amount) -> Angle<decltype(amount / 180.f * F_PI)>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -330,7 +334,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	Angle<T> rad(const T &amount);
+	auto rad(const T &amount) -> Angle<decltype(amount * F_PI)>;
 }
 
 namespace std

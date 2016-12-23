@@ -36,7 +36,7 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	template<class T2>
-	Angle<T>::Angle(const Angle<T2> &copy) : m_amount(copy.m_amount)
+	Angle<T>::Angle(const Angle<T2> &copy) : m_amount(copy.asRad())
 	{
 		
 	}
@@ -85,15 +85,15 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	auto operator*(const Angle<T> &left,const T &right) -> Angle<decltype(left.asRad()*right)>
+	template<class T,class T2>
+	auto operator*(const Angle<T> &left,const T2 &right) -> Angle<decltype(left.asRad()*right)>
 	{
 		return Angle<decltype(left.asRad()*right)>(left.asRad() * right);
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	auto operator*(const T &left,const Angle<T> &right) -> Angle<decltype(left*right.asRad())>
+	template<class T,class T2>
+	auto operator*(const T2 &left,const Angle<T> &right) -> Angle<decltype(left*right.asRad())>
 	{
 		return Angle<decltype(left+right.asRad())>(left * right.asRad());
 	}
@@ -184,16 +184,16 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	Angle<T> deg(const T &amount)
+	auto deg(const T &amount) -> Angle<decltype(amount / 180.f * F_PI)>
 	{
-		return Angle<T>(T(3.14159265358979) * amount / T(180.0));
+		return Angle<decltype(amount / 180.f * F_PI)>(decltype(amount / 180.f * F_PI)(F_PI) * amount / T(180.0));
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	Angle<T> rad(const T &amount)
+	auto rad(const T &amount) -> Angle<decltype(amount * F_PI)>
 	{
-		return Angle<T>(amount);
+		return Angle<decltype(amount * F_PI)>(amount);
 	}
 }
 
