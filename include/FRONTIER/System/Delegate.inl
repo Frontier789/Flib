@@ -109,43 +109,6 @@ namespace fm
 		
 	}
 	
-	
-	/*
-	
-	/////////////////////////////////////////////////////////////
-	template<class R,class... Args>
-	template<class ObjectType,class,class>
-	inline Delegate<R,Args...>::Delegate(ObjectType object) : m_impl(new MemFuncDelegate<ObjectType,R,Args...>(&ObjectType::operator(),std::move(object)))
-	{
-		
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class R,class... Args>
-	template<class ObjectType,class,class,class>
-	inline Delegate<R,Args...>::Delegate(ObjectType object) : m_impl(new MemCFuncDelegate<ObjectType,R,Args...>(&ObjectType::operator(),std::move(object)))
-	{
-		
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class R,class... Args>
-	template<class ObjectType,class>
-	inline Delegate<R,Args...>::Delegate(ObjectType *objPtr) : m_impl(new ObjMemFuncDelegate<ObjectType,R,Args...>(&ObjectType::operator(),objPtr))
-	{
-		
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class R,class... Args>
-	template<class ObjectType,class,class>
-	inline Delegate<R,Args...>::Delegate(const ObjectType *objPtr) : m_impl(new ObjMemCFuncDelegate<ObjectType,R,Args...>(&ObjectType::operator(),objPtr))
-	{
-		
-	}
-	*/
-	
-	
 	/////////////////////////////////////////////////////////////
 	template<class R,class... Args>
 	template<class... ExtraArgs>
@@ -163,6 +126,20 @@ namespace fm
 	}
 	
 	
+	
+	/////////////////////////////////////////////////////////////
+	template<class R,class... Args>
+	inline Delegate<R,Args...>::operator bool() const
+	{
+		return !m_impl->isBaseDelegate();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class R,class... Args>
+	inline bool Delegate<R,Args...>::operator!() const
+	{
+		return m_impl->isBaseDelegate();
+	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class R,class... Args>

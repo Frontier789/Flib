@@ -56,6 +56,14 @@ namespace fm
 	}
 	
 	/////////////////////////////////////////////////////////////
+	Result &Result::operator+=(const Result &result)
+	{
+		if (*this) *this = result;
+		
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
 	std::string Result::toString(bool fullDesc) const
 	{
 		if (!(*this))

@@ -63,6 +63,13 @@ namespace fm
 	{
 		return new FuncDelegate<AltR,FuncArgList,R,Args...>(m_pointer);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class AltR,class FuncArgList,class R,class... Args>
+	bool FuncDelegate<AltR,FuncArgList,R,Args...>::isBaseDelegate() const
+	{
+		return false;
+	}
 }
 
 #endif // FRONTIER_FUNCDELEGATE_INL_INCLUDED

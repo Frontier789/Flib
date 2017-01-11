@@ -142,50 +142,6 @@ namespace fm
 		template<class ObjectType,class AltR,class... CallArgs>
 		Delegate(AltR (ObjectType::*memFunc)(CallArgs...) const,const ObjectType *object);
 		
-		
-		/*
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct delegate from a function
-		/// 
-		/// @param memFunc The function to assign
-		/// @param object The object the function will be called on
-		/// 
-		/////////////////////////////////////////////////////////////
-		template<class ObjectType,class = int,class = typename std::enable_if<std::is_same<decltype(&ObjectType::operator()),R (ObjectType::*)(Args...)>::value >::type >
-		Delegate(ObjectType object);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct delegate from a function
-		/// 
-		/// @param memFunc The function to assign
-		/// @param object The object the function will be called on
-		/// 
-		/////////////////////////////////////////////////////////////
-		template<class ObjectType,class = int,class = int,class = typename std::enable_if<std::is_same<decltype(&ObjectType::operator()),R (ObjectType::*)(Args...) const>::value >::type >
-		Delegate(ObjectType object);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct delegate from a function
-		/// 
-		/// @param memFunc The function to assign
-		/// @param object The object the function will be called on
-		/// 
-		/////////////////////////////////////////////////////////////
-		template<class ObjectType,class = typename std::enable_if<std::is_same<decltype(&ObjectType::operator()),R (ObjectType::*)(Args...)>::value >::type >
-		Delegate(ObjectType *objPtr);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct delegate from a function
-		/// 
-		/// @param memFunc The function to assign
-		/// @param object The object the function will be called on
-		/// 
-		/////////////////////////////////////////////////////////////
-		template<class ObjectType,class = int,class = typename std::enable_if<std::is_same<decltype(&ObjectType::operator()),R (ObjectType::*)(Args...) const>::value >::type >
-		Delegate(const ObjectType *objPtr);
-		*/
-		
-		
 		/////////////////////////////////////////////////////////////
 		/// @brief Call the assigned function
 		/// 
@@ -210,6 +166,21 @@ namespace fm
 		template<class... ExtraArgs>
 		R operator()(Args... callArgs,ExtraArgs... extraArgs) const;
 		
+		/////////////////////////////////////////////////////////////
+		/// @brief Check if the delegate is assigned
+		/// 
+		/// @return True iff the delegate is assigned a function
+		/// 
+		/////////////////////////////////////////////////////////////
+		operator bool() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Check if the delegate is not assigned
+		/// 
+		/// @return True iff the delegate is not assigned a function
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool operator!() const;
 		
 		
 		/////////////////////////////////////////////////////////////

@@ -65,6 +65,13 @@ namespace fm
 	{
 		return new MemCFuncDelegate<ObjectType,AltR,FuncArgList,R,Args...>(m_pointer);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ObjectType,class AltR,class FuncArgList,class R,class... Args>
+	bool MemCFuncDelegate<ObjectType,AltR,FuncArgList,R,Args...>::isBaseDelegate() const
+	{
+		return false;
+	}
 }
 
 #endif // FRONTIER_MemCFuncDelegate_INL_INCLUDED

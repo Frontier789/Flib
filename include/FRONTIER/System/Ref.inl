@@ -71,6 +71,13 @@ namespace fm
 
     /////////////////////////////////////////////////////////////
     template<class T>
+	bool Ref<T>::operator!() const
+    {
+		return !m_ptr;
+    }
+
+    /////////////////////////////////////////////////////////////
+    template<class T>
     Ref<T>::operator T*()
     {
         return m_ptr;

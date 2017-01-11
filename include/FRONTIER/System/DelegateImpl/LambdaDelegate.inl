@@ -115,6 +115,13 @@ namespace fm
 	{
 		return new LambdaDelegate<LambdaT,R,Args...>(m_lambda);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class LambdaT,class R,class... Args>
+	bool LambdaDelegate<LambdaT,R,Args...>::isBaseDelegate() const
+	{
+		return false;
+	}
 }
 
 #endif // FRONTIER_LAMBDADELEGATE_INL_INCLUDED

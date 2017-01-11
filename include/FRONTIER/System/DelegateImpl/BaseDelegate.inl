@@ -47,6 +47,13 @@ namespace fm
 	{
 		return new BaseDelegate<R,Args...>();
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class R,class... Args>
+	bool BaseDelegate<R,Args...>::isBaseDelegate() const
+	{
+		return true;
+	}
 }
 
 #endif // FRONTIER_BASEDELEGATE_INL_INCLUDED

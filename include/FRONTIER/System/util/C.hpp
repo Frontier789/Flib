@@ -24,7 +24,7 @@
 	#define Cy(nnn) for (size_t y=0,FRONTIER_CY_N=(nnn);y<FRONTIER_CY_N;++y)
 	#define Cz(nnn) for (size_t z=0,FRONTIER_CZ_N=(nnn);z<FRONTIER_CZ_N;++z)
 	#define Cf(nnn,ii) for (size_t ii=0,FRONTIER_CF_N_ ## ii=(nnn);ii<FRONTIER_CF_N_ ## ii;++ii)
-	#define Cv(Vnnn) Cx((Vnnn).w) Cy((Vnnn).h)
+	#define Cv(Vnnn) for (fm::vec2s p,FRONTIER_CV_WH=(Vnnn);p.x<FRONTIER_CV_WH.w;++p.x) for (p.y=0;p.y<FRONTIER_CV_WH.h;++p.y)
 	#define Cxy(Xnnn,Ynnn) Cx(Xnnn) Cy(Ynnn)
 
 #endif // FRONTIER_C_HPP_INCLUDED

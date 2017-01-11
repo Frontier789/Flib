@@ -89,7 +89,30 @@ namespace fg
 		}
 		
 		Cv(m_size)
-			m_texels[x * m_size.h + y] = color;
+			m_texels[p.x * m_size.h + p.y] = color;
+		
+		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	Image::reference Image::create(const fg::Image &img,fm::rect2s area)
+	{
+		if (area.pos.x >= getSize().w || area.pos.y >= getSize().h)
+		{
+			*this = Image();
+			
+			return *this;
+		}
+		
+		area.size.w = std::min(area.size.w,getSize().w - area.pos.x);
+		area.size.h = std::min(area.size.h,getSize().h - area.pos.y);
+		
+		create(area.size);
+		
+		if (area.size.w == getSize().w)
+		{
+			
+		}
 		
 		return *this;
 	}
@@ -114,7 +137,7 @@ namespace fg
 	std::string getExtension(const std::string &text)
 	{
 		int dotPos = text.find_last_of(".");
-		std::string ret = text.substr(dotPos+1,text.size()-dotPos);
+		std::string ret = text.substr(dotPos+1,text.length()-dotPos);
 
 		// lowercase
 		C(ret.length())
@@ -167,10 +190,10 @@ namespace fg
 				return fm::Result();
 
 			if (error == 1)
-				return fm::Result("STBIError",fm::Result::OPFailed,"stbi_failure","Image.saveToFile",__FILE__,__LINE__,filename,std::string(stbi_failure_reason()));
+				return fm::Result("STBIError",fm::Result::OPFailed,"stbi_failure","saveToFile",__FILE__,__LINE__,filename,std::string(stbi_failure_reason()));
 
 			if (error == 2)
-				return fm::Result("IOError",fm::Result::OPFailed,"FileNotWritable","Image.saveToFile",__FILE__,__LINE__,filename);
+				return fm::Result("IOError",fm::Result::OPFailed,"FileNotWritable","saveToFile",__FILE__,__LINE__,filename);
 		}
 
 		return fm::Result();
@@ -236,11 +259,8 @@ namespace fg
 			fm::vec2 ratio = fm::vec2(m_size)/size;
 
 			Cv(size)
-			{
-				fm::vec2 p(x,y);
-				
 				ret.set(p,at(p*ratio));
-			}
+			
 		}
 
 
@@ -271,7 +291,7 @@ namespace fg
 
 			return fm::Result();
 		}
-		return fm::Result("IOError",fm::Result::OPFailed,"FileNotFound","Image.loadFromFile",__FILE__,__LINE__,filename);
+		return fm::Result("IOError",fm::Result::OPFailed,"FileNotFound","loadFromFile",__FILE__,__LINE__,filename);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -298,7 +318,7 @@ namespace fg
 
 			return fm::Result();
 		}
-		return fm::Result("STBIError",fm::Result::OPFailed,"stbi_failure","Image.loadFromMemory",__FILE__,__LINE__,std::string(stbi_failure_reason()));
+		return fm::Result("STBIError",fm::Result::OPFailed,"stbi_failure","loadFromMemory",__FILE__,__LINE__,std::string(stbi_failure_reason()));
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -311,7 +331,7 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	fm::vec2s Image::size() const
+	fm::vec2s Image::getSize() const
 	{
 		return m_size;
 	}
@@ -319,19 +339,19 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	Color &Image::at(fm::vec2s pos)
 	{
-		return m_texels[pos.x * m_size.h + pos.y];
+		return m_texels[pos.y * m_size.w + pos.x];
 	}
 
 	/////////////////////////////////////////////////////////////
 	const Color &Image::at(fm::vec2s pos) const
 	{
-		return m_texels[pos.x * m_size.h + pos.y];
+		return m_texels[pos.y * m_size.w + pos.x];
 	}
 
 	/////////////////////////////////////////////////////////////
 	Image::reference Image::set(fm::vec2s pos,Color color)
 	{
-		m_texels[pos.x * m_size.h + pos.y] = color;
+		at(pos) = color;
 		
 		return *this;
 	}
@@ -369,20 +389,6 @@ namespace fg
 
 		return *this;
 	}
-	/*
-	/////////////////////////////////////////////////////////////
-	static std::vector<Image> loadMultipleImagesFromFile(const std::string &file,fm::Error *error = fm::nullPtr);
-
-	/////////////////////////////////////////////////////////////
-	static std::vector<Image> loadMultipleImagesFromMemory(const fm::Uint8 *data,fm::Size byteCount,const std::string &ext,fm::Error *error = fm::nullPtr);
-
-	/////////////////////////////////////////////////////////////
-	fm::Result saveMultipleImagesToFile(Image const* const* images,fm::Size imageCount,const std::string &file);
-
-	/////////////////////////////////////////////////////////////
-	fm::Size saveMultipleImagesToMemory(Image const* const* images,fm::Size imageCount,fm::Uint8 *(&memory),const std::string &ext);
-	*/
-	
 	
 	/////////////////////////////////////////////////////////////
 	Image::reference Image::operator=(Image &&move)
@@ -403,17 +409,5 @@ namespace fg
 		std::memcpy(m_texels,copy.m_texels,m_size.area() * sizeof(*m_texels));
 		
 		return (*this);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	Color *Image::operator[](fm::Size index)
-	{
-		return &m_texels[index * m_size.h];
-	}
-	
-	/////////////////////////////////////////////////////////////
-	const Color *Image::operator[](fm::Size index) const
-	{
-		return &m_texels[index * m_size.h];
 	}
 }

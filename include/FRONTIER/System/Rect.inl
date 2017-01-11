@@ -1,0 +1,77 @@
+////////////////////////////////////////////////////////////////////////// <!--
+/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+///                                                                    ///
+/// Flib is licensed under the terms of GNU GPL.                       ///
+/// Therefore you may freely use it in your project,                   ///
+/// modify it, redistribute it without any warranty on the             ///
+/// condition that this disclaimer is not modified/removed.            ///
+/// You may not misclaim the origin of this software.                  ///
+///                                                                    ///
+/// If you use this software in your program/project a                 ///
+/// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
+/// is not required but highly appreciated.                            ///
+///                                                                    ///
+/// You should have received a copy of GNU GPL with this software      ///
+///                                                                    ///
+////////////////////////////////////////////////////////////////////////// -->
+#ifndef FRONTIER_RECT_INL_INCLUDED
+#define FRONTIER_RECT_INL_INCLUDED
+#include <cmath>
+
+namespace fm
+{
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline rect<T>::rect() : pos(vector2<T>()),
+							 size(vector2<T>())
+	{
+
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline rect<T>::rect(const vector2<T> &pos,const vector2<T> &size) : pos(pos),
+																		 size(size)
+	{
+
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	template<class T2>
+	inline rect<T>::rect(const rect<T2> &copy) : pos(vector2<T>(copy.pos)),
+												 size(vector2<T>(copy.size))
+	{
+
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline bool rect<T>::operator==(const rect<T> &other) const
+	{
+		return pos==other.pos && size==other.size;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline bool rect<T>::operator!=(const rect<T> &other) const
+	{
+		return pos!=other.pos || size!=other.size;
+	}
+}
+
+#include <FRONTIER/System/util/PredefStreams.hpp>
+
+template<class T,class CharT,class CharTraitT>
+inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::rect<T> &rct)
+{
+	return out<<rct.pos<<' '<<rct.size;
+}
+
+template<class T,class CharT,class CharTraitT>
+inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::rect<T> &rct)
+{
+	return in>>rct.pos>>rct.size;
+}
+
+#endif // FRONTIER_RECT_INL_INCLUDED

@@ -316,14 +316,16 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
-	inline typename std::enable_if<W == H,T>::type matrix<W,H,T>::det() const
+	template<class,class>
+	inline T matrix<W,H,T>::det() const
 	{
 		return priv::getDet<W,T>::getDeterminant(*this);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
-	inline typename std::enable_if<W == H,matrix<W,H,T> >::type matrix<W,H,T>::minors() const
+	template<class,class>
+	inline matrix<W,H,T> matrix<W,H,T>::minors() const
 	{
 		matrix<W,H,T> ret;
 		Cx(W)Cy(H)
@@ -350,7 +352,8 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
-	inline typename std::enable_if<W == H,matrix<W,H,T> >::type matrix<W,H,T>::adjugate() const
+	template<class,class>
+	inline matrix<W,H,T> matrix<W,H,T>::adjugate() const
 	{
 		matrix<W,H,T> cofactors = minors();
 		Cx(W)Cy(H)
@@ -361,14 +364,16 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
-	inline typename std::enable_if<W == H,matrix<W,H,T> >::type matrix<W,H,T>::inverse() const
+	template<class,class>
+	inline matrix<W,H,T> matrix<W,H,T>::inverse() const
 	{
 		return adjugate()/det();
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
-	inline typename std::enable_if<W == H,T>::type matrix<W,H,T>::trace() const
+	template<class,class>
+	inline T matrix<W,H,T>::trace() const
 	{
 		T ret = T();
 		C(W)

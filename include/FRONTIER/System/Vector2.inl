@@ -342,6 +342,45 @@ namespace fm
 		left.y%=right.y;
 		return left;
 	}
+	
+	
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x= b                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector2<T> &operator*=(vector2<T> &left,const T2 &right)
+	{
+		left.x*=right;
+		left.y*=right;
+		
+		return left;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector2<T> &operator/=(vector2<T> &left,const T2 &right)
+	{
+		left.x/=right;
+		left.y/=right;
+		
+		return left;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector2<T> &operator%=(vector2<T> &left,const T2 &right)
+	{
+		left.x%=right;
+		left.y%=right;
+		
+		return left;
+	}
 
 	
 	

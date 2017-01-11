@@ -19,15 +19,17 @@
 
 #include <FRONTIER/System/util/dont_include_inl_begin>
 
+#include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
-#include <FRONTIER/System/Result.hpp>
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
 #include <FRONTIER/System/util/API.h>
+#include <FRONTIER/System/Result.hpp>
+
 #define FRONTIER_IMAGE
 #include <string>
 
@@ -78,19 +80,15 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy a whole image
-		/// 
-		/// Operates in linear time to the number os texels
-		/// 
+		///
 		/// @param copy The source image
 		///
 		/////////////////////////////////////////////////////////////
 		Image(const Image &copy);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Move an image
-		/// 
-		/// Operates in constant time
-		/// 
+		/// @brief Move a whole image
+		///
 		/// @param move The source image
 		///
 		/////////////////////////////////////////////////////////////
@@ -111,6 +109,17 @@ namespace fg
 		reference create(fm::vec2s size,Color color = Color::White);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Create the image from an other image
+		/// 
+		/// @param img The image t copy from
+		/// @param area The rectangle to copy from the other image
+		///
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference create(const fg::Image &img,fm::rect2s area);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Create the image with given size and given data
 		/// 
 		/// @param size The new size
@@ -122,50 +131,26 @@ namespace fg
 		reference create(fm::vec2s size,const Color *texels);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Get a part of the image
+		/// @brief Load the image from a file
 		/// 
-		/// Copies the part of the image
-		/// PArameters are clamped to the original image bounds if needed
-		/// 
-		/// @param pos The corner of the subimage
-		/// @param size the size of the requested subimage
+		/// @param filename The file to load
 		///
 		/// @return reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		Image getSubImage(fm::vec2s pos,fm::vec2s size) const;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Load image from a file
-		///
-		/// Supported types are jpg, jpeg, png, gif, tga, bmp
-		/// this function uses stb_image http://nothings.org
-		/// 
-		/// On faliure preserves original state
-		/// 
-		/// @param filename The name of the file to load
-		/// 
-		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Result loadFromFile(const std::string &filename);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Load image from a file that is loaded into memory
-		///
-		/// Supported types are jpg, jpeg, png, gif, tga, bmp
-		/// this function uses stb_image http://nothings.org
+		/// @brief Load the image from a file loaded int memory
 		/// 
-		/// On faliure preserves original state
+		/// @param buffer The buffer holding the data
+		/// @param byteCount The number of bytes the data consists of
 		///
-		/// @param buffer A pointer to the beginning of the file in memory
-		/// @param byteCount The number of bytes in the file
-		///
-		/// @return The error-state of the function
+		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Result loadFromMemory(const void *buffer,fm::Size byteCount);
-
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Save image to a file
 		///
@@ -179,22 +164,26 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Save image to a memory region
 		///
-		/// Supported types are jpg, jpeg, png, gif, tga, bmp
-		/// this function uses stb_image http://nothings.org
+		/// Supported types are jpg, jpeg, png, gif, tga
+		/// it uses stb_image http://nothings.org
 		///
-		/// @param pointer The pointer to the data (allocated using new[])
+		/// If anything goes wrong this function returns NULL and
+		/// a description of the error is printed to fg_log
+		///
 		/// @param byteCount The number of bytes returned (0 on error)
 		/// @param ext The extension of the file
+		/// @param pointer A pointer to the data (allocated with operator new[])
 		///
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result saveToMemory(fm::Uint8 *&pointer,fm::Size &byteCount,const std::string &ext = "png") const;
+		fm::Result saveToMemory(fm::Uint8 *&pointer,fm::Size &byteCount,const std::string &ext) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Resize The image
-		/// 
-		/// Resizing an empty image results in completely white image
+		///
+		/// If anything goes wrong this function returns NULL and
+		/// a description of the error is printed to fg_log
 		///
 		/// @param size The new size
 		/// @param linearFilter Iff true linear filtering is used (nearest neighbour otherwise)
@@ -222,7 +211,7 @@ namespace fg
 		/// @return The size of the image
 		///
 		/////////////////////////////////////////////////////////////
-		fm::vec2s size() const;
+		fm::vec2s getSize() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the color of a texel
@@ -285,106 +274,27 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		reference flipVertically();
-/*
-		/////////////////////////////////////////////////////////////
-		/// @brief Load images from a file that contains more than one
-		///
-		/// Supports: .ico
-		///
-		/// @param file The name of the file
-		/// @param error Returns the error (if any) that happened
-		///
-		/// @return A vector of images
-		///
-		/////////////////////////////////////////////////////////////
-		static std::vector<Image> loadMultipleImagesFromFile(const std::string &file,fm::Error *error = fm::nullPtr);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Load images from a file in memory that contains more than one
-		///
-		/// Supports: .ico
-		///
-		/// @param data The file in memory
-		/// @param byteCount The number of bytes in the file
-		/// @param ext The extension (file type) of the file in memory
-		/// @param error Returns the error (if any) that happened
-		///
-		/// @return A vector of images
-		///
-		/////////////////////////////////////////////////////////////
-		static std::vector<Image> loadMultipleImagesFromMemory(const fm::Uint8 *data,fm::Size byteCount,const std::string &ext,fm::Error *error = fm::nullPtr);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Save image(s) to a file
-		///
-		/// Supports: .ico
-		///
-		/// @param images The images
-		/// @param imageCount The number of images
-		/// @param file The name of the file
-		///
-		/// @return The error-state of the function
-		///
-		/////////////////////////////////////////////////////////////
-		static fm::Result saveMultipleImagesToFile(Image const* const* images,fm::Size imageCount,const std::string &file);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Save image(s) to a file in memory
-		///
-		/// Supports: .ico
-		/// Returns allocated memory in @a memory
-		/// Uses operator[] new for allocation
-		///
-		/// @param images The images
-		/// @param imageCount The number of images
-		/// @param memory The written memory
-		/// @param ext The extension
-		///
-		/// @return The number of bytes written
-		///
-		/////////////////////////////////////////////////////////////
-		static fm::Size saveMultipleImagesToMemory(Image const* const* images,fm::Size imageCount,fm::Uint8 *(&memory),const std::string &ext);
-	*/
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Assign operator
-		/// 
-		/// @param img The image to overwrite this with
-		/// 
+		/// @brief Copy an image
+		///
+		/// @param copy The image to copy
+		///
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference operator=(const Image &img);
+		reference operator=(const Image &copy);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Assign operator
-		/// 
-		/// @param img The image to swap this with
-		/// 
+		/// @brief Move an image
+		///
+		/// @param move The image to move
+		///
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference operator=(Image &&img);
+		reference operator=(Image &&move);
 		
-		/////////////////////////////////////////////////////////////
-		/// @brief Retrive pointer to the beginning of a row of the image
-		/// 
-		/// @param index The index of the row
-		/// 
-		/// @return Pointer to the row
-		///
-		/////////////////////////////////////////////////////////////
-		Color *operator[](fm::Size index);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Retrive pointer to the beginning of a row of the image
-		/// 
-		/// @param index The index of the row
-		/// 
-		/// @return Pointer to the row
-		///
-		/////////////////////////////////////////////////////////////
-		const Color *operator[](fm::Size index) const;
 	};
 }
 #endif

@@ -135,13 +135,8 @@ namespace fm
 	template<class T2,class A2>
 	auto polar2<T,A>::operator+(const polar2<T2,A2> &other) const -> polar2<decltype(length + other.length),decltype((angle + other.angle).asRad())>
 	{
-		auto angleDif 	 = other.angle - angle;
-		auto cosAngleDif = std::cos(angleDif);
-		
-		return polar2<decltype(r + other.r),decltype((angle + other.angle).asRad())>(
-				std::sqrt(LENGTH() + other.LENGTH() + 2*r*other.r*cosAngleDif),
-				angle + fm::rad(atan2(other.r * std::sin(angleDif),r + other.r*cosAngleDif))
-		);
+		return polar2<decltype(length + other.length),decltype((angle + other.angle).asRad())>(length + other.length,
+																							   angle  + other.angle);
 	}
 
 	////////////////////////////////////////////////////////////

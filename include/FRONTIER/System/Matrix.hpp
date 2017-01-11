@@ -27,6 +27,7 @@
 #include <FRONTIER/System/util/dont_include_inl_end>
 
 #include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/System/Angle.hpp>
 #include <type_traits>
 
 #define FRONTIER_MATRIX
@@ -298,7 +299,8 @@ namespace fm
 		/// @return The determinant
 		///
 		/////////////////////////////////////////////////////////////
-		typename std::enable_if<W == H,T>::type det() const;
+		template<class K = T,class = typename std::enable_if<W == H,K>::type>
+		T det() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -309,7 +311,8 @@ namespace fm
 		/// @return The matrix of minors
 		///
 		/////////////////////////////////////////////////////////////
-		typename std::enable_if<W == H,matrix<W,H,T> >::type minors() const;
+		template<class K = T,class = typename std::enable_if<W == H,K>::type>
+		matrix<W,H,T> minors() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -320,7 +323,8 @@ namespace fm
 		/// @return The adjugate
 		///
 		/////////////////////////////////////////////////////////////
-		typename std::enable_if<W == H,matrix<W,H,T> >::type adjugate() const;
+		template<class K = T,class = typename std::enable_if<W == H,K>::type>
+		matrix<W,H,T> adjugate() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -331,7 +335,8 @@ namespace fm
 		/// @return The inverse
 		///
 		/////////////////////////////////////////////////////////////
-		typename std::enable_if<W == H,matrix<W,H,T> >::type inverse() const;
+		template<class K = T,class = typename std::enable_if<W == H,K>::type>
+		matrix<W,H,T> inverse() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -342,7 +347,8 @@ namespace fm
 		/// @return The trace
 		///
 		/////////////////////////////////////////////////////////////
-		typename std::enable_if<W == H,T>::type trace() const;
+		template<class K = T,class = typename std::enable_if<W == H,K>::type>
+		T trace() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Access(rw) a row of the matrix

@@ -21,28 +21,39 @@ using namespace std;
 
 namespace fm
 {
-		/////////////////////////////////////////////////////////////
-		template<class... StringClass>
-		inline Result::Result(const std::string &type,
-							  ErrorLevel level,
-							  const std::string &error,
-							  const std::string &func,
-							  const std::string &file,
-							  fm::Size line,
-							  const StringClass &... detailsp) : type(type),
-																 level(level),
-																 error(error),
-																 func(func),
-																 file(file),
-																 line(line)
+	namespace priv
+	{
+		inline void append(std::vector<std::string> &details)
 		{
-			const std::string *ptrs[] = {&detailsp...};
 			
-			details.resize(sizeof(ptrs)/sizeof(*ptrs));
-			
-			for (fm::Size i = 0;i < details.size();++i)
-				details[i] = *ptrs[i];
 		}
+		
+		template<class StrClass,class... StringClass>
+		inline void append(std::vector<std::string> &details,const StrClass &str,const StringClass &... detailsp)
+		{
+			details.push_back(str);
+			
+			fm::priv::append(details,detailsp...);
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class... StringClass>
+	inline Result::Result(const std::string &type,
+						  ErrorLevel level,
+						  const std::string &error,
+						  const std::string &func,
+						  const std::string &file,
+						  fm::Size line,
+						  const StringClass &... detailsp) : type(type),
+															 level(level),
+															 error(error),
+															 func(func),
+															 file(file),
+															 line(line)
+	{
+		priv::append(details,detailsp...);
+	}
 }
 
 #include <FRONTIER/System/util/PredefStreams.hpp>

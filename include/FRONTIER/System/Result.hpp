@@ -127,6 +127,16 @@ namespace fm
 		bool operator!=(ErrorLevel errorLevel) const;
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Overwrite the result if the other one is an error
+		/// 
+		/// @param result The result
+		/// 
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		Result &operator+=(const Result &result);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Convert the result to a human-readable string
 		/// 
 		/// @param fullDesc True to get full description
