@@ -32,6 +32,9 @@ namespace fm
 	typedef std::int32_t  Int32;
 	typedef std::int64_t  Int64;
 	
+	typedef std::intptr_t  IntPtr;
+	typedef std::uintptr_t UintPtr;
+	
 	template<class T> class vector2;
 	template<class T> class vector3;
 	template<class T> class vector4;

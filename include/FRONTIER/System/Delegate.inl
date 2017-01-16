@@ -147,7 +147,7 @@ namespace fm
 	{
 		delete m_impl;
 		
-		m_impl = copy.m_impl->makeNewCopy();
+		m_impl = copy.m_impl->makeCopy();
 		
 		return *this;
 	}

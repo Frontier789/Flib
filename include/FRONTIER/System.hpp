@@ -39,7 +39,9 @@ namespace fm
 
 #include <FRONTIER/System/Ice.hpp>
 #include <FRONTIER/System/Ref.hpp>
+#include <FRONTIER/System/Time.hpp>
 #include <FRONTIER/System/Clock.hpp>
+#include <FRONTIER/System/Sleep.hpp>
 #include <FRONTIER/System/Angle.hpp>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/System/Matrix.hpp>

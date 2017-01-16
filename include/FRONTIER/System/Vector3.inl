@@ -340,6 +340,7 @@ namespace fm
 		left.z-=right.z;
 		return left;
 	}
+	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector3<T> &operator*=(vector3<T> &left,const vector3<T2> &right)
@@ -367,6 +368,42 @@ namespace fm
 		left.x%=right.x;
 		left.y%=right.y;
 		left.z%=right.z;
+		return left;
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * *\
+					                          
+					   A x= b                  
+					                          
+	\* * * * * * * * * * * * * * * * * * * * */
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector3<T> &operator*=(vector3<T> &left,const T2 &right)
+	{
+		left.x*=right;
+		left.y*=right;
+		left.z*=right;
+		return left;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector3<T> &operator/=(vector3<T> &left,const T2 &right)
+	{
+		left.x/=right;
+		left.y/=right;
+		left.z/=right;
+		return left;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector3<T> &operator%=(vector3<T> &left,const T2 &right)
+	{
+		left.x%=right;
+		left.y%=right;
+		left.z%=right;
 		return left;
 	}
 

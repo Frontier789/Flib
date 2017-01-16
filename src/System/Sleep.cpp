@@ -14,10 +14,44 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Graphics.hpp>
-#include <FRONTIER/System.hpp>
-#include <FRONTIER/Window.hpp>
+#include <FRONTIER/System/util/OS.h>
+#include <FRONTIER/System/Sleep.hpp>
+#include <FRONTIER/System/Time.hpp>
+#define _GLIBCXX_USE_NANOSLEEP
 
-using namespace fm;
-using namespace fg;
-using namespace fw;
+#ifdef __GNUC__
+	#define NO_STD_THIS_THREAD 1
+#else
+	#define NO_STD_THIS_THREAD 0
+#endif
+
+#if __cplusplus >= 201103L && NO_STD_THIS_THREAD == 0
+	#include <thread>
+	#include <chrono>
+#elif defined(FRONTIER_OS_WINDOWS)
+	#include <windows.h>
+#else
+	#include <unistd.h>
+#endif
+
+namespace fm
+{
+	/////////////////////////////////////////////////////////////
+	void Sleep(const Time &duration)
+	{
+		if (duration > Time::Zero)
+		{
+			#if __cplusplus >= 201103L && NO_STD_THIS_THREAD == 0
+				std::this_thread::sleep_for(std::chrono::microseconds(duration.asMicroseconds());
+			#elif defined(FRONTIER_OS_WINDOWS)
+				::Sleep(duration.asMilliseconds());
+			#else
+				usleep(duration.asMicroseconds());
+			#endif
+		}
+
+	}
+}
+
+
+

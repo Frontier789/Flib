@@ -18,62 +18,33 @@
 #include <FRONTIER/OpenGL.hpp>
 #include <deque>
 
-#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-    #include <FRONTIER/System/TlsPtr.hpp>
-    #include <FRONTIER/System/Mutex.hpp>
-#endif // FRONTIER_PROTECT_SHARED_VARIABLES
-
-namespace fg
-{
-    namespace priv
-    {
-        #ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-
-        std::deque<std::deque<fm::Error> > glErrors;
-        fm::TlsPtr<std::deque<fm::Error> > tlsGLErrors;
-        fm::Mutex glErrorMutex;
-
-        #else
-
-        std::deque<fm::Error> glErrors;
-
-        #endif // FRONTIER_PROTECT_SHARED_VARIABLES
-
-        fm::Delegate<void,const fm::Error &> callback;
-    }
-}
-
 namespace fg
 {
 	namespace GL
 	{
-	    using namespace fg::priv;
-
-		//////////////////////////////////
-		fm::Error getLastGLError()
+	     #ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+			#define GL_ERRORS_THREAD_LOCAL thread_local 
+		#else
+			#define GL_ERRORS_THREAD_LOCAL 
+		#endif
+		
+		GL_ERRORS_THREAD_LOCAL std::deque<fm::Result> glErrors;
+		
+		namespace priv
 		{
-		    #ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-
-		    if (!tlsGLErrors)
-                return fm::Result();
-
-            if (tlsGLErrors->size())
-            {
-                fm::Error ret = tlsGLErrors->back();
-                tlsGLErrors->pop_back();
-                return ret;
-            }
-
-		    #else
-
+			fm::Delegate<void,const fm::Result &> glErrorCallback;
+		}
+        
+        
+		//////////////////////////////////
+		fm::Result getLastGLError()
+		{
 		    if (glErrors.size())
             {
-                fm::Error ret = glErrors.back();
+                fm::Result ret = glErrors.back();
                 glErrors.pop_back();
                 return ret;
             }
-
-		    #endif // FRONTIER_PROTECT_SHARED_VARIABLES
 
             return fm::Result();
 		}
@@ -81,55 +52,27 @@ namespace fg
 		//////////////////////////////////
 		bool hasGLError()
 		{
-		    #ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-
-		    if (!tlsGLErrors)
-                return false;
-
-            if (tlsGLErrors->size())
-                return true;
-
-		    #else
-
 		    if (glErrors.size())
                 return true;
-
-		    #endif // FRONTIER_PROTECT_SHARED_VARIABLES
 
             return false;
 		}
 
 		//////////////////////////////////
-		void raiseGLError(const fm::Error &error)
+		void raiseGLError(const fm::Result &error)
 		{
-		    #ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-
-		    if (!tlsGLErrors)
-            {
-                glErrorMutex.lock();
-                glErrors.push_back(std::deque<fm::Error>());
-                tlsGLErrors = &glErrors.back();
-                glErrorMutex.unLock();
-            }
-
-            tlsGLErrors->push_back(error);
-
-		    #else
-
 		    glErrors.push_back(error);
 
-		    #endif // FRONTIER_PROTECT_SHARED_VARIABLES
-
-		    fg::priv::callback(error);
+		    priv::glErrorCallback(error);
 		}
 
 		//////////////////////////////////
-		void setGLErrorListener(const fm::Delegate<void,const fm::Error &> &callback)
+		void setGLErrorListener(const fm::Delegate<void,const fm::Result &> &callback)
 		{
-		    fg::priv::callback = callback;
+		    priv::glErrorCallback = callback;
 		}
 
-		/// glCheckError /////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////
 		fm::Result glCheckError(const char *file, unsigned int line,const char *call)
 		{
 			unsigned int errorCode = glGetError();
@@ -169,7 +112,7 @@ namespace fg
 						details = "the object bound to GL_FRAMEBUFFER is not \"framebuffer complete\"",
 						error = "GL_INVALID_FRAMEBUFFER_OPERATION";
 
-                fm::Result ret = fm::Result("GLError",error,details,call,file,line);
+                fm::Result ret("GLError",fm::Result::OPFailed,error,call,file,line,details);
 
                 raiseGLError(ret);
 

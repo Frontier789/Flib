@@ -172,20 +172,6 @@ namespace fg
 
 		explicit DrawData(const Mesh &m);
 
-/*
-		template<class PT,class CT,class TT,class NT,fm::Size N>
-		inline explicit DrawData(const fm::vertex<PT,CT,TT,NT> (&data)[N],fg::Primitive primitive = fg::Triangles);
-
-		template<class PT,class CT,class TT,class NT>
-		inline DrawData(const fm::vertex<PT,CT,TT,NT> *pointer,fm::Size N,fg::Primitive primitive = fg::Triangles);
-
-
-		template<class PT,class CT,class TT,class NT,fm::Size N>
-		inline DrawData &set(const fm::vertex<PT,CT,TT,NT> (&data)[N],bool calcDrawCall = true,fg::Primitive primitive = fg::Triangles)
-
-		template<class PT,class CT,class TT,class NT>
-		inline DrawData &set(const fm::vertex<PT,CT,TT,NT> *pointer,fm::Size N,bool calcDrawCall = true,fg::Primitive primitive = fg::Triangles)
-*/
         /* access attribute */
 		Attribute &operator[](AssociationPoint type);
 		const Attribute &operator[](AssociationPoint type) const;

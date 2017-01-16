@@ -335,6 +335,9 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	auto rad(const T &amount) -> Angle<decltype(amount * F_PI)>;
+	
+	
+	typedef Angle<float> Anglef;
 }
 
 namespace std
@@ -374,7 +377,6 @@ namespace std
 	/////////////////////////////////////////////////////////////
 	template<class T>
     auto tan(const fm::Angle<T> &angle) -> decltype(tan(angle.asRad()));
-
 }
 
 #endif // FRONTIER_ANGLE_HPP_INCLUDED

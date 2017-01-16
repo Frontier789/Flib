@@ -24,7 +24,7 @@ namespace fg
 {
 	void printNULL(const char *funcName)
 	{
-		fg::GL::raiseGLError(fm::Error("GLError","MissingFunc",fm::String(funcName).str() + " couldn't be loaded from shared object",funcName,__FILE__,__LINE__));
+		fg::GL::raiseGLError(fm::Result("GLError",fm::Result::OPFailed,"MissingFunc",funcName,__FILE__,__LINE__,fm::String(funcName).str() + " couldn't be loaded from shared object"));
 	}
 }
 	

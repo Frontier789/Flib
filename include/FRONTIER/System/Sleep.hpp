@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////// <!--
+	////////////////////////////////////////////////////////////////////////// <!--
 /// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
@@ -14,10 +14,24 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Graphics.hpp>
-#include <FRONTIER/System.hpp>
-#include <FRONTIER/Window.hpp>
+#ifndef FRONTIER_SLEEP_HPP_INCLUDED
+#define FRONTIER_SLEEP_HPP_INCLUDED
+#include <FRONTIER/System/util/API.h>
+#define FRONTIER_SLEEP
 
-using namespace fm;
-using namespace fg;
-using namespace fw;
+namespace fm
+{
+	class Time;
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Function used to pause the execution for @a duration time
+	/// 
+	/// @ingroup System
+	/// 
+	/// @param duration Time amount to pause for
+	/// 
+	/////////////////////////////////////////////////////////////
+	void FRONTIER_API Sleep(const Time &duration);
+}
+
+#endif // FRONTIER_SLEEP_HPP_INCLUDED

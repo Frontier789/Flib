@@ -14,10 +14,35 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Graphics.hpp>
-#include <FRONTIER/System.hpp>
-#include <FRONTIER/Window.hpp>
+#include <FRONTIER/Window/Wapi/WapiGetLastError.hpp>
+#include <FRONTIER/System/String.hpp>
+#include <windows.h>
+#include <string>
 
-using namespace fm;
-using namespace fg;
-using namespace fw;
+namespace fw
+{
+	fm::Result WapiGetLastErrorFunc(const char *functionName,const char *file, unsigned int line)
+	{
+		std::string ret;
+		char *errorText; // FormatMessage allocates memory automatically for us
+		DWORD err = GetLastError();
+		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_IGNORE_INSERTS,
+					   NULL,
+					   err,
+					   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+					   (LPTSTR)&errorText,0,NULL);
+		if (errorText)
+		{
+			// convert description to string
+			ret = std::string(errorText);
+			::LocalFree(errorText); // free up the allocated memory
+		}
+
+		while (ret.length() && (ret[ret.length()-1]=='\t' ||
+								ret[ret.length()-1]==' '  ||
+								ret[ret.length()-1]=='\r' ||
+								ret[ret.length()-1]=='\n') ) ret.resize(ret.length()-1);
+
+		return fm::Result("WapiError",fm::Result::OPFailed,fm::toString(err),functionName,file,line,ret);
+	}
+}
