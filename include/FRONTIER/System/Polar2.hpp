@@ -225,7 +225,7 @@ namespace fm
 		/// @return length^2
 		///
 		/////////////////////////////////////////////////////////////
-		auto LENGTH() const -> decltype(length*length);
+		auto LENGTH() const -> decltype(T()*T());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Convert the polar vector to euclidean vector

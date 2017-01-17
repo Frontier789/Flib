@@ -61,7 +61,7 @@ namespace fg
 	{
 		fg::Image ret = copyToImage();
 
-		Cv(ret.size())
+		Cv(ret.getSize())
 		{
 			fm::Uint32 *ptr = (fm::Uint32*)(&ret.at(p));
 			

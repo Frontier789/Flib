@@ -84,7 +84,7 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class A>
-	auto polar2<T,A>::LENGTH() const -> decltype(length*length)
+	auto polar2<T,A>::LENGTH() const -> decltype(T()*T())
 	{
 		return length*length;
 	}

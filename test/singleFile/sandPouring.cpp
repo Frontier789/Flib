@@ -5,7 +5,7 @@ using namespace std;
 
 int main()
 {
-	Window win(vec2(640,480));
+	Window win(vec2(640,480),"The falling sand");
 	
 	bool running = true;
 	Clock fpsClock;
