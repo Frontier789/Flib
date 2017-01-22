@@ -84,6 +84,20 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class A>
+	inline polar2<T,A> polar2<T,A>::sgn() const
+	{
+		return polar2<T,A>(T(1),angle);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class A>
+	inline polar2<T,A> polar2<T,A>::perp() const
+	{
+		return polar2<T,A>(length,angle + deg(90));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class A>
 	auto polar2<T,A>::LENGTH() const -> decltype(T()*T())
 	{
 		return length*length;
@@ -92,10 +106,11 @@ namespace fm
 
 	////////////////////////////////////////////////////////////
 	template<class T,class A>
-	inline polar2<T,A>::operator vector2<T>() const
+	template<class T2>
+	inline polar2<T,A>::operator vector2<T2>() const
 	{
-		return vector2<T>(std::cos(angle),
-						  std::sin(angle)) * length;
+		return vector2<T2>(std::cos(angle),
+						   std::sin(angle)) * length;
 	}
 
 	////////////////////////////////////////////////////////////

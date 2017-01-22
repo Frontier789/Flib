@@ -38,9 +38,6 @@
 
 namespace fm
 {
-	template<class,class,class,class>
-	class vertex;
-
 	template<class> class vector2;
 	template<class> class vector3;
 	template<class> class vector4;
@@ -63,8 +60,7 @@ namespace fg
 	class Color;
 
 	/////////////////////////////////////////////////////////////
-	///
-	/// 	@brief Class used to handle OpenGL shader programs in language <a href="http://en.wikipedia.org/wiki/GLSL">GLSL</a>
+	/// @brief Class used to handle OpenGL shader programs in language <a href="http://en.wikipedia.org/wiki/GLSL">GLSL</a>
 	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Shader : public fm::NonCopyable, public GlObject
@@ -121,6 +117,30 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
         Shader();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move constructor
+		///
+		/// @param shader The shader to move
+		///
+		/////////////////////////////////////////////////////////////
+		Shader(Shader &&shader);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move assignment operator
+		///
+		/// @param shader The shader to move
+		///
+		/////////////////////////////////////////////////////////////
+		Shader &operator=(Shader &&shader);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Swap two shaders
+		///
+		/// @param shader The shader to swap with
+		///
+		/////////////////////////////////////////////////////////////
+		Shader &swap(Shader &shader);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor

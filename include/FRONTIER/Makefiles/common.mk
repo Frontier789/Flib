@@ -2,7 +2,11 @@ include $(dir $(lastword $(MAKEFILE_LIST)))/detect_os.mk
 
 # default compilation tools and settings
 CXX=g++
-CXXFLAGS=-std=gnu++11
+CXXFLAGS=-std=gnu++11 -pedantic -Werror
+
+ifneq ($(F_DEBUG),)
+ CXXFLAGS+=-g
+endif
 
 # common tools
 MKDIR=mkdir

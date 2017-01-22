@@ -14,48 +14,39 @@
 /// You should have received a copy of GNU GPL with this software	   ///
 ///																	   ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_DRAWABLE_HPP_INCLUDED
-#define FRONTIER_DRAWABLE_HPP_INCLUDED
-#define FRONTIER_DRAWABLE
+#ifndef FRONTIER_ATTRIBUTE_REF_INL_INCLUDED
+#define FRONTIER_ATTRIBUTE_REF_INL_INCLUDED
+#include <FRONTIER/Graphics/Attribute.hpp>
 
-namespace fm
-{
-	class Time;
-}
+#include <FRONTIER/System/util/dont_include_inl_begin>
+#include <FRONTIER/Graphics/DrawData.hpp>
+#include <FRONTIER/System/util/dont_include_inl_end>
 
 namespace fg
 {
-	class ShaderManager;
-
 	/////////////////////////////////////////////////////////////
-	/// @brief Abstract base class for classes that can be drawn using a shader
-	///
-	/////////////////////////////////////////////////////////////
-	class Drawable
+	template<class T,fm::Size N>
+	inline AttributeRef &AttributeRef::operator=(const T (&data)[N])
 	{
-	public:
-		/////////////////////////////////////////////////////////////
-		/// @brief Default destructor
-		///
-		/////////////////////////////////////////////////////////////
-		virtual ~Drawable();
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Draw using a given shader
-		/// 
-		/// @param shader Shader to use
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual void onDraw(ShaderManager &shader) = 0;
+		m_drawData.getAttribute(m_assoc).set(data);
+		return *this;
+	}
 
-		/////////////////////////////////////////////////////////////
-		/// @brief Regular update function
-		/// 
-		/// @param dt The elapsed time since last calling update
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual void onUpdate(const fm::Time &dt) = 0;
-	};
+	/////////////////////////////////////////////////////////////
+	template<class T,fm::Size N>
+	inline AttributeRef &AttributeRef::set(const T (&data)[N])
+	{
+		m_drawData.getAttribute(m_assoc).set(data);
+		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline AttributeRef &AttributeRef::set(const T *pointer,fm::Size N)
+	{
+		m_drawData.getAttribute(m_assoc).set(pointer,N);
+		return *this;
+	}
 }
 
-#endif // FRONTIER_DRAWABLE_HPP_INCLUDED
+#endif // FRONTIER_ATTRIBUTE_REF_INL_INCLUDED

@@ -54,14 +54,6 @@ namespace fm
 	{
 		return m_amount;
 	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	template<class T2>
-	Angle<T>::operator Angle<T2>() const
-	{
-		return Angle<T2>(T2(m_amount));
-	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
@@ -99,8 +91,8 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	auto operator/(const Angle<T> &left,const T &right) -> Angle<decltype(left.asRad()/right)>
+	template<class T,class T2>
+	auto operator/(const Angle<T> &left,const T2 &right) -> Angle<decltype(left.asRad()/right)>
 	{
 		return Angle<decltype(left.asRad()+right)>(left.asRad() + right);
 	}
@@ -113,29 +105,29 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	Angle<T> &operator+=(Angle<T> &left,const Angle<T> &right)
+	template<class T,class T2>
+	Angle<T> &operator+=(Angle<T> &left,const Angle<T2> &right)
 	{
 		return left = left + right;
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	Angle<T> &operator-=(Angle<T> &left,const Angle<T> &right)
+	template<class T,class T2>
+	Angle<T> &operator-=(Angle<T> &left,const Angle<T2> &right)
 	{
 		return left = left - right;
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	Angle<T> &operator*=(Angle<T> &left,const T &right)
+	template<class T,class T2>
+	Angle<T> &operator*=(Angle<T> &left,const T2 &right)
 	{
 		return left = left * right;
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	Angle<T> &operator/=(Angle<T> &left,const T &right)
+	template<class T,class T2>
+	Angle<T> &operator/=(Angle<T> &left,const T2 &right)
 	{
 		return left = left / right;
 	}

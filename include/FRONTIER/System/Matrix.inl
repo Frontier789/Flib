@@ -450,6 +450,9 @@ namespace fm
 									 a30,a31,a32,a33);
 	}
 
+	/////////////////////////////////////////////////////////////
+	template<size_t W,size_t H,class T>
+	matrix<W,H,T> matrix<W,H,T>::identity;
 
 
 	/////////////////////////////////////////////////////////////
@@ -708,25 +711,25 @@ namespace fm
 		{
 			return scaling(x,y,1);
 		}
-/*
+
 		////////////////////////////////////////////////////////////
-		inline matrix<4,4,float> rotation(const Angle &angle)
+		inline matrix<4,4,float> rotation(const Anglef &angle)
 		{
-			return matrix<4,4,float>(std::cos(z),-std::sin(z),0,0,
-									 std::sin(z), std::cos(z),0,0,
-											   0,           0,1,0,
-											   0,           0,0,1);
+			return matrix<4,4,float>(std::cos(angle),-std::sin(angle),0,0,
+									 std::sin(angle), std::cos(angle),0,0,
+											       0,               0,1,0,
+												   0,               0,0,1);
 		}
 
 		////////////////////////////////////////////////////////////
-		inline matrix<4,4,float> perspective(const Angle &fieldOfView,float aspect,float Znear,float Zfar,)
+		inline matrix<4,4,float> perspective(const Anglef &fieldOfView,float aspect,float Znear,float Zfar)
 		{
-			return matrix<4,4,float>(1.f/std::tan(fov/2.f)/aspect,                    0,                        0,                          0,
-																0,1.f/std::tan(fov/2.f),                        0,                          0,
-																0,                    0,(Zfar+Znear)/(Znear-Zfar),(2*Znear*Zfar)/(Znear-Zfar),
-																0,                    0,                       -1,                          0);
+			return matrix<4,4,float>(1.f/std::tan(fieldOfView/2.f)/aspect,                    0,                        0,                          0,
+																0,1.f/std::tan(fieldOfView/2.f),                        0,                          0,
+																0,                            0,(Zfar+Znear)/(Znear-Zfar),(2*Znear*Zfar)/(Znear-Zfar),
+																0,                            0,                       -1,                          0);
 		}
-*/
+
 		/////////////////////////////////////////////////////////////
 		inline matrix<4,4,float> ortho(float left,float bottom,float right,float top,float nearVal,float farVal)
 		{

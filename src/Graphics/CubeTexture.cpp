@@ -22,6 +22,16 @@ namespace fg
 		m_isSmooth = cubeTex.isSmooth(),
 		getGlId() = m_cubeTex.getGlId();
 	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result CubeTextureFace::copyFace(const CubeTexture &cubeTex,unsigned int face)
+	{
+		CubeTextureFace fakeFace(m_cubeTex,face);
+		fakeFace.getGlId() = m_cubeTex.getGlId();
+		fakeFace.m_faceId  = face;
+		
+		return loadFromImage(fakeFace.copyToImage());
+	}
 
 	/////////////////////////////////////////////////////////////
 	CubeTextureFace::~CubeTextureFace()
@@ -41,14 +51,18 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	Texture::reference CubeTextureFace::setRepeated(bool repeat)
 	{
+		m_isRepeated = repeat;
 		m_cubeTex.setRepeated(repeat);
+		
 		return *this;
 	}
 
 	/////////////////////////////////////////////////////////////
 	Texture::reference CubeTextureFace::setSmooth(bool smooth)
 	{
+		m_isSmooth = smooth;
 		m_cubeTex.setSmooth(smooth);
+		
 		return *this;
 	}
 
@@ -66,9 +80,64 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
+	CubeTexture::CubeTexture(const CubeTexture &cubeTex) : m_size(0),
+														   m_isRepeated(false),
+														   m_isSmooth(false)
+	{
+		(*this) = cubeTex;
+	}
+
+	/////////////////////////////////////////////////////////////
+	CubeTexture::CubeTexture(CubeTexture &&cubeTex) : m_size(0),
+													  m_isRepeated(false),
+													  m_isSmooth(false)
+	{
+		(*this) = cubeTex;
+	}
+
+	/////////////////////////////////////////////////////////////
+	CubeTexture &CubeTexture::operator=(const CubeTexture &cubeTex)
+	{
+		if (cubeTex.getGlId())
+		{
+			create(cubeTex.getSize());
+			C(6)
+				getFace(i).copyFace(cubeTex,i);
+		}
+		else
+		{
+			if (getGlId() && glIsTexture(getGlId()) == GL_TRUE)
+				glDeleteTextures(1,&getGlId());
+			
+			getGlId() = 0;
+			m_size    = 0;
+		}
+		
+		setRepeated(cubeTex.m_isRepeated);
+		setSmooth(cubeTex.m_isSmooth);
+	}
+
+	/////////////////////////////////////////////////////////////
+	CubeTexture &CubeTexture::operator=(CubeTexture &&cubeTex)
+	{
+		return this->swap(cubeTex);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	CubeTexture &CubeTexture::swap(CubeTexture &cubeTex)
+	{
+		std::swap(m_isRepeated,cubeTex.m_isRepeated);
+		std::swap(m_isSmooth,cubeTex.m_isSmooth);
+		std::swap(getGlId(),cubeTex.getGlId());
+		std::swap(m_size,cubeTex.m_size);
+		
+		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
 	CubeTexture::~CubeTexture()
 	{
-		if (getGlId() && glIsTexture(getGlId())==GL_TRUE)
+		if (getGlId() && glIsTexture(getGlId()) == GL_TRUE)
 			glDeleteTextures(1,&getGlId());
 	}
 
@@ -245,18 +314,12 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	fm::Result CubeTexture::bind(const CubeTexture *texture)
+	fm::Result CubeTexture::bind(fm::Ref<const CubeTexture> texture)
 	{
 		if (texture)
 			return texture->bind();
 
 		return glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,0));
-	}
-
-	/////////////////////////////////////////////////////////////
-	fm::Result CubeTexture::bind(const CubeTexture &texture)
-	{
-		return texture.bind();
 	}
 
 	/////////////////////////////////////////////////////////////

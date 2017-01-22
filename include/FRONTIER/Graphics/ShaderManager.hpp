@@ -16,11 +16,15 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_SHADERMANAGER_HPP_INCLUDED
 #define FRONTIER_SHADERMANAGER_HPP_INCLUDED
+
+#include <FRONTIER/Graphics/AssocPoint.hpp>
 #include <FRONTIER/System/MatrixStack.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/System/Ref.hpp>
+
 #define FRONTIER_SHADERMANAGER
+#include <vector>
 
 namespace fm
 {
@@ -34,49 +38,245 @@ namespace fg
 {
     class DrawData;
 
+	/////////////////////////////////////////////////////////////
+	/// @brief Class used to manage OpenGL shaders with a camera, matrix stacks and named attributes
+	///
+	/////////////////////////////////////////////////////////////
     class ShaderManager : public fg::Shader
     {
     protected:
-        std::vector<fm::MatrixStack<4,4,float> > m_stacks;
-        void clearData();
-        virtual fm::Result prepareDraw(const fg::DrawData &data);
-
-        fm::Camera *m_cam;
-        std::vector<std::string> m_matNames;
-        std::vector<int> m_matIds;
-
-        std::map<int,std::string> m_assocPoints; /// e.g.  DrawData::Pos -> "in_pos"
-        std::vector<std::string> m_texNames;
-        std::vector<std::string> m_texUseNames;
-    public:
-
-        ////////////////////////////////////////////////////////////
-        ShaderManager();
-
-        virtual ~ShaderManager();
-
-        ////////////////////////////////////////////////////////////
-        void associate(const std::string &attrName,int point,bool overWrite = true);
-        virtual void setMatrices(const std::string &modelMat,const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "");
-        void regTexture(const std::string &texName,const std::string &texInUse = "");
-        virtual void useTexture(fm::Ref<const fg::Texture> tex,fm::Size texIndex = 0);
+		enum MatrixState ///< Internal type used to indicate a matrix name's state
+		{
+			UnknownMat, ///< The matrix name is not known to exist
+			MissingMat, ///< The matrix name is known not to exist
+			FoundMat    ///< The matrix name is known to exist
+		};
+		
+		std::vector<fm::MatrixStack<4,4,float> > m_stacks; ///< Stores the matrix stacks
+		std::map<AssocPoint,std::string> m_assocPoints;    /// Maps assocpoints to shader attribute names
+		std::vector<std::string> m_texUseNames; ///< Stores the shader attribute names of the variables that indicate whether a texture is in use
+		std::vector<std::string> m_texNames;    ///< Stores the shader attribute names of textures
+		std::vector<std::string> m_matNames;    ///< Stores the shader attribute names of matrices
+		std::vector<MatrixState> m_matState;    ///< Stores the state of the named matrices
+		fm::Camera *m_cam; ///< Pointer to the active camera
         
-        ////////////////////////////////////////////////////////////
-        virtual void setCamera(fm::Ref<fm::Camera> cam);
-        virtual void setCamera(fm::Ref<fm::Camera> cam,const std::string &projMat,const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
+		virtual fm::Result prepareDraw(const fg::DrawData &data); ///< Internal function used to prepare a drawing operation
+		void clearData(); ///< Internal function used to clear all data
+
+    public:
+		/////////////////////////////////////////////////////////////
+		/// @brief Default constructor
+		///
+		/////////////////////////////////////////////////////////////
+        ShaderManager();
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Move constructor
+		///
+		/// @param manager The shadermanager to move
+		///
+		/////////////////////////////////////////////////////////////
+		ShaderManager(ShaderManager &&manager);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Default destructor
+		///
+		/////////////////////////////////////////////////////////////
+        virtual ~ShaderManager();
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Move assignment operator
+		///
+		/// @param manager The shadermanager to move
+		/// 
+		/// @param Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		ShaderManager &operator=(ShaderManager &&manager);
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Swap two shader managers
+		///
+		/// @param manager The shadermanager to swap with
+		/// 
+		/// @param Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		ShaderManager &swap(ShaderManager &manager);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Assign a shader attribute name with an association point
+		/// 
+		/// @param attrName The name of the attribute 
+		/// @param point The association point
+		/// @param overWrite Indicates whether to overwrite the existing assignment
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        ShaderManager &associate(const std::string &attrName,AssocPoint point,bool overWrite = true);
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Assign all standard shader attribute names
+		/// 
+		/// @param positionName The name of the position attribute
+		/// @param colorName The name of the color attribute
+		/// @param texPositionName The name of the texture position attribute
+		/// @param normalName The name of the normal attribute
+		/// @param tangentName The name of the tangent attribute
+		/// @param bitangentName The name of the bitangent attribute
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		ShaderManager &associate(const std::string &positionName,const std::string &colorName,const std::string &texPositionName,const std::string &normalName = "",const std::string &tangentName = "",const std::string &bitangentName = "");
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Assign all standard shader matrix uniform names
+		/// 
+		/// @param modelMat The name of the model matrix
+		/// @param normalMat The name of the normal matrix
+		/// @param colorMat The name of the color matrix
+		/// @param texUVMat The name of the texture position matrix
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        virtual ShaderManager &setMatrices(const std::string &modelMat,const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "");
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Register a texture's name
+		/// 
+		/// @param texName The name of the uniform
+		/// @param texInUse The name of the uniform (int) to use to indicate whether the texture is in use
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        ShaderManager &regTexture(const std::string &texName,const std::string &texInUse = "");
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Activate a texture
+		/// 
+		/// @param tex The texture to use
+		/// @param texIndex The texture slot to use
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        virtual ShaderManager &useTexture(fm::Ref<const fg::Texture> tex,fm::Size texIndex = 0);
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Change the active camera
+		/// 
+		/// @param cam The new camera
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        virtual ShaderManager &changeCamera(fm::Ref<fm::Camera> cam);
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the active camera and the name of camera matrices
+		/// 
+		/// @param cam The new camera
+		/// @param cam projMat The name of the projection matrix uniform
+		/// @param cam viewMat The name of the view matrix uniform
+		/// @param cam plyPos The name of the player position uniform
+		/// @param cam plyView The name of the player view direction uniform
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        virtual ShaderManager &setCamera(fm::Ref<fm::Camera> cam,const std::string &projMat,const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the active camera
+		/// 
+		/// @return pointer to the active camera (may be null)
+		/// 
+		/////////////////////////////////////////////////////////////
 		fm::Camera *getCamera();
 
-        ////////////////////////////////////////////////////////////
-        void clearAssociations();
-        void clearTextures();
-        virtual void update();
+		/////////////////////////////////////////////////////////////
+		/// @brief Clear all associations
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        ShaderManager &clearAssociations();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Clear all registered textures
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        ShaderManager &clearTextures();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Update variables of the shader
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        virtual ShaderManager &update();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Draw a drawdata
+		/// 
+		/// @param data The drawdata to use
+		/// 
+		/// @return The result of the operation
+		/// 
+		/////////////////////////////////////////////////////////////
         fm::Result draw(const fg::DrawData &data);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Draw an indexset of a drawdata
+		/// 
+		/// @param data The drawdata to use
+		/// @param indexSet The id of the drawcall in @a data to use
+		/// 
+		/// @return The result of the operation
+		/// 
+		/////////////////////////////////////////////////////////////
         fm::Result draw(const fg::DrawData &data,fm::Size indexSet);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Draw multiple indexsets of a drawdata
+		/// 
+		/// @param data The drawdata to use
+		/// @param indexBeg The index of the first drawcall to use
+		/// @param indexCount The number of the drawcalls to use
+		/// 
+		/// @return The result of the operation
+		/// 
+		/////////////////////////////////////////////////////////////
         virtual fm::Result draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount);
 
-        ////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the model matrix stack
+		/// 
+		/// @return Reference to the model matrix stack
+		/// 
+		/////////////////////////////////////////////////////////////
         fm::MatrixStack<4,4,float> &getModelStack();
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the color matrix stack
+		/// 
+		/// @return Reference to the color matrix stack
+		/// 
+		/////////////////////////////////////////////////////////////
         fm::MatrixStack<4,4,float> &getColorStack();
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the texture position matrix stack
+		/// 
+		/// @return Reference to the texture position matrix stack
+		/// 
+		/////////////////////////////////////////////////////////////
         fm::MatrixStack<4,4,float> &getTexUVStack();
     };
 }

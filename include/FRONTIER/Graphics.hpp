@@ -34,7 +34,35 @@ namespace fg
 
 }
 
+#include <FRONTIER/Graphics/FixedShaderManager.hpp>
+#include <FRONTIER/Graphics/ShaderManager.hpp>
+#include <FRONTIER/Graphics/DepthTexture.hpp>
+#include <FRONTIER/Graphics/FloatTexture.hpp>
+#include <FRONTIER/Graphics/FontRenderer.hpp>
+#include <FRONTIER/Graphics/RenderStates.hpp>
+#include <FRONTIER/Graphics/FramedSprite.hpp>
+#include <FRONTIER/Graphics/TextureAtlas.hpp>
+#include <FRONTIER/Graphics/AttributeRef.hpp>
+#include <FRONTIER/Graphics/FrameBuffer.hpp>
+#include <FRONTIER/Graphics/CubeTexture.hpp>
+#include <FRONTIER/Graphics/VertexState.hpp>
+#include <FRONTIER/Graphics/IndexHolder.hpp>
+#include <FRONTIER/Graphics/AssocPoint.hpp>
+#include <FRONTIER/Graphics/Attribute.hpp>
+#include <FRONTIER/Graphics/Primitive.hpp>
+#include <FRONTIER/Graphics/Drawable.hpp>
+#include <FRONTIER/Graphics/GlObject.hpp>
+#include <FRONTIER/Graphics/DrawCall.hpp>
+#include <FRONTIER/Graphics/DrawData.hpp>
+#include <FRONTIER/Graphics/Metrics.hpp>
+#include <FRONTIER/Graphics/Texture.hpp>
+#include <FRONTIER/Graphics/Shader.hpp>
+#include <FRONTIER/Graphics/Sprite.hpp>
+#include <FRONTIER/Graphics/Buffer.hpp>
+#include <FRONTIER/Graphics/Glyph.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
+#include <FRONTIER/Graphics/Mesh.hpp>
+#include <FRONTIER/Graphics/Font.hpp>
 
 #endif // FRONTIER_GRAPICS_MODULE_HPP_INCLUDED

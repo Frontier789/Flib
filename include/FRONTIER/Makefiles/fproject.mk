@@ -20,12 +20,14 @@ F_LINK_LIBS:=-lf $(F_LINK_LIBS)
 
 # linker flags
 ifeq ($(LDFLAGS),)
- LDFLAGS=-s
+ ifeq ($(F_DEBUG),)
+  LDFLAGS=-s
+ endif
 endif
 
 # compile falgs
-ifeq ($(CXXFLAGS),)
- CXXFLAGS=-std=gnu++11 -O3 -pedantic -Werror
+ifeq ($(F_DEBUG),)
+ CXXFLAGS+=-O3
 endif
 
 # executable name

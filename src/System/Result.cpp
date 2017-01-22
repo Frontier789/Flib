@@ -20,6 +20,13 @@
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
+	Result::Result() : level(OPDone),
+					   line(0)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
 	Result::operator bool() const
 	{
 		return (level != OPFailed && type == "");

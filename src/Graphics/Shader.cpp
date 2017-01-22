@@ -202,7 +202,7 @@ namespace fg
 	}
 
 
-	/// destructor /////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
 	Shader::~Shader()
 	{
 		if (getGlId() && glIsProgram(getGlId()))
@@ -216,6 +216,34 @@ namespace fg
 					glDeleteVertexArrays(1,&m_defVao);
 			}
 		}
+	}
+
+	/////////////////////////////////////////////////////////////
+	Shader::Shader(Shader &&shader)
+	{
+		shader.swap(*this);
+	}
+
+	/////////////////////////////////////////////////////////////
+	Shader &Shader::operator=(Shader &&shader)
+	{
+		return this->swap(shader);
+	}
+
+	/////////////////////////////////////////////////////////////
+	Shader &Shader::swap(Shader &shader)
+	{
+		m_subShaders.swap(shader.m_subShaders);
+		m_uniforms.swap(shader.m_uniforms);
+		m_textures.swap(shader.m_textures);
+		m_attribs.swap(shader.m_attribs);
+		
+		std::swap(m_texCounter,shader.m_texCounter);
+		std::swap(m_defVao,shader.m_defVao);
+		
+		std::swap(getGlId(),shader.getGlId());
+		
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////

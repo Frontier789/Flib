@@ -16,13 +16,15 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_SPRITE_HPP_INCLUDED
 #define FRONTIER_SPRITE_HPP_INCLUDED
+
 #include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>
-#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Time.hpp>
 #include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/System/Ref.hpp>
+
 #define FRONTIER_SPRITE
 
 namespace fg

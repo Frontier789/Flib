@@ -16,32 +16,91 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_FIXEDSHADERMANAGER_HPP_INCLUDED
 #define FRONTIER_FIXEDSHADERMANAGER_HPP_INCLUDED
+
 #include <FRONTIER/Graphics/ShaderManager.hpp>
+
 #define FRONTIER_FIXEDSHADERMANAGER
 
 namespace fg
 {
+	/////////////////////////////////////////////////////////////
+	/// @brief Shader manager that utilises the fixed pipline rendering of OpenGL (to be used with version prior to 3.0)
+	///
+	/////////////////////////////////////////////////////////////
     class FixedShaderManager : public fg::ShaderManager
     {
-        ////////////////////////////////////////////////////////////
-        fm::Result prepareDraw(const fg::DrawData &data);
-
-        const fg::Texture *m_activeTex;
+		fm::Result prepareDraw(const fg::DrawData &data); ///< Internal function used to prepare a drawing operation
+		const fg::Texture *m_activeTex; ///< Holds the active texture
 
     public:
-        ////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////
+		/// @brief Default constructor
+		///
+		/////////////////////////////////////////////////////////////
         FixedShaderManager();
 
+		/////////////////////////////////////////////////////////////
+		/// @brief Default destructor
+		///
+		/////////////////////////////////////////////////////////////
         ~FixedShaderManager();
+		/////////////////////////////////////////////////////////////
+		/// @brief Assign all standard shader matrix uniform names
+		/// 
+		/// @param modelMat The name of the model matrix
+		/// @param normalMat The name of the normal matrix
+		/// @param colorMat The name of the color matrix
+		/// @param texUVMat The name of the texture position matrix
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		ShaderManager &setMatrices(const std::string &modelMat,const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "");
 
-        ////////////////////////////////////////////////////////////
-        void setCamera(fm::Ref<fm::Camera> cam,const std::string &projMat = "",const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
-        void setMatrices(const std::string &modelMat,const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "");
-        void useTexture(fm::Ref<const fg::Texture> tex,fm::Size texIndex = 0);
-
-        ////////////////////////////////////////////////////////////
-        void update();
-        fm::Result draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount);
+		/////////////////////////////////////////////////////////////
+		/// @brief Activate a texture
+		/// 
+		/// @param tex The texture to use
+		/// @param texIndex The texture slot to use
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        ShaderManager &useTexture(fm::Ref<const fg::Texture> tex,fm::Size texIndex = 0);
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the active camera and the name of camera matrices
+		/// 
+		/// @param cam The new camera
+		/// @param cam projMat The name of the projection matrix uniform
+		/// @param cam viewMat The name of the view matrix uniform
+		/// @param cam plyPos The name of the player position uniform
+		/// @param cam plyView The name of the player view direction uniform
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        ShaderManager &setCamera(fm::Ref<fm::Camera> cam,const std::string &projMat = "",const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Update variables of the shader
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+        ShaderManager &update();
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Draw multiple indexsets of a drawdata
+		/// 
+		/// @param data The drawdata to use
+		/// @param indexBeg The index of the first drawcall to use
+		/// @param indexCount The number of the drawcalls to use
+		/// 
+		/// @return The result of the operation
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Result draw(const fg::DrawData &data,fm::Size indexBeg = 0,fm::Size indexCount = 1);
     };
 }
 

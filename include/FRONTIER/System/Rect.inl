@@ -44,6 +44,13 @@ namespace fm
 	{
 
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline bool rect<T>::contains(const vector2<T> &p) const
+	{
+		return pos.x <= p.x && pos.y <= p.y && pos.x + size.w >= p.x && pos.y + size.h >= p.y;
+	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>

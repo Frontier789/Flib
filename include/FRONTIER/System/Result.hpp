@@ -46,6 +46,12 @@ namespace fm
 		std::vector<std::string> details; ///< Holds additional error dependant values
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Default constructor
+		///
+		/////////////////////////////////////////////////////////////
+		Result();
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Construct a Result out of its members
 		///
 		/// @param type Holds the type of the error 
@@ -58,12 +64,12 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		template<class... StringClass>
-		Result(const std::string &type  = "",
-			   ErrorLevel level = OPDone,
-			   const std::string &error = "",
-			   const std::string &func  = "",
-			   const std::string &file  = "",
-			   fm::Size line = 42,
+		Result(const std::string &type,
+			   ErrorLevel level,
+			   const std::string &error,
+			   const std::string &func,
+			   const std::string &file,
+			   fm::Size line,
 			   const StringClass &... details);
 		
 		/////////////////////////////////////////////////////////////

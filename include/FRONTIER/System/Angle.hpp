@@ -81,15 +81,6 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		T asRad() const;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the angle as <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-		///
-		/// @return The angle in <a href="http://en.wikipedia.org/wiki/Radian">radians</a>
-		///
-		/////////////////////////////////////////////////////////////
-		template<class T2>
-		operator Angle<T2>() const;
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -166,8 +157,8 @@ namespace fm
 	/// @return Result of the division
 	///
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	auto operator/(const Angle<T> &left,const T &right) -> Angle<decltype(left.asRad()/right)>;
+	template<class T,class T2>
+	auto operator/(const Angle<T> &left,const T2 &right) -> Angle<decltype(left.asRad()/right)>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -192,8 +183,8 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	Angle<T> &operator+=(Angle<T> &left,const Angle<T> &right);
+	template<class T,class T2>
+	Angle<T> &operator+=(Angle<T> &left,const Angle<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -205,8 +196,8 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	Angle<T> &operator-=(Angle<T> &left,const Angle<T> &right);
+	template<class T,class T2>
+	Angle<T> &operator-=(Angle<T> &left,const Angle<T2> &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -218,8 +209,8 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	Angle<T> &operator*=(Angle<T> &left,const T &right);
+	template<class T,class T2>
+	Angle<T> &operator*=(Angle<T> &left,const T2 &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
@@ -231,8 +222,8 @@ namespace fm
 	/// @return Reference to @a left
 	///
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	Angle<T> &operator/=(Angle<T> &left,const T &right);
+	template<class T,class T2>
+	Angle<T> &operator/=(Angle<T> &left,const T2 &right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle

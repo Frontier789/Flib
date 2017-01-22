@@ -1,5 +1,6 @@
 #include <FRONTIER/Graphics/ShaderManager.hpp>
 #include <FRONTIER/Graphics/FramedSprite.hpp>
+#include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 

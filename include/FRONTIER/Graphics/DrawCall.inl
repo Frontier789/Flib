@@ -14,27 +14,32 @@
 /// You should have received a copy of GNU GPL with this software	   ///
 ///																	   ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_DRAWDATA_INL_INCLUDED
-#define FRONTIER_DRAWDATA_INL_INCLUDED
-#include <FRONTIER/Graphics/DrawCall.hpp>
+#ifndef FRONTIER_DRAW_CALL_INL_INCLUDED
+#define FRONTIER_DRAW_CALL_INL_INCLUDED
+#include <FRONTIER/GL/Is_GLDataType.hpp>
 
 namespace fg
 {
-    //////////////////////////////////////////////////////////////////////////
-    template<class T,fm::Size N>
-    inline DrawCall &DrawData::addDraw(const T (&data)[N],fg::Primitive primitive)
-    {
-		return addDraw(data,N,primitive);
-    }
+	/////////////////////////////////////////////////////////////
+	template<class T,fm::Size N>
+	inline DrawCall &DrawCall::operator=(const T (&data)[N])
+	{
+		return set(data,fg::Triangles);
+	}
 
-    //////////////////////////////////////////////////////////////////////////
-    template<class T>
-    inline DrawCall &DrawData::addDraw(const T *pointer,fm::Size N,fg::Primitive primitive)
-    {
-        m_drawCalls.push_back(DrawCall());
-        m_drawCalls.back().set(pointer,N,primitive);
-        return m_drawCalls.back();
-    }
+	/////////////////////////////////////////////////////////////
+	template<class T,fm::Size N>
+	inline DrawCall &DrawCall::set(const T (&data)[N],fg::Primitive primitive)
+	{
+		return set(data,N,primitive);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline DrawCall &DrawCall::set(const T *pointer,fm::Size N,fg::Primitive primitive)
+	{
+		return set(pointer,N,fg::Is_GLDataType<T>::enumVal,sizeof(T)*N,primitive);
+	}
 }
 
-#endif // FRONTIER_DRAWDATA_INL_INCLUDED
+#endif // FRONTIER_DRAW_CALL_INL_INCLUDED
