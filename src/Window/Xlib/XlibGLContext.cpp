@@ -124,7 +124,7 @@ namespace fw
 			CurHolder() : disp(0)
 			{
 				C(sizeof(curs)/sizeof(*curs))
-					curs[i] = ::None;
+					curs[i] = 0;
 			}
 			
 			~CurHolder()

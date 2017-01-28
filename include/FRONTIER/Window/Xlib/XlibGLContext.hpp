@@ -29,7 +29,7 @@ namespace fw
 	{
 		Display *FRONTIER_API getGlobDisp();
 		void FRONTIER_API freeGlobDisp(Display *disp);
-		bool FRONTIER_API getFBConfig(Display *disp,void *fbconfptr,bool window);
+		fm::Result FRONTIER_API getFBConfig(Display *disp,void *fbconfptr,bool window);
 	}
 	
 	namespace Xlib
@@ -47,7 +47,7 @@ namespace fw
 			fw::GLContext::Settings m_settings; ///< The settings of the context
 
 			static int errorHandler(Display *disp,XErrorEvent *xerrev); ///< Function used to avoid X's automatic error handling boiling us out
-			bool createContext(GLXFBConfig config,::GLXContext sharedContext); ///< Function used to set up the context
+			fm::Result createContext(GLXFBConfig config,::GLXContext sharedContext); ///< Function used to set up the context
 
 		public:
 			typedef GLContext &reference;

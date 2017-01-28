@@ -35,7 +35,7 @@ namespace fm
 		public:
 			static inline R call(LambdaT lambda)
 			{
-				return (R)lambda();
+				return lambda();
 			}
 		};
 		
@@ -46,7 +46,7 @@ namespace fm
 			template<class LambdaT,class R,class... Args>
 			static inline R call(LambdaT lambda,Args... args)
 			{
-				return (R)lambda(args...);
+				return lambda(args...);
 			}
 		};
 		
@@ -87,16 +87,9 @@ namespace fm
 			
 			static inline R call(LambdaT lambda,FirstArg firstArg,ArgsTail... argsTail)
 			{
-				CallForwarder<
-							  sizeof(test<LambdaT,FirstArg,ArgsTail...>( lambda,firstArg,argsTail... )) == sizeof(YES)
-							 >::template call<LambdaT,R,FirstArg,ArgsTail...>(lambda,firstArg,argsTail...);
-			}
-			
-			static inline R call(LambdaT *lambda,FirstArg firstArg,ArgsTail... argsTail)
-			{
-				CallForwarder<
-							  sizeof(test<LambdaT,FirstArg,ArgsTail...>( *lambda,firstArg,argsTail... )) == sizeof(YES)
-							 >::template call<LambdaT,R,FirstArg,ArgsTail...>(*lambda,firstArg,argsTail...);
+				return CallForwarder<
+									 sizeof(test<LambdaT,FirstArg,ArgsTail...>( lambda,firstArg,argsTail... )) == sizeof(YES)
+									>::template call<LambdaT,R,FirstArg,ArgsTail...>(lambda,firstArg,argsTail...);
 			}
 		};
 	}
@@ -105,8 +98,7 @@ namespace fm
 	template<class LambdaT,class R,class... Args>
 	R LambdaDelegate<LambdaT,R,Args...>::call(Args... callArgs) const
 	{
-		typedef typename std::remove_pointer<LambdaT>::type RealLambda;
-		return (R)priv::LambdaCaller<RealLambda,R,Args...>::call(m_lambda,callArgs...);
+		return priv::LambdaCaller<LambdaT,R,Args...>::call(m_lambda,callArgs...);
 	}
 	
 	/////////////////////////////////////////////////////////////

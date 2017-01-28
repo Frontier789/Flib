@@ -46,6 +46,7 @@ namespace fm
 #include <FRONTIER/System/Angle.hpp>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/System/Camera.hpp>
 #include <FRONTIER/System/Polar2.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>

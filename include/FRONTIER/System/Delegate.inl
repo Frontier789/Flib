@@ -42,7 +42,7 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class R,class... Args>
-	inline Delegate<R,Args...>::Delegate(const Delegate<R,Args...> &copy) : m_impl(copy.m_impl->makeNewCopy())
+	inline Delegate<R,Args...>::Delegate(const Delegate<R,Args...> &copy) : m_impl(copy.m_impl->makeCopy())
 	{
 		
 	}

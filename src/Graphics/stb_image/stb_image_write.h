@@ -99,7 +99,7 @@ void writen(const void *dataptr,size_t size,size_t len,FILE *fileptr,unsigned in
 		}
 		else
 		{
-			cap = max(used*2, used + size*len);
+			cap = max<size_t>(used*2, used + size*len);
 			unsigned char *newptr = new unsigned char[cap];
 			
 			memcpy(newptr,*result_ptr,used);

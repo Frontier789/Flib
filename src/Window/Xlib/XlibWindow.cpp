@@ -1113,15 +1113,17 @@ namespace fw
 		}
 		
 		/////////////////////////////////////////////////////////////
-		void Window::setVisible(bool visible)
+		fm::Result Window::setVisible(bool visible)
 		{
 			if (!isOpen())
-				return;
+				return fm::Result();
 			
 			if (visible)
 				XMapWindow(m_disp,m_win);
 			else
 				XUnmapWindow(m_disp,m_win);
+			
+			return fm::Result();
 		}
 		
 		////////////////////////////////////////////////////////////
@@ -1234,7 +1236,7 @@ namespace fw
 			if (!isOpen()) return;
 			
 			// copy information
-			const fg::Color *rpixels = icon.getPixelsPtr();
+			const fg::Color *rpixels = icon.getPtr();
 			fm::vec2s size = icon.getSize();
 			
 			fg::Color *Modpixels = new fg::Color[size.area()];

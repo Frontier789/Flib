@@ -18,7 +18,7 @@
 #define FRONTIER_XLIB_WINDOW_INCLUDED
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/util/API.h>
-#include <FRONTIER/Window/Result.hpp>
+#include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/Window/Event.hpp>
 #define FRONTIER_XLIB_WINDOW
 
@@ -43,7 +43,7 @@ namespace fw
 	{
 		Display *FRONTIER_API getGlobDisp();
 		void FRONTIER_API freeGlobDisp(Display *disp);
-		bool FRONTIER_API getFBConfig(Display *disp,void *fbconfptr,bool window);
+		fm::Result FRONTIER_API getFBConfig(Display *disp,void *fbconfptr,bool window);
 	}
 	
 	/////////////////////////////////////////////////////////////
