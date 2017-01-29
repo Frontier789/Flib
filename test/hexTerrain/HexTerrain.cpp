@@ -72,7 +72,7 @@ void HexTerrain::gen()
 	data.getHeight(vec2i(    0,-size)) = getRandom(-0.5,0.1);
 	data.getHeight(vec2i( size,-size)) = getRandom(-0.5,0.1);
 	
-	float spread = getRandom(.7,.85);
+	float spread = getRandom(.6,.75);
 	
 	triangleFillers.push_back(TriangleFiller(vec2i(),vec2i( size,    0),vec2i(    0, size),.5,spread));
 	triangleFillers.push_back(TriangleFiller(vec2i(),vec2i(    0, size),vec2i(-size, size),.5,spread));

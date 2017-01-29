@@ -115,6 +115,18 @@ namespace fm
     	return *this;
     }
     
+    ////////////////////////////////////////////////////////////
+    Clock::reference Clock::setTime(fm::Time time)
+    {
+		return setTime(time.asSecs());
+    }
+    
+	/////////////////////////////////////////////////////////////
+	fm::Time Clock::getTime() const
+	{
+		return fm::seconds(getSeconds());
+	}
+    
     
     ////////////////////////////////////////////////////////////
     bool Clock::isPaused() const

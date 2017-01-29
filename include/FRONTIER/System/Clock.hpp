@@ -18,6 +18,7 @@
 #define FRONTIER_CLOCK_HPP_INCLUDED
 
 #include <FRONTIER/System/util/API.h>
+#include <FRONTIER/System/Time.hpp>
 
 #define FRONTIER_CLOCK
 
@@ -90,6 +91,17 @@ namespace fm
 		double getSeconds() const;
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Get time since started
+		///
+		/// If the Clock paused then this function will return the difference between
+		/// the startTime and pauseTime
+		/// 
+		/// @return Elapsed time
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Time getTime() const;
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Pause the clock
 		/// 
 		/// @return Reference to itself
@@ -130,6 +142,16 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		reference setTime(double elapsedSeconds);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the elapsed time
+		/// 
+		/// @param Time The elapsed time to use
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		reference setTime(fm::Time time);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if the Clock is paused
