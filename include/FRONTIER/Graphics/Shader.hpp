@@ -341,7 +341,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		template<class T,class,class = typename std::enable_if<!fg::Is_GLDataType<T>::value>::type>
+		template<class T,class = int,class = typename std::enable_if<!fg::Is_GLDataType<T>::value>::type>
 		fm::Result setAttribPointer(const std::string &name,const T *pointer,unsigned int stride = 0);
 
 		/////////////////////////////////////////////////////////////

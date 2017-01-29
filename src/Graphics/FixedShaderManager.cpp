@@ -11,6 +11,9 @@
 #include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
+#include <iostream>
+using namespace std;
+
 namespace fg
 {
 	////////////////////////////////////////////////////////////
@@ -113,21 +116,21 @@ namespace fg
 			const fg::Attribute &attr = data[fg::Assoc::Position];
 			glEnableClientState(GL_VERTEX_ARRAY);
 			fg::Buffer::bind(attr.buf,fg::ArrayBuffer);
-			glVertexPointer(attr.components,attr.componentType,attr.stride,nullptr);
+			glVertexPointer(attr.components,attr.componentType,attr.stride,attr.buf ? attr.buf->getDataPtr() : nullptr);
 		}
 		if (data.hasAttr(fg::Assoc::Color))
 		{
 			const fg::Attribute &attr = data[fg::Assoc::Color];
 			glEnableClientState(GL_COLOR_ARRAY);
 			fg::Buffer::bind(attr.buf,fg::ArrayBuffer);
-			glColorPointer(attr.components,attr.componentType,attr.stride,nullptr);
+			glColorPointer(attr.components,attr.componentType,attr.stride,attr.buf ? attr.buf->getDataPtr() : nullptr);
 		}
 		if (data.hasAttr(fg::Assoc::TextureUV))
 		{
 			const fg::Attribute &attr = data[fg::Assoc::TextureUV];
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			fg::Buffer::bind(attr.buf,fg::ArrayBuffer);
-			glTexCoordPointer(attr.components,attr.componentType,attr.stride,nullptr);
+			glTexCoordPointer(attr.components,attr.componentType,attr.stride,attr.buf ? attr.buf->getDataPtr() : nullptr);
 		}
 		if (data.hasAttr(fg::Assoc::Normal))
 		{
@@ -136,7 +139,7 @@ namespace fg
 			fg::Buffer::bind(attr.buf,fg::ArrayBuffer);
 
 			if (attr.components == 3) // GL only accepts 3d normals
-				glNormalPointer(attr.componentType,attr.stride,nullptr);
+				glNormalPointer(attr.componentType,attr.stride,attr.buf ? attr.buf->getDataPtr() : nullptr);
 		}
 		
 		return glCheck((void)0);
@@ -146,7 +149,7 @@ namespace fg
     fm::Result FixedShaderManager::draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount)
     {
         prepareDraw(data);
-
+		
         C(indexCount)
         {
 			if (indexBeg+i >= data.getDrawCount()) break;
@@ -154,9 +157,9 @@ namespace fg
 			const fg::DrawCall &draw = data.getDraw(indexBeg+i);
 
 			fg::Buffer::bind(draw.buf,fg::IndexBuffer);
-
+			
 			if (draw.componentType)
-				glDrawElements(draw.primitive,draw.indexCount,draw.componentType,nullptr);
+				glDrawElements(draw.primitive,draw.indexCount,draw.componentType,draw.buf ? draw.buf->getDataPtr() : nullptr);
 			else
 				glDrawArrays(draw.primitive,draw.drawBeg,draw.drawLen);
         }

@@ -10,7 +10,7 @@ using namespace std;
 int main()
 {
 	Window win(vec2(640,480),"Hexy",Window::Default /*&~ Window::Resize &~ Window::Maximize*/);
-		
+	
 	srand(time(0));
 	
 	bool running = true;
@@ -29,7 +29,7 @@ int main()
 	bool leftDown = false;
 	vec2 lastMouse;
 	
-	for (;running;)
+	for (int loop=0;running;++loop)
 	{
 		Event ev;
 		while (win.popEvent(ev))

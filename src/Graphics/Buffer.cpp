@@ -23,7 +23,7 @@
 
 namespace fg
 {
-	/// constructors /////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
 	Buffer::Buffer() : m_type(ArrayBuffer),
 					   m_usage(StaticDraw),
 					   m_data(nullptr),
@@ -37,6 +37,13 @@ namespace fg
                                         m_size(0)
 	{
         (*this) = buf;
+	}
+
+	////////////////////////////////////////////////////////////
+	Buffer::Buffer(Buffer &&buf) : m_data(nullptr),
+                                   m_size(0)
+	{
+		buf.swap(*this);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -71,7 +78,7 @@ namespace fg
 		setData(data,bytesToCopy,type,usage);
 	}
 
-	/// destructors /////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
 	Buffer::~Buffer()
 	{
 	    delete[] m_data;
@@ -81,7 +88,7 @@ namespace fg
 
 	}
 
-	/// functions /////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
 	void Buffer::init()
 	{
 		if (!getGlId() || !glIsBuffer(getGlId()))
@@ -131,7 +138,7 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	bool needShadowCopy()
+	bool Buffer::keepShadowCopy()
 	{
         if (::priv::so_loader.getProcAddr("glCopyBufferSubData"))
             return false;
@@ -176,7 +183,7 @@ namespace fg
 		}
 
         // on old hardware use cpu shadowcopy
-		if (needShadowCopy())
+		if (keepShadowCopy())
         {
             delete[] m_data;
             m_data = new fm::Uint8[bytesToCopy];
@@ -293,6 +300,12 @@ namespace fg
         return *this;
 	}
 
+	/////////////////////////////////////////////////////////////
+	Buffer &Buffer::operator=(Buffer &&buf)
+	{
+		return this->swap(buf);
+	}
+
 	////////////////////////////////////////////////////////////
 	fm::Result Buffer::bind(BufferType targetType) const
 	{
@@ -335,6 +348,18 @@ namespace fg
 		int testBound;
 		glGetIntegerv(GL_ARRAY_BUFFER_BINDING,&testBound);
 		return (glGetError() == GL_NO_ERROR);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void *Buffer::getDataPtr()
+	{
+		return m_data;
+	}
+
+	/////////////////////////////////////////////////////////////
+	const void *Buffer::getDataPtr() const
+	{
+		return m_data;
 	}
 	
 	/////////////////////////////////////////////////////////////
