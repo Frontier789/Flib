@@ -91,6 +91,13 @@ namespace fm
 									 sizeof(test<LambdaT,FirstArg,ArgsTail...>( lambda,firstArg,argsTail... )) == sizeof(YES)
 									>::template call<LambdaT,R,FirstArg,ArgsTail...>(lambda,firstArg,argsTail...);
 			}
+			
+			static inline R call(LambdaT *lambda,FirstArg firstArg,ArgsTail... argsTail)
+			{
+				return CallForwarder<
+									 sizeof(test<LambdaT,FirstArg,ArgsTail...>( *lambda,firstArg,argsTail... )) == sizeof(YES)
+									>::template call<LambdaT,R,FirstArg,ArgsTail...>(*lambda,firstArg,argsTail...);
+			}
 		};
 	}
 	
@@ -98,7 +105,7 @@ namespace fm
 	template<class LambdaT,class R,class... Args>
 	R LambdaDelegate<LambdaT,R,Args...>::call(Args... callArgs) const
 	{
-		return priv::LambdaCaller<LambdaT,R,Args...>::call(m_lambda,callArgs...);
+		return priv::LambdaCaller<typename std::remove_pointer<LambdaT>::type,R,Args...>::call(m_lambda,callArgs...);
 	}
 	
 	/////////////////////////////////////////////////////////////

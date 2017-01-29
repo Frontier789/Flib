@@ -1,4 +1,5 @@
 #include <Frontier.hpp>
+#include <FRONTIER/OpenGL.hpp>
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -15,7 +16,7 @@ int main()
 	Clock fpsClock;
 	
 	FixedShaderManager shader;
-	DrawData drawdata;
+	deque<DrawData*> drawdatas;
 	
 	vector<vec2> points;
 	vector<vec4> colors;
@@ -49,6 +50,14 @@ int main()
 					
 				if (ev.key.code == Keyboard::Left)
 					gravity.angle += deg(45);
+					
+				if (ev.key.code == Keyboard::C)
+				{
+					points.clear();
+					colors.clear();
+					C(drawdatas.size()) delete drawdatas[i];
+					drawdatas.clear();
+				}
 			}
 			
 			if (ev.type == Event::ButtonPressed)
@@ -117,45 +126,86 @@ int main()
 					}
 				}
 				
-				drawdata.positions.set(&points[0],points.size());
+				for (fm::Size i=0;i*5000<points.size();i++)
+				{
+					int n = 5000;
+					if (i*5000 + n >= points.size()) n = points.size() - i*5000;
+					
+					drawdatas[i]->positions.set(&points[i*5000],n);
+				}
 			}
 			
 			if (leftPressed || rightPressed)
-			/*C(15)*/{
-				vec2 pInWin = Mouse::getPosition(win) + vec2(rand()%31-15,rand()%31-15);
+			{
+				int addedVertices = 0;
 				
-				bool add = true;
+				int num = 1;
+				if (Keyboard::isKeyHeld(Keyboard::LShift) || Keyboard::isKeyHeld(Keyboard::RShift)) num *= 5;
+				if (Keyboard::isKeyHeld(Keyboard::LCtrl)  || Keyboard::isKeyHeld(Keyboard::RCtrl))  num *= 3;
 				
-				if (rect2i(vec2(),win.getSize()-vec2(1,1)).contains(pInWin))
+				C(num)
 				{
-					if (field[int(pInWin.x)][int(pInWin.y)])
-						add = false;
-					else 
-						nextField[int(pInWin.x)][int(pInWin.y)] = true;
-				}
-				
-				if (add)
-				{
-					points.push_back(pInWin);
-				
-					if (leftPressed && !rightPressed)
-						colors.push_back((vec4(cos(colors.size()/150.0),sin(colors.size()/200.0 + 5.2),sin(colors.size()/600.0 + 15.2),1)+vec4(1,1,1,1))/2);
+					vec2 pInWin = Mouse::getPosition(win) + vec2(rand()%31-15,rand()%31-15);
 					
-					if (!leftPressed && rightPressed)
-						colors.push_back(vec4::White);
+					if (rect2i(vec2(),win.getSize()-vec2(1,1)).contains(pInWin))
+					{
+						if (!field[int(pInWin.x)][int(pInWin.y)])
+						{
+							nextField[int(pInWin.x)][int(pInWin.y)] = true;
+							
+							points.push_back(pInWin);
 						
-					if (leftPressed && rightPressed)
-						colors.push_back(vec4(vec3(rand()%100,rand()%100,rand()%100).sgn(),1));
-					
-					drawdata.reset();
-					drawdata.positions.set(&points[0],points.size());
-					drawdata.colors.set(&colors[0],colors.size());
-					drawdata.addDraw(0,points.size(),fg::Points);
-					
-					prevMousep = pInWin;
+							if (leftPressed && !rightPressed)
+							{
+								float colCount = colors.size() / float(num);
+								colors.push_back((vec4(cos(colCount/150.0),sin(colCount/200.0 + 5.2),sin(colCount/600.0 + 15.2),1)+vec4(1,1,1,1))/2);
+							}
+							
+							if (!leftPressed && rightPressed)
+								colors.push_back(vec4::White);
+								
+							if (leftPressed && rightPressed)
+								colors.push_back(vec4(vec3(rand()%100,rand()%100,rand()%100).sgn(),1));
+							
+							++addedVertices;
+						}
+					}
 				}
 				
+				if (addedVertices)
+				{
+					if (drawdatas.size() && drawdatas.back()->getDraw(0).drawLen < 5000)
+					{
+						fm::Size begInd    = drawdatas.size()*5000 - 5000;
+						fm::Size present   = drawdatas.back()->getDraw(0).drawLen;
+						fm::Size copyCount = min<fm::Size>(5000 - present,addedVertices);
+						
+						drawdatas.back()->reset();
+						drawdatas.back()->positions.set(&points[begInd],copyCount + present);
+						drawdatas.back()->colors.set(&colors[begInd],copyCount + present);
+						drawdatas.back()->addDraw(0,copyCount + present,fg::Points);
+						
+						addedVertices -= copyCount;
+					}
+					
+					while (addedVertices)
+					{
+						drawdatas.push_back(new DrawData);
+						
+						fm::Size begInd    = drawdatas.size()*5000 - 5000;
+						fm::Size copyCount = min<fm::Size>(5000,addedVertices);
+						
+						drawdatas.back()->positions.set(&points[begInd],copyCount);
+						drawdatas.back()->colors.set(&colors[begInd],copyCount);
+						drawdatas.back()->addDraw(0,copyCount,fg::Points);
+						
+						addedVertices -= copyCount;
+					}	
+				}
+				
+				prevMousep = Mouse::getPosition(win);
 			}
+			
 			
 			Cxy(100,100)
 				nextField[270+x][190+y] = true;
@@ -165,9 +215,12 @@ int main()
 		
 		
 		win.clear();
-		shader.draw(drawdata);
+		C(drawdatas.size())
+			shader.draw(*drawdatas[i]);
 		win.swapBuffers();
 		
 		Sleep(1.0 / 60.0 - fpsClock.restart());
 	}
+	
+	C(drawdatas.size()) delete drawdatas[i];
 }

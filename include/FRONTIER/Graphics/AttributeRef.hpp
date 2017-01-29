@@ -133,7 +133,15 @@ namespace fg
 						  fm::Size componentType,
 						  const void *pointer,
 						  fm::Size bytesToCopy);
-
+	
+		/////////////////////////////////////////////////////////////
+		/// @brief Access the pointed attribute
+		/// 
+		/// @return Reference to the attribute
+		/// 
+		/////////////////////////////////////////////////////////////
+		Attribute &getData();
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the referenced attribute
 		/// 

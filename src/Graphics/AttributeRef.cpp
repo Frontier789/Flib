@@ -74,4 +74,10 @@ namespace fg
 		
 		return *this;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	Attribute &AttributeRef::getData()
+	{
+		return m_drawData.getAttribute(m_assoc);
+	}
 }
