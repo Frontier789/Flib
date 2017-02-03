@@ -152,6 +152,60 @@ inline fm::Size HexArray<T>::getSliceArea() const
 }
 
 template<class T>
+inline vector3<T> HexArray<T>::getNormal(vec2i p) const
+{
+	auto isInRange = [&](vec2i pt) -> bool {
+		
+		if ((pt.x <= 0 && pt.y >= 0) || 
+			(pt.x >= 0 && pt.y <= 0))
+		{
+			return std::max(std::abs(pt.x),std::abs(pt.y)) <= m_size;
+		}
+		
+		return std::abs(pt.x + pt.y) <= m_size;
+	};
+	
+	const T h_scale = T(5.0);
+	
+	const T &height_C = getHeight(p);
+	vector3<T> Cin3D(getDrawPos(p),height_C*h_scale);
+	
+	auto getTriangleNormal = [&](vec2i A,vec2i B) -> vector3<T> {
+		
+		T height_A = isInRange(A) ? getHeight(A) : height_C;
+		T height_B = isInRange(B) ? getHeight(B) : height_C;
+		
+		vector3<T> Ain3D(getDrawPos(A),height_A*h_scale);
+		vector3<T> Bin3D(getDrawPos(B),height_B*h_scale);
+		
+		vector3<T> a = Ain3D - Bin3D;
+		vector3<T> b = Cin3D - Bin3D;
+		
+		return a.cross(b).sgn();
+	};
+	
+	vec2i pts[] = {vec2i(1,0),vec2i(0,1),vec2i(-1,1),vec2i(-1,0),vec2i(0,-1),vec2i(1,-1),  vec2i(1,0)};
+	
+	vector3<T> normalSum;
+	
+	C(6)
+	{
+		normalSum += getTriangleNormal(p + pts[i],p + pts[i+1]);
+	}
+	
+	return normalSum.sgn() * (height_C < T(0) ? T(0.8) : T(1));
+}
+
+template<class T>
+inline vector2<T> HexArray<T>::getDrawPos(vec2i p) const
+{
+	vector2<T> midpBase_i = polar2<T>(T(1),deg(30));
+	vector2<T> midpBase_j = polar2<T>(T(1),deg(90));
+	
+	return p.x * midpBase_i + p.y * midpBase_j;
+}
+
+template<class T>
 inline vec2i HexArray<T>::transformPoint(vec2i p,int &offset)
 {
 	vec2i transp;

@@ -3,4 +3,7 @@
 !*/*.cpp
 !*/*.hpp
 !*/*.inl
+!*/*.glsl
 !*/makefile
+!*/
+lib*

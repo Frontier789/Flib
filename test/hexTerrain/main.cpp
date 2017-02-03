@@ -103,23 +103,91 @@ inline Interpoler<T> &Interpoler<T>::restart()
 }
 
 
-
+void printControls()
+{
+	cout << "Controls:" << endl
+		 << "\tR: regenerate map" << endl
+		 << "\tS: save screenshot" << endl
+		 << "\t+: increase deatil level" << endl
+		 << "\t-: reduce detail level" << endl
+		 << "\tl: toggle light" << endl
+		 << "\tg: toggle grid" << endl
+		 << "\tMouse: press left and move to look around" << endl
+		 << "\tWheel: zoom in and out" << endl << endl;
+}
 
 int main()
 {
 	Window win(vec2(640,480),"Hexy",Window::Default /*&~ Window::Resize &~ Window::Maximize*/);
+	
+	printControls();
 	
 	srand(time(0));
 	
 	bool running = true;
 	Clock fpsClock;
 	
-	FixedShaderManager shader;
+	FixedShaderManager fixedShader;
+	ShaderManager shader110;
+	ShaderManager shader150;
+	
+	int usedShader = 0;
+	bool useGeomShader = false;
+	bool doLight = true;
+	bool doGrid  = false;
+	
+	if (Shader::isAvailable())
+	{
+		Result res150 = shader150.loadFromFiles("shaders/vert150.glsl","shaders/geom150.glsl","shaders/frag150.glsl");
+		if (res150)
+		{
+			cout << "using shader ver 150" << endl;
+			shader150.associate("in_pos","in_color","","in_normal");
+			shader150.setMatrices("u_modelMat");
+			shader150.setCamera(nullptr,"u_projMat","u_viewMat");
+			
+			usedShader = 2;
+			useGeomShader = true;
+		}
+		else
+		{
+			cout << "load of shader ver 150 failed result: " << res150.toString() << endl;
+		
+			Result res110 = shader110.loadFromFiles("shaders/vert110.glsl","shaders/frag110.glsl");
+			if (res110)
+			{
+				cout << "using shader ver 110" << endl;
+				shader110.associate("in_pos","in_color","in_texpos","in_normal");
+				shader110.setMatrices("u_modelMat");
+				shader110.setCamera(nullptr,"u_projMat","u_viewMat");
+				
+				usedShader = 1;
+			}
+			else
+			{
+				cout << "load of shader ver 110 failed result: " << res110.toString() << endl;
+				cout << "falling back to fixed pipeline" << endl;
+				
+				usedShader = 0;
+			}
+		}
+	}
+	else
+	{
+		cout << "shaders not supported, using fixed pipeline" << endl;
+		
+		usedShader = 0;
+	}
+	
+	ShaderManager &shader = ((usedShader == 0) ? fixedShader : (usedShader == 1 ? shader110 : shader150));
+	
 	Camera cam;
-	shader.setCamera(cam);
+	shader.changeCamera(cam);
+	shader.setUniform("u_doLight",1);
+	shader.setUniform("u_doGrid",0);
 	cam.getProjStack().push(MATRIX::ortho(win.getSize().w*-0.5,win.getSize().h*-0.5,win.getSize().w*0.5,win.getSize().h*0.5));
 	
-	HexTerrain hex(1);
+	HexTerrain hex(1,useGeomShader);
 	hex.gen();
 	
 	vec2  viewPos;
@@ -131,14 +199,15 @@ int main()
 	Interpoler<vec2>  posInterpoler (vec2(),vec2(),seconds(0));
 	
 	Clock loopClk;
+	Clock uClk;
 	
 	for (int loop=0;running;++loop)
 	{
-		if (loopClk.getSeconds() > 3)
+		if (loopClk.getSeconds() > 1)
 		{
 			loopClk.restart();
 			
-			win.setTitle("Hexy  " + fm::toString(loop/3) + "fps");
+			win.setTitle("Hexy  " + fm::toString(loop/1) + "fps");
 			
 			loop = 0;
 		}
@@ -167,6 +236,19 @@ int main()
 				if (ev.key.code == Keyboard::S)
 				{
 					win.capture().saveToFile("hex.png");
+				}
+				
+				if (ev.key.code == Keyboard::G)
+				{
+					doGrid = !doGrid;
+					shader.setUniform("u_doGrid",doGrid ? 1 : 0);
+					
+				}
+				
+				if (ev.key.code == Keyboard::L)
+				{
+					doLight = !doLight;
+					shader.setUniform("u_doLight",doLight ? 1 : 0);
 				}
 				
 				if (ev.key.code == Keyboard::Plus)
@@ -243,6 +325,8 @@ int main()
 				posInterpoler.retarget(viewPos,seconds(0.1),false);
 			}
 		}
+		
+		shader.setUniform("u_time",(float)uClk.getSeconds());
 		
 		win.clear();
 		shader.getModelStack().push().mul(MATRIX::translation(posInterpoler.get())*MATRIX::scaling(vec2(zoomInterpoler.get())));

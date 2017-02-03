@@ -5,7 +5,7 @@ using namespace std;
 
 #include "HexTerrain.hpp"
 
-HexTerrain::HexTerrain(int size) : data(size,-200), colorStyle(0)
+HexTerrain::HexTerrain(int size,bool useGeomShader) : data(size,-200), plotter(useGeomShader), colorStyle(0)
 {
 	
 }
@@ -61,7 +61,7 @@ void HexTerrain::TriangleFiller::extendToTwice()
 void HexTerrain::gen()
 {
 	data.clear();
-	data.getHeight(vec2i(0,0)) = getRandom(.5,1);
+	data.getHeight(vec2i(0,0)) = getRandom(.5,1.5);
 	
 	int size = data.getSize();
 	
@@ -72,7 +72,7 @@ void HexTerrain::gen()
 	data.getHeight(vec2i(    0,-size)) = getRandom(-0.5,0.1);
 	data.getHeight(vec2i( size,-size)) = getRandom(-0.5,0.1);
 	
-	float spread = getRandom(.6,.75);
+	float spread = getRandom(.6,.8);
 	
 	triangleFillers.push_back(TriangleFiller(vec2i(),vec2i( size,    0),vec2i(    0, size),.5,spread));
 	triangleFillers.push_back(TriangleFiller(vec2i(),vec2i(    0, size),vec2i(-size, size),.5,spread));
@@ -125,30 +125,63 @@ void HexTerrain::setColorStyle(int style)
 	loadColors();
 }
 
+template<fm::Size N>
+vec4 lerp(const vec4 (&colorArray)[N],const float (&heightArray)[N],float height)
+{
+	if (height < heightArray[0])
+	{
+		return colorArray[0];
+	}
+	
+	C(N - 1)
+	{
+		if (height >= heightArray[i] && height < heightArray[i+1])
+		{
+			float rat = float(height-heightArray[i])/(heightArray[i+1] - heightArray[i]);
+			
+			return colorArray[i+1] * rat + colorArray[i] * (1.0 - rat);
+		}
+	}
+	
+	return heightArray[N-1];
+}
+
+template<fm::Size N>
+vec4 proximal(const vec4 (&colorArray)[N],const float (&heightArray)[N],float height)
+{
+	if (height < heightArray[0])
+	{
+		return colorArray[0];
+	}
+	
+	C(N - 1)
+	{
+		if (height < (heightArray[i+1]+heightArray[i])/2)
+		{
+			return colorArray[i];
+		}
+	}
+	
+	return heightArray[N-1];
+}
+
 void HexTerrain::loadColors()
 {
 	Delegate<vec4,float> colorGetters[] = {
 	
-	[](float d) -> vec4 {	
-		if (d < -1)
-		{
-			return vec4(0,0,.5);
-		}
-		
+	[](float d) -> vec4 {
 		vec4 clrs[] = {vec4(0,0,.5),vec4(0,.1,.95),vec4(.4,.6,.7),vec4(0.2,0.6,0),vec4(.57,.57,0),vec4(.63,.34,0),vec4(.8,.57,.34),vec4::White,vec4(.87,.91,1)};
-		float heights[] = {     -1,           -.5,             0,           0.13,            0.3,            0.6,             0.8,           1,           1.1};
+		float heights[] = {     -1,           -.5,             0,           0.13,            0.3,            0.6,             0.8,           1,           3.1};
 		
-		C(sizeof(heights)/sizeof(*heights) - 1)
-		{
-			if (d >= heights[i] && d < heights[i+1])
-			{
-				float rat = float(d-heights[i])/(heights[i+1] - heights[i]);
-				
-				return clrs[i+1] * rat + clrs[i] * (1.0 - rat);
-			}
-		}
+		return lerp(clrs,heights,d);
+	},
+	[](float d) -> vec4 {
+		vec4 clrs1[] = {vec4(61,93,114,255)/255,vec4(.3,.3,.5),vec4(.2,.2,.6),vec4(.3,.3,.7),vec4(.4,.4,.9),vec4(.5,.5,.7),vec4(.7,.7,.8),vec4(1,1,1)};
+		float heights1[] = {                 -1,           -.6,           -.3,           -.1,            .1,           .3,            .5,           1};
+		vec4 clrs[] = {vec4(.0,.0,.1),vec4(.1,.1,.2),vec4(.2,.2,.5),vec4(.3,.3,.5),vec4(.7,.7,1),vec4(1,1,1)};
+		float heights[] = {       -1,             -.5,           0,            .3,           .7,          1};
 		
-		return vec4::White;
+		return lerp(clrs,heights,int(d*5)/5.0);
 	},
 	[](float d) -> vec4 {
 		float v = max((d+1)/2,0.f);

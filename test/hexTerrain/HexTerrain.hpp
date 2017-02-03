@@ -28,7 +28,7 @@ public:
 	
 	deque<TriangleFiller> triangleFillers;
 	
-	HexTerrain(int size);
+	HexTerrain(int size,bool useGeomShader);
 	
 	void gen();
 	void extendToTwice();

@@ -33,6 +33,8 @@ int main()
 	
 	shader.getModelStack().push(MATRIX::ortho(0,win.getSize().h,win.getSize().w,0,1,-1));
 	
+	bool gPress = false;
+	
 	for (fm::Uint64 loop=0;running;++loop)
 	{
 		Event ev;
@@ -57,6 +59,19 @@ int main()
 					colors.clear();
 					C(drawdatas.size()) delete drawdatas[i];
 					drawdatas.clear();
+				}
+					
+				if (ev.key.code == Keyboard::G)
+				{
+					gPress = true;
+				}
+			}
+			
+			if (ev.type == Event::KeyReleased)
+			{
+				if (ev.key.code == Keyboard::G)
+				{
+					gPress = false;
 				}
 			}
 			
@@ -107,7 +122,14 @@ int main()
 				
 				for (int i=0;i<points.size();++i)
 				{
-					vec2 delta = (vec2(gravity) + vec2(gravity).sgn().perp() * (rand()%301-150))*dt;
+					vec2 appliedGravity = gravity;
+					if (gPress)
+					{
+						vec2 mouseToP = Mouse::getPosition(win) - points[i];
+						appliedGravity = mouseToP.sgn() * gravity.length * 2.1;
+					}
+					
+					vec2 delta = (vec2(appliedGravity) + vec2(appliedGravity).sgn().perp() * (rand()%301-150))*dt;
 					
 					if (rect2i(vec2(),win.getSize()-vec2(1,1)).contains(points[i]+delta))
 					{

@@ -33,6 +33,9 @@ public:
 	fm::Size getArea() const;
 	fm::Size getSliceArea() const;
 	
+	vector3<T> getNormal(vec2i p) const;
+	vector2<T> getDrawPos(vec2i p) const;
+	
 	T &getHeight(vec2i p);
 	T &getHeight(vec3i p);
 	const T &getHeight(vec2i p) const;
