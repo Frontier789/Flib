@@ -34,6 +34,8 @@ int main()
 	shader.getModelStack().push(MATRIX::ortho(0,win.getSize().h,win.getSize().w,0,1,-1));
 	
 	bool gPress = false;
+
+	float sandRange = 15;
 	
 	for (fm::Uint64 loop=0;running;++loop)
 	{
@@ -72,6 +74,16 @@ int main()
 				if (ev.key.code == Keyboard::G)
 				{
 					gPress = false;
+				}
+
+				if (ev.key.code == Keyboard::Plus)
+				{
+					sandRange++;
+				}
+
+				if (ev.key.code == Keyboard::Minus)
+				{
+					sandRange--;
 				}
 			}
 			
@@ -167,7 +179,7 @@ int main()
 				
 				C(num)
 				{
-					vec2 pInWin = Mouse::getPosition(win) + vec2(rand()%31-15,rand()%31-15);
+					vec2 pInWin = Mouse::getPosition(win) + vec2(rand()%101-50,rand()%101-50).sgn()*(rand()%10000)/10000.f*sandRange;
 					
 					if (rect2i(vec2(),win.getSize()-vec2(1,1)).contains(pInWin))
 					{

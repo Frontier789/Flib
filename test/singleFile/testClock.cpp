@@ -34,7 +34,7 @@ void doSomethingSilly(int n)
 	int *t = new int[n];
 	for (int i=0;i<n;++i)
 	{
-		t[i] = int(t+i);
+		t[i] = int(t[i]+i);
 	}
 	
 	delete[] t;
@@ -50,7 +50,7 @@ void testDelegates(int a,int b)
 		int *t = new int[n];
 		for (int i=0;i<n;++i)
 		{
-			t[i] = int(t+i);
+			t[i] = int(t[i]+i);
 		}
 		
 		delete[] t;
