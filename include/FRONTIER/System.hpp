@@ -52,5 +52,6 @@ namespace fm
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Delegate.hpp>
+#include <FRONTIER/System/Transition.hpp>
 
 #endif // FRONTIER_SYSTEM_MODULE_HPP_INCLUDED

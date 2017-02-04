@@ -7,102 +7,6 @@ using namespace std;
 #include "HexPlotter.hpp"
 #include "HexTerrain.hpp"
 
-template<class T>
-class Interpoler
-{
-	fm::Time  m_duration;
-	fm::Clock m_clock;
-	T m_start;
-	T m_end;
-public:
-	
-	Interpoler();
-	
-	Interpoler(T begin,T end,fm::Time duration = fm::seconds(1));
-	
-	T get() const;
-	fm::Time getTimeLeft() const;
-	
-	bool finished() const;
-	
-	Interpoler<T> &set(T begin,T end,fm::Time duration = fm::seconds(1));
-	Interpoler<T> &retarget(T newEnd,fm::Time addDuration = fm::seconds(1),bool keepTimeLeft = true);
-	Interpoler<T> &restart();
-};
-
-template<class T>
-inline Interpoler<T>::Interpoler()
-{
-	
-}
-
-template<class T>
-inline Interpoler<T>::Interpoler(T begin,T end,fm::Time duration) : m_duration(duration), m_start(begin), m_end(end)
-{
-	
-}
-
-template<class T>
-inline T Interpoler<T>::get() const
-{
-	double r = m_clock.getTime() / m_duration;
-	
-	if (r > 1.0) return m_end;
-	
-	r = (3 - 2*r)*r*r;
-	
-	return (1.0 - r)*m_start + r*m_end;
-}
-
-template<class T>
-inline fm::Time Interpoler<T>::getTimeLeft() const
-{
-	fm::Time t = m_clock.getTime();
-	
-	if (t > m_duration) return fm::seconds(0);
-	
-	return m_duration - t;
-}
-
-template<class T>
-inline bool Interpoler<T>::finished() const
-{
-	return m_clock.getTime() >= m_duration;
-}
-
-template<class T>
-inline Interpoler<T> &Interpoler<T>::set(T begin,T end,fm::Time duration)
-{
-	m_duration = duration;
-	m_start    = begin;
-	m_end      = end;
-	
-	m_clock.restart();
-	
-	return *this;
-}
-
-template<class T>
-inline Interpoler<T> &Interpoler<T>::retarget(T newEnd,fm::Time addDuration,bool keepTimeLeft)
-{
-	m_duration = keepTimeLeft ? (getTimeLeft() + addDuration) : addDuration;
-	m_start    = get();
-	m_end      = newEnd;
-	
-	m_clock.restart();
-	
-	return *this;
-}
-
-template<class T>
-inline Interpoler<T> &Interpoler<T>::restart()
-{
-	m_clock.restart();
-	
-	return *this;
-}
-
-
 void printControls()
 {
 	cout << "Controls:" << endl
@@ -195,8 +99,8 @@ int main()
 	bool  leftDown  = false;
 	vec2  lastMouse;
 	
-	Interpoler<float> zoomInterpoler(50,50,seconds(0));
-	Interpoler<vec2>  posInterpoler (vec2(),vec2(),seconds(0));
+	Transition<float> zoomTransition(50,50,seconds(0));
+	Transition<vec2>  posTransition (vec2(),vec2(),seconds(0));
 	
 	Clock loopClk;
 	Clock uClk;
@@ -256,7 +160,7 @@ int main()
 					hex.extendToTwice();
 					
 					viewZoom /= 1.8;
-					zoomInterpoler.retarget(viewZoom,seconds(0.2),false);
+					zoomTransition.retarget(viewZoom,seconds(0.2),false);
 				}
 
 				if (ev.key.code == Keyboard::Minus)
@@ -264,7 +168,7 @@ int main()
 					hex.reduceToHalf();
 					
 					viewZoom *= 1.8;
-					zoomInterpoler.retarget(viewZoom,seconds(0.2),false);
+					zoomTransition.retarget(viewZoom,seconds(0.2),false);
 				}
 
 				if ((ev.key.code >= Keyboard::Num0    && ev.key.code <= Keyboard::Num9) ||
@@ -303,7 +207,7 @@ int main()
 					
 					viewPos += (p-lastMouse)*vec2(1,-1);
 					
-					posInterpoler.retarget(viewPos,seconds(0.0),false);
+					posTransition.retarget(viewPos,seconds(0.0),false);
 					
 					lastMouse = p;
 				}
@@ -321,15 +225,15 @@ int main()
 				
 				viewZoom *= s;
 				
-				zoomInterpoler.retarget(viewZoom,seconds(0.1),false);
-				posInterpoler.retarget(viewPos,seconds(0.1),false);
+				zoomTransition.retarget(viewZoom,seconds(0.1),false);
+				posTransition.retarget(viewPos,seconds(0.1),false);
 			}
 		}
 		
 		shader.setUniform("u_time",(float)uClk.getSeconds());
 		
 		win.clear();
-		shader.getModelStack().push().mul(MATRIX::translation(posInterpoler.get())*MATRIX::scaling(vec2(zoomInterpoler.get())));
+		shader.getModelStack().push().mul(MATRIX::translation(posTransition.get())*MATRIX::scaling(vec2(zoomTransition.get())));
 		hex.onDraw(shader);
 		shader.getModelStack().pop();
 		win.swapBuffers();
