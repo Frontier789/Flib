@@ -23,14 +23,13 @@
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
-#include <FRONTIER/System/CommonTypes.hpp>
-#include <FRONTIER/System/NonCopyable.hpp>
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/Metrics.hpp>
-#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/Graphics/Glyph.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/System/util/API.h>
 #define FRONTIER_FONT
 #include <string>
 #include <map>
@@ -74,8 +73,6 @@ namespace fg
 			bool operator<(const Identifier &other) const;
 		};
 
-
-		fm::Size *m_refCount;     ///< How many instances does reference this object
 		FontRenderer *m_renderer; ///< A pointer to a fg::Font::Renderer that does the rendering part
 		mutable std::map<unsigned int,TextureAtlas<Identifier> > *m_texAtlases; ///< Maps characer sizes to different font atlases
 	public:
@@ -91,14 +88,40 @@ namespace fg
 		Font();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Default constructor
-		///
-		/// If @a copy is invalid (uninitialized) then this the object will be invalid (uninitialized)
+		/// @brief Copy constructor
 		///
 		/// @param copy The font to copy
 		///
 		/////////////////////////////////////////////////////////////
-		Font(const Font &copy);
+		Font(const Font &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move constructor
+		///
+		/// @param move The font to move
+		///
+		/////////////////////////////////////////////////////////////
+		Font(Font &&move);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy assignment
+		///
+		/// @param copy The font to copy
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		Font &operator=(const Font &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move assignment
+		///
+		/// @param move The font to move
+		/// 
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		Font &operator=(Font &&move);
 
 
 		/////////////////////////////////////////////////////////////
@@ -128,7 +151,19 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result loadFromMemory(const void *fileContent,fm::Size fileSizeInBytes,unsigned int size = 14);
+		fm::Result loadFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int size = 14);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy the Font from a ttf file that loaded in memory
+		///
+		/// @param fileContent A pointer to the beggining of the file in memory
+		/// @param fileSizeInBytes The number of bytes in the loaded file
+		/// @param size The initial size
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result copyFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int size = 14);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the mignification and magnification filter on the texture atlases
@@ -146,13 +181,13 @@ namespace fg
 		/// This function searches the glyphTable and if doesn't
 		/// find the glyph it creates the glyph.
 		///
-		/// @param letter The codepoint of the glyph
+		/// @param codepoint The codepoint of the glyph
 		/// @param type The style of the glyph
 		///
 		/// @return The glyph
 		///
 		/////////////////////////////////////////////////////////////
-		Glyph getGlyph(const fm::Uint32 &letter,unsigned int type = Glyph::Regular) const;
+		Glyph getGlyph(const fm::Uint32 &codepoint,unsigned int type = Glyph::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Precache characters
@@ -168,25 +203,25 @@ namespace fg
 		///
 		/// This function does not access the glyphTable
 		///
-		/// @param letter The codepoint of the glyph
+		/// @param codepoint The codepoint of the glyph
 		/// @param style The style of the glyph
 		/// @param leftDown If not NULL it will be set to the offset of the glyph from the baseline
 		///
 		/// @return The rendered image
 		///
 		/////////////////////////////////////////////////////////////
-		Image renderGlyph(const fm::Uint32 &letter,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown = nullptr) const;
+		Image renderGlyph(const fm::Uint32 &codepoint,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown = nullptr) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if a given glyph is present in the font
 		///
-		/// @param letter The codepoint of the glyph
+		/// @param codepoint The codepoint of the glyph
 		/// @param style The style of the glyph
 		///
 		/// @return True iff the glyph is present
 		///
 		/////////////////////////////////////////////////////////////
-		bool hasGlyph(const fm::Uint32 &letter,unsigned int style = Glyph::Regular) const;
+		bool hasGlyph(const fm::Uint32 &codepoint,unsigned int style = Glyph::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get information about the font metrics
@@ -278,28 +313,6 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		void init();
 	};
-
-	////////////////////////////////////////////////////////////
-	/// @class fg::Font
-	/// @ingroup Graphics
-	///
-	/// Example:
-	/// @code
-	/// fg::Font::Renderer arial;
-	/// if (!arial.loadFromFile("arial.ttf"))
-	/// {
-	///     /* handle error */
-	///     return -1;
-	/// }
-	/// fg::Image A = arial.renderGlyph('A');
-	/// A.saveToFile("A.png");
-	/// @endcode
-	///
-	/// @see fg::Font
-	/// @see fg::Image
-	/// @see fg::FontRenderer
-	///
-	////////////////////////////////////////////////////////////
 }
 
 #endif // FRONTIER_FONT_HPP_INCLUDED

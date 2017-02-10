@@ -32,12 +32,14 @@ namespace fg
 
 	}
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	////////////////////////////////////////////////////////////
 	Buffer::Buffer(const Buffer &buf) : m_data(nullptr),
                                         m_size(0)
 	{
         (*this) = buf;
 	}
+#endif
 
 	////////////////////////////////////////////////////////////
 	Buffer::Buffer(Buffer &&buf) : m_data(nullptr),
@@ -256,9 +258,12 @@ namespace fg
 		return m_type;
 	}
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	Buffer &Buffer::operator=(const Buffer &buf)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
+		
         // copy attrs
 	    m_usage = buf.m_usage;
 	    m_type  = buf.m_type;
@@ -299,6 +304,7 @@ namespace fg
 
         return *this;
 	}
+#endif
 
 	/////////////////////////////////////////////////////////////
 	Buffer &Buffer::operator=(Buffer &&buf)

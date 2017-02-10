@@ -20,13 +20,11 @@
 #include <FRONTIER/System/util/dont_include_inl_begin>
 
 #include <FRONTIER/Graphics/GlObject.hpp>
-#include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/System/Vector2.hpp>
-#include <FRONTIER/System/Matrix.hpp>
-#include <FRONTIER/System/Rect.hpp>
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Result.hpp>
@@ -34,8 +32,20 @@
 
 #define FRONTIER_TEXTURE
 
+namespace fm
+{
+	template<fm::Size,fm::Size,class> class matrix;
+	template<class> class vector4;
+	
+	typedef matrix<4,4,float> mat4;
+	typedef vector4<float> vec4;
+}
+
 namespace fg
 {
+	class Image;
+	class Color;
+	
 	/////////////////////////////////////////////////////////////
 	///
 	/// 	@brief Class used to handle OpenGL 2D textures
@@ -82,7 +92,7 @@ namespace fg
 		/// @param copy The texture to be copied
 		///
 		/////////////////////////////////////////////////////////////
-		Texture(const Texture &copy);
+		Texture(const Texture &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move constructor
@@ -300,7 +310,6 @@ namespace fg
 		/// @brief Bind the texture for usage
 		///
 		/// This function uses the GL_TXTURE_2D target
-		/// This function does not modify the texture matrix
 		///
 		/// @return The error-state of the function
 		///
@@ -311,10 +320,7 @@ namespace fg
 		/// @brief Bind a texture for usage
 		///
 		/// This function uses the GL_TXTURE_2D target
-		/// This function calls fg::Texture::m_setTexMat
-		/// (can be modifed by changeSetTexMat) to set the texture matrix
-		/// If @a texture is NULL the actually bound texture will be
-		/// unbound
+		/// If @a texture is NULL the actually bound texture will be unbound
 		///
 		/// @param texture The texture to be bound (or NULL)
 		///
@@ -331,7 +337,7 @@ namespace fg
 		/// @return The transformation matrix
 		///
 		/////////////////////////////////////////////////////////////
-		fm::mat4 getPixToUnitMatrix() const;
+		fm::matrix<4,4,float> getPixToUnitMatrix() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the maximum width (same as max height) of a texture
@@ -373,7 +379,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference operator=(const Texture &tex);
+		reference operator=(const Texture &tex) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assignment operator

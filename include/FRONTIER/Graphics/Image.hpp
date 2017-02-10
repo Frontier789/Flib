@@ -19,16 +19,15 @@
 
 #include <FRONTIER/System/util/dont_include_inl_begin>
 
-#include <FRONTIER/System/Rect.hpp>
-#include <FRONTIER/System/Vector2.hpp>
-#include <FRONTIER/System/Vector3.hpp>
-#include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
+#include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/Rect.hpp>
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
-#include <FRONTIER/System/util/API.h>
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_IMAGE
 #include <string>
@@ -84,7 +83,7 @@ namespace fg
 		/// @param copy The source image
 		///
 		/////////////////////////////////////////////////////////////
-		Image(const Image &copy);
+		Image(const Image &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move a whole image
@@ -112,12 +111,13 @@ namespace fg
 		/// @brief Create the image from an other image
 		/// 
 		/// @param img The image t copy from
-		/// @param area The rectangle to copy from the other image
+		/// @param pos The position of the rectangle to copy from the other image
+		/// @param size The size of the rectangle to copy from the other image
 		///
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference create(const fg::Image &img,fm::rect2s area);
+		reference create(const fg::Image &img,fm::vec2s pos,fm::vec2s size);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create the image with given size and given data
@@ -167,8 +167,7 @@ namespace fg
 		/// Supported types are jpg, jpeg, png, gif, tga
 		/// it uses stb_image http://nothings.org
 		///
-		/// If anything goes wrong this function returns NULL and
-		/// a description of the error is printed to fg_log
+		/// If anything goes wrong this function returns NULL
 		///
 		/// @param byteCount The number of bytes returned (0 on error)
 		/// @param ext The extension of the file
@@ -180,10 +179,18 @@ namespace fg
 		fm::Result saveToMemory(fm::Uint8 *&pointer,fm::Size &byteCount,const std::string &ext) const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Resize The image
+		/// @brief Copy a region of the image
 		///
-		/// If anything goes wrong this function returns NULL and
-		/// a description of the error is printed to fg_log
+		/// @param pos The upper-left corner of the region
+		/// @param size The size of the region in texels
+		///
+		/// @return The copied image
+		///
+		/////////////////////////////////////////////////////////////
+		Image getSubImage(fm::vec2s pos,fm::vec2s size) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Resize The image
 		///
 		/// @param size The new size
 		/// @param linearFilter Iff true linear filtering is used (nearest neighbour otherwise)
@@ -241,7 +248,37 @@ namespace fg
 		/// @return The color of the texel
 		///
 		/////////////////////////////////////////////////////////////
+		Color &getTexel(fm::vec2s pos);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the color of a texel
+		///
+		/// @param pos The position of a texel
+		///
+		/// @return The color of the texel
+		///
+		/////////////////////////////////////////////////////////////
+		const Color &getTexel(fm::vec2s pos) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the color of a texel
+		///
+		/// @param pos The position of a texel
+		///
+		/// @return The color of the texel
+		///
+		/////////////////////////////////////////////////////////////
 		reference set(fm::vec2s pos,Color color);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the color of a texel
+		///
+		/// @param pos The position of a texel
+		///
+		/// @return The color of the texel
+		///
+		/////////////////////////////////////////////////////////////
+		reference setTexel(fm::vec2s pos,Color color);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Access the texels in c-style
@@ -258,6 +295,22 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		const Color *getPtr() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Access the texels in c-style
+		///
+		/// @return Pointer to the texels
+		///
+		/////////////////////////////////////////////////////////////
+		Color *getTexelsPtr();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Access the texels in c-style
+		///
+		/// @return Pointer to the texels
+		///
+		/////////////////////////////////////////////////////////////
+		const Color *getTexelsPtr() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Flip the image horizontally
@@ -283,7 +336,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference operator=(const Image &copy);
+		reference operator=(const Image &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Move an image

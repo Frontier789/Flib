@@ -19,6 +19,7 @@
 
 #include <FRONTIER/Graphics/AssocPoint.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_ATTRIBUTE_REF
@@ -58,7 +59,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		AttributeRef &operator=(const Attribute &attr);
+		AttributeRef &operator=(const Attribute &attr) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move assignment operator

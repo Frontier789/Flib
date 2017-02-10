@@ -218,7 +218,7 @@ namespace fg
 			delete m_root;
 			m_root = new Node;
 			
-			m_tex.create(10,10);
+			m_tex.create(fm::vec2(10,10));
 		}
 		
 		/////////////////////////////////////////////////////////////
@@ -230,12 +230,12 @@ namespace fg
 			for (fm::Size i=0;i<count;i++)
 			{
 				// there is a rect, a vec2 and a MappedType in glyphPoints with give stride
-				fm::rect2s *rectPtr = (fm::rect2s*)((char*)glyphPoints + stride*i);
-				fm::vec2   *leftdownPtr = (fm::vec2*)((char*)glyphPoints + stride*i + sizeof(fm::rect2s));
+				fm::rect2s *rectPtr     = (fm::rect2s*)((char*)glyphPoints + stride*i);
+				fm::vec2   *leftdownPtr =   (fm::vec2*)((char*)glyphPoints + stride*i + sizeof(fm::rect2s));
 				
 				// copy the important part of the image
 				fg::Image img;
-				img.create(atlas,fm::rect2s(rectPtr->pos,rectPtr->size));
+				img.create(atlas,rectPtr->pos,rectPtr->size);
 				
 				Node *inserted = nullptr;
 				fm::vec2s size = img.getSize();

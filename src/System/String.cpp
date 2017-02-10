@@ -104,12 +104,12 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	String::String(const char *text,const std::locale &loc)
 	{
-		if (text)
-			while (*text)
-			{
-				m_str += priv::utf32FromAnsi(*text,loc);
-				text++;
-			}
+		const char *ptr = text;
+		
+		fm::Size len = 0;
+		while (text && *text) ++text, ++len;
+		
+		*this = fromUtf8(ptr,len);
 	}
 
 	/////////////////////////////////////////////////////////////

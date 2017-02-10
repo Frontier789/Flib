@@ -34,27 +34,28 @@ namespace fg
 		
 	}
 	
-	/////////////////////////////////////////////////////////////
-	Mesh::Mesh()
-	{
-
-	}
-	
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	Mesh::Mesh(const Mesh &copy)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
 		
+		(*this) = copy;
 	}
+#endif
 	
 	/////////////////////////////////////////////////////////////
 	Mesh::Mesh(Mesh &&move)
 	{
 		move.swap(*this);
 	}
-	
+
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	Mesh::reference Mesh::operator=(const Mesh &copy)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
+		
 		pts    .assign(copy.pts.begin(),   copy.pts.end());
 		uvs    .assign(copy.uvs.begin(),   copy.uvs.end());
 		norms  .assign(copy.norms.begin(), copy.norms.end());
@@ -65,6 +66,7 @@ namespace fg
 
 	    return *this;
 	}
+#endif
 	
 	/////////////////////////////////////////////////////////////
 	Mesh::reference Mesh::operator=(Mesh &&move)
@@ -332,10 +334,10 @@ namespace fg
 	};
 	
 	/////////////////////////////////////////////////////////////
-    void Mesh::calcNormals(bool joinIdenticalVertices)
+    Mesh::reference Mesh::calcNormals(bool joinIdenticalVertices)
     {
 		if (pts.size() < 3)
-            return;
+			return *this;
             
 		norms.resize(pts.size(),fm::vec3());
 		
@@ -408,13 +410,15 @@ namespace fg
 
 		C(norms.size())
 			norms[i] = norms[i].sgn();
+		
+		return *this;
     }
 
 	/////////////////////////////////////////////////////////////
-	void Mesh::calcTangents()
+	Mesh::reference Mesh::calcTangents()
     {
 		if (pts.size() < 3 || uvs.size() < 3)
-            return;
+			return *this;
 
 		for (fm::Size faceIndex = 0;faceIndex < faces.size();++faceIndex)
 		{
@@ -479,5 +483,7 @@ namespace fg
 
         C(bitans.size())
 			bitans[i] = bitans[i].sgn();
+		
+		return *this;
     }
 }

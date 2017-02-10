@@ -25,6 +25,7 @@
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
+#include <FRONTIER/Graphics/DepthTestMode.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Result.hpp>
@@ -44,35 +45,7 @@ namespace fg
 	class Texture;
 
 	/////////////////////////////////////////////////////////////
-	/// @brief Encodes types of blending
-	///
-	/// By default blending is not used (same as Overwrite)
-	///
-	/////////////////////////////////////////////////////////////
-	enum BlendMode {
-		Overwrite, ///< Destination = Input
-		Additive,  ///< Destination = Destination + Input
-		Alpha      ///< Destination = Destination*(1-Input.a) + Input*Input.a
-	};
-
-	/////////////////////////////////////////////////////////////
-	/// @brief Encodes types of depth testing
-	///
-	/// By default depth test is not used
-	///
-	/////////////////////////////////////////////////////////////
-	enum DepthTestMode {
-		Less,    ///< Writes the fragment iff it's distance is smaller than the current in the depth buffer
-		LEqual,  ///< Writes the fragment iff it's distance is smaller or equal than the current in the depth buffer
-		GEqual,  ///< Writes the fragment iff it's distance is greater or equal than the current in the depth buffer
-		Greater, ///< Writes the fragment iff it's distance is greater than the current in the depth buffer
-		Always,  ///< Always writes the fragment in the depth buffer
-		Unused   ///< Does not perform depth test
-	};
-
-	/////////////////////////////////////////////////////////////
-	///
-	/// 	@brief Class used to crae and handle OpenGL <a href="http://www.opengl.org/wiki/Framebuffer_Object">Framebuffers</a>
+	/// @brief Class used to crae and handle OpenGL <a href="http://www.opengl.org/wiki/Framebuffer_Object">Framebuffers</a>
 	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API FrameBuffer : public fm::NonCopyable, public GlObject
@@ -136,6 +109,34 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		FrameBuffer();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move constructor
+		///
+		/// @param move The instance to be moved
+		///
+		/////////////////////////////////////////////////////////////
+		FrameBuffer(FrameBuffer &&move);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move assignment
+		///
+		/// @param move The instance to be moved
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		FrameBuffer &operator=(FrameBuffer &&move);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Swap two framebuffers
+		///
+		/// @param fbo The framebuffer to swap with
+		/// 
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		FrameBuffer &swap(FrameBuffer &fbo);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the framebuffer from attachments and depth buffer

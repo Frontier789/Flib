@@ -1,4 +1,6 @@
 #include <FRONTIER/Graphics/CubeTexture.hpp>
+#include <FRONTIER/Graphics/Image.hpp>
+#include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/util/C.hpp>
 #include <FRONTIER/System/String.hpp>
@@ -21,6 +23,17 @@ namespace fg
 		m_isRepeated = cubeTex.isRepeated(),
 		m_isSmooth = cubeTex.isSmooth(),
 		getGlId() = m_cubeTex.getGlId();
+	}
+
+	/////////////////////////////////////////////////////////////
+	CubeTextureFace::CubeTextureFace(const CubeTextureFace &face) : m_cubeTex(face.m_cubeTex),
+																	m_faceId(face.m_faceId)
+	{
+		m_realSize   = face.m_realSize,
+		m_size       = face.m_size,
+		m_isRepeated = face.m_isRepeated,
+		m_isSmooth   = face.m_isSmooth,
+		getGlId()    = face.getGlId();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -79,6 +92,7 @@ namespace fg
 
 	}
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	CubeTexture::CubeTexture(const CubeTexture &cubeTex) : m_size(0),
 														   m_isRepeated(false),
@@ -86,18 +100,22 @@ namespace fg
 	{
 		(*this) = cubeTex;
 	}
+#endif
 
 	/////////////////////////////////////////////////////////////
 	CubeTexture::CubeTexture(CubeTexture &&cubeTex) : m_size(0),
 													  m_isRepeated(false),
 													  m_isSmooth(false)
 	{
-		(*this) = cubeTex;
+		this->swap(cubeTex);
 	}
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	CubeTexture &CubeTexture::operator=(const CubeTexture &cubeTex)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
+		
 		if (cubeTex.getGlId())
 		{
 			create(cubeTex.getSize());
@@ -116,6 +134,7 @@ namespace fg
 		setRepeated(cubeTex.m_isRepeated);
 		setSmooth(cubeTex.m_isSmooth);
 	}
+#endif
 
 	/////////////////////////////////////////////////////////////
 	CubeTexture &CubeTexture::operator=(CubeTexture &&cubeTex)

@@ -168,7 +168,7 @@ namespace fg
 		// upload each point
 		for (fm::Size i=0;i<pointCount;i++)
 			if (points[i].img)
-				upload(*points[i].img,*points[i].point,*points[i].leftdown);
+				upload(*points[i].img,points[i].point,points[i].leftdown);
 	}
 
 	/////////////////////////////////////////////////////////////

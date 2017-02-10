@@ -16,14 +16,15 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/CubeTexture.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
-#include <FRONTIER/GL/GL_CHECK.hpp>
-#include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
+#include <FRONTIER/Graphics/Shader.hpp>
+#include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/OpenGL.hpp>
 #include <fstream>
 
@@ -196,7 +197,8 @@ namespace fg
 	}
 
 	/// constructor /////////////////////////////////////////////////////////
-	Shader::Shader() : m_texCounter(0)
+	Shader::Shader() : m_texCounter(0),
+					   m_blendMode(fg::Alpha)
 	{
 
 	}
@@ -599,4 +601,21 @@ namespace fg
 		
 		return (glGetError() == GL_NO_ERROR && *ptr);
     }
+
+	/////////////////////////////////////////////////////////////
+	void Shader::setBlendMode(fg::BlendMode mode)
+	{
+		m_blendMode = mode;
+		
+		if (mode == fg::Overwrite)
+			glDisable(GL_BLEND);
+			
+		if (mode == fg::Additive)
+			glEnable(GL_BLEND),
+			glBlendFunc(GL_ONE,GL_ONE);
+			
+		if (mode == fg::Alpha)
+			glEnable(GL_BLEND),
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
 }

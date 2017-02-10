@@ -17,9 +17,7 @@
 #ifndef FRONTIER_GLCHECK_HPP_INCLUDED
 #define FRONTIER_GLCHECK_HPP_INCLUDED
 #include <FRONTIER/System/CommonTypes.hpp>
-#include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/System/util/API.h>
-#include <FRONTIER/System/Result.hpp>
 #define FRONTIER_GLCHECK
 
 #ifdef FRONTIER_DEBUG
@@ -27,6 +25,13 @@
 #else
 	#define glCheck(call) ((call),fm::Result())
 #endif
+
+namespace fm
+{
+	class Result;
+	
+	template<class,class...> class Delegate;
+}
 
 namespace fg
 {

@@ -65,11 +65,14 @@ namespace fg
 		loadFromFile(filename);
 	}
 	
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	Image::Image(const Image &copy) : m_texels(nullptr)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
 		(*this) = copy;
 	}
+#endif
 
 	/////////////////////////////////////////////////////////////
 	Image::Image(Image &&move) : m_texels(nullptr)
@@ -95,24 +98,9 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	Image::reference Image::create(const fg::Image &img,fm::rect2s area)
+	Image::reference Image::create(const fg::Image &img,fm::vec2s pos,fm::vec2s size)
 	{
-		if (area.pos.x >= getSize().w || area.pos.y >= getSize().h)
-		{
-			*this = Image();
-			
-			return *this;
-		}
-		
-		area.size.w = std::min(area.size.w,getSize().w - area.pos.x);
-		area.size.h = std::min(area.size.h,getSize().h - area.pos.y);
-		
-		create(area.size);
-		
-		if (area.size.w == getSize().w)
-		{
-			
-		}
+		img.getSubImage(pos,size).swap(*this);
 		
 		return *this;
 	}
@@ -231,13 +219,33 @@ namespace fg
 		}
 	}
 	
-	/*
 	/////////////////////////////////////////////////////////////
 	Image Image::getSubImage(fm::vec2s pos,fm::vec2s size) const
 	{
-		...
+		Image ret;
+		
+		if (pos.x >= size.w || pos.y >= getSize().h)
+			return ret;
+		
+		size.w = std::min(size.w,getSize().w - pos.x);
+		size.h = std::min(size.h,getSize().h - pos.y);
+		
+		ret.create(size);
+		
+		if (size.w == getSize().w)
+		{
+			std::memcpy(ret.getTexelsPtr(),getTexelsPtr() + getSize().w * pos.y,sizeof(Color)*getSize().area());
+		}
+		else
+		{
+			C(size.h)
+			{
+				std::memcpy(ret.getTexelsPtr() + size.w * i,getTexelsPtr() + getSize().w * (pos.y + i) + pos.x,sizeof(Color)*size.w);
+			}
+		}
+		
+		return ret;
 	}
-	*/
 
 	/////////////////////////////////////////////////////////////
 	Image Image::scale(fm::vec2s size,bool linearFilter)
@@ -339,11 +347,23 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	Color &Image::at(fm::vec2s pos)
 	{
-		return m_texels[pos.y * m_size.w + pos.x];
+		return getTexel(pos);
 	}
 
 	/////////////////////////////////////////////////////////////
 	const Color &Image::at(fm::vec2s pos) const
+	{
+		return getTexel(pos);
+	}
+
+	/////////////////////////////////////////////////////////////
+	Color &Image::getTexel(fm::vec2s pos)
+	{
+		return m_texels[pos.y * m_size.w + pos.x];
+	}
+
+	/////////////////////////////////////////////////////////////
+	const Color &Image::getTexel(fm::vec2s pos) const
 	{
 		return m_texels[pos.y * m_size.w + pos.x];
 	}
@@ -351,7 +371,15 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	Image::reference Image::set(fm::vec2s pos,Color color)
 	{
-		at(pos) = color;
+		getTexel(pos) = color;
+		
+		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	Image::reference Image::setTexel(fm::vec2s pos,Color color)
+	{
+		getTexel(pos) = color;
 		
 		return *this;
 	}
@@ -364,6 +392,18 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	const Color *Image::getPtr() const
+	{
+		return m_texels;
+	}
+
+	/////////////////////////////////////////////////////////////
+	Color *Image::getTexelsPtr()
+	{
+		return m_texels;
+	}
+
+	/////////////////////////////////////////////////////////////
+	const Color *Image::getTexelsPtr() const
 	{
 		return m_texels;
 	}
@@ -398,9 +438,12 @@ namespace fg
 		return (*this);
 	}
 	
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	Image::reference Image::operator=(const Image &copy)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
+		
 		delete[] m_texels;
 		m_size = copy.m_size;
 		
@@ -410,4 +453,5 @@ namespace fg
 		
 		return (*this);
 	}
+#endif
 }

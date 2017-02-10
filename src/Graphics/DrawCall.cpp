@@ -39,12 +39,14 @@ namespace fg
 
     }
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
     //////////////////////////////////////////////////////////////////////////
     DrawCall::DrawCall(const DrawCall &drawCall) : buf(nullptr),
                                                    ownBuffer(false)
     {
         (*this) = drawCall;
     }
+#endif
 
     //////////////////////////////////////////////////////////////////////////
     DrawCall::DrawCall(DrawCall &&drawCall) : buf(nullptr),
@@ -53,9 +55,12 @@ namespace fg
         drawCall.swap(*this);
     }
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
     //////////////////////////////////////////////////////////////////////////
     DrawCall &DrawCall::operator=(const DrawCall &drawCall)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
+		
         componentType = drawCall.componentType;
         indexCount = drawCall.indexCount;
 		primitive  = drawCall.primitive;
@@ -79,6 +84,7 @@ namespace fg
 
 		return *this;
     }
+#endif
 
     //////////////////////////////////////////////////////////////////////////
     DrawCall &DrawCall::operator=(DrawCall &&drawCall)

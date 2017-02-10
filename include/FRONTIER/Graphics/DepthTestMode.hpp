@@ -14,24 +14,25 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_SLEEP_HPP_INCLUDED
-#define FRONTIER_SLEEP_HPP_INCLUDED
-#include <FRONTIER/System/util/API.h>
-#define FRONTIER_SLEEP
+#ifndef FRONTIER_DEPTHTESTMODE_HPP_INCLUDED
+#define FRONTIER_DEPTHTESTMODE_HPP_INCLUDED
+#define FRONTIER_DEPTHTESTMODE
 
-namespace fm
+namespace fg
 {
-	class Time;
-	
 	/////////////////////////////////////////////////////////////
-	/// @brief Function used to pause the execution for @a duration time
-	/// 
-	/// @ingroup System
-	/// 
-	/// @param duration Time amount to pause for
-	/// 
+	/// @brief Encodes types of depth testing
+	///
+	/// By default depth test is not used
+	///
 	/////////////////////////////////////////////////////////////
-	void FRONTIER_API Sleep(const Time &duration);
+	enum DepthTestMode {
+		Less,    ///< Writes the fragment iff it's distance is smaller than the current in the depth buffer
+		LEqual,  ///< Writes the fragment iff it's distance is smaller or equal than the current in the depth buffer
+		GEqual,  ///< Writes the fragment iff it's distance is greater or equal than the current in the depth buffer
+		Greater, ///< Writes the fragment iff it's distance is greater than the current in the depth buffer
+		Always,  ///< Always writes the fragment in the depth buffer
+		Unused   ///< Does not perform depth test
+	};
 }
-
-#endif // FRONTIER_SLEEP_HPP_INCLUDED
+#endif // FRONTIER_DEPTHTESTMODE_INCLUDED

@@ -14,6 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/System/Result.hpp>
@@ -60,6 +61,16 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		CubeTextureFace(CubeTexture &cubeTex,unsigned int faceId);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy constructor
+		/// 
+		/// Does not actually copy data only reference
+		/// 
+		/// @param face The cube face to copy
+		/// 
+		/////////////////////////////////////////////////////////////
+		CubeTextureFace(const CubeTextureFace &face);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -131,40 +142,50 @@ namespace fg
 		CubeTexture();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Copy construtor
+		/// @brief Copy constructor
 		///
-		/// @param cubeTex The texture to copy
+		/// Copies the whole texture back to client memory
+		/// and sends the data to a new texture unit
+		/// it is a S-L-O-W operation
+		///
+		/// If @a copy is invalid then the texture is leaved invalid
+		///
+		/// @param copy The texture to be copied
 		///
 		/////////////////////////////////////////////////////////////
-		CubeTexture(const CubeTexture &cubeTex);
+		CubeTexture(const CubeTexture &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Move construtor
+		/// @brief Move constructor
 		///
-		/// @param cubeTex The texture to move
+		/// @param move The texture to move
 		///
 		/////////////////////////////////////////////////////////////
-		CubeTexture(CubeTexture &&cubeTex);
+		CubeTexture(CubeTexture &&move);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Copy assignment operator
+		/// @brief Copy assignment
 		///
-		/// @param cubeTex The texture to copy
+		/// Copies the whole texture back to client memory
+		/// and sends the data to a new texture unit
+		/// it is a S-L-O-W operation
 		///
-		/// @return Reference to itself
+		/// If @a copy is invalid then the texture is leaved invalid
 		///
+		/// @param copy The texture to be copied
+		/// 
+		/// @return reference to itself
+		/// 
 		/////////////////////////////////////////////////////////////
-		CubeTexture &operator=(const CubeTexture &cubeTex);
+		CubeTexture &operator=(const CubeTexture &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Move assignment operator
+		/// @brief Move assignment
 		///
-		/// @param cubeTex The texture to move
-		///
-		/// @return Reference to itself
+		/// @param move The texture to move
 		///
 		/////////////////////////////////////////////////////////////
-		CubeTexture &operator=(CubeTexture &&cubeTex);
+		CubeTexture &operator=(CubeTexture &&move);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Swap two cube textures

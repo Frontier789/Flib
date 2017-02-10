@@ -17,7 +17,7 @@
 #ifndef FRONTIER_BUFFER_HPP_INCLUDED
 #define FRONTIER_BUFFER_HPP_INCLUDED
 #include <FRONTIER/Graphics/GlObject.hpp>
-#include <FRONTIER/System/NonCopyable.hpp>
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Result.hpp>
@@ -83,7 +83,7 @@ namespace fg
 		/// @param buf The buffer to copy
 		///
 		/////////////////////////////////////////////////////////////
-		Buffer(const Buffer &buf);
+		Buffer(const Buffer &buf) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move constructor
@@ -340,7 +340,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		Buffer &operator=(const Buffer &buf);
+		Buffer &operator=(const Buffer &buf) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Binary operator =

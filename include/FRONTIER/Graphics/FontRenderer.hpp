@@ -17,12 +17,11 @@
 #ifndef FRONTIER_FONTRENDERER_HPP_INCLUDED
 #define FRONTIER_FONTRENDERER_HPP_INCLUDED
 #include <FRONTIER/System/CommonTypes.hpp>
-#include <FRONTIER/System/NonCopyable.hpp>
-#include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/Graphics/Metrics.hpp>
-#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/Graphics/Glyph.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Result.hpp>
 #define FRONTIER_FONTRENDERER
 #include <string>
@@ -37,20 +36,23 @@ namespace fg
 	//////////////////////////////////
 	/// @brief Used for loading font files and rendering glyphs onto fg::Image
 	/// 
-	/// This class heavily depends on FreeType2 (check out http://www.freetype.org/)
+	/// This class heavily depends on Stb_TrueType (check out http://www.nothings.org/)
 	/// 
 	/// @ingroup Graphics
 	/// 
 	//////////////////////////////////
-	class FRONTIER_API FontRenderer : fm::NonCopyable
+	class FRONTIER_API FontRenderer
 	{
 	private:
-		mutable void *m_ftLibrary;  ///< The FreeType library data
-		mutable void *m_ftFaceData; ///< The FreeType data of the font loaded
-		bool m_loaded; ///< Indicates whether the object holds a valid font
+		const fm::Uint8 *m_fileContent; ///< The font file loaded
 		mutable fm::Size m_currentSize; ///< The current character size
 		mutable fg::Metrics m_metrics;  ///< The metrics of the font
-
+		mutable void *m_stbFontInfo;    ///< The internal stb font info 
+		fm::Size m_fileSize;            ///< The number of bytes in data
+		bool m_ownData;                 ///< Indicates whether the data is to be freed by the instance
+		
+		void clean(); ///< Internal function used to clean up data
+		
 	public:
 		typedef FontRenderer &reference;
 		typedef const FontRenderer &const_reference;
@@ -58,10 +60,54 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		///
-		/// After this the object is invalid (uninitialized)
-		///
 		/////////////////////////////////////////////////////////////
 		FontRenderer();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy constructor
+		/// 
+		/// @param renderer The instance to copy
+		/// 
+		/////////////////////////////////////////////////////////////
+		FontRenderer(const FontRenderer &renderer) FRONTIER_HEAVYCOPY_QUALIFIER;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move constructor
+		/// 
+		/// @param renderer The instance to move
+		/// 
+		/////////////////////////////////////////////////////////////
+		FontRenderer(FontRenderer &&renderer);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy assignment
+		/// 
+		/// @param renderer The instance to copy
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		FontRenderer &operator=(const FontRenderer &renderer) FRONTIER_HEAVYCOPY_QUALIFIER;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move assignment
+		/// 
+		/// @param renderer The instance to move
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		FontRenderer &operator=(FontRenderer &&renderer);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Swap two renderers
+		/// 
+		/// @param renderer The instance to swap with
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		FontRenderer &swap(FontRenderer &renderer);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -73,24 +119,38 @@ namespace fg
 		/// @brief Load the Font from a ttf file
 		///
 		/// @param fileName The name of the ttf file
-		/// @param size The initial size
+		/// @param characterSize The initial size
 		///
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result loadFromFile(const std::string &fileName,unsigned int size = 14);
+		fm::Result loadFromFile(const std::string &fileName,unsigned int characterSize = 10);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the Font from a ttf file that loaded in memory
+		/// 
+		/// The caller is responsible for freeing the data
+		/// 
+		/// @param fileContent A pointer to the beggining of the file in memory
+		/// @param fileSizeInBytes The number of bytes in the loaded file
+		/// @param characterSize The initial size
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result loadFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int characterSize = 10);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the Font from a ttf file that loaded in memory
 		///
 		/// @param fileContent A pointer to the beggining of the file in memory
 		/// @param fileSizeInBytes The number of bytes in the loaded file
-		/// @param size The initial size
+		/// @param characterSize The initial size
 		///
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result loadFromMemory(const void *fileContent,fm::Size fileSizeInBytes,unsigned int size = 14);
+		fm::Result copyFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int characterSize = 10);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Render a glyph's image with the current size
@@ -106,7 +166,7 @@ namespace fg
 		/// @return The rendered image
 		///
 		/////////////////////////////////////////////////////////////
-		fg::Image renderGlyph(const fm::Uint32 &letter,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown = nullptr) const;
+		fg::Image renderGlyph(const fm::Uint32 &letter,unsigned int style = Glyph::Regular,fm::vec2 *leftDown = nullptr) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if a given glyph is present in the font
@@ -141,9 +201,11 @@ namespace fg
 		/// @brief Change the currently used character size
 		///
 		/// @param size The new size
-		///
+		/// 
+		/// @return Reference to itself
+		/// 
 		/////////////////////////////////////////////////////////////
-		void setCharacterSize(unsigned int size) const;
+		const FontRenderer &setCharacterSize(unsigned int size) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the currently used character size

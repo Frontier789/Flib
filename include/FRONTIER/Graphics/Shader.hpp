@@ -49,6 +49,7 @@ namespace fm
 	template<fm::Size W,fm::Size H,class T>
 	class matrix;
 
+	typedef matrix<2,2,float> mat2;
 	typedef matrix<3,3,float> mat3;
 	typedef matrix<4,4,float> mat4;
 }
@@ -58,6 +59,18 @@ namespace fg
 	class CubeTexture;
 	class Texture;
 	class Color;
+
+	/////////////////////////////////////////////////////////////
+	/// @brief Encodes types of blending
+	///
+	/// By default blending is not used (same as Overwrite)
+	///
+	/////////////////////////////////////////////////////////////
+	enum BlendMode {
+		Overwrite, ///< Destination = Input
+		Additive,  ///< Destination = Destination + Input
+		Alpha      ///< Destination = Destination*(1-Input.a) + Input*Input.a
+	};
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to handle OpenGL shader programs in language <a href="http://en.wikipedia.org/wiki/GLSL">GLSL</a>
@@ -101,6 +114,7 @@ namespace fg
 		std::map<std::string, TexUniformData > m_textures; ///< The state and name of the texture uniforms
 		fm::Size m_texCounter; ///< The counter used when activating texture slots
 		fm::Uint32 m_defVao;   ///< Default vao for core profiles
+		BlendMode m_blendMode; ///< The used blending
 		fm::Result link(); ///< Internal function used to link the compiled shaders to the shader program
 		void init();       ///< Internal function used at setup
 		fm::Result freeSubShaders(); ///< Internal function used at clean-up
@@ -581,6 +595,13 @@ namespace fg
 		/////////////////////////////////////////////////////////////
         static fm::Result compileSubShaderFromFile(const std::string &file,unsigned int type,unsigned int &ret);
 
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the blending mode of the shader
+		///
+		/// @param mode The new blending mode
+		///
+		/////////////////////////////////////////////////////////////
+		void setBlendMode(fg::BlendMode mode);
 	};
 
 }

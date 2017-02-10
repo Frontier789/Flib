@@ -228,6 +228,8 @@ namespace fg
 		
 		bind();
 		
+		setBlendMode(m_blendMode);
+		
 		fm::Result res;
 
 		if (m_matState[4] == FoundMat)

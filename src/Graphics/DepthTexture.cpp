@@ -15,6 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/DepthTexture.hpp>
+#include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/System/util/C.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
@@ -32,10 +33,36 @@ namespace fg
 
 	}
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	////////////////////////////////////////////////////////////
 	DepthTexture::DepthTexture(const DepthTexture &copy) : Texture::Texture(copy)
 	{
+		
+	}
+#endif
 
+	////////////////////////////////////////////////////////////
+	DepthTexture::DepthTexture(DepthTexture &&move)
+	{
+		((Texture*)this)->swap(move);
+	}
+
+#ifndef FRONTIER_HEAVYCOPY_FORBID
+	////////////////////////////////////////////////////////////
+	DepthTexture &DepthTexture::operator=(const DepthTexture &copy)
+	{
+		*((Texture*)this) = (const Texture &)copy;
+		
+		return *this;
+	}
+#endif
+
+	////////////////////////////////////////////////////////////
+	DepthTexture &DepthTexture::operator=(DepthTexture &&move)
+	{
+		((Texture*)this)->swap(move);
+		
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////

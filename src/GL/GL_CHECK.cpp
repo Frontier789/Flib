@@ -14,6 +14,8 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/Delegate.hpp>
+#include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/OpenGL.hpp>
 #include <deque>
@@ -22,7 +24,7 @@ namespace fg
 {
 	namespace GL
 	{
-	     #ifdef FRONTIER_PROTECT_SHARED_VARIABLES
+	    #ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 			#define GL_ERRORS_THREAD_LOCAL thread_local 
 		#else
 			#define GL_ERRORS_THREAD_LOCAL 

@@ -84,6 +84,8 @@ namespace fg
 			fg::Shader::bind(nullptr);
 		}
 		
+		setBlendMode(m_blendMode);
+		
 		// activate the texture if any
 		if (m_activeTex)
 			glEnable(GL_TEXTURE_2D);

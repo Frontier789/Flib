@@ -35,7 +35,8 @@ namespace fg
 	{
 
 	}
-	
+
+#ifndef FRONTIER_HEAVYCOPY_FORBID
     //////////////////////////////////////////////////////////////////////////
 	DrawData::DrawData(const DrawData &drawData) : positions(*this,Assoc::Position),
 												   colors(*this,Assoc::Color),
@@ -46,7 +47,8 @@ namespace fg
 	{
 		(*this) = drawData;
 	}
-	
+#endif
+
     //////////////////////////////////////////////////////////////////////////
 	DrawData::DrawData(DrawData &&drawData) : positions(*this,Assoc::Position),
 											  colors(*this,Assoc::Color),
@@ -112,14 +114,18 @@ namespace fg
 		return *m_attrs[type];
 	}
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
     //////////////////////////////////////////////////////////////////////////
 	DrawData &DrawData::operator=(const DrawData &drawData)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
+		
 		m_drawCalls = drawData.m_drawCalls;
 		m_attrs = drawData.m_attrs;
 		
 		return *this;
 	}
+#endif
 
     //////////////////////////////////////////////////////////////////////////
 	DrawData &DrawData::operator=(DrawData &&drawData)

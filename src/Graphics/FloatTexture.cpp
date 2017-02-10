@@ -28,10 +28,36 @@ namespace fg
 
 	}
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	////////////////////////////////////////////////////////////
 	FloatTexture::FloatTexture(const FloatTexture &copy) : Texture::Texture(copy)
 	{
+		
+	}
+#endif
 
+	////////////////////////////////////////////////////////////
+	FloatTexture::FloatTexture(FloatTexture &&move)
+	{
+		((Texture*)this)->swap(move);
+	}
+
+#ifndef FRONTIER_HEAVYCOPY_FORBID
+	////////////////////////////////////////////////////////////
+	FloatTexture &FloatTexture::operator=(const FloatTexture &copy)
+	{
+		*((Texture*)this) = (const Texture &)copy;
+		
+		return *this;
+	}
+#endif
+
+	////////////////////////////////////////////////////////////
+	FloatTexture &FloatTexture::operator=(FloatTexture &&move)
+	{
+		((Texture*)this)->swap(move);
+		
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////

@@ -101,6 +101,33 @@ namespace fg
 
 	}
 
+	/////////////////////////////////////////////////////////////
+	FrameBuffer::FrameBuffer(FrameBuffer &&move) : m_depthBufID(0),
+												   m_width(0),
+												   m_height(0),
+												   m_depthTestMode(Unused)
+	{
+		move.swap(*this);
+	}
+
+	/////////////////////////////////////////////////////////////
+	FrameBuffer &FrameBuffer::operator=(FrameBuffer &&move)
+	{
+		return this->swap(move);
+	}
+
+	/////////////////////////////////////////////////////////////
+	FrameBuffer &FrameBuffer::swap(FrameBuffer &fbo)
+	{
+		std::swap(m_depthBufID   ,fbo.m_depthBufID   );
+		std::swap(m_width        ,fbo.m_width        );
+		std::swap(m_height       ,fbo.m_height       );
+		std::swap(m_depthTestMode,fbo.m_depthTestMode);
+		std::swap(getGlId()      ,fbo.getGlId()      );
+		
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////
 	FrameBuffer::FrameBuffer(const Texture **colorAttachments,fm::Size count,const DepthBuffer &depthBuf) : m_depthBufID(0),
 																											m_width(0),

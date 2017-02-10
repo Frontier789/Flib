@@ -17,6 +17,7 @@
 #ifndef FRONTIER_INDEXHOLDER_HPP_INCLUDED
 #define FRONTIER_INDEXHOLDER_HPP_INCLUDED
 
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/util/API.h>
 
@@ -64,7 +65,7 @@ namespace fg
 		/// @param copy The array to be copied
 		/// 
 		/////////////////////////////////////////////////////////////
-		IndexHolder(const IndexHolder &copy);
+		IndexHolder(const IndexHolder &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move constructor

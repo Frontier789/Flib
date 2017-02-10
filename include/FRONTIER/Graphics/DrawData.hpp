@@ -21,6 +21,7 @@
 #include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/System/util/dont_include_inl_end>
 
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/DrawCall.hpp>
 #include <FRONTIER/GL/Is_GLDataType.hpp>
@@ -74,7 +75,7 @@ namespace fg
 		/// @param drawData The drawData to copy
 		/// 
 		/////////////////////////////////////////////////////////////
-		DrawData(const DrawData &drawData);
+		DrawData(const DrawData &drawData) FRONTIER_HEAVYCOPY_QUALIFIER;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Move constructor
@@ -140,7 +141,7 @@ namespace fg
 		/// @return References to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		DrawData &operator=(const DrawData &drawData);
+		DrawData &operator=(const DrawData &drawData) FRONTIER_HEAVYCOPY_QUALIFIER;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Move assignment operator

@@ -32,6 +32,12 @@ namespace fm
 	{
 		
 	}
+	/////////////////////////////////////////////////////////////
+	template<class R,class... Args>
+	inline Delegate<R,Args...>::Delegate(decltype(nullptr)) : m_impl(new BaseDelegate<R,Args...>())
+	{
+		
+	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class R,class... Args>

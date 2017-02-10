@@ -16,7 +16,9 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_DEPTHTEXTURE_HPP_INCLUDED
 #define FRONTIER_DEPTHTEXTURE_HPP_INCLUDED
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
+#include <FRONTIER/Graphics/Color.hpp>
 #define FRONTIER_DEPTHTEXTURE
 
 namespace fg
@@ -59,7 +61,39 @@ namespace fg
 		/// @param copy The texture to be copied
 		///
 		/////////////////////////////////////////////////////////////
-		explicit DepthTexture(const DepthTexture &copy);
+		DepthTexture(const DepthTexture &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move constructor
+		///
+		/// @param move The texture to move
+		///
+		/////////////////////////////////////////////////////////////
+		DepthTexture(DepthTexture &&move);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy assignment
+		///
+		/// Copies the whole texture back to client memory
+		/// and sends the data to a new texture unit
+		/// it is a S-L-O-W operation
+		///
+		/// If @a copy is invalid then the texture is leaved invalid
+		///
+		/// @param copy The texture to be copied
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		DepthTexture &operator=(const DepthTexture &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move assignment
+		///
+		/// @param move The texture to move
+		///
+		/////////////////////////////////////////////////////////////
+		DepthTexture &operator=(DepthTexture &&move);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create a OpenGL texture from image

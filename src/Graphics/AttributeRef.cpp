@@ -25,18 +25,22 @@ namespace fg
 		
 	}																
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	AttributeRef &AttributeRef::operator=(const Attribute &attr)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
+		
 		m_drawData.getAttribute(m_assoc) = attr;
 		
 		return *this;
 	}
+#endif
 
 	/////////////////////////////////////////////////////////////
 	AttributeRef &AttributeRef::operator=(Attribute &&attr)
 	{
-		m_drawData.getAttribute(m_assoc) = attr;
+		m_drawData.getAttribute(m_assoc).swap(attr);
 		
 		return *this;
 	}

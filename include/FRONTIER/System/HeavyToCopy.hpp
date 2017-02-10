@@ -14,24 +14,22 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_SLEEP_HPP_INCLUDED
-#define FRONTIER_SLEEP_HPP_INCLUDED
-#include <FRONTIER/System/util/API.h>
-#define FRONTIER_SLEEP
+#ifndef FRONTIER_HEAVYTOCOPY_HPP_INCLUDED
+#define FRONTIER_HEAVYTOCOPY_HPP_INCLUDED
 
-namespace fm
-{
-	class Time;
-	
-	/////////////////////////////////////////////////////////////
-	/// @brief Function used to pause the execution for @a duration time
-	/// 
-	/// @ingroup System
-	/// 
-	/// @param duration Time amount to pause for
-	/// 
-	/////////////////////////////////////////////////////////////
-	void FRONTIER_API Sleep(const Time &duration);
-}
+#ifndef FRONTIER_HEAVYCOPY_ALLOW
+	#define FRONTIER_HEAVYCOPY_FORBID
+#endif
 
-#endif // FRONTIER_SLEEP_HPP_INCLUDED
+#ifdef FRONTIER_HEAVYCOPY_FORBID
+	#define FRONTIER_HEAVYCOPY_QUALIFIER = delete
+#else
+	#define FRONTIER_HEAVYCOPY_QUALIFIER
+#endif
+
+#ifndef FRONTIER_HEAVYCOPY_NOTE
+	#define FRONTIER_HEAVYCOPY_NOTE
+#endif
+
+#endif // FRONTIER_HEAVYTOCOPY_HPP_INCLUDED
+

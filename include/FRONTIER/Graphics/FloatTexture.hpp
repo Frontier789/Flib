@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_FLOATTEXTURE_HPP_INCLUDED
 #define FRONTIER_FLOATTEXTURE_HPP_INCLUDED
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #define FRONTIER_FLOATTEXTURE
 
@@ -54,17 +55,45 @@ namespace fg
 		/// @param copy The texture to be copied
 		///
 		/////////////////////////////////////////////////////////////
-		explicit FloatTexture(const FloatTexture &copy);
+		FloatTexture(const FloatTexture &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move constructor
+		///
+		/// @param move The texture to move
+		///
+		/////////////////////////////////////////////////////////////
+		FloatTexture(FloatTexture &&move);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy assignment
+		///
+		/// Copies the whole texture back to client memory
+		/// and sends the data to a new texture unit
+		/// it is a S-L-O-W operation
+		///
+		/// If @a copy is invalid then the texture is leaved invalid
+		///
+		/// @param copy The texture to be copied
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		FloatTexture &operator=(const FloatTexture &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Move assignment
+		///
+		/// @param move The texture to move
+		///
+		/////////////////////////////////////////////////////////////
+		FloatTexture &operator=(FloatTexture &&move);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create a OpenGL texture from image
 		///
 		/// This function sends the client-side data (the image)
 		/// to OpenGL
-		///
-		/// If @a img has an invalid size (w or h is 0) or its width or height
-		/// is bigger than getMaximumSize() then an error is prompted to fg_log
-		/// and the texture is leaved invalid
 		///
 		/// @param img The image to send to OpenGL
 		///

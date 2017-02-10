@@ -17,6 +17,8 @@
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
+#include <FRONTIER/Graphics/Image.hpp>
+#include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Matrix.hpp>
@@ -71,12 +73,14 @@ namespace fg
 
 	}
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	////////////////////////////////////////////////////////////
 	Texture::Texture(const Texture &copy) : m_isRepeated(false),
 											m_isSmooth(false)
 	{
 		*this = copy;
 	}
+#endif
 
 	////////////////////////////////////////////////////////////
 	Texture::Texture(Texture &&move) : m_isRepeated(false),
@@ -85,9 +89,12 @@ namespace fg
 		this->swap(move);
 	}
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	////////////////////////////////////////////////////////////
 	Texture::reference Texture::operator=(const Texture &tex)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
+		
 		if (getGlId() && glIsTexture(getGlId()) == GL_TRUE)
 		{
 			GLuint glId = getGlId();
@@ -101,6 +108,7 @@ namespace fg
 		if (tex.getGlId())
 			loadFromImage(tex.copyToImage());
 	}
+#endif
 
 	////////////////////////////////////////////////////////////
 	Texture::reference Texture::operator=(Texture &&tex)
@@ -157,10 +165,6 @@ namespace fg
 		
 		fm::Result res;
 		
-		// opengl wouldn't accpet too big textures
-		if (realSize != size)
-			res += fm::Result("TextureError",fm::Result::OPChanged,"OutOfBunds","create",__FILE__,__LINE__,fm::toString(size.w).str(),fm::toString(size.h).str());
-		
 		// setup internal data
 		m_realSize = realSize;
 		m_size = size;
@@ -212,11 +216,10 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	fm::Result Texture::loadFromImage(const Image &img)
 	{
-		fm::Result res;
+		fm::Result res = create(img.getSize());
 
 		// resize texture to needed size
-		if ((res = create(img.getSize())))
-			return res;
+		if (!res) return res;
 		else
 		{
 			// upload data

@@ -53,11 +53,13 @@ namespace fg
 			std::copy(arrayToCopy,arrayToCopy+indexCount,(fm::Uint32*)m_ptr);
 		}
 	}
-		
+
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	IndexHolder::IndexHolder(const IndexHolder &other) : m_use16bits(other.m_use16bits),
 														 m_size(other.m_size)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
 		if (m_use16bits)
 		{
 			m_ptr = new fm::Uint16[m_size];
@@ -69,6 +71,7 @@ namespace fg
 			std::copy((fm::Uint32*)other.m_ptr,(fm::Uint32*)other.m_ptr + other.m_size,(fm::Uint32*)m_ptr);
 		}
 	}
+#endif
 
 	/////////////////////////////////////////////////////////////
 	IndexHolder::~IndexHolder()

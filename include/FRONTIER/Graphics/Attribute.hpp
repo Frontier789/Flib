@@ -17,6 +17,7 @@
 #ifndef FRONTIER_ATTRIBUTE_HPP_INCLUDED
 #define FRONTIER_ATTRIBUTE_HPP_INCLUDED
 
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/GL/Is_GLDataType.hpp>
 #include <FRONTIER/System/util/API.h>
@@ -72,7 +73,7 @@ namespace fg
 		/// @param attr The attribute to be copied
 		/// 
 		/////////////////////////////////////////////////////////////
-		Attribute(const Attribute &attr);
+		Attribute(const Attribute &attr) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move constructor
@@ -92,7 +93,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		Attribute &operator=(const Attribute &attr);
+		Attribute &operator=(const Attribute &attr) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move assignment operator

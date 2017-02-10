@@ -18,6 +18,7 @@
 #define FRONTIER_DRAW_CALL_HPP_INCLUDED
 
 #include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/Graphics/Primitive.hpp>
 #include <FRONTIER/System/util/API.h>
 
@@ -76,7 +77,7 @@ namespace fg
 		/// @param drawCall The call to be copied
 		/// 
 		/////////////////////////////////////////////////////////////
-		DrawCall(const DrawCall &drawCall);
+		DrawCall(const DrawCall &drawCall) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move constructor
@@ -94,7 +95,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		DrawCall &operator=(const DrawCall &drawCall);
+		DrawCall &operator=(const DrawCall &drawCall) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move assignment operator

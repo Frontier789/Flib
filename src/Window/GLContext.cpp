@@ -15,7 +15,9 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/GLContext.hpp>
+#include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/Window/Window.hpp>
@@ -252,21 +254,6 @@ namespace fw
 	void GLContext::clear(bool colorBuffer)
 	{
 		clear(colorBuffer,m_depthTestMode != fg::Unused,false);
-	}
-
-	/////////////////////////////////////////////////////////////
-	void GLContext::setBlend(fg::BlendMode mode)
-	{
-		if (mode == fg::Overwrite)
-			glDisable(GL_BLEND);
-			
-		if (mode == fg::Additive)
-			glEnable(GL_BLEND),
-			glBlendFunc(GL_ONE,GL_ONE);
-			
-		if (mode == fg::Alpha)
-			glEnable(GL_BLEND),
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	/////////////////////////////////////////////////////////////

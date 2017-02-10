@@ -16,19 +16,24 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_GLCONTEXT_INCLUDED
 #define FRONTIER_GLCONTEXT_INCLUDED
-#include <FRONTIER/Graphics/FrameBuffer.hpp>
+#include <FRONTIER/Graphics/DepthTestMode.hpp>
 #include <FRONTIER/Window/WindowPredef.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
-#include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Result.hpp>
 #define FRONTIER_GLCONTEXT
 
 namespace fm
 {
-	template<class>
-	class vector4;
+	template<class> class vector4;
+	
+	typedef vector4<float> vec4;
+}
+
+namespace fg
+{
+	class Image;
 }
 
 namespace fw
@@ -47,7 +52,7 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API GLContext : public fm::NonCopyable
 	{
-		priv::GLContext *m_context;    ///< The undelying implementation
+		priv::GLContext *m_context;        ///< The undelying implementation
 		fg::DepthTestMode m_depthTestMode; ///< The current depth test mode
 	public:
 
@@ -271,7 +276,7 @@ namespace fw
 		/// @param color The new clear-color
 		///
 		/////////////////////////////////////////////////////////////
-		void setClearColor(const fm::vector4<float> &color);
+		void setClearColor(const fm::vec4 &color);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the clearing depth used by the currently active context
@@ -304,16 +309,6 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		void clear(bool colorBuffer,bool depthBuffer,bool stencilBuffer = false);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the blending mode of the current context
-		///
-		/// @param mode The new blending mode
-		///
-		/// @see BlendMode
-		///
-		/////////////////////////////////////////////////////////////
-		static void setBlend(fg::BlendMode mode);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the depthtest mode of the current context

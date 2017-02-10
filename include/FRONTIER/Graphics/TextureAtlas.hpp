@@ -43,7 +43,7 @@ namespace fg
 	/// @brief Class used to manage <a href="http://en.wikipedia.org/wiki/Texture_atlas">Texture Atlases</a>
 	/// 
 	/// All uploaded textures are associated with a key of type MappedType
-	/// which with the textures' loaction can be fetced
+	/// which with the texture's loaction can be fetced
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class MappedType,class Compare = std::less<MappedType> >
@@ -226,7 +226,7 @@ namespace fg
 		/// @brief Rearrange the uploaded Texture in a better way
 		/// 
 		/// It is a SLOW operation and invalidates every data 
-		/// returned be TextureAtlas::fetch
+		/// returned by fetch
 		/// 
 		/////////////////////////////////////////////////////////////
 		void optimize();

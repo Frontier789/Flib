@@ -19,9 +19,8 @@
 #include <FRONTIER/Graphics/Image.hpp> 
 #include <FRONTIER/Window/Window.hpp>
 
-
 #ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-#include <FRONTIER/System/Mutex.hpp>
+#include <mutex>
 #endif
 
 #include <GL/glx.h>

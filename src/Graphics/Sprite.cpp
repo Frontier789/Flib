@@ -2,20 +2,52 @@
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/Sprite.hpp>
+#include <FRONTIER/Graphics/Glyph.hpp>
 
 namespace fg
 {
     /////////////////////////////////////////////////////////////
+    Sprite::Sprite() : m_tex(nullptr)
+    {
+		
+    }
+    
+    /////////////////////////////////////////////////////////////
+	Sprite::Sprite(const Glyph &glyph) : m_tex(glyph.tex),
+										 m_texRect(glyph.pos,glyph.size),
+										 m_size(glyph.size)
+    {
+		init();
+    }
+    
+    /////////////////////////////////////////////////////////////
+    Sprite::Sprite(fm::Ref<const fg::Texture> tex) : m_tex(tex),
+													 m_texRect(tex ? fm::rect2s(fm::vec2s(),tex->getSize()) : fm::rect2s()),
+													 m_size(tex ? tex->getSize() : fm::vec2())
+    {
+		init();
+    }
+    
+    /////////////////////////////////////////////////////////////
+    Sprite::Sprite(fm::Ref<const fg::Texture> tex,
+                   const fm::rect2s &texRect) : m_tex(tex),
+												m_texRect(texRect),
+												m_size(texRect.size),
+												m_pos(texRect.pos)
+    {
+        init();
+    }
+    
+    /////////////////////////////////////////////////////////////
     Sprite::Sprite(fm::Ref<const fg::Texture> tex,
                    const fm::rect2s &texRect,
                    const fm::vec2 &pos,
-                   const fm::vec2 &size) :  m_tex(tex),
-                                            m_pos(pos)
+                   const fm::vec2 &size) : m_tex(tex),
+										   m_texRect(texRect),
+										   m_size(size),
+										   m_pos(pos)
     {
-        setTexRect(texRect);
-		
-		if (size.area())
-			setSize(size);
+        init();
     }
 
     /////////////////////////////////////////////////////////////
@@ -54,15 +86,7 @@ namespace fg
     Sprite &Sprite::setSize(const fm::vec2 &size)
     {
         init();
-
         m_size = size;
-
-        if (m_size.area() == 0)
-        {
-            if (m_tex)
-                m_size = m_tex->getRealSize();
-        }
-
         return *this;
     }
 
@@ -77,15 +101,6 @@ namespace fg
     {
         init();
         m_texRect = texRect;
-
-        if (m_texRect.size.area() == 0)
-        {
-            if (m_tex)
-                m_texRect.size = m_tex->getRealSize();
-        }
-
-        m_size = m_texRect.size;
-
         return *this;
     }
 
@@ -94,6 +109,12 @@ namespace fg
         return m_texRect;
     }
 
+    /////////////////////////////////////////////////////////////
+    Sprite &Sprite::setTexture(fm::Ref<const fg::Texture> tex)
+    {
+        m_tex = tex;
+        return *this;
+    }
 
     /////////////////////////////////////////////////////////////
     Sprite &Sprite::setTexture(fm::Ref<const fg::Texture> tex,const fm::rect2s &texRect)
@@ -114,7 +135,7 @@ namespace fg
 	{
         if (!m_tex) return;
 
-        shader.getModelStack().push().mul(fm::MATRIX::translation(m_pos)*fm::MATRIX::scaling(m_size));
+        shader.getModelStack().push().mul(fm::MATRIX::translation(fm::vec2(fm::vec2i(m_pos)))*fm::MATRIX::scaling(fm::vec2(fm::vec2i(m_size))));
         shader.getTexUVStack().push().mul(m_tex->getPixToUnitMatrix()*fm::MATRIX::translation((fm::vec2)m_texRect.pos)*fm::MATRIX::scaling((fm::vec2)m_texRect.size));
         shader.useTexture(m_tex);
         shader.draw(m_draw);
