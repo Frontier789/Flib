@@ -52,6 +52,7 @@ namespace fm
 								 m_updateViewMat(true)
 	{
 		anglesFromDir();
+		updateProj();
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -70,6 +71,7 @@ namespace fm
 								 m_updateViewMat(true)
 	{
 		anglesFromDir();
+		updateProj();
 	}
 	
 	/////////////////////////////////////////////////////////////
