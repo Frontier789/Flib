@@ -5,6 +5,9 @@ ifeq ($(OS),Windows_NT)
  F_EXEC_EXT=.exe
  F_RM=cmd /C del /Q /F
  F_RRM=cmd /C rmdir /Q /S
+ define F_MKDIR
+  mkdir -p $(1)
+ endef
  define F_DELETE
   $(F_RRM) $(subst /,\,$(1))
  endef
@@ -17,6 +20,9 @@ else
   F_EXEC_EXT=
   F_RM = rm -f
   F_RRM = rm -f -r
+  define F_MKDIR
+   mkdir -p $(1)
+  endef
   define F_DELETE
    $(F_RRM) $(1)
   endef
@@ -27,6 +33,9 @@ else
   F_EXEC_EXT=
   F_RM = rm -f
   F_RRM = rm -f -r
+  define F_MKDIR
+   mkdir -p $(1)
+  endef
   define F_DELETE
    $(F_RRM) $(1)
   endef

@@ -2,6 +2,7 @@ FPATH=../..
 include $(FPATH)/include/FRONTIER/Makefiles/common.mk
 
 CPP_FILES=$(notdir $(wildcard *.cpp))
+EXE_FILES=$(CPP_FILES:.cpp=.exe)
 F_PROJ_MK=$(FPATH)/include/FRONTIER/Makefiles/fproject.mk
 
 ifeq ($(F_PLATFORM),Windows)
@@ -16,14 +17,11 @@ else
  endif
 endif
 
-define EOL
-
-
-endef
-
 # for every cpp file call make w/ fproject.mk on it
-all:
-	$(foreach cpp_file,$(CPP_FILES),$(MAKE) -j4 --no-print-directory -f $(F_PROJ_MK) F_CPP_FILES=$(cpp_file) EXEC=$(cpp_file:.cpp=) FPATH=$(FPATH) CXX=$(CXX) ${EOL})
+all: $(EXE_FILES)
+
+%.exe: %.cpp
+	$(MAKE) --no-print-directory -f $(F_PROJ_MK) F_CPP_FILES=$< EXEC=$(@:.exe=) FPATH=$(FPATH) CXX=$(CXX)
 
 clean:
 	$(RRM) $(F_O_DIR) && $(RM) $(CPP_FILES:.cpp=$(F_EXEC_EXT))

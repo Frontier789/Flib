@@ -58,6 +58,7 @@ namespace fg
 		
 		pts    .assign(copy.pts.begin(),   copy.pts.end());
 		uvs    .assign(copy.uvs.begin(),   copy.uvs.end());
+		clr    .assign(copy.clr.begin(),   copy.clr.end());
 		norms  .assign(copy.norms.begin(), copy.norms.end());
 		tans   .assign(copy.tans.begin(),  copy.tans.end());
 		bitans .assign(copy.bitans.begin(),copy.bitans.end());
@@ -79,6 +80,7 @@ namespace fg
 	{
 		pts    .swap(target.pts    );
 		uvs    .swap(target.uvs    );
+		clr    .swap(target.clr    );
 		norms  .swap(target.norms  );
 		tans   .swap(target.tans   );
 		bitans .swap(target.bitans );

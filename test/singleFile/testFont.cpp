@@ -14,7 +14,7 @@ int main()
 	Clock fpsClock;
 	
 	Camera cam;
-	cam.getProjStack().top(MATRIX::ortho(0,480,640,0,-1,1));
+	cam.set2D(win.getSize());
 	
 	FixedShaderManager shader;
 	shader.setCamera(cam);
@@ -29,7 +29,7 @@ int main()
 	font.setSmooth(true);
 	font.setCharacterSize(25);
 	
-	String message = u8"úúúú nobody gives a shit";
+	String message = u8"Dzsulah nem szereti a BornandC++t";
 	
 	vector<Sprite> sprites;
 	float w = 0;
@@ -55,7 +55,7 @@ int main()
 		
 		float s = waveClk.getSeconds();
 		
-		return vec2(0,sin(deg(index*5 + s*80))*25);
+		return vec2(0,sin(deg(index*15 + s*80)) * 25 / (sin(deg(index*2 + s*80))*0.3 + 0.7));
 		
 	};
 	

@@ -59,10 +59,10 @@ $(F_O_DIR)/%.o: %.cpp | $(F_O_DIR)
 	$(CXX) $(CXXFLAGS) -I $(FPATH)/include -c $< -o $@ 
 
 $(F_O_DIR):
-	$(MKDIR) $(F_O_DIR)
+	$(call F_MKDIR,$(F_O_DIR))
 
 clean_o_dir:
-	$(F_RRM) $(F_O_DIR)
+	$(call F_DELETE,$(F_O_DIR))
 
 clean_exec:
 	$(F_RM) $(TARGET)

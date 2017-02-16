@@ -11,67 +11,31 @@
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
-	void Camera::anglesFromDir() const
-	{
-		vec3 viewOnPlane = vec3(m_viewDir.x,0,m_viewDir.z).sgn();
-
-		m_pitch = fm::rad( std::acos(viewOnPlane.dot(m_viewDir))   *(m_viewDir.y < 0 ? -1 : 1) );
-		m_yaw   = fm::rad( std::acos(viewOnPlane.dot(vec3(0,0,-1)))*(m_viewDir.x < 0 ? 1 : -1) );
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Camera::dirFromAngles() const
-	{
-		m_viewDir = fm::Quat(vec3(1,0,0),m_pitch)*fm::Quat(vec3(0,1,0),m_yaw)*vec3(0,0,-1);
-	}
-
-	/////////////////////////////////////////////////////////////
-	Camera::Camera(const vec2 &screenSize) : m_screenSize(screenSize),
-											 m_znear(0.0),
-											 m_zfar(0.0),
-											 m_3d(false),
-											 m_updateViewMat(false)
+	Camera::Camera() : m_data2d{vec2(),0,0,vec3()},
+					   m_3d(false)
 	{
 
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::Camera(const vec3 &pos,
-				   const vec3 &lookDir,
-				   const vec2 &screenSize,
-				   const Angle<float> &fov,
+	Camera::Camera(const vec2 &screenSize,
+				   const vec3 &pos,
+				   const vec3 &target,
+				   const Anglef &fov,
 				   float znear,
-				   float zfar) : m_screenSize(screenSize),
-								 m_pos(pos),
-								 m_fov(fov),
-								 m_viewWidth(0),
-								 m_znear(znear),
-								 m_zfar(zfar),
-								 m_3d(true),
-								 m_viewDir(lookDir.sgn()),
-								 m_updateViewMat(true)
+				   float zfar) : m_data3d{screenSize,znear,zfar,pos,(target - pos).sgn(),fov},
+								 m_3d(true)
 	{
-		anglesFromDir();
 		updateProj();
+		updateView();
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::Camera(const vec3 &pos,
-				   const vec3 &lookDir,
-				   const vec2 &screenSize,
-				   float viewWidth,
-				   float znear,
-				   float zfar) : m_screenSize(screenSize),
-								 m_pos(pos),
-								 m_viewWidth(viewWidth),
-								 m_znear(znear),
-								 m_zfar(zfar),
-								 m_3d(false),
-								 m_viewDir(lookDir.sgn()),
-								 m_updateViewMat(true)
+	Camera::Camera(const vec2 &screenSize) : m_data2d{screenSize,-1,1,vec3()},
+											 m_3d(false)
 	{
-		anglesFromDir();
 		updateProj();
+		updateView();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -80,16 +44,27 @@ namespace fm
 		m_projStack.clear();
 		
 		if (m_3d)
-			m_projStack.push(fm::MATRIX::perspective(m_fov,m_screenSize.w/m_screenSize.h,m_znear,m_zfar));
+			m_projStack.push(fm::MATRIX::perspective(m_data3d.fov,m_data3d.screenSize.w/m_data3d.screenSize.h,m_data3d.znear,m_data3d.zfar));
 		else
 		{
-			float r = m_screenSize.h/m_screenSize.w;
-			m_projStack.push(fm::MATRIX::ortho(-m_viewWidth/2,
-											   -m_viewWidth/2*r,
-												m_viewWidth/2,
-												m_viewWidth/2*r,
-												m_znear,m_zfar));
+			float r = m_data2d.screenSize.h/m_data2d.screenSize.w;
+			m_projStack.push(fm::MATRIX::ortho(0,
+											   m_data2d.screenSize.h,
+											   m_data2d.screenSize.w,
+											   0,
+											   m_data2d.znear,m_data2d.zfar));
 		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void Camera::updateView()
+	{
+		m_viewStack.clear();
+		
+		if (m_3d)
+			m_viewStack.push(fm::MATRIX::lookAt(m_data3d.pos,m_data3d.pos+m_data3d.viewDir,u()));
+		else
+			m_viewStack.push(fm::MATRIX::translation(-m_data2d.pos));
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -101,26 +76,18 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	const mat4 &Camera::getViewMat() const
 	{
-		if (m_updateViewMat)
-		{
-			m_updateViewMat = false;
-
-			m_viewMat = fm::MATRIX::lookAt(m_pos,m_pos+m_viewDir,u());
-
-			// m_viewMat = (fm::Quat(vec3(1,0,0),m_pitch)*fm::Quat(vec3(0,1,0),m_yaw)).getMatrix()*fm::MATRIX::translation(-m_pos);
-		}
-
-		return m_viewMat;
+		return m_viewStack.top();
 	}
 
 	/////////////////////////////////////////////////////////////
 	Camera::reference Camera::lookAt(const vec3 &target)
 	{
-		m_viewDir = (target - m_pos).sgn();
-
-		anglesFromDir();
-
-		m_updateViewMat = true;
+		if (m_3d)
+		{
+			m_data3d.viewDir = (target - m_data3d.pos).sgn();
+			
+			updateView();
+		}
 
 		return *this;
 	}
@@ -128,11 +95,12 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	Camera::reference Camera::setViewDir(const vec3 &viewDir)
 	{
-		m_viewDir = viewDir.sgn();
+		if (m_3d)
+		{
+			m_data3d.viewDir = viewDir.sgn();
 
-		anglesFromDir();
-
-		m_updateViewMat = true;
+			updateView();
+		}
 
 		return *this;
 	}
@@ -141,9 +109,9 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	Camera::reference Camera::setPos(const vec3 &pos)
 	{
-		m_pos = pos;
+		m_data2d.pos = pos;
 
-		m_updateViewMat = true;
+		updateView();
 
 		return *this;
 	}
@@ -151,13 +119,13 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	Camera::reference Camera::movePos(const vec3 &delta)
 	{
-		return setPos(m_pos+delta);
+		return setPos(m_data2d.pos+delta);
 	}
 
 	/////////////////////////////////////////////////////////////
 	Camera::reference Camera::setScreenSize(const vec2 &screenSize)
 	{
-		m_screenSize = screenSize;
+		m_data2d.screenSize = screenSize;
 
 		updateProj();
 
@@ -165,13 +133,17 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::set3D(const vec2 &screenSize,const Angle<float> &fov,float znear,float zfar)
+	Camera::reference Camera::set3D(const vec2 &screenSize,const Anglef &fov,float znear,float zfar)
 	{
-		m_screenSize = screenSize;
-		m_fov   = fov;
-		m_znear = znear;
-		m_zfar  = zfar;
-		m_3d    = true;
+		m_data3d.screenSize = screenSize;
+		m_data3d.znear = znear;
+		m_data3d.zfar  = zfar;
+		m_data3d.fov   = fov;
+		
+		m_data3d.viewDir = vec3(0,0,-1);
+		m_data3d.pos     = vec3();
+		
+		m_3d = true;
 
 		updateProj();
 
@@ -179,23 +151,27 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::set2D(const vec2 &screenSize,float viewWidth,float znear,float zfar)
+	Camera::reference Camera::set3D(const vec2 &screenSize,const vec3 &pos,const vec3 &target,const Anglef &fov,float znear,float zfar)
 	{
-		m_screenSize = screenSize;
-		m_viewWidth  = viewWidth;
-		m_znear = znear;
-		m_zfar  = zfar;
-		m_3d    = false;
-
-		updateProj();
+		set3D(screenSize,fov,znear,zfar);
+		setPos(pos);
+		lookAt(target);
 
 		return *this;
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::set2D(const vec2 &screenSize)
+	Camera::reference Camera::set2D(const vec2 &screenSize,float znear,float zfar)
 	{
-		return set2D(screenSize,screenSize.w,-1,1);
+		m_data2d.screenSize = screenSize;
+		m_data2d.znear = znear;
+		m_data2d.zfar  = zfar;
+		m_data2d.pos   = vec3();
+		m_3d = false;
+
+		updateProj();
+
+		return *this;
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -203,17 +179,12 @@ namespace fm
 	{
 		return m_projStack;
 	}
-
+	
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::setViewMat(const mat4 &viewMat)
+	MatrixStack<4,4,float> &Camera::getViewStack()
 	{
-		m_viewMat = viewMat;
-
-		m_updateViewMat = false;
-
-		return *this;
+		return m_projStack;
 	}
-
 
 	/////////////////////////////////////////////////////////////
 	vec3 Camera::u() const
@@ -224,37 +195,41 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	vec3 Camera::r() const
 	{
-		return fm::Quat(vec3(0,1,0),m_yaw-fm::deg(90))*vec3(0,0,-1);
+		return fm::Quat(vec3(0,1,0),getYaw()-fm::deg(90))*vec3(0,0,-1);
 	}
 
 	/////////////////////////////////////////////////////////////
 	vec3 Camera::f() const
 	{
-		return fm::Quat(vec3(0,1,0),m_yaw)*vec3(0,0,-1);
+		return fm::Quat(vec3(0,1,0),getYaw())*vec3(0,0,-1);
 	}
 
 	/////////////////////////////////////////////////////////////
 	const vec3 &Camera::getViewDir() const
 	{
-		return m_viewDir;
+		return m_data3d.viewDir;
 	}
 
 	/////////////////////////////////////////////////////////////
 	const vec3 &Camera::getPos() const
 	{
-		return m_pos;
+		return m_data3d.pos;
 	}
 
 	/////////////////////////////////////////////////////////////
-	const Angle<float> &Camera::getPitch() const
+	Anglef Camera::getPitch() const
 	{
-		return m_pitch;
+		vec3 viewOnPlane = vec3(m_data3d.viewDir.x,0,m_data3d.viewDir.z).sgn();
+
+		return fm::rad( std::acos(viewOnPlane.dot(m_data3d.viewDir))*(m_data3d.viewDir.y < 0 ? -1 : 1) );
 	}
 
 	/////////////////////////////////////////////////////////////
-	const Angle<float> &Camera::getYaw() const
+	Anglef Camera::getYaw() const
 	{
-		return m_yaw;
+		vec3 viewOnPlane = vec3(m_data3d.viewDir.x,0,m_data3d.viewDir.z).sgn();
+
+		return fm::rad( std::acos(viewOnPlane.dot(vec3(0,0,-1)))*(m_data3d.viewDir.x < 0 ? 1 : -1) );
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -264,53 +239,53 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::setPitch(const Angle<float> &pitch)
+	Camera::reference Camera::setPitch(const Anglef &pitch)
 	{
-		m_pitch = pitch;
+		Anglef pitchR = pitch;
 
-		if (m_pitch.asDeg() >  89.99) m_pitch = fm::deg( 89.99);
-		if (m_pitch.asDeg() < -89.99) m_pitch = fm::deg(-89.99);
+		if (pitchR.asDeg() >  89.99) pitchR = fm::deg( 89.99);
+		if (pitchR.asDeg() < -89.99) pitchR = fm::deg(-89.99);
 
-		dirFromAngles();
+		m_data3d.viewDir = fm::Quat(vec3(1,0,0),pitchR)*fm::Quat(vec3(0,1,0),getYaw())*vec3(0,0,-1);
 
-		m_updateViewMat = true;
+		updateView();
 
 		return *this;
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::setYaw(const Angle<float> &yaw)
+	Camera::reference Camera::setYaw(const Anglef &yaw)
 	{
-		double round = yaw.asDeg();
+		Anglef yawR = fm::deg(std::fmod(yaw.asDeg(),360));
 
-		if (round < -180) round = 360+round;
-		else if (round >  180) round = round-360;
+		if (yawR.asDeg() < -180) yawR = fm::deg(360)+yawR;
+		if (yawR.asDeg() >  180) yawR = yawR-fm::deg(360);
 
-		m_yaw = fm::deg(round);
+		m_data3d.viewDir = fm::Quat(vec3(1,0,0),getPitch())*fm::Quat(vec3(0,1,0),yawR)*vec3(0,0,-1);
 
-		dirFromAngles();
-
-		m_updateViewMat = true;
+		updateView();
 
 		return *this;
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::addPitch(const Angle<float> &delta)
+	Camera::reference Camera::addPitch(const Anglef &delta)
 	{
-		return setPitch(m_pitch+delta);
+		return setPitch(getPitch()+delta);
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::addYaw(const Angle<float> &delta)
+	Camera::reference Camera::addYaw(const Anglef &delta)
 	{
-		return setYaw(m_yaw+delta);
+		return setYaw(getYaw()+delta);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	Camera::reference Camera::setNear(float znear)
 	{
-		m_znear = znear;
+		m_data2d.znear = znear;
+		
+		updateProj();
 		
 		return *this;
 	}
@@ -318,7 +293,9 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	Camera::reference Camera::setFar(float zfar)
 	{
-		m_zfar = zfar;
+		m_data2d.zfar = zfar;
+		
+		updateProj();
 		
 		return *this;
 	}
@@ -326,12 +303,12 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	float Camera::getNear() const
 	{
-		return m_znear;
+		return m_data2d.znear;
 	}
 	
 	/////////////////////////////////////////////////////////////
 	float Camera::getFar() const
 	{
-		return m_zfar;
+		return m_data2d.zfar;
 	}
 }

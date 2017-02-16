@@ -44,19 +44,24 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
         ~FixedShaderManager();
+        
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign all standard shader matrix uniform names
 		/// 
+		/// @param projMat The name of the projection matrix uniform
 		/// @param modelMat The name of the model matrix
+		/// @param viewMat The name of the view matrix uniform
 		/// @param normalMat The name of the normal matrix
 		/// @param colorMat The name of the color matrix
 		/// @param texUVMat The name of the texture position matrix
+		/// @param plyPos The name of the player position uniform
+		/// @param plyView The name of the player view direction uniform
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		ShaderManager &setMatrices(const std::string &modelMat,const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "");
-
+        ShaderManager &setUniformNames(const std::string &projMat,const std::string &modelMat,const std::string &viewMat = "",const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "",const std::string &plyPos = "",const std::string &plyView = "");
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Activate a texture
 		/// 
@@ -69,26 +74,12 @@ namespace fg
         ShaderManager &useTexture(fm::Ref<const fg::Texture> tex,fm::Size texIndex = 0);
         
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the active camera and the name of camera matrices
-		/// 
-		/// @param cam The new camera
-		/// @param cam projMat The name of the projection matrix uniform
-		/// @param cam viewMat The name of the view matrix uniform
-		/// @param cam plyPos The name of the player position uniform
-		/// @param cam plyView The name of the player view direction uniform
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-        ShaderManager &setCamera(fm::Ref<fm::Camera> cam,const std::string &projMat = "",const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
-		
-		/////////////////////////////////////////////////////////////
 		/// @brief Update variables of the shader
 		/// 
-		/// @return Reference to itself
+		/// @return The result of the operation
 		/// 
 		/////////////////////////////////////////////////////////////
-        ShaderManager &update();
+		fm::Result update();
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Draw multiple indexsets of a drawdata

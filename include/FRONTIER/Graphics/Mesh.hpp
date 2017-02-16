@@ -21,6 +21,7 @@
 #include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/Graphics/Primitive.hpp>
 #include <FRONTIER/System/Delegate.hpp>
+#include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/util/API.h>
@@ -43,6 +44,7 @@ namespace fg
 		
 		std::vector<fm::vec3> pts; ///< The poisition
 		std::vector<fm::vec2> uvs; ///< The texture poisition
+		std::vector<fm::vec4> clr; ///< The color
 
 		std::vector<fm::vec3> bitans; ///< The bitangent vector
 		std::vector<fm::vec3> norms;  ///< The normal vector

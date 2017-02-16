@@ -21,6 +21,7 @@
 #include <FRONTIER/System/MatrixStack.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
+#include <FRONTIER/System/Camera.hpp>
 #include <FRONTIER/System/Ref.hpp>
 
 #define FRONTIER_SHADERMANAGER
@@ -30,8 +31,6 @@ namespace fm
 {
     template<fm::Size,fm::Size,class> class matrix;
     typedef matrix<4,4,float> mat4;
-
-    class Camera;
 }
 
 namespace fg
@@ -58,7 +57,7 @@ namespace fg
 		std::vector<std::string> m_texNames;    ///< Stores the shader attribute names of textures
 		std::vector<std::string> m_matNames;    ///< Stores the shader attribute names of matrices
 		std::vector<MatrixState> m_matState;    ///< Stores the state of the named matrices
-		fm::Camera *m_cam; ///< Pointer to the active camera
+		fm::Camera m_cam; ///< The camera
         
 		virtual fm::Result prepareDraw(const fg::DrawData &data); ///< Internal function used to prepare a drawing operation
 		void clearData(); ///< Internal function used to clear all data
@@ -134,15 +133,19 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign all standard shader matrix uniform names
 		/// 
+		/// @param projMat The name of the projection matrix uniform
 		/// @param modelMat The name of the model matrix
+		/// @param viewMat The name of the view matrix uniform
 		/// @param normalMat The name of the normal matrix
 		/// @param colorMat The name of the color matrix
 		/// @param texUVMat The name of the texture position matrix
+		/// @param plyPos The name of the player position uniform
+		/// @param plyView The name of the player view direction uniform
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-        virtual ShaderManager &setMatrices(const std::string &modelMat,const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "");
+        virtual ShaderManager &setUniformNames(const std::string &projMat,const std::string &modelMat,const std::string &viewMat = "",const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "",const std::string &plyPos = "",const std::string &plyView = "");
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Register a texture's name
@@ -165,38 +168,22 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
         virtual ShaderManager &useTexture(fm::Ref<const fg::Texture> tex,fm::Size texIndex = 0);
-        
-		/////////////////////////////////////////////////////////////
-		/// @brief Change the active camera
-		/// 
-		/// @param cam The new camera
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-        virtual ShaderManager &changeCamera(fm::Ref<fm::Camera> cam);
-        
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the active camera and the name of camera matrices
-		/// 
-		/// @param cam The new camera
-		/// @param cam projMat The name of the projection matrix uniform
-		/// @param cam viewMat The name of the view matrix uniform
-		/// @param cam plyPos The name of the player position uniform
-		/// @param cam plyView The name of the player view direction uniform
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-        virtual ShaderManager &setCamera(fm::Ref<fm::Camera> cam,const std::string &projMat,const std::string &viewMat = "",const std::string &plyPos = "",const std::string &plyView = "");
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the active camera
+		/// @brief Get the camera
 		/// 
-		/// @return pointer to the active camera (may be null)
+		/// @return the camera
 		/// 
 		/////////////////////////////////////////////////////////////
-		fm::Camera *getCamera();
+		fm::Camera &getCamera();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the camera
+		/// 
+		/// @return the camera
+		/// 
+		/////////////////////////////////////////////////////////////
+		const fm::Camera &getCamera() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Clear all associations
@@ -217,10 +204,10 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Update variables of the shader
 		/// 
-		/// @return Reference to itself
+		/// @return The result of the operation
 		/// 
 		/////////////////////////////////////////////////////////////
-        virtual ShaderManager &update();
+		virtual fm::Result update();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Draw a drawdata
@@ -262,6 +249,22 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
         fm::MatrixStack<4,4,float> &getModelStack();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the view matrix stack
+		/// 
+		/// @return Reference to the view matrix stack
+		/// 
+		/////////////////////////////////////////////////////////////
+        fm::MatrixStack<4,4,float> &getViewStack();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the projection matrix stack
+		/// 
+		/// @return Reference to the projection matrix stack
+		/// 
+		/////////////////////////////////////////////////////////////
+        fm::MatrixStack<4,4,float> &getProjStack();
         
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the color matrix stack

@@ -29,7 +29,6 @@ namespace fg
 {
 	////////////////////////////////////////////////////////////
 	ShaderManager::ShaderManager() : m_stacks(3,fm::MatrixStack<4,4,float>(fm::mat4())),
-									 m_cam(nullptr),
 									 m_matNames(8,std::string()),
 									 m_matState(8,UnknownMat)
 	{
@@ -72,7 +71,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	void ShaderManager::clearData()
 	{
-		m_cam = nullptr;
+		m_cam = fm::Camera();
 
 		m_assocPoints.clear();
 		m_texNames    = std::vector<std::string>();
@@ -109,20 +108,27 @@ namespace fg
 	}
 	
 	////////////////////////////////////////////////////////////
-	ShaderManager &ShaderManager::setMatrices(const std::string &modelMat,
-											  const std::string &normalMat,
-											  const std::string &colorMat,
-											  const std::string &texUVMat)
+	ShaderManager &ShaderManager::setUniformNames(const std::string &projMat,
+												  const std::string &modelMat,
+												  const std::string &viewMat,
+												  const std::string &normalMat,
+												  const std::string &colorMat,
+												  const std::string &texUVMat,
+												  const std::string &plyPos,
+												  const std::string &plyView)
 	{
+		
+		m_matNames[0] = projMat;
+		m_matNames[1] = viewMat;
+		m_matNames[2] = plyPos;
+		m_matNames[3] = plyView;
 		m_matNames[4] = modelMat;
 		m_matNames[5] = normalMat;
 		m_matNames[6] = colorMat;
 		m_matNames[7] = texUVMat;
 
-		m_matState[4] = modelMat.length()  ? UnknownMat : MissingMat;
-		m_matState[5] = normalMat.length() ? UnknownMat : MissingMat;
-		m_matState[6] = colorMat.length()  ? UnknownMat : MissingMat;
-		m_matState[7] = texUVMat.length()  ? UnknownMat : MissingMat;
+		C(m_matState.size())
+			m_matState[i] = (m_matNames[i].length() ? UnknownMat : MissingMat);
 		
 		return *this;
 	}
@@ -151,30 +157,13 @@ namespace fg
 	}
 	
 	////////////////////////////////////////////////////////////
-	ShaderManager &ShaderManager::changeCamera(fm::Ref<fm::Camera> cam)
+	fm::Camera &ShaderManager::getCamera()
 	{
-		m_cam = cam;
-		
-		return *this;
+		return m_cam;
 	}
 	
 	////////////////////////////////////////////////////////////
-	ShaderManager &ShaderManager::setCamera(fm::Ref<fm::Camera> cam,const std::string &projMat,const std::string &viewMat,const std::string &plyPos,const std::string &plyView)
-	{
-		changeCamera(cam);
-
-		m_matNames[0] = projMat;
-		m_matNames[1] = viewMat;
-		m_matNames[2] = plyPos;
-		m_matNames[3] = plyView;
-
-		C(m_matState.size())
-			m_matState[i] = (m_matNames[i].length() ? UnknownMat : MissingMat);
-			
-		return *this;
-	}
-	////////////////////////////////////////////////////////////
-	fm::Camera *ShaderManager::getCamera()
+	const fm::Camera &ShaderManager::getCamera() const
 	{
 		return m_cam;
 	}
@@ -197,40 +186,25 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	ShaderManager &ShaderManager::update()
+	fm::Result ShaderManager::update()
 	{
 		C(m_matState.size())
 			if (m_matState[i] == UnknownMat)
 				m_matState[i] = (hasUniform(m_matNames[i]) ? FoundMat : MissingMat);
-
-		if (m_cam)
-		{
-			if (m_matState[0] == FoundMat)
-				setUniform(m_matNames[0],m_cam->getProjMat());
-
-			if (m_matState[1] == FoundMat)
-				setUniform(m_matNames[1],m_cam->getViewMat());
-
-			if (m_matState[2] == FoundMat)
-				setUniform(m_matNames[2],m_cam->getPos());
-
-			if (m_matState[3] == FoundMat)
-				setUniform(m_matNames[3],m_cam->getViewDir());
-		}
-		
-		return *this;
-	}
-
-	////////////////////////////////////////////////////////////
-	fm::Result ShaderManager::prepareDraw(const fg::DrawData &data)
-	{
-		update();
-		
-		bind();
-		
-		setBlendMode(m_blendMode);
 		
 		fm::Result res;
+		
+		if (m_matState[0] == FoundMat)
+			res += glCheck(setUniform(m_matNames[0],m_cam.getProjMat()));
+
+		if (m_matState[1] == FoundMat)
+			res += glCheck(setUniform(m_matNames[1],m_cam.getViewMat()));
+
+		if (m_matState[2] == FoundMat)
+			res += glCheck(setUniform(m_matNames[2],m_cam.getPos()));
+
+		if (m_matState[3] == FoundMat)
+			res += glCheck(setUniform(m_matNames[3],m_cam.getViewDir()));
 
 		if (m_matState[4] == FoundMat)
 			res += glCheck(setUniform(m_matNames[4],m_stacks[0].top()));
@@ -243,6 +217,18 @@ namespace fg
 
 		if (m_matState[7] == FoundMat)
 			res += glCheck(setUniform(m_matNames[7],m_stacks[2].top()));
+		
+		return res;
+	}
+
+	////////////////////////////////////////////////////////////
+	fm::Result ShaderManager::prepareDraw(const fg::DrawData &data)
+	{
+		fm::Result res = update();
+		
+		bind();
+		
+		setBlendMode(m_blendMode);
 
 		for (std::map<AssocPoint,std::string>::const_iterator it = m_assocPoints.begin();it != m_assocPoints.end();++it)
 		{
@@ -314,6 +300,18 @@ namespace fg
 	fm::MatrixStack<4,4,float> &ShaderManager::getModelStack()
 	{
 		return m_stacks[0];
+	}
+
+	////////////////////////////////////////////////////////////
+	fm::MatrixStack<4,4,float> &ShaderManager::getViewStack()
+	{
+		return m_cam.getViewStack();
+	}
+
+	////////////////////////////////////////////////////////////
+	fm::MatrixStack<4,4,float> &ShaderManager::getProjStack()
+	{
+		return m_cam.getProjStack();
 	}
 
 	////////////////////////////////////////////////////////////

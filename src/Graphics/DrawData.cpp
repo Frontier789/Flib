@@ -141,6 +141,9 @@ namespace fg
 		if (mesh.pts.size())
 			positions.set(&mesh.pts[0],mesh.pts.size());
 
+		if (mesh.clr.size())
+			colors.set(&mesh.clr[0],mesh.clr.size());
+
 		if (mesh.uvs.size())
 			texPositions.set(&mesh.uvs[0],mesh.uvs.size());
 

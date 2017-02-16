@@ -30,32 +30,25 @@ namespace fg
     }
 
 	////////////////////////////////////////////////////////////
-    ShaderManager &FixedShaderManager::setCamera(fm::Ref<fm::Camera> camera,
-												 const std::string &projMat,
-												 const std::string &viewMat,
-												 const std::string &plyPos,
-												 const std::string &plyView)
+	ShaderManager &FixedShaderManager::setUniformNames(const std::string &projMat,
+													   const std::string &modelMat,
+													   const std::string &viewMat,
+													   const std::string &normalMat,
+													   const std::string &colorMat,
+													   const std::string &texUVMat,
+													   const std::string &plyPos,
+													   const std::string &plyView)
     {
-        m_cam = camera;
+        
         (void)projMat;
+        (void)modelMat;
         (void)viewMat;
+        (void)normalMat;
+        (void)colorMat;
+        (void)texUVMat;
         (void)plyPos;
         (void)plyView;
-        
-		return *this;
-    }
-
-	////////////////////////////////////////////////////////////
-    ShaderManager &FixedShaderManager::setMatrices(const std::string &modelMat,
-												   const std::string &normalMat,
-												   const std::string &colorMat,
-												   const std::string &texUVMat)
-    {
-        m_matState[4] = modelMat.length()  ? FoundMat : UnknownMat;
-        m_matState[5] = normalMat.length() ? FoundMat : UnknownMat;
-        m_matState[6] = colorMat.length()  ? FoundMat : UnknownMat;
-        m_matState[7] = texUVMat.length()  ? FoundMat : UnknownMat;
-        
+		
 		return *this;
     }
 
@@ -71,9 +64,9 @@ namespace fg
     }
 
 	////////////////////////////////////////////////////////////
-    ShaderManager &FixedShaderManager::update()
+	fm::Result FixedShaderManager::update()
     {
-		return *this;
+		return fm::Result();
     }
 
 	////////////////////////////////////////////////////////////
@@ -95,16 +88,11 @@ namespace fg
 		fg::Texture::bind(m_activeTex);
 		
 		// set projection matrix
-		if (m_cam)
-		{
-			glMatrixMode(GL_PROJECTION);
-			glLoadMatrixf(&m_cam->getProjMat().transpose()[0][0]);
-		}
+		glMatrixMode(GL_PROJECTION);
+		glLoadMatrixf(&m_cam.getProjMat().transpose()[0][0]);
 		
 		// set model and view matrix
-		fm::mat4 m = m_stacks[0].top();
-		if (m_cam)
-			m = m_cam->getViewMat() * m;
+		fm::mat4 m = m_cam.getViewMat() * m_stacks[0].top();
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf(&m.transpose()[0][0]);
 		
