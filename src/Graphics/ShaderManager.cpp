@@ -108,16 +108,15 @@ namespace fg
 	}
 	
 	////////////////////////////////////////////////////////////
-	ShaderManager &ShaderManager::setUniformNames(const std::string &projMat,
-												  const std::string &modelMat,
+	ShaderManager &ShaderManager::setUniformNames(const std::string &modelMat,
 												  const std::string &viewMat,
+												  const std::string &projMat,
 												  const std::string &normalMat,
 												  const std::string &colorMat,
 												  const std::string &texUVMat,
 												  const std::string &plyPos,
 												  const std::string &plyView)
 	{
-		
 		m_matNames[0] = projMat;
 		m_matNames[1] = viewMat;
 		m_matNames[2] = plyPos;

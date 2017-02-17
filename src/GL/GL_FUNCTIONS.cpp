@@ -17,6 +17,7 @@
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
 #include <FRONTIER/System/util/OS.h>
 #include <FRONTIER/System/String.hpp>
+#include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/OpenGL.hpp>
 

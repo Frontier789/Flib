@@ -47,8 +47,7 @@ int main()
 		{
 			cout << "using shader ver 150" << endl;
 			shader150.associate("in_pos","in_color","","in_normal");
-			shader150.setMatrices("u_modelMat");
-			shader150.setCamera(nullptr,"u_projMat","u_viewMat");
+			shader150.setUniformNames("u_modelMat","u_viewMat","u_projMat");
 			
 			usedShader = 2;
 			useGeomShader = true;
@@ -62,8 +61,7 @@ int main()
 			{
 				cout << "using shader ver 110" << endl;
 				shader110.associate("in_pos","in_color","in_texpos","in_normal");
-				shader110.setMatrices("u_modelMat");
-				shader110.setCamera(nullptr,"u_projMat","u_viewMat");
+				shader110.setUniformNames("u_modelMat","u_viewMat","u_projMat");
 				
 				usedShader = 1;
 			}
@@ -85,8 +83,7 @@ int main()
 	
 	ShaderManager &shader = ((usedShader == 0) ? fixedShader : (usedShader == 1 ? shader110 : shader150));
 	
-	Camera cam;
-	shader.changeCamera(cam);
+	Camera &cam = shader.getCamera();
 	shader.setUniform("u_doLight",1);
 	shader.setUniform("u_doGrid",0);
 	cam.getProjStack().push(MATRIX::ortho(win.getSize().w*-0.5,win.getSize().h*-0.5,win.getSize().w*0.5,win.getSize().h*0.5));

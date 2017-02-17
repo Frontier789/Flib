@@ -13,11 +13,8 @@ int main()
 	bool running = true;
 	Clock fpsClock;
 	
-	Camera cam;
-	cam.set2D(win.getSize());
-	
 	FixedShaderManager shader;
-	shader.setCamera(cam);
+	shader.getCamera().set2D(win.getSize());
 	
 	Font font;
 	Result res = font.loadFromFile("arial.ttf");

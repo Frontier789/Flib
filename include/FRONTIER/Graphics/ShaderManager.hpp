@@ -133,9 +133,9 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign all standard shader matrix uniform names
 		/// 
-		/// @param projMat The name of the projection matrix uniform
 		/// @param modelMat The name of the model matrix
 		/// @param viewMat The name of the view matrix uniform
+		/// @param projMat The name of the projection matrix uniform
 		/// @param normalMat The name of the normal matrix
 		/// @param colorMat The name of the color matrix
 		/// @param texUVMat The name of the texture position matrix
@@ -145,7 +145,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-        virtual ShaderManager &setUniformNames(const std::string &projMat,const std::string &modelMat,const std::string &viewMat = "",const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "",const std::string &plyPos = "",const std::string &plyView = "");
+        virtual ShaderManager &setUniformNames(const std::string &modelMat,const std::string &viewMat,const std::string &projMat,const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "",const std::string &plyPos = "",const std::string &plyView = "");
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Register a texture's name

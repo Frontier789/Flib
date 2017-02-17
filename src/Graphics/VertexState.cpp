@@ -15,6 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/VertexState.hpp>
+#include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
 #include <FRONTIER/OpenGL.hpp>
