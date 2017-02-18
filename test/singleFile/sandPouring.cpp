@@ -9,7 +9,7 @@ using namespace std;
 int main()
 {
 	Window win(vec2(640,480),"The falling sand",Window::Default &~ Window::Resize &~ Window::Maximize);
-		
+	
 	srand(time(0));
 	
 	bool running = true;
@@ -28,6 +28,7 @@ int main()
 	
 	vec2 prevMousep;
 	Clock gravityClock;
+	Clock loopClk;
 	
 	pol2 gravity(70,deg(90));
 	
@@ -39,6 +40,15 @@ int main()
 	
 	for (fm::Uint64 loop=0;running;++loop)
 	{
+		if (loopClk.getSeconds() > 1)
+		{
+			loopClk.restart();
+			
+			win.setTitle("The falling sand  " + fm::toString(loop/1) + "fps");
+			
+			loop = 0;
+		}
+		
 		Event ev;
 		while (win.popEvent(ev))
 		{
@@ -247,13 +257,13 @@ int main()
 			swap(nextField,field);
 		}
 		
-		
 		win.clear();
 		C(drawdatas.size())
 			shader.draw(*drawdatas[i]);
 		win.swapBuffers();
 		
-		Sleep(1.0 / 60.0 - fpsClock.restart());
+		Sleep(1.0 / 60.0 - fpsClock.getSeconds());
+		fpsClock.restart();
 	}
 	
 	C(drawdatas.size()) delete drawdatas[i];

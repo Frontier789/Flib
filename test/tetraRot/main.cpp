@@ -182,6 +182,7 @@ int main()
 		
 		win.swapBuffers();
 		
-		Sleep(1.0 / 60.0 - fpsClk.restart());
+		Sleep(1.0 / 120.0 - fpsClk.getSeconds());
+		fpsClk.restart();
 	}
 }

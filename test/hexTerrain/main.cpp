@@ -235,6 +235,7 @@ int main()
 		shader.getModelStack().pop();
 		win.swapBuffers();
 		
-		Sleep(1.0 / 60.0 - fpsClock.restart());
+		Sleep(1.0 / 60.0 - fpsClock.getSeconds());
+		fpsClock.restart();
 	}
 }

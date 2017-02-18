@@ -128,7 +128,8 @@ int main()
 		for (auto &s : sprites) s.onDraw(shader);
 		win.swapBuffers();
 		
-		Sleep(1.0 / 60.0 - fpsClock.restart());
+		Sleep(1.0 / 60.0 - fpsClock.getSeconds());
+		fpsClock.restart();
 	}
 }
 
