@@ -1,1 +1,3 @@
+src/Graphics/jpge/* linguist-vendored
 src/Graphics/stb_image/* linguist-vendored
+src/Graphics/stb_truetype/* linguist-vendored
