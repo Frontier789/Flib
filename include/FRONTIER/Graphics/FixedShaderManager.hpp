@@ -60,7 +60,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-        ShaderManager &setUniformNames(const std::string &projMat,const std::string &modelMat,const std::string &viewMat = "",const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "",const std::string &plyPos = "",const std::string &plyView = "");
+        ShaderManager &setUniformNames(const std::string &projMat,const std::string &modelMat,const std::string &viewMat = "",const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "",const std::string &plyPos = "",const std::string &plyView = "",const std::string &time = "");
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Activate a texture

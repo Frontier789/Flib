@@ -1,11 +1,16 @@
 #version 150
 
-uniform mat4 u_modelMat;
-uniform mat4 u_viewMat;
-uniform mat4 u_projMat;
+#define FRONTIER_MODEL_MAT
+#define FRONTIER_VIEW_MAT
+#define FRONTIER_PROJ_MAT
+#define FRONTIER_SECONDS
 
+uniform mat4 FRONTIER_MODEL_MAT u_modelMat;
+uniform mat4 FRONTIER_VIEW_MAT u_viewMat;
+uniform mat4 FRONTIER_PROJ_MAT u_projMat;
+
+uniform float FRONTIER_SECONDS u_time;
 uniform int   u_doLight;
-uniform float u_time;
 
 layout (points) in;
 layout (triangle_strip, max_vertices = 6) out;

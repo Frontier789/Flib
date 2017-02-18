@@ -119,6 +119,7 @@ namespace fg
 		void init();       ///< Internal function used at setup
 		fm::Result freeSubShaders(); ///< Internal function used at clean-up
 		virtual void clearData();    ///< clear uniforms, attributes, textures etc
+		virtual fm::Result postProcess(const std::string *data,const unsigned int *types,unsigned int count); ///< Process source of the successfully loaded shader
 
     public:
         typedef Shader &reference;

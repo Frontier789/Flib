@@ -1,16 +1,25 @@
 #version 110
 
-uniform mat4 u_modelMat;
-uniform mat4 u_viewMat;
-uniform mat4 u_projMat;
+#define FRONTIER_MODEL
+#define FRONTIER_VIEW
+#define FRONTIER_PROJ
+#define FRONTIER_SECONDS
+#define FRONTIER_POS
+#define FRONTIER_CLR
+#define FRONTIER_NRM
+#define FRONTIER_TEXPOS
 
+uniform mat4 FRONTIER_MODEL u_modelMat;
+uniform mat4 FRONTIER_VIEW  u_viewMat;
+uniform mat4 FRONTIER_PROJ  u_projMat;
+
+uniform float FRONTIER_SECONDS u_time;
 uniform int   u_doLight;
-uniform float u_time;
 
-attribute vec2 in_pos;
-attribute vec4 in_color;
-attribute vec3 in_normal;
-attribute vec2 in_texpos;
+attribute vec2 FRONTIER_POS    in_pos;
+attribute vec4 FRONTIER_CLR    in_color;
+attribute vec3 FRONTIER_NRM    in_normal;
+attribute vec2 FRONTIER_TEXPOS in_texpos;
 
 varying vec4 va_color;
 varying vec2 va_texpos;

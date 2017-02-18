@@ -22,6 +22,7 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/System/Camera.hpp>
+#include <FRONTIER/System/Clock.hpp>
 #include <FRONTIER/System/Ref.hpp>
 
 #define FRONTIER_SHADERMANAGER
@@ -58,7 +59,9 @@ namespace fg
 		std::vector<std::string> m_matNames;    ///< Stores the shader attribute names of matrices
 		std::vector<MatrixState> m_matState;    ///< Stores the state of the named matrices
 		fm::Camera m_cam; ///< The camera
+		fm::Clock m_clk;  ///< The internal clock
         
+		virtual fm::Result postProcess(const std::string *data,const unsigned int *types,unsigned int count); ///< Process source of the successfully loaded shader
 		virtual fm::Result prepareDraw(const fg::DrawData &data); ///< Internal function used to prepare a drawing operation
 		void clearData(); ///< Internal function used to clear all data
 
@@ -145,7 +148,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-        virtual ShaderManager &setUniformNames(const std::string &modelMat,const std::string &viewMat,const std::string &projMat,const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "",const std::string &plyPos = "",const std::string &plyView = "");
+		virtual ShaderManager &setUniformNames(const std::string &modelMat,const std::string &viewMat,const std::string &projMat,const std::string &normalMat = "",const std::string &colorMat = "",const std::string &texUVMat = "",const std::string &plyPos = "",const std::string &plyView = "",const std::string &time = "");
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Register a texture's name

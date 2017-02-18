@@ -1,18 +1,18 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)		   ///
-///																	///
-/// Flib is licensed under the terms of GNU GPL.					   ///
-/// Therefore you may freely use it in your project,				   ///
-/// modify it, redistribute it without any warranty on the			 ///
-/// condition that this disclaimer is not modified/removed.			///
-/// You may not misclaim the origin of this software.				  ///
-///																	///
-/// If you use this software in your program/project a				 ///
+/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+///                                                                    ///
+/// Flib is licensed under the terms of GNU GPL.                       ///
+/// Therefore you may freely use it in your project,                   ///
+/// modify it, redistribute it without any warranty on the             ///
+/// condition that this disclaimer is not modified/removed.            ///
+/// You may not misclaim the origin of this software.                  ///
+///                                                                    ///
+/// If you use this software in your program/project a                 ///
 /// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
-/// is not required but highly appreciated.							///
-///																	///
-/// You should have received a copy of GNU GPL with this software	  ///
-///																	///
+/// is not required but highly appreciated.                            ///
+///                                                                    ///
+/// You should have received a copy of GNU GPL with this software      ///
+///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/ShaderManager.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
@@ -29,8 +29,8 @@ namespace fg
 {
 	////////////////////////////////////////////////////////////
 	ShaderManager::ShaderManager() : m_stacks(3,fm::MatrixStack<4,4,float>(fm::mat4())),
-									 m_matNames(8,std::string()),
-									 m_matState(8,UnknownMat)
+									 m_matNames(9,std::string()),
+									 m_matState(9,UnknownMat)
 	{
 
 	}
@@ -115,7 +115,8 @@ namespace fg
 												  const std::string &colorMat,
 												  const std::string &texUVMat,
 												  const std::string &plyPos,
-												  const std::string &plyView)
+												  const std::string &plyView,
+												  const std::string &time)
 	{
 		m_matNames[0] = projMat;
 		m_matNames[1] = viewMat;
@@ -125,6 +126,7 @@ namespace fg
 		m_matNames[5] = normalMat;
 		m_matNames[6] = colorMat;
 		m_matNames[7] = texUVMat;
+		m_matNames[8] = time;
 
 		C(m_matState.size())
 			m_matState[i] = (m_matNames[i].length() ? UnknownMat : MissingMat);
@@ -216,8 +218,112 @@ namespace fg
 
 		if (m_matState[7] == FoundMat)
 			res += glCheck(setUniform(m_matNames[7],m_stacks[2].top()));
+
+		if (m_matState[8] == FoundMat)
+			res += glCheck(setUniform(m_matNames[8],float(m_clk.getSeconds())));
 		
 		return res;
+	}
+	
+	////////////////////////////////////////////////////////////
+	fm::Result ShaderManager::postProcess(const std::string *data,const unsigned int *types,unsigned int count)
+	{
+		(void)types;
+		
+		std::vector<std::string> names[] = {{"proj","projmat","proj_mat","projection","projectionmat","projection_mat"},
+											{"view","viewmat","view_mat"},
+											{"plypos","ply_pos","playerpos","player_pos"},
+											{"dir","viewdir","view_dir","direction","viewdirection","view_direction"},
+											{"model","modelmat","model_mat"},
+											{"normmat","norm_mat","normalmat","normal_mat"},
+											{"colormat","color_mat"},
+											{"texturemat","texture_mat","texmat","tex_mat"},
+											{"time","secs","seconds","clock"},
+											{"pos","position","pts"},
+											{"clr","color"},
+											{"nrm","norm","normal"},
+											{"texuv","texcoord","texpos","textureuv","texturecoord","texturepos","tex_uv","tex_coord","tex_pos","texture_uv","texture_coord","texture_pos"},
+											{"tan","tangent"},
+											{"bitan","bitangent"}};
+		
+		fm::Size matCount = 9;
+		
+		auto findName = [&](const std::string &source,fm::Size offset,fm::Size &matId,fm::Size &delta) -> bool
+		{
+			for (fm::Size nameClass = 0;nameClass < sizeof(names)/sizeof(*names);++nameClass)
+			{
+				for (auto &name : names[nameClass])
+				{
+					if (offset + name.size() < source.size())
+					{
+						bool match = true;
+						for (fm::Size i=0;i<name.size() && match;++i)
+						{
+							char c = source[i+offset];
+							if (c <= 'Z' && c >= 'A') c += 'a'-'A';
+							match = match && c == name[i];
+						}
+						
+						if (match)
+						{
+							std::string wsp = " \t";
+							if (offset+name.size() == source.size() || wsp.find(source[offset+name.size()]) != std::string::npos)
+							{
+								matId = nameClass;
+								delta = name.size();
+								return true;							
+							}
+						}
+					}
+				}
+			}
+			return false;
+		};
+		
+		auto findAssoc = [](const std::string &source,fm::Size offset,std::string &assoc) -> bool
+		{
+			while (offset < source.size() && (source[offset] == ' ' || source[offset] == '\t')) ++offset;
+			
+			std::string excl = " \t\r\n;";
+			
+			while (offset < source.size() && excl.find(source[offset]) == std::string::npos) assoc += source[offset],++offset;
+			
+			return assoc.length();
+		};
+		
+		std::string frontierTag = "FRONTIER_";
+		
+		for (auto str = data;str != data+count;++str)
+		{
+			const std::string &source = *str;
+			
+			fm::Size pos = source.find(frontierTag,0);
+			while (pos != std::string::npos)
+			{
+				fm::Size matId,delta;
+				if (findName(source,pos + frontierTag.size(),matId,delta))
+				{
+					std::string assoc;
+					if (findAssoc(source,pos + frontierTag.size() + delta,assoc))
+					{
+						if (matId < matCount)
+						{
+							// cout << "found matrix " << names[matId][0] << " as " << assoc << endl;
+							m_matNames[matId] = assoc;
+							m_matState[matId] = UnknownMat;							
+						}
+						else
+						{
+							// cout << "found attr " << names[matId][0] << " as " << assoc << endl;
+							associate(assoc,Assoc::Unused + int(matId - matCount + 1));
+						}
+					}
+				}
+				pos = source.find(frontierTag,pos+1);
+			}
+		}
+		
+		return fm::Result();
 	}
 
 	////////////////////////////////////////////////////////////

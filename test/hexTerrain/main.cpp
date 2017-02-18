@@ -46,8 +46,6 @@ int main()
 		if (res150)
 		{
 			cout << "using shader ver 150" << endl;
-			shader150.associate("in_pos","in_color","","in_normal");
-			shader150.setUniformNames("u_modelMat","u_viewMat","u_projMat");
 			
 			usedShader = 2;
 			useGeomShader = true;
@@ -60,8 +58,6 @@ int main()
 			if (res110)
 			{
 				cout << "using shader ver 110" << endl;
-				shader110.associate("in_pos","in_color","in_texpos","in_normal");
-				shader110.setUniformNames("u_modelMat","u_viewMat","u_projMat");
 				
 				usedShader = 1;
 			}
@@ -226,8 +222,6 @@ int main()
 				posTransition.retarget(viewPos,seconds(0.1),false);
 			}
 		}
-		
-		shader.setUniform("u_time",(float)uClk.getSeconds());
 		
 		win.clear();
 		shader.getModelStack().push().mul(MATRIX::translation(posTransition.get())*MATRIX::scaling(vec2(zoomTransition.get())));

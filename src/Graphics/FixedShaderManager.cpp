@@ -37,7 +37,8 @@ namespace fg
 													   const std::string &colorMat,
 													   const std::string &texUVMat,
 													   const std::string &plyPos,
-													   const std::string &plyView)
+													   const std::string &plyView,
+													   const std::string &time)
     {
         
         (void)projMat;
@@ -48,6 +49,7 @@ namespace fg
         (void)texUVMat;
         (void)plyPos;
         (void)plyView;
+        (void)time;
 		
 		return *this;
     }

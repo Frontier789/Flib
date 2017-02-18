@@ -186,6 +186,15 @@ namespace fg
 
 		return res;
 	}
+	
+	////////////////////////////////////////////////////////////
+	fm::Result Shader::postProcess(const std::string *data,const unsigned int *types,unsigned int count)
+	{
+		(void)data;
+		(void)types;
+		(void)count;
+		return fm::Result();
+	}
 
 	////////////////////////////////////////////////////////////
 	void Shader::clearData()
@@ -269,21 +278,29 @@ namespace fg
 		// init GlId
 		init();
 		if (!getGlId())
-			return fm::Result("GLError",fm::Result::OPFailed,"InitFailed","link",__FILE__,__LINE__);
-
-		// refill sub shaders
-		freeSubShaders();
-		m_subShaders.resize(count);
+			return fm::Result("GLError",fm::Result::OPFailed,"InitFailed","loadFromFiles",__FILE__,__LINE__);
 		
-		fm::Result res;
-		C(count)
+		vector<string> data(count,"");
+		
+		for (int i=0;i<count;++i)
 		{
-			res += compileSubShaderFromFile(files[i],types[i],m_subShaders[i]);
+			std::ifstream in(files[i].c_str(), std::ios::in | std::ios::binary);
+			if (in)
+			{
+				// read whole file
+				std::string &contents = data[i];
+				in.seekg(0, std::ios::end);
+				contents.resize(in.tellg());
+				in.seekg(0, std::ios::beg);
+				in.read(&contents[0], contents.size());
+				in.close();
+			}
+			else
+				return fm::Result("IOError",fm::Result::OPFailed,"FileNotFound","loadFromFiles",__FILE__,__LINE__,files[i]);
 		}
 		
-		if (!res) return res;
 		
-		return link();
+		return loadFromMemory(&data[0],types,count);
 	}
 
 
@@ -293,7 +310,7 @@ namespace fg
 		// init GlId
 		init();
 		if (!getGlId())
-			return fm::Result("GLError",fm::Result::OPFailed,"InitFailed","link",__FILE__,__LINE__);
+			return fm::Result("GLError",fm::Result::OPFailed,"InitFailed","loadFromMemory",__FILE__,__LINE__);
 		
 		// refill sub shaders
 		freeSubShaders();
@@ -306,8 +323,10 @@ namespace fg
 		}
 		
 		if (!res) return res;
+		res = link();
+		if (!res) return res;
 		
-		return link();
+		return postProcess(data,types,count);
 	}
 
 
