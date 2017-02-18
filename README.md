@@ -15,16 +15,19 @@ call make
 
 <p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Citation</h2>
-The source uses three public domain libraries and a GPLv2 library:
+The source uses two public domain libraries and a GPLv2 library:
 <ol>
 	<li>
 		<p>stb (http://github.com/nothings/stb and http://nothings.org)</p>
 		<ul type="*">
 			<li>stb_image.h</li>
 		</ul>
-	</li>
-	<li>
-		<p>stb (http://github.com/nothings/stb and http://nothings.org)</p>
+		<ul type="*">
+			<li>stb_image_write.h</li>
+		</ul>
+		<ul type="*">
+			<li>stb_image_resize.h</li>
+		</ul>
 		<ul type="*">
 			<li>stb_truetype.h</li>
 		</ul>
