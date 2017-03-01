@@ -134,12 +134,33 @@ namespace fg
 		/// @brief Load the Font from a ttf file
 		///
 		/// @param fileName The name of the ttf file
-		/// @param size The initial size
+		/// @param characterSize The initial size
 		///
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result loadFromFile(const std::string &fileName,unsigned int size = 14);
+		fm::Result loadFromFile(const std::string &fileName,unsigned int characterSize = 14);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the Font from a system ttf file
+		///
+		/// @param fileName The name of the ttf file
+		/// @param characterSize The initial size
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result loadSysFont(const std::string &fileName,unsigned int characterSize = 14);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the default Font from a system ttf file
+		///
+		/// @param characterSize The initial size
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result loadDefSysFont(unsigned int characterSize = 14);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the Font from a ttf file that loaded in memory
@@ -151,19 +172,19 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result loadFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int size = 14);
+		fm::Result loadFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int characterSize = 14);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy the Font from a ttf file that loaded in memory
 		///
 		/// @param fileContent A pointer to the beggining of the file in memory
 		/// @param fileSizeInBytes The number of bytes in the loaded file
-		/// @param size The initial size
+		/// @param characterSize The initial size
 		///
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result copyFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int size = 14);
+		fm::Result copyFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int characterSize = 14);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the mignification and magnification filter on the texture atlases
@@ -245,10 +266,10 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the currently used size
 		///
-		/// @param size The new size
+		/// @param characterSize The new size
 		///
 		/////////////////////////////////////////////////////////////
-		void setCharacterSize(unsigned int size) const;
+		void setCharacterSize(unsigned int characterSize) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the currently set character size

@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+/// Copyright (C) 20getFont-2016 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -124,7 +124,28 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result loadFromFile(const std::string &fileName,unsigned int characterSize = 10);
+		fm::Result loadFromFile(const std::string &fileName,unsigned int characterSize = 14);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the Font from a system ttf file
+		///
+		/// @param fileName The name of the ttf file
+		/// @param characterSize The initial size
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result loadSysFont(const std::string &fileName,unsigned int characterSize = 14);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the default Font from a system ttf file
+		///
+		/// @param characterSize The initial size
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result loadDefSysFont(unsigned int characterSize = 14);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the Font from a ttf file that loaded in memory
@@ -138,7 +159,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result loadFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int characterSize = 10);
+		fm::Result loadFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int characterSize = 14);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the Font from a ttf file that loaded in memory
@@ -150,7 +171,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result copyFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int characterSize = 10);
+		fm::Result copyFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int characterSize = 14);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Render a glyph's image with the current size

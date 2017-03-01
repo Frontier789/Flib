@@ -27,7 +27,7 @@ $(F_O_FILES_DIR):
 $(F_O_FILES_DIR)/static: | $(F_O_FILES_DIR)
 	$(CD) $(F_O_FILES_DIR) && $(MKDIR) static
 
-F_MODULES=Graphics System Window GL
+F_MODULES=Graphics System Window GL Gui
 
 ####  ####  ####  ## generating targets ##  ####  ####  ####
 

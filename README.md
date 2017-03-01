@@ -15,7 +15,7 @@ call make
 
 <p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Citation</h2>
-The source uses two public domain libraries and a GPLv2 library:
+The source uses two public domain libraries:
 <ol>
 	<li>
 		<p>stb (http://github.com/nothings/stb and http://nothings.org)</p>

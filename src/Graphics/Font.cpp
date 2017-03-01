@@ -98,17 +98,31 @@ namespace fg
     }
 
 	////////////////////////////////////////////////////////////
-    fm::Result Font::loadFromFile(const std::string &fileName,unsigned int size)
+    fm::Result Font::loadFromFile(const std::string &fileName,unsigned int characterSize)
     {
     	init();
-        return m_renderer->loadFromFile(fileName,size);
+        return m_renderer->loadFromFile(fileName,characterSize);
     }
 
 	////////////////////////////////////////////////////////////
-    fm::Result Font::loadFromMemory(const fm::Uint8 *fileContent,fm::Size fileLength,unsigned int size)
+    fm::Result Font::loadSysFont(const std::string &fileName,unsigned int characterSize)
+    {
+    	init();
+        return m_renderer->loadSysFont(fileName,characterSize);
+    }
+
+	////////////////////////////////////////////////////////////
+    fm::Result Font::loadDefSysFont(unsigned int characterSize)
+    {
+    	init();
+        return m_renderer->loadDefSysFont(characterSize);
+    }
+
+	////////////////////////////////////////////////////////////
+    fm::Result Font::loadFromMemory(const fm::Uint8 *fileContent,fm::Size fileLength,unsigned int characterSize)
     {
         init();
-        return m_renderer->loadFromMemory(fileContent,fileLength,size);
+        return m_renderer->loadFromMemory(fileContent,fileLength,characterSize);
     }
 
 	////////////////////////////////////////////////////////////
@@ -131,10 +145,10 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-    void Font::setCharacterSize(unsigned int size) const
+    void Font::setCharacterSize(unsigned int characterSize) const
     {
         if (m_renderer)
-            m_renderer->setCharacterSize(size);
+            m_renderer->setCharacterSize(characterSize);
     }
 
 	/////////////////////////////////////////////////////////////

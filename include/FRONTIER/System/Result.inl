@@ -16,8 +16,6 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_RESULT_INL_INCLUDED
 #define FRONTIER_RESULT_INL_INCLUDED
-#include <iostream>
-using namespace std;
 
 namespace fm
 {
@@ -58,7 +56,7 @@ namespace fm
 
 #include <FRONTIER/System/util/PredefStreams.hpp>
 
-template<class T,class CharT,class CharTraitT>
+template<class CharT,class CharTraitT>
 inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::Result &res)
 {
 	return out<<res.toString();

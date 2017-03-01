@@ -17,7 +17,9 @@
 #include <FRONTIER/Graphics.hpp>
 #include <FRONTIER/System.hpp>
 #include <FRONTIER/Window.hpp>
+#include <FRONTIER/Gui.hpp>
 
 using namespace fm;
 using namespace fg;
 using namespace fw;
+using namespace fgui;

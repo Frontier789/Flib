@@ -227,7 +227,7 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	fm::Result Window::setVisible(bool visible)
 	{
-		m_window->setVisible(visible);
+		return m_window->setVisible(visible);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -312,6 +312,21 @@ namespace fw
 	priv::Window &Window::getOSWindow()
 	{
 		return *m_window;
+	}
+
+	/////////////////////////////////////////////////////////////
+	Window &Window::swap(Window &win)
+	{
+		std::swap(m_window,win.m_window);
+		this->GLContext::swap(win);
+		
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Window &Window::operator=(Window &&win)
+	{
+		return this->swap(win);
 	}
 
 	#define getByteRef(obj,i) (*(((unsigned char*)&obj)+i))

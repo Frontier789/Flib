@@ -154,6 +154,34 @@ namespace fm
 																							   angle  + other.angle);
 	}
 
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2,class A2>
+	auto operator+(const vector2<T> &left,const polar2<T2,A2> &right) -> vector2<decltype(T() + T2())>
+	{
+		return left + vector2<T2>(right);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class A,class T2>
+	auto operator+(const polar2<T,A> &left,const vector2<T2> &right) -> vector2<decltype(T() + T2())>
+	{
+		return vector2<T2>(left) + right;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2,class A2>
+	auto operator-(const vector2<T> &left,const polar2<T2,A2> &right) -> vector2<decltype(T() - T2())>
+	{
+		return left - vector2<T2>(right);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class A,class T2>
+	auto operator-(const polar2<T,A> &left,const vector2<T2> &right) -> vector2<decltype(T() - T2())>
+	{
+		return vector2<T2>(left) - right;
+	}
+
 	////////////////////////////////////////////////////////////
 	template<class T,class A>
 	template<class T2,class A2>

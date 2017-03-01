@@ -149,7 +149,6 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		Window(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title = " ",fw::Window::WindowStyle style = fw::Window::Default,Window *parent = NULL,Handle container = 0,fw::GLContext::Settings settings = fw::GLContext::Settings());
 
-
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the window from its attributes
 		/// 
@@ -167,7 +166,7 @@ namespace fw
 		/// @brief Default destructor
 		///
 		/////////////////////////////////////////////////////////////
-		~Window();
+		virtual ~Window();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Closes the window
@@ -536,12 +535,12 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		/// @brief Move assign a window
 		///
-		/// @param cont The window to move
+		/// @param win The window to move
 		///
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		Window &operator=(Window &&cont);
+		Window &operator=(Window &&win);
 	};
 
 

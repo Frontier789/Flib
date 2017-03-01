@@ -6,6 +6,10 @@
 #include <fstream>
 #include <cstring>
 
+#ifdef FRONTIER_OS_WINDOWS
+ #include <windows.h>
+#endif
+
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STBTT_STATIC
 #define STBTT_MAX_OVERSAMPLE 64
@@ -155,6 +159,31 @@ namespace fg
 		setCharacterSize(size);
 			
 		return fm::Result();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result FontRenderer::loadSysFont(const std::string &fileName,unsigned int characterSize)
+	{
+	#ifdef FRONTIER_OS_WINDOWS
+	
+		char buffer[MAX_PATH];
+		::GetWindowsDirectory(buffer, MAX_PATH);
+		
+		return loadFromFile(std::string(buffer) + "\\fonts\\" + fileName,characterSize);
+	#endif
+		
+		return fm::Result("IOError",fm::Result::OPFailed,"FontNotFound","loadSysFont",__FILE__,__LINE__,fileName);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result FontRenderer::loadDefSysFont(unsigned int characterSize)
+	{
+	#ifdef FRONTIER_OS_WINDOWS
+	
+		return loadSysFont("tahoma.ttf",characterSize);
+	#endif
+		
+		return fm::Result("IOError",fm::Result::OPFailed,"FontNotFound","loadDefSysFont",__FILE__,__LINE__);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -423,6 +452,11 @@ namespace fg
 			return *this;
 		
 		stbtt_GetFontVMetrics((stbtt_fontinfo*)m_stbFontInfo,&m_metrics.maxH,&m_metrics.minH,&m_metrics.lineGap);
+		
+		float scl = stbtt_ScaleForMappingEmToPixels((stbtt_fontinfo*)m_stbFontInfo, m_currentSize);
+		m_metrics.lineGap *= scl;
+		m_metrics.minH *= scl;
+		m_metrics.maxH *= scl;
 		
 		return *this;
 	}

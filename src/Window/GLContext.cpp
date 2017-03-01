@@ -305,6 +305,21 @@ namespace fw
 			
 		return ret;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	GLContext &GLContext::swap(GLContext &cont)
+	{
+		std::swap(m_context,cont.m_context);
+		std::swap(m_depthTestMode,cont.m_depthTestMode);
+		
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	GLContext &GLContext::operator=(GLContext &&cont)
+	{
+		return this->swap(cont);
+	}
 }
 
 #endif // FRONTIER_NO_CONTEXT

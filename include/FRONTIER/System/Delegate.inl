@@ -57,7 +57,7 @@ namespace fm
 	template<class R,class... Args>
 	inline Delegate<R,Args...>::Delegate(Delegate<R,Args...> &&move) : m_impl(move.m_impl)
 	{
-		
+		move.m_impl = nullptr;
 	}
 	
 	/////////////////////////////////////////////////////////////

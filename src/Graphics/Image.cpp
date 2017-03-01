@@ -215,8 +215,9 @@ namespace fg
 			pointer = writer((const unsigned char*)m_texels,m_size.w,m_size.h,4,&bytesWritten);
 			byteCount = bytesWritten;
 			
-			return fm::Result();
 		}
+		
+		return fm::Result();
 	}
 	
 	/////////////////////////////////////////////////////////////

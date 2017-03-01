@@ -49,6 +49,8 @@ public:
 			
 		}
 		
+		virtual ~Object() = default;
+		
 		virtual vec3 getNormal(vec3 p,vec3 from) = 0;
 		virtual float calcDist(Ray r) = 0;
 	};
