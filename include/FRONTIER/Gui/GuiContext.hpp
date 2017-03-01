@@ -20,13 +20,13 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/Graphics/Font.hpp>
 #include <map>
 
 #define FRONTIER_GUICONTEXT
 
 namespace fg
 {
-	class Font;
 	class Shader;
 	class Drawable;
 	class DrawData;
@@ -49,7 +49,7 @@ namespace fgui
 	class GuiContext
 	{
 	protected:
-		std::map<fm::String,fg::Font*> m_fonts; ///< The loaded fonts
+		std::map<fm::String,fg::Font> m_fonts; ///< The loaded fonts
 		fg::ShaderManager *m_shader; ///< The shader used when drawing
 		fm::vec2s m_size; ///< The size of the context
 		
@@ -103,17 +103,17 @@ namespace fgui
 		/// @return The result of the operation
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual fm::Result loadFont(const fm::String &fontName,fg::Font *newFont);
+		virtual fm::Result loadFont(const fm::String &fontName,fg::Font font);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a font based on its name
 		/// 
 		/// @param fontName The name of the font
 		/// 
-		/// @return The font (null if not found)
+		/// @return The font
 		/// 
 		/////////////////////////////////////////////////////////////
-		fg::Font *getFont(const fm::String &fontName);
+		fg::Font getFont(const fm::String &fontName);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the default font
@@ -121,7 +121,7 @@ namespace fgui
 		/// @return The font (null if not found)
 		/// 
 		/////////////////////////////////////////////////////////////
-		fg::Font *getDefaultFont();
+		fg::Font getDefaultFont();
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the default font
@@ -131,7 +131,7 @@ namespace fgui
 		/// @return The result of the operation
 		/// 
 		/////////////////////////////////////////////////////////////
-		fm::Result setDefaultFont(fg::Font *font);
+		fm::Result setDefaultFont(fg::Font font);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the used shader

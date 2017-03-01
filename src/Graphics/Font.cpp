@@ -71,7 +71,7 @@ namespace fg
     {
 		cleanUp();
 		
-		if (copy.m_renderer)
+		if (copy.isLoaded())
 		{
 			m_renderer   = copy.m_renderer;
 			m_texAtlases = copy.m_texAtlases;
@@ -133,7 +133,7 @@ namespace fg
 	{
 		Font ret;
 		
-		if (m_renderer)
+		if (isLoaded())
 		{
 			ret.m_texAtlases = new std::map<unsigned int,TextureAtlas<Identifier> >();
 			ret.m_renderer   = new FontRenderer();
@@ -148,8 +148,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
     Font::reference Font::setSmooth(bool smooth)
     {
-		// set for all the atlases
-		if (m_texAtlases)
+		if (isLoaded())
 			for (std::map<unsigned int,TextureAtlas<Identifier> >::iterator it = m_texAtlases->begin();it!=m_texAtlases->end();it++)
 				it->second.getTexture().setSmooth(smooth);
 
@@ -160,14 +159,14 @@ namespace fg
 	////////////////////////////////////////////////////////////
     void Font::setCharacterSize(unsigned int characterSize) const
     {
-        if (m_renderer)
+        if (isLoaded())
             m_renderer->setCharacterSize(characterSize);
     }
 
 	/////////////////////////////////////////////////////////////
 	unsigned int Font::getCharacterSize() const
 	{
-		if (!m_renderer)
+		if (!isLoaded())
 			return 0;
 
 		return m_renderer->getCharacterSize();
@@ -183,7 +182,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
     Glyph Font::getGlyph(const fm::Uint32 &letter,unsigned int style) const
     {
-    	if (!m_renderer)
+    	if (!isLoaded())
 			return Glyph();
 
 		// try finding it in the dictionary
@@ -202,7 +201,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	void Font::preCache(const fm::String &characters,unsigned int type) const
 	{
-		if (!m_renderer)
+		if (!isLoaded())
 			return;
 
 		TextureAtlas<Identifier> &texAtl = (*m_texAtlases)[m_renderer->getCharacterSize()];
@@ -235,7 +234,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
     Image Font::renderGlyph(const fm::Uint32 &letter,unsigned int style,fm::vec2 *leftDown) const
     {
-        if (!m_renderer)
+        if (!isLoaded())
             return Image();
 
         return m_renderer->renderGlyph(letter,style,leftDown);
@@ -244,12 +243,11 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	bool Font::hasGlyph(const fm::Uint32 &letter,unsigned int style) const
 	{
-		if (m_texAtlases)
-			if ((*m_texAtlases)[m_renderer->getCharacterSize()].isUploaded(Identifier(letter,style)))
-				return true;
-		
-		if (!m_renderer)
+		if (!isLoaded())
 			return false;
+			
+		if ((*m_texAtlases)[m_renderer->getCharacterSize()].isUploaded(Identifier(letter,style)))
+			return true;
 		
 		return m_renderer->hasGlyph(letter);
 	}
@@ -289,7 +287,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
     Metrics Font::getMetrics() const
     {
-        if (!m_renderer)
+        if (!isLoaded())
             return Metrics();
         
         return m_renderer->getMetrics();
@@ -298,7 +296,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	int Font::getKerning(const fm::Uint32 &leftCodePoint,const fm::Uint32 &rightCodePoint) const
 	{
-		if (!m_renderer)
+		if (!isLoaded())
 			return 0;
 
 		return m_renderer->getKerning(leftCodePoint,rightCodePoint);
@@ -313,7 +311,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	Glyph Font::upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type,const fm::vec2i &leftdown,unsigned int characterSize)
 	{
-		if (!m_texAtlases) return Glyph();
+		if (!isLoaded()) return Glyph();
 		
 		return (*m_texAtlases)[characterSize ? characterSize : m_renderer->getCharacterSize()].upload(img,Identifier(letter,type),leftdown);
 	}
@@ -326,5 +324,23 @@ namespace fg
 		std::swap(m_refCount  ,font.m_refCount  );
 		
 		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Font::isLoaded() const
+	{
+		return m_renderer;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Font::operator bool() const
+	{
+		return isLoaded();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Font::operator!() const
+	{
+		return !isLoaded();
 	}
 }

@@ -52,9 +52,6 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	GuiContext::~GuiContext()
 	{
-		for (const auto &it : m_fonts)
-			delete it.second;
-		
 		delete m_shader;
 	}
 
@@ -119,57 +116,57 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	fm::Result GuiContext::loadFont(const fm::String &fontName)
 	{
-		fg::Font *font = new fg::Font;
-		fm::Result res = font->loadSysFont(fontName.str());
+		fg::Font font;
+		fm::Result res = font.loadSysFont(fontName.str());
 		
-		if (res)
-		{
-			res = loadFont(fontName,font);
-		}
+		if (res) res = loadFont(fontName,font);
 		
 		return res;
 	}
 
 	/////////////////////////////////////////////////////////////
-	fm::Result GuiContext::loadFont(const fm::String &fontName,fg::Font *newFont)
+	fm::Result GuiContext::loadFont(const fm::String &fontName,fg::Font font)
 	{
-		m_fonts[fontName] = newFont;
+		if (font)
+			m_fonts[fontName] = font;
+		else
+			m_fonts.erase(fontName);
 		
 		return fm::Result();
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fg::Font *GuiContext::getFont(const fm::String &fontName)
+	fg::Font GuiContext::getFont(const fm::String &fontName)
 	{
-		if (m_fonts[fontName] == nullptr)
+		if (!m_fonts.count(fontName))
 			loadFont(fontName);
+			
+		if (m_fonts.count(fontName))
+			return m_fonts[fontName];
 		
-		return m_fonts[fontName];
+		return fg::Font();
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fg::Font *GuiContext::getDefaultFont()
+	fg::Font GuiContext::getDefaultFont()
 	{
-		if (m_fonts["default"] == nullptr)
+		if (!m_fonts.count("default"))
 		{
-			fg::Font *defFont = new fg::Font();
-			if (defFont->loadDefSysFont())
+			fg::Font defFont;
+			if (defFont.loadDefSysFont())
 			{
 				loadFont("default",defFont);
+				return defFont;
 			}
-			else delete defFont;
 		}
 		
 		return m_fonts["default"];
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fm::Result GuiContext::setDefaultFont(fg::Font *newFont)
+	fm::Result GuiContext::setDefaultFont(fg::Font font)
 	{
-		delete m_fonts["default"];
-		m_fonts["default"] = newFont;
-		
-		return fm::Result();
+		return loadFont("default",font);
 	}
 	
 	/////////////////////////////////////////////////////////////
