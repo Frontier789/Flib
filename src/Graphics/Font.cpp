@@ -43,47 +43,43 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-    Font::Font() : m_renderer(nullptr),
-                   m_texAtlases(nullptr)
+    Font::Font() : m_texAtlases(nullptr),
+                   m_renderer(nullptr),
+                   m_refCount(nullptr)
     {
 
     }
 
-#ifndef FRONTIER_HEAVYCOPY_FORBID
 	////////////////////////////////////////////////////////////
-    Font::Font(Font::const_reference copy) : m_renderer(nullptr),
-                                             m_texAtlases(nullptr)
+    Font::Font(Font::const_reference copy) : m_texAtlases(nullptr),
+											 m_renderer(nullptr),
+											 m_refCount(nullptr)
     {
 		(*this) = copy;
     }
-#endif
 
 	////////////////////////////////////////////////////////////
-	Font::Font(Font &&move) : m_renderer(nullptr),
-                              m_texAtlases(nullptr)
+	Font::Font(Font &&move) : m_texAtlases(nullptr),
+							  m_renderer(nullptr),
+							  m_refCount(nullptr)
     {
 		move.swap(*this);
     }
 
-#ifndef FRONTIER_HEAVYCOPY_FORBID
 	////////////////////////////////////////////////////////////
 	Font &Font::operator=(Font::const_reference copy)
     {
-		FRONTIER_HEAVYCOPY_NOTE;
-		
-		delete m_renderer;
-		delete m_texAtlases;
-		
-		m_renderer = nullptr;
-		m_renderer = nullptr;
+		cleanUp();
 		
 		if (copy.m_renderer)
 		{
-			m_renderer   = new FontRenderer(*copy.m_renderer);
-			m_texAtlases = std::map<unsigned int,TextureAtlas<Identifier> >;
+			m_renderer   = copy.m_renderer;
+			m_texAtlases = copy.m_texAtlases;
+			m_refCount   = copy.m_refCount;
+			
+			(*m_refCount)++;
 		}
     }
-#endif
 
 	////////////////////////////////////////////////////////////
 	Font &Font::operator=(Font &&move)
@@ -131,6 +127,23 @@ namespace fg
         init();
         return m_renderer->copyFromMemory(fileContent,fileLength,size);
     }
+    
+	/////////////////////////////////////////////////////////////
+	Font Font::createHardCopy() const
+	{
+		Font ret;
+		
+		if (m_renderer)
+		{
+			ret.m_texAtlases = new std::map<unsigned int,TextureAtlas<Identifier> >();
+			ret.m_renderer   = new FontRenderer();
+			ret.m_refCount   = new fm::Size(1);
+			
+			*ret.m_renderer  = m_renderer->createHardCopy(); 
+		}
+		
+		return ret;
+	}
 
 	////////////////////////////////////////////////////////////
     Font::reference Font::setSmooth(bool smooth)
@@ -244,11 +257,21 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	void Font::cleanUp()
 	{
-		delete m_texAtlases;
-		delete m_renderer;
-
+		if (m_refCount)
+		{
+			(*m_refCount)--;
+			
+			if (*m_refCount == 0)
+			{
+				delete m_texAtlases;
+				delete m_renderer;
+				delete m_refCount;
+			}
+		}
+		
 		m_texAtlases = nullptr;
 		m_renderer   = nullptr;
+		m_refCount   = nullptr;
 	}
 
 
@@ -257,8 +280,9 @@ namespace fg
 	{
 		// first clean up
         cleanUp();
-		m_renderer = new FontRenderer;
 		m_texAtlases = new std::map<unsigned int,TextureAtlas<Identifier> >;
+		m_renderer   = new FontRenderer;
+		m_refCount   = new fm::Size(1);
 	}
 
 
@@ -289,14 +313,17 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	Glyph Font::upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type,const fm::vec2i &leftdown,unsigned int characterSize)
 	{
+		if (!m_texAtlases) return Glyph();
+		
 		return (*m_texAtlases)[characterSize ? characterSize : m_renderer->getCharacterSize()].upload(img,Identifier(letter,type),leftdown);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	Font::reference Font::swap(Font &font)
 	{
-		std::swap(m_renderer  ,font.m_renderer  );
 		std::swap(m_texAtlases,font.m_texAtlases);
+		std::swap(m_renderer  ,font.m_renderer  );
+		std::swap(m_refCount  ,font.m_refCount  );
 		
 		return *this;
 	}

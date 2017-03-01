@@ -104,6 +104,33 @@ namespace fg
 		
 		delete (stbtt_fontinfo*)m_stbFontInfo;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	FontRenderer FontRenderer::createHardCopy() const
+	{
+		FontRenderer ret;
+		
+		ret.m_currentSize = m_currentSize;
+		ret.m_metrics     = m_metrics;    
+		ret.m_fileSize    = m_fileSize;  
+		ret.m_ownData     = m_ownData;    
+		
+		if (m_ownData)
+		{
+			fm::Uint8 *buf = new fm::Uint8[m_fileSize];
+			std::memcpy(buf,m_fileContent,m_fileSize);
+			ret.m_fileContent = buf;
+		}
+		else
+		{
+			ret.m_fileContent = m_fileContent;
+		}
+		
+		if (ret.m_fileContent)
+			stbtt_InitFont((stbtt_fontinfo*)ret.m_stbFontInfo, ret.m_fileContent, stbtt_GetFontOffsetForIndex(ret.m_fileContent,0));
+		
+		return ret;
+	}
 
 	/////////////////////////////////////////////////////////////
 	void FontRenderer::clean()

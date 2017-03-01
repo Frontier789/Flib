@@ -23,7 +23,6 @@
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
-#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/Metrics.hpp>
 #include <FRONTIER/Graphics/Glyph.hpp>
@@ -47,7 +46,7 @@ namespace fg
 	class FontRenderer;
 
 	//////////////////////////////////
-	/// @brief Font class that implements <a href="http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02#Creating_a_texture_atlas">Font atlas</a> technique
+	/// @brief Reference counted font class that implements <a href="http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02#Creating_a_texture_atlas">Font atlas</a> technique
 	///
 	//////////////////////////////////
 	class FRONTIER_API Font
@@ -72,9 +71,11 @@ namespace fg
 			/////////////////////////////////////////////////////////////
 			bool operator<(const Identifier &other) const;
 		};
-
-		FontRenderer *m_renderer; ///< A pointer to a fg::Font::Renderer that does the rendering part
+	
 		mutable std::map<unsigned int,TextureAtlas<Identifier> > *m_texAtlases; ///< Maps characer sizes to different font atlases
+		FontRenderer *m_renderer; ///< A pointer to a fg::Font::Renderer that does the rendering part
+		fm::Size *m_refCount; ///< The reference count
+		
 	public:
 		typedef Font &reference;
 		typedef const Font &const_reference;
@@ -89,15 +90,17 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy constructor
+		/// 
+		/// only copies reference
 		///
 		/// @param copy The font to copy
 		///
 		/////////////////////////////////////////////////////////////
-		Font(const Font &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
+		Font(const Font &copy);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move constructor
-		///
+		/// 
 		/// @param move The font to move
 		///
 		/////////////////////////////////////////////////////////////
@@ -105,13 +108,15 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy assignment
-		///
+		/// 
+		/// only copies reference
+		/// 
 		/// @param copy The font to copy
 		/// 
 		/// @return reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		Font &operator=(const Font &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
+		Font &operator=(const Font &copy);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move assignment
@@ -122,7 +127,6 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		Font &operator=(Font &&move);
-
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -185,6 +189,14 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Result copyFromMemory(const fm::Uint8 *fileContent,fm::Size fileSizeInBytes,unsigned int characterSize = 14);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Create a real copy of the font
+		///
+		/// @return The copy
+		///
+		/////////////////////////////////////////////////////////////
+		Font createHardCopy() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the mignification and magnification filter on the texture atlases
