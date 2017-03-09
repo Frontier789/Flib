@@ -22,6 +22,7 @@ namespace fgui
 	ClickListener::ClickListener() : m_dblClickLength(fm::milliseconds(1200))
 	{
 		for (auto &clk : m_clickClks) clk.setTime(m_dblClickLength + fm::seconds(1));
+		for (auto &press : m_btnPressed) press = false;
 		
 		addEventHandler([&](fw::Event &ev){
 			
@@ -50,15 +51,26 @@ namespace fgui
 			
 			if (ev.type == fw::Event::MouseMoved)
 			{
+				bool mouseGrab = false;
+				fm::vec2i p = ev.motion;
+				
 				for (fm::Size i=0;i<fw::Mouse::ButtonCount;++i)
 				{
 					if (m_btnPressed[i])
 					{
-						if ((m_pressPoses[i] - fm::vec2i(ev.motion)).LENGTH() < m_maxClickDist*m_maxClickDist)
+						mouseGrab = true;
+						
+						if ((m_pressPoses[i] - p).LENGTH() < m_maxClickDist*m_maxClickDist)
 						{
 							m_pressPoses[i] = fm::vec2(-500000,-500000);
 						}
 					}
+				}
+				
+				if (!mouseInside() && mouseGrab)
+				{
+					onMouseMoved(p,m_prevPos);
+					m_prevPos = p;
 				}
 			}
 			

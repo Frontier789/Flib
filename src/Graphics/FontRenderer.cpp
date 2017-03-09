@@ -187,7 +187,14 @@ namespace fg
 			
 		return fm::Result();
 	}
-	
+}
+
+#include <iostream>
+using namespace std;
+#include <GL/glx.h>
+
+namespace fg
+{
 	/////////////////////////////////////////////////////////////
 	fm::Result FontRenderer::loadSysFont(const std::string &fileName,unsigned int characterSize)
 	{
@@ -197,6 +204,35 @@ namespace fg
 		::GetWindowsDirectory(buffer, MAX_PATH);
 		
 		return loadFromFile(std::string(buffer) + "\\fonts\\" + fileName,characterSize);
+	
+	#elif defined(FRONTIER_OS_LINUX)
+		
+		Display *disp = XOpenDisplay(nullptr);
+		
+		int db;
+		char **names = XListFonts(disp,"*",1500,&db);
+		
+		cout << db << " fonts found" << endl;
+		/*
+		for (int i=0;i<db;++i)
+			cout << names[i] << endl;
+		*/
+		char **paths = XGetFontPath(disp, &db);
+		
+		cout << db << " paths found" << endl;
+		
+		for (int i=0;i<db;++i)
+			cout << paths[i] << endl;
+		
+		XFreeFontPath(paths);
+		XFreeFontNames(names);
+		XCloseDisplay(disp);
+		(void)characterSize;
+		
+		/*
+		XGetFontPath
+		XListFonts
+		*/
 	#endif
 		
 		return fm::Result("IOError",fm::Result::OPFailed,"FontNotFound","loadSysFont",__FILE__,__LINE__,fileName);
@@ -208,6 +244,11 @@ namespace fg
 	#ifdef FRONTIER_OS_WINDOWS
 	
 		return loadSysFont("tahoma.ttf",characterSize);
+	
+	#elif defined(FRONTIER_OS_LINUX)
+	
+		return loadSysFont("kecske.ttf",characterSize);
+	
 	#endif
 		
 		return fm::Result("IOError",fm::Result::OPFailed,"FontNotFound","loadDefSysFont",__FILE__,__LINE__);
@@ -290,6 +331,8 @@ namespace fg
 		stbtt_FreeBitmap(bitmap,0);
 		
 		return img;
+		
+		(void)style;
 /*
 		// if rendering upper/lower index decrease size
 		unsigned int originalSize = m_currentSize;
@@ -481,6 +524,7 @@ namespace fg
 		stbtt_GetFontVMetrics((stbtt_fontinfo*)m_stbFontInfo,&m_metrics.maxH,&m_metrics.minH,&m_metrics.lineGap);
 		
 		float scl = stbtt_ScaleForMappingEmToPixels((stbtt_fontinfo*)m_stbFontInfo, m_currentSize);
+		m_metrics.lineGap += m_metrics.maxH - m_metrics.minH;
 		m_metrics.lineGap *= scl;
 		m_metrics.minH *= scl;
 		m_metrics.maxH *= scl;

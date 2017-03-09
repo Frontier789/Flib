@@ -26,7 +26,8 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	CubeTextureFace::CubeTextureFace(const CubeTextureFace &face) : m_cubeTex(face.m_cubeTex),
+	CubeTextureFace::CubeTextureFace(const CubeTextureFace &face) : Texture(),
+																	m_cubeTex(face.m_cubeTex),
 																	m_faceId(face.m_faceId)
 	{
 		m_realSize   = face.m_realSize,
@@ -40,7 +41,7 @@ namespace fg
 	fm::Result CubeTextureFace::copyFace(const CubeTexture &cubeTex,unsigned int face)
 	{
 		CubeTextureFace fakeFace(m_cubeTex,face);
-		fakeFace.getGlId() = m_cubeTex.getGlId();
+		fakeFace.getGlId() = cubeTex.getGlId();
 		fakeFace.m_faceId  = face;
 		
 		return loadFromImage(fakeFace.copyToImage());

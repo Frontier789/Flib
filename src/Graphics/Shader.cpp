@@ -280,9 +280,9 @@ namespace fg
 		if (!getGlId())
 			return fm::Result("GLError",fm::Result::OPFailed,"InitFailed","loadFromFiles",__FILE__,__LINE__);
 		
-		vector<string> data(count,"");
+		std::vector<std::string> data(count,"");
 		
-		for (int i=0;i<count;++i)
+		for (size_t i=0;i<count;++i)
 		{
 			std::ifstream in(files[i].c_str(), std::ios::in | std::ios::binary);
 			if (in)

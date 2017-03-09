@@ -33,6 +33,7 @@ namespace fgui
 					if (in)
 					{
 						onMouseMoved(p,m_prevPos);
+						m_prevPos = p;
 					}
 					else
 					{
@@ -47,7 +48,6 @@ namespace fgui
 					}
 				}
 				
-				m_prevPos = p;
 				m_mouseIn = in;
 			}
 			

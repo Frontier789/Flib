@@ -47,7 +47,6 @@ namespace fm
 			m_projStack.push(fm::MATRIX::perspective(m_data3d.fov,m_data3d.screenSize.w/m_data3d.screenSize.h,m_data3d.znear,m_data3d.zfar));
 		else
 		{
-			float r = m_data2d.screenSize.h/m_data2d.screenSize.w;
 			m_projStack.push(fm::MATRIX::ortho(0,
 											   m_data2d.screenSize.h,
 											   m_data2d.screenSize.w,

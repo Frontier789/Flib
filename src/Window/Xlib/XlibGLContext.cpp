@@ -161,7 +161,22 @@ namespace fw
 				
 				if (!cur)
 				{
-					int data[(fm::Size)Mouse::CursorCount] = {XC_left_ptr,XC_xterm,XC_hand2,XC_X_cursor,XC_watch};
+					int data[(fm::Size)Mouse::CursorCount] = 
+					{
+						XC_left_ptr,
+						XC_xterm,
+						XC_hand2,
+						XC_X_cursor,
+						XC_watch,
+						XC_top_side,
+						XC_left_side,
+						XC_bottom_side,
+						XC_right_side,
+						XC_top_right_corner,
+						XC_top_left_corner,
+						XC_bottom_left_corner,
+						XC_bottom_right_corner
+					};
 				
 					cur = XCreateFontCursor(disp,data[index]);
 				}

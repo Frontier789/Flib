@@ -336,8 +336,8 @@ namespace fm
 				for (size_t dy=0;dy<H;dy++)
 					if (dx!=x && dy!=y)
 					{
-						int px = dx;
-						int py = dy;
+						size_t px = dx;
+						size_t py = dy;
 						
 						if (px > x) px--;
 						if (py > y) py--;

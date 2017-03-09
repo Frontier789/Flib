@@ -104,6 +104,8 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	String::String(const char *text,const std::locale &loc)
 	{
+		(void)loc;
+		
 		const char *ptr = text;
 		
 		fm::Size len = 0;
@@ -751,6 +753,4 @@ namespace fm
 
 		return ret;
 	}
-
-	/////////////////////////////////////////////////////////////
 }

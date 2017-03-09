@@ -189,12 +189,20 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		enum Cursor {
-			Arrow,      ///< The default arrow cursor
-			IBeam,      ///< The text entering cursor
-			Click,      ///< The clickable cursor
-			No,         ///< The forbidding cursir
-			Loading,    ///< The loading cursor
-			CursorCount ///< The number of cursors
+			Arrow,           ///< The default arrow cursor
+			IBeam,           ///< The text entering cursor
+			Click,           ///< The clickable cursor
+			No,              ///< The forbidding cursir
+			Loading,         ///< The loading cursor
+			SizeTop,         ///< The sizer cursor to top side
+			SizeLeft,        ///< The sizer cursor to left side
+			SizeBottom,      ///< The sizer cursor to bottom side
+			SizeRight,       ///< The sizer cursor to right side
+			SizeTopRight,    ///< The sizer cursor to top right corner
+			SizeTopLeft,     ///< The sizer cursor to top left corner
+			SizeBottomLeft,  ///< The sizer cursor to bottom left corner
+			SizeBottomRight, ///< The sizer cursor to bottom right corner
+			CursorCount      ///< The number of cursors
 		};
 
 		/////////////////////////////////////////////////////////////

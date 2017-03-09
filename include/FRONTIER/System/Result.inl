@@ -23,7 +23,7 @@ namespace fm
 	{
 		inline void append(std::vector<std::string> &details)
 		{
-			
+			(void)details;
 		}
 		
 		template<class StrClass,class... StringClass>

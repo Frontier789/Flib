@@ -199,22 +199,17 @@ namespace fg
 			// get extension
 			std::string extension = getExtension(ext);
 			
-			bool unknownExt = false;
-			
 			if (extension == "bmp") writer = &stbi_write_bmp_mem;
 			else if (extension == "tga") writer = &stbi_write_tga_mem;
 			else if (extension == "jpg" || extension == "jpeg") writer = &jpge::jpeg_write_mem;
 			else
 			{
 				writer = &stbi_write_png_to_mem_auto;
-				
-				unknownExt = extension != "png";
 			}
 			
 			int bytesWritten = 0;
 			pointer = writer((const unsigned char*)m_texels,m_size.w,m_size.h,4,&bytesWritten);
 			byteCount = bytesWritten;
-			
 		}
 		
 		return fm::Result();

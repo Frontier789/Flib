@@ -103,7 +103,22 @@ namespace fw
     /////////////////////////////////////////////////////////////
     void Mouse::setCursor(Mouse::Cursor cursor)
     {
-        LPCTSTR data[(fm::Size)Mouse::CursorCount] = {IDC_ARROW,IDC_IBEAM,IDC_HAND,IDC_NO,IDC_WAIT};
+        LPCTSTR data[(fm::Size)Mouse::CursorCount] = 
+        {
+        	IDC_ARROW,
+        	IDC_IBEAM,
+        	IDC_HAND,
+        	IDC_NO,
+        	IDC_WAIT,
+        	IDC_SIZENS,
+        	IDC_SIZEWE,
+        	IDC_SIZENS,
+        	IDC_SIZEWE,
+        	IDC_SIZENESW,
+        	IDC_SIZENWSE,
+        	IDC_SIZENESW,
+        	IDC_SIZENWSE
+        };
 
         fm::Size index = (fm::Size)cursor;
 

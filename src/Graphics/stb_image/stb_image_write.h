@@ -99,7 +99,7 @@ void writen(const void *dataptr,size_t size,size_t len,FILE *fileptr,unsigned in
 		}
 		else
 		{
-			cap = max<size_t>(used*2, used + size*len);
+			cap = std::max<size_t>(used*2, used + size*len);
 			unsigned char *newptr = new unsigned char[cap];
 			
 			memcpy(newptr,*result_ptr,used);
@@ -221,6 +221,7 @@ static unsigned char *outmem(int rgb_dir, int vdir, int x, int y, int comp,const
 
 unsigned char *stbi_write_bmp_mem(const unsigned char *pixels, int x, int y, int n, int *out_len)
 {
+   (void)n;
    int pad = (-x*3) & 3;
    return outmem(-1,-1,x,y,4,(const void *) pixels,0,pad,out_len,
            "11 4 22 4" "4 44 22 444444",
@@ -239,6 +240,7 @@ int stbi_write_bmp(char const *filename, int x, int y, int comp, const void *dat
 
 unsigned char *stbi_write_tga_mem(const unsigned char *pixels, int x, int y, int n, int *out_len)
 {
+   (void)n;
    return outmem( -1,-1, x, y, 4, (const void *) pixels, true, 0,out_len,
                   "111 221 2222 11", 0,0,3, 0,0,0, 0,0,x,y, 32, 8);
 }
