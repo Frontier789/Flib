@@ -187,6 +187,7 @@ namespace fg
 			
 		return fm::Result();
 	}
+	#if defined(FRONTIER_OS_LINUX)
 }
 
 #include <iostream>
@@ -195,6 +196,7 @@ using namespace std;
 
 namespace fg
 {
+	#endif
 	/////////////////////////////////////////////////////////////
 	fm::Result FontRenderer::loadSysFont(const std::string &fileName,unsigned int characterSize)
 	{
