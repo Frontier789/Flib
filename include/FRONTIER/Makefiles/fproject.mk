@@ -19,7 +19,7 @@ endif
 override F_LINK_LIBS:=-lf $(F_DEF_LINK_LIBS) $(F_LINK_LIBS)
 
 # compile falgse
-CXXFLAGS=-std=gnu++11 -pedantic -Werror -Wall
+CXXFLAGS=-std=gnu++11 -pedantic -Wall
 
 # linker flags
 ifeq ($(LDFLAGS),)
