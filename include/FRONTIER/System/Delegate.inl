@@ -118,7 +118,7 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class R,class... Args>
 	template<class... ExtraArgs>
-	inline R Delegate<R,Args...>::call(Args... callArgs,ExtraArgs... extraArgs) const
+	inline R Delegate<R,Args...>::call(Args... callArgs,ExtraArgs...) const
 	{
 		return m_impl->call(callArgs...);
 	}
@@ -126,7 +126,7 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class R,class... Args>
 	template<class... ExtraArgs>
-	inline R Delegate<R,Args...>::operator()(Args... callArgs,ExtraArgs... extraArgs) const
+	inline R Delegate<R,Args...>::operator()(Args... callArgs,ExtraArgs...) const
 	{
 		return call(callArgs...);
 	}

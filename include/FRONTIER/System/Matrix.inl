@@ -278,6 +278,7 @@ namespace fm
 		public:
 			static U getDeterminant(const matrix<0,0,U> &mat)
 			{
+				(void)mat;
 				return U(1);
 			}
 		};
@@ -581,6 +582,8 @@ namespace fm
              size_t W2,size_t H2,class T2,class,class>
 	inline bool operator==(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right)
 	{
+		(void)left;
+		(void)right;
 		return false;
 	}
 
@@ -601,6 +604,8 @@ namespace fm
              size_t W2,size_t H2,class T2,class,class>
 	inline bool operator!=(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right)
 	{
+		(void)left;
+		(void)right;
 		return false;
 	}
 	

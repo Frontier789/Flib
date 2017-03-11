@@ -15,6 +15,35 @@
 #define STBTT_MAX_OVERSAMPLE 64
 #include "stb_truetype/stb_truetype.h"
 
+#ifdef FRONTIER_OS_LINUX
+#include <stdio.h>
+
+namespace fm
+{
+	std::string exec(const char *cmd)
+	{
+		char buffer[512];
+		std::string result = "";
+		FILE *pipe = popen(cmd, "r");
+		
+		if (!pipe) 
+			return std::string();
+		
+		try {
+		    while (!feof(pipe))
+		        if (fgets(buffer, sizeof(buffer)/sizeof(*buffer), pipe))
+		            result += buffer;
+
+		} catch (...) {
+			pclose(pipe);
+			return std::string();
+		}
+		pclose(pipe);
+		return result;
+	}
+}
+#endif
+
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
@@ -187,16 +216,7 @@ namespace fg
 			
 		return fm::Result();
 	}
-	#if defined(FRONTIER_OS_LINUX)
-}
-
-#include <iostream>
-using namespace std;
-#include <GL/glx.h>
-
-namespace fg
-{
-	#endif
+	
 	/////////////////////////////////////////////////////////////
 	fm::Result FontRenderer::loadSysFont(const std::string &fileName,unsigned int characterSize)
 	{
@@ -209,32 +229,22 @@ namespace fg
 	
 	#elif defined(FRONTIER_OS_LINUX)
 		
-		Display *disp = XOpenDisplay(nullptr);
+		std::string fonts = fm::exec("fc-match -s --format=\"%{file}\\n\"");
 		
-		int db;
-		char **names = XListFonts(disp,"*",1500,&db);
+		fm::Size pos = fonts.find(".ttf\n");
+		while (pos != std::string::npos)
+		{
+			fm::Size beg = pos;
+			while (beg > 0 && fonts[beg] != '\n') --beg;
+			
+			std::string font = fonts.substr(beg,pos-beg+4);
+			
+			if (loadFromFile(font,characterSize))
+				return fm::Result();
+			
+			pos = fonts.find(".ttf\n",pos+1);
+		}
 		
-		cout << db << " fonts found" << endl;
-		/*
-		for (int i=0;i<db;++i)
-			cout << names[i] << endl;
-		*/
-		char **paths = XGetFontPath(disp, &db);
-		
-		cout << db << " paths found" << endl;
-		
-		for (int i=0;i<db;++i)
-			cout << paths[i] << endl;
-		
-		XFreeFontPath(paths);
-		XFreeFontNames(names);
-		XCloseDisplay(disp);
-		(void)characterSize;
-		
-		/*
-		XGetFontPath
-		XListFonts
-		*/
 	#endif
 		
 		return fm::Result("IOError",fm::Result::OPFailed,"FontNotFound","loadSysFont",__FILE__,__LINE__,fileName);
@@ -249,7 +259,7 @@ namespace fg
 	
 	#elif defined(FRONTIER_OS_LINUX)
 	
-		return loadSysFont("kecske.ttf",characterSize);
+		return loadSysFont("",characterSize);
 	
 	#endif
 		

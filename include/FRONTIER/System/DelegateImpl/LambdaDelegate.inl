@@ -55,7 +55,7 @@ namespace fm
 		{
 		public:
 			template<class LambdaT,class R,class SkipArg,class... Args>
-			static inline R call(LambdaT lambda,SkipArg skipArg,Args... args)
+			static inline R call(LambdaT lambda,SkipArg,Args... args)
 			{
 				return LambdaCaller<LambdaT,R,Args...>::call(lambda,args...);
 			}

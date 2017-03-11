@@ -35,7 +35,7 @@ namespace fm
 		{
 		public:
 			template<class... ExtraArgs>
-			static inline R call(ObjectType &object,R (ObjectType::*funcPtr)(Args...),Args... args,ExtraArgs... eargs)
+			static inline R call(ObjectType &object,R (ObjectType::*funcPtr)(Args...),Args... args,ExtraArgs...)
 			{
 				return (object .* funcPtr)(args...);
 			}

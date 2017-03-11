@@ -73,7 +73,7 @@ namespace fgui
 		/// @param shader The shader to use
 		///
 		/////////////////////////////////////////////////////////////
-		virtual void onDraw(fg::ShaderManager &shader);
+		virtual void onDraw(fg::ShaderManager &shader) override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief draw the gui element using the context's shader
@@ -87,7 +87,7 @@ namespace fgui
 		/// @param dt The elapsed time since last update
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void onUpdate(const fm::Time &dt);
+		virtual void onUpdate(const fm::Time &dt) override;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Internally handle an event

@@ -54,7 +54,7 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	fm::Result CubeTextureFace::create(const fm::vec2s &size)
+	fm::Result CubeTextureFace::create(fm::vec2s size)
 	{
         if (m_cubeTex.getSize() != std::max(size.w,size.h))
 			return m_cubeTex.create(std::max(size.w,size.h));

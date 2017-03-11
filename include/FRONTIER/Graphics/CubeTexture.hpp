@@ -86,7 +86,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result create(const fm::vec2s &size);
+		fm::Result create(fm::vec2s size);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the repeate flag

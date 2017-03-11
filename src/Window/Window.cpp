@@ -19,6 +19,7 @@
 #include <FRONTIER/System/util/OS.h>
 
 #ifdef FRONTIER_OS_WINDOWS
+	#include <FRONTIER/Window/Wapi/WapiWindow.hpp>
 	#include "Wapi/WapiGetLastError.cpp"
 	#include "Wapi/WapiWindow.cpp"
 #elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)

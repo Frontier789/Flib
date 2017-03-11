@@ -32,6 +32,7 @@ namespace fgui
 
 }
 
+#include <FRONTIER/Gui/GuiText.hpp>
 #include <FRONTIER/Gui/GuiWindow.hpp>
 #include <FRONTIER/Gui/GuiElement.hpp>
 #include <FRONTIER/Gui/GuiCallback.hpp>

@@ -20,6 +20,7 @@
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Gui/GuiWindow.hpp>
 #include <FRONTIER/Window/Event.hpp>
+#include <FRONTIER/System/Rect.hpp>
 
 namespace fgui
 {
