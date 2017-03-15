@@ -214,7 +214,7 @@ public:
 	void calcVecs(Ray r,vec3 &pt,vec3 &norm,vec3 &tangent,bool &hit,Object *&obj)
 	{
 		float mnDist = -1;
-		int objectIndex;
+		int objectIndex = 0;
 		
 		for (int i=0;i<m_objs.size();++i)
 		{

@@ -1,15 +1,17 @@
 #ifndef HEX_PLOTTER_GUARD_INL
 #define HEX_PLOTTER_GUARD_INL
 
+#include <vector>
+
 template<class T>
 inline void HexPlotter::load(const HexArray<T> &hex,Delegate<vec4,T> dataToColor)
 {
 	drawData.reset();
 	
-	vector<vec2> pts(hex.getArea() * getVertexCountPerHex());
-	vector<vec4> clr(hex.getArea() * getVertexCountPerHex());
-	vector<vec2> tpt(hex.getArea() * getVertexCountPerHex());
-	vector<vec3> nrm(hex.getArea() * getVertexCountPerHex());
+	std::vector<vec2> pts(hex.getArea() * getVertexCountPerHex());
+	std::vector<vec4> clr(hex.getArea() * getVertexCountPerHex());
+	std::vector<vec2> tpt(hex.getArea() * getVertexCountPerHex());
+	std::vector<vec3> nrm(hex.getArea() * getVertexCountPerHex());
 
 	vec2 *ptsPointer = &pts[0];
 	vec4 *clrPointer = &clr[0];
