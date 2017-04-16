@@ -50,6 +50,8 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	ShaderManager &ShaderManager::swap(ShaderManager &manager)
 	{
+		Shader::swap(manager);
+		
 		m_stacks     .swap(manager.m_stacks     );
 		m_assocPoints.swap(manager.m_assocPoints);
 		m_texUseNames.swap(manager.m_texUseNames);

@@ -1,4 +1,5 @@
 #include <FRONTIER/Graphics/ShaderManager.hpp>
+#include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/Graphics/FramedSprite.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
@@ -36,35 +37,48 @@ namespace fg
             if (x<3 && y<3)
             {
                 fm::Size offset = 6*(3*x+y);
-
-                inds[offset + 0] = 4*x+y;
-                inds[offset + 1] = 4*x+y+1;
-                inds[offset + 2] = 4*x+y+4;
-                inds[offset + 3] = 4*x+y+4;
-                inds[offset + 4] = 4*x+y+1;
-                inds[offset + 5] = 4*x+y+5;
+				fm::Size difs[] = {0,1,4,4,1,5};
+				
+				C(sizeof(difs)/sizeof(*difs))
+					inds[offset + i] = 4*x + y + difs[i];
             }
         }
 
         m_draw.reset();
 
-        m_draw[fg::Assoc::Position]  = pts;
-        m_draw[fg::Assoc::TextureUV] = uvs;
-        m_draw[fg::Assoc::Color]     = clr;
+		m_draw.positions    = pts;
+        m_draw.texPositions = uvs;
+		m_draw.colors       = clr;
         m_draw.addDraw(inds,fg::Triangles);
     }
 
 
     /////////////////////////////////////////////////////////////
+    FramedSprite::FramedSprite() : m_tex(nullptr)
+    {
+    	
+    }
+
+    /////////////////////////////////////////////////////////////
+    FramedSprite::FramedSprite(fm::Ref<const fg::Texture> tex) : m_tex(tex)
+    {
+        buildVertices();
+    }
+
+    /////////////////////////////////////////////////////////////
+    FramedSprite::FramedSprite(fm::Ref<const fg::Texture> tex,
+                               const fm::rect2s &texRect) : m_tex(tex),
+															m_texRect(texRect)
+    {
+        buildVertices();
+    }
+
+    /////////////////////////////////////////////////////////////
     FramedSprite::FramedSprite(fm::Ref<const fg::Texture> tex,
                                const fm::rect2s &texRect,
-                               const fm::vec2s &frameSize,
-                               const fm::vec2 &pos,
-                               const fm::vec2 &size) : m_tex(tex),
-                                                       m_frameSize(frameSize),
-                                                       m_texRect(texRect),
-                                                       m_size(size),
-                                                       m_pos(pos)
+                               const fm::vec2s &frameSize) : m_tex(tex),
+															 m_frameSize(frameSize),
+														     m_texRect(texRect)
     {
         buildVertices();
     }
@@ -76,6 +90,7 @@ namespace fg
         return *this;
     }
 
+    /////////////////////////////////////////////////////////////
     const fm::vec2 &FramedSprite::getPos() const
     {
         return m_pos;
@@ -93,6 +108,7 @@ namespace fg
         return *this;
     }
 
+    /////////////////////////////////////////////////////////////
     const fm::vec2 &FramedSprite::getSize() const
     {
         return m_size;
@@ -108,11 +124,20 @@ namespace fg
         return *this;
     }
 
+    /////////////////////////////////////////////////////////////
     const fm::rect2s &FramedSprite::getTexRect() const
     {
         return m_texRect;
     }
 
+
+    /////////////////////////////////////////////////////////////
+    FramedSprite &FramedSprite::setTexture(fm::Ref<const fg::Texture> tex)
+    {
+        m_tex = tex;
+        setTexRect(fm::rect2s());
+        return *this;
+    }
 
     /////////////////////////////////////////////////////////////
     FramedSprite &FramedSprite::setTexture(fm::Ref<const fg::Texture> tex,const fm::rect2s &texRect)
@@ -122,6 +147,7 @@ namespace fg
         return *this;
     }
 
+    /////////////////////////////////////////////////////////////
     const fg::Texture *FramedSprite::getTexture() const
     {
         return m_tex;
@@ -136,6 +162,7 @@ namespace fg
         return *this;
     }
 
+    /////////////////////////////////////////////////////////////
     const fm::vec2s &FramedSprite::getFrameSize() const
     {
         return m_frameSize;

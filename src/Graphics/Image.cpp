@@ -14,6 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/System/Vector2.hpp>
@@ -269,6 +270,24 @@ namespace fg
 
 
 		return ret;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Image::reference Image::forEach(fm::Delegate<void,fm::vec2s,Color&,Image&> func)
+	{
+		Cv(getSize())
+			func(p,at(p),*this);
+		
+		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	Image::const_reference Image::forEach(fm::Delegate<void,fm::vec2s,Color,const Image&> func) const
+	{
+		Cv(getSize())
+			func(p,at(p),*this);
+		
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////

@@ -101,6 +101,7 @@ namespace fg
     {
         init();
         m_texRect = texRect;
+		m_size = texRect.size;
         return *this;
     }
 
@@ -113,6 +114,8 @@ namespace fg
     Sprite &Sprite::setTexture(fm::Ref<const fg::Texture> tex)
     {
         m_tex = tex;
+		if (tex)
+			setTexRect(fm::rect2s(fm::vec2s(),tex->getRealSize()));
         return *this;
     }
 

@@ -53,6 +53,9 @@ O_FILES=$(addprefix $(F_O_DIR)/,$(notdir $(F_CPP_FILES:.cpp=.o)))
 
 all: $(TARGET)
 
+run: all
+	$(TARGET)
+
 clean: clean_o_dir clean_exec
 
 $(TARGET): $(O_FILES) $(FPATH)/$(F_LIB_DIR_NAME)/libf.a

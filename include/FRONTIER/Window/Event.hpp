@@ -302,8 +302,9 @@ namespace fw
 		int x; ///< X coordinate of the cursor
 		int y; ///< Y coordinate of the cursor
 		Mouse::Button button; ///< Identifies the mouse button
-
-		operator fm::vec2i() const; ///< convert to vec2i
+		
+		template<class T>
+		operator fm::vector2<T>() const; ///< convert to vector2
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -318,7 +319,8 @@ namespace fw
 		int x;  ///< X coordinate of the cursor
 		int y;  ///< Y coordinate of the cursor
 
-		operator fm::vec2i() const; ///< convert to vec2i
+		template<class T>
+		operator fm::vector2<T>() const; ///< convert to vector2
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -337,7 +339,8 @@ namespace fw
 		bool alt;    ///< Indicates that alt was held when the event occured
 		float delta; ///< The amount the wheel moved (+1 means it was rotated once, forward, away from the user)
 
-		operator fm::vec2i() const; ///< convert to vec2i
+		template<class T>
+		operator fm::vector2<T>() const; ///< convert to vector2
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -352,7 +355,8 @@ namespace fw
 		unsigned int w; ///< The new width
 		unsigned int h; ///< The new height
 
-		operator fm::vec2u() const; ///< convert to vec2u
+		template<class T>
+		operator fm::vector2<T>() const; ///< convert to vector2
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -381,7 +385,8 @@ namespace fw
 		int y; ///< Y coordinate of the cursor
 		std::vector<std::string> files; ///< The name(s) of file(s)
 
-		operator fm::vec2i() const; ///< convert to vec2i
+		template<class T>
+		operator fm::vector2<T>() const; ///< convert to vector2
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -498,3 +503,7 @@ namespace fw
 }
 
 #endif // FRONTIER_EVENT_HPP_INCLUDED
+
+#ifndef FRONTIER_DONT_INCLUDE_INL
+	#include <FRONTIER/Window/Event.inl>
+#endif // FRONTIER_DONT_INCLUDE_INL

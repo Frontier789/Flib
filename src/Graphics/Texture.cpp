@@ -237,9 +237,9 @@ namespace fg
 	fm::Result Texture::loadFromFile(const std::string &filename)
 	{
 		Image img;
-		fm::Result res;
+		fm::Result res = img.loadFromFile(filename);
 
-		if ((res = img.loadFromFile(filename))) return res;
+		if (!res) return res;
 
 		return loadFromImage(img);
 	}

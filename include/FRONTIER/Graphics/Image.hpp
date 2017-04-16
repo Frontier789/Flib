@@ -19,6 +19,7 @@
 
 #include <FRONTIER/System/util/dont_include_inl_begin>
 
+#include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Rect.hpp>
@@ -129,6 +130,26 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		reference create(fm::vec2s size,const Color *texels);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Call a function for all the texels in the image
+		/// 
+		/// @param func The func to call
+		///
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference forEach(fm::Delegate<void,fm::vec2s,Color&,Image&> func);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Call a function for all the texels in the image
+		/// 
+		/// @param func The func to call
+		///
+		/// @return reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		const_reference forEach(fm::Delegate<void,fm::vec2s,Color,const Image&> func) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the image from a file

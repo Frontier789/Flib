@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_LAMBDADELEGATE_INL_INCLUDED
 #define FRONTIER_LAMBDADELEGATE_INL_INCLUDED
+#include <FRONTIER/System/CallForwarder.hpp>
 #include <type_traits>
 
 namespace fm
@@ -27,85 +28,11 @@ namespace fm
 		
 	}
 	
-	namespace priv
-	{
-		template<class LambdaT,class R,class... Args>
-		class LambdaCaller
-		{
-		public:
-			static inline R call(LambdaT lambda)
-			{
-				return lambda();
-			}
-		};
-		
-		template<bool lambdaCurCallable>
-		class CallForwarder
-		{
-		public:
-			template<class LambdaT,class R,class... Args>
-			static inline R call(LambdaT lambda,Args... args)
-			{
-				return lambda(args...);
-			}
-		};
-		
-		template<>
-		class CallForwarder<false>
-		{
-		public:
-			template<class LambdaT,class R,class SkipArg,class... Args>
-			static inline R call(LambdaT lambda,SkipArg,Args... args)
-			{
-				return LambdaCaller<LambdaT,R,Args...>::call(lambda,args...);
-			}
-		};
-		
-		template<class LambdaT,class R,class FirstArg,class... ArgsTail>
-		class LambdaCaller<LambdaT,R,FirstArg,ArgsTail...>
-		{
-			class YES
-			{
-				char c[2];
-			};
-			
-			typedef char NO;
-			
-			template<class A,class B>
-			class Second
-			{
-			public:
-				typedef B type;
-			};
-			
-			template<class SLambdaT,class SFirstArg,class... SArgsTail> 
-			static auto test(SLambdaT lambda,SFirstArg firstArg,SArgsTail... argsTail) -> typename Second<decltype(lambda(firstArg,argsTail...)),YES>::type;
-			
-			template<class SLambdaT,class SFirstArg,class... SArgsTail> 
-			static NO  test(...);    
-		public:
-			
-			static inline R call(LambdaT lambda,FirstArg firstArg,ArgsTail... argsTail)
-			{
-				return CallForwarder<
-									 sizeof(test<LambdaT,FirstArg,ArgsTail...>( lambda,firstArg,argsTail... )) == sizeof(YES)
-									>::template call<LambdaT,R,FirstArg,ArgsTail...>(lambda,firstArg,argsTail...);
-			}
-			
-			static inline R call(LambdaT *lambda,FirstArg firstArg,ArgsTail... argsTail)
-			{
-				return CallForwarder<
-									 sizeof(test<LambdaT,FirstArg,ArgsTail...>( *lambda,firstArg,argsTail... )) == sizeof(YES)
-									>::template call<LambdaT,R,FirstArg,ArgsTail...>(*lambda,firstArg,argsTail...);
-			}
-		};
-	}
-	
 	/////////////////////////////////////////////////////////////
 	template<class LambdaT,class R,class... Args>
 	R LambdaDelegate<LambdaT,R,Args...>::call(Args... callArgs) const
 	{
-		return priv::LambdaCaller<typename std::remove_pointer<LambdaT>::type,R,Args...>::call(m_lambda,callArgs...);
+		return fm::CallForwarder<typename std::remove_pointer<LambdaT>::type,R,Args...>::call(m_lambda,callArgs...);
 	}
 	
 	/////////////////////////////////////////////////////////////
