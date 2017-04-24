@@ -67,6 +67,7 @@ namespace fgui
 		fm::vec2 viewOffset;
 		bool monospacing;
 		fm::vec4 color;
+		fm::vec2 maxView;
 		
 		std::vector<fm::Size> wordBegs,wordEnds;
 		std::vector<float> wordPixDifBegs,wordPixDifEnds;
@@ -297,6 +298,9 @@ namespace fgui
 									rectPos.y = std::min<float>(std::max<float>(rectPos.y,0),viewSize.h);
 								}
 								
+								maxView.x = std::max<int>(rectPos.x,maxView.x);
+								maxView.y = std::max<int>(rectPos.y,maxView.y);
+								
 								mesh.pts.push_back(fm::vec2i(rectPos));
 								mesh.uvs.push_back(fm::vec2i(rectPos - rectCorner) + g.pos);
 								mesh.clr.push_back(color);
@@ -308,6 +312,9 @@ namespace fgui
 				}
 			}
 			begNewLine(render);
+						
+			if (!viewSize.area())
+				viewSize = maxView;
 		}
 		
 		fg::DrawData getDrawData()
@@ -352,7 +359,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	GuiText::GuiText(fm::vec2 size,GuiContext &owner) : GuiElement(size,owner),
+	GuiText::GuiText(GuiContext &owner,fm::vec2 size) : GuiElement(owner,size),
 													    m_tex(nullptr),
 														m_wrapMode(TextWrapWord),
 													    m_charSize(14),
@@ -364,7 +371,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	GuiText::GuiText(fm::String text,GuiContext &owner) : GuiElement(owner),
+	GuiText::GuiText(GuiContext &owner,fm::String text) : GuiElement(owner),
 													      m_tex(nullptr),
 														  m_wrapMode(TextWrapWord),
 													      m_charSize(14),
@@ -373,11 +380,11 @@ namespace fgui
 													      m_clr(fm::vec4::Black),
 													      m_font(owner.getDefaultFont())
 	{
-		
+		updateDrawData();
 	}
 	
 	/////////////////////////////////////////////////////////////
-	GuiText::GuiText(fm::String text,fm::vec2 size,GuiContext &owner) : GuiElement(size,owner),
+	GuiText::GuiText(GuiContext &owner,fm::vec2 size,fm::String text) : GuiElement(owner,size),
 																		m_tex(nullptr),
 																		m_wrapMode(TextWrapWord),
 																		m_charSize(14),

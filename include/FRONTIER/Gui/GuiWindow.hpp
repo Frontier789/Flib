@@ -90,7 +90,7 @@ namespace fgui
 		/// @return The size of the context
 		///
 		/////////////////////////////////////////////////////////////
-		virtual fm::vec2s getSize() const;
+		virtual fm::vec2s getSize() const override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the size of the context
@@ -98,7 +98,7 @@ namespace fgui
 		/// @param size The size of the context
 		///
 		/////////////////////////////////////////////////////////////
-		virtual void setSize(fm::vec2s size);
+		virtual void setSize(fm::vec2s size) override;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Swap two gui windows
@@ -128,7 +128,15 @@ namespace fgui
 		/// @param ev The event
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void handleEvent(fw::Event &ev);
+		virtual void handleEvent(fw::Event &ev) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Handle all pending events
+		/// 
+		/// This function is to be implemented by derived classes
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void handlePendingEvents() override;
 	};
 }
 

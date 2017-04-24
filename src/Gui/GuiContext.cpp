@@ -18,7 +18,9 @@
 #include <FRONTIER/Graphics/ShaderManager.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Gui/GuiContext.hpp>
+#include <FRONTIER/Gui/GuiLayout.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
+#include <FRONTIER/System/Sleep.hpp>
 
 namespace fgui
 {
@@ -31,16 +33,20 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiContext::GuiContext() : m_shader(new fg::FixedShaderManager)
+	GuiContext::GuiContext() : m_shader(new fg::FixedShaderManager),
+							   m_layout(new GuiLayout(*this))
 	{
 		setupShader();
+		setMaxFps(60);
 	}
 
 	/////////////////////////////////////////////////////////////
 	GuiContext::GuiContext(fm::vec2s size) : m_shader(new fg::FixedShaderManager),
+											 m_layout(new GuiLayout(*this)),
 											 m_size(size)
 	{
 		setupShader();
+		setMaxFps(60);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -53,6 +59,7 @@ namespace fgui
 	GuiContext::~GuiContext()
 	{
 		delete m_shader;
+		delete m_layout;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -173,6 +180,14 @@ namespace fgui
 	GuiContext &GuiContext::swap(GuiContext &cont)
 	{
 		m_fonts.swap(cont.m_fonts);
+		std::swap(m_shader,cont.m_shader);
+		std::swap(m_layout,cont.m_layout);
+		
+		m_layout->setOwnerContext(*this);
+		m_layout->setSize(getSize());
+		cont.m_layout->setOwnerContext(cont);
+		cont.m_layout->setSize(cont.getSize());
+		
 		return *this;
 	}
 
@@ -180,6 +195,79 @@ namespace fgui
 	GuiContext &GuiContext::operator=(GuiContext &&cont)
 	{
 		return this->swap(cont);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::setMainLayout(GuiLayout *layout,bool delPrevLayout)
+	{
+		if (delPrevLayout)
+			delete m_layout;
+		
+		m_layout = layout;
+		
+		if (!m_layout) m_layout = new GuiLayout(*this);
+		
+		m_layout->setOwnerContext(*this);
+		m_layout->setSize(getSize());
+	}
+	
+	/////////////////////////////////////////////////////////////
+	GuiLayout &GuiContext::getMainLayout()
+	{
+		if (!m_layout->getSize().area())
+		{
+			m_layout->setSize(getSize());
+		}
+		
+		return *m_layout;
+	}
+		
+	/////////////////////////////////////////////////////////////
+	void GuiContext::handleEvent(fw::Event &ev)
+	{
+		m_layout->handleEvent(ev);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::handlePendingEvents()
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::updateElements()
+	{
+		m_layout->onUpdate(m_spf);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::drawElements()
+	{
+		this->draw(getMainLayout());
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::applyFpsLimit()
+	{
+		fm::Time dt = m_fpsClk.getTime();
+		
+		fm::Sleep(m_spf - dt);
+		
+		m_fpsClk.restart();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::setUpdateInterval(fm::Time interval)
+	{
+		m_spf = interval;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::setMaxFps(float fps)
+	{
+		if (fps) m_spf = fm::seconds(1.0 / fps);
+		
+		else m_spf = fm::Time::Zero;
 	}
 }
 

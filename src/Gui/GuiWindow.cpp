@@ -87,5 +87,17 @@ namespace fgui
 			getShader().getCamera().set2D(getSize());
 			fg::FrameBuffer::setViewport(fm::rect2s(fm::vec2s(),getSize()));
 		}
+		
+		GuiContext::handleEvent(ev);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiWindow::handlePendingEvents()
+	{
+		fw::Event ev;
+		while (popEvent(ev))
+		{
+			handleEvent(ev);
+		}
 	}
 }

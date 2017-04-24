@@ -21,6 +21,9 @@
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
+#include <FRONTIER/System/Clock.hpp>
+#include <FRONTIER/Window/Event.hpp>
+#include <FRONTIER/System/Time.hpp>
 #include <map>
 
 #define FRONTIER_GUICONTEXT
@@ -33,6 +36,11 @@ namespace fg
 	class ShaderManager;
 }
 
+namespace fw
+{
+	class Event;
+}
+
 namespace fm
 {
 	class Result;
@@ -40,6 +48,8 @@ namespace fm
 
 namespace fgui
 {
+	class GuiLayout;
+	
 	/////////////////////////////////////////////////////////////
 	/// @brief Holds data for gui elements such as fonts
 	///
@@ -51,7 +61,10 @@ namespace fgui
 	protected:
 		std::map<fm::String,fg::Font> m_fonts; ///< The loaded fonts
 		fg::ShaderManager *m_shader; ///< The shader used when drawing
+		GuiLayout *m_layout; ///< The main layout of the context
+		fm::Clock m_fpsClk;  ///< Clock for measuring fps
 		fm::vec2s m_size; ///< The size of the context
+		fm::Time m_spf;   ///< Second per frame (0 on inf fps)
 		
 		void setupShader(); ///< Initialises the shader
 		
@@ -137,7 +150,7 @@ namespace fgui
 		/// @brief Set the used shader
 		/// 
 		/// @param newShader The new shader
-		/// @param delPrevShader Indeicates whether the previous shader is to be deleted
+		/// @param delPrevShader Indicates whether the previous shader is to be deleted
 		/// 
 		/// @return Reference to itself
 		/// 
@@ -214,6 +227,79 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		GuiContext &operator=(GuiContext &&cont);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the main layout of the context
+		///
+		/// @param layout The new layout
+		/// @param delPrevLayout Indicates whether the previous layout is to be deleted
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setMainLayout(GuiLayout *layout,bool delPrevLayout = true);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the main layout of the context
+		///
+		/// @return The layout
+		/// 
+		/////////////////////////////////////////////////////////////
+		GuiLayout &getMainLayout();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Handle an event
+		///
+		/// Forwards event ot the main layout
+		/// 
+		/// @param ev The event
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void handleEvent(fw::Event &ev);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Handle all pending events
+		/// 
+		/// This function is to be implemented by derived classes
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void handlePendingEvents();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Call the update function of the elements in the main layout
+		/// 
+		/////////////////////////////////////////////////////////////
+		void updateElements();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Call the draw function of the elements in the main layout
+		/// 
+		/////////////////////////////////////////////////////////////
+		void drawElements();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Suspend the thread until fps is dropped to set limit
+		/// 
+		/////////////////////////////////////////////////////////////
+		void applyFpsLimit();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the desired time between updates
+		/// 
+		/// Same as calling setMaxFps(1s / interval)
+		/// 
+		/// @param interval The interval between updates
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setUpdateInterval(fm::Time interval);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the maximum fps (zero means inf)
+		/// 
+		/// Same as calling setUpdateInterval(1s / interval)
+		/// 
+		/// @param fps The max fps
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setMaxFps(float fps);
 	};
 }
 

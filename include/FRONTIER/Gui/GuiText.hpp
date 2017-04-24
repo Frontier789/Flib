@@ -121,11 +121,11 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief construct the text with given size and owner
 		/// 
-		/// @param size The size of the visible area
 		/// @param owner The owner of the guielement
+		/// @param size The size of the visible area
 		/// 
 		/////////////////////////////////////////////////////////////
-		GuiText(fm::vec2 size,GuiContext &owner);
+		GuiText(GuiContext &owner,fm::vec2 size);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief construct the text with given text and owner
@@ -134,17 +134,17 @@ namespace fgui
 		/// @param owner The owner of the guielement
 		/// 
 		/////////////////////////////////////////////////////////////
-		GuiText(fm::String text,GuiContext &owner);
+		GuiText(GuiContext &owner,fm::String text);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief construct the text with given text, size and owner
 		/// 
-		/// @param text The text of the guitext
-		/// @param size The size of the visible area
 		/// @param owner The owner of the guielement
+		/// @param size The size of the visible area
+		/// @param text The text of the guitext
 		/// 
 		/////////////////////////////////////////////////////////////
-		GuiText(fm::String text,fm::vec2 size,GuiContext &owner);
+		GuiText(GuiContext &owner,fm::vec2 size,fm::String text);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the size of the gui text

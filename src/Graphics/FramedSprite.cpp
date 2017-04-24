@@ -82,6 +82,49 @@ namespace fg
     {
         buildVertices();
     }
+    
+    /////////////////////////////////////////////////////////////
+    FramedSprite::FramedSprite(const FramedSprite &sprite) : m_tex(sprite.m_tex),
+                                                             m_frameSize(sprite.m_frameSize),
+                                                             m_texRect(sprite.m_texRect),
+                                                             m_size(sprite.m_size),
+                                                             m_pos(sprite.m_pos)
+    {
+        buildVertices();
+    }
+    
+    /////////////////////////////////////////////////////////////
+    FramedSprite::FramedSprite(FramedSprite &&sprite)
+    {
+        sprite.swap(*this);
+    }
+    
+    /////////////////////////////////////////////////////////////
+    FramedSprite &FramedSprite::operator=(const FramedSprite &sprite)
+    {
+        FramedSprite cpy(sprite);
+        
+        return this->swap(cpy);
+    }
+    
+    /////////////////////////////////////////////////////////////
+    FramedSprite &FramedSprite::operator=(FramedSprite &&sprite)
+    {
+        return this->swap(sprite);
+    }
+    
+    /////////////////////////////////////////////////////////////
+    FramedSprite &FramedSprite::swap(FramedSprite &sprite)
+    {
+        std::swap(m_tex,sprite.m_tex);
+        std::swap(m_frameSize,sprite.m_frameSize);
+        std::swap(m_texRect,sprite.m_texRect);
+        m_draw.swap(sprite.m_draw);
+        std::swap(m_size,sprite.m_size);
+        std::swap(m_pos,sprite.m_pos);
+        
+        return *this;
+    }
 
     /////////////////////////////////////////////////////////////
     FramedSprite &FramedSprite::setPos(const fm::vec2 &pos)

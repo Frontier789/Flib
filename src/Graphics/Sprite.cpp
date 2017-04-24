@@ -49,6 +49,47 @@ namespace fg
     {
         init();
     }
+    
+    /////////////////////////////////////////////////////////////
+    Sprite::Sprite(const Sprite &sprite) : m_tex(sprite.m_tex),
+                                           m_texRect(sprite.m_texRect),
+                                           m_size(sprite.m_size),
+                                           m_pos(sprite.m_pos)
+    {
+        init();
+    }
+    
+    /////////////////////////////////////////////////////////////
+    Sprite::Sprite(Sprite &&sprite)
+    {
+        sprite.swap(*this);
+    }
+    
+    /////////////////////////////////////////////////////////////
+    Sprite &Sprite::operator=(const Sprite &sprite)
+    {
+        Sprite cpy(sprite);
+        
+        return this->swap(cpy);
+    }
+    
+    /////////////////////////////////////////////////////////////
+    Sprite &Sprite::operator=(Sprite &&sprite)
+    {
+        return this->swap(sprite);
+    }
+    
+    /////////////////////////////////////////////////////////////
+    Sprite &Sprite::swap(Sprite &sprite)
+    {
+        std::swap(m_tex,sprite.m_tex);
+        std::swap(m_texRect,sprite.m_texRect);
+        m_draw.swap(sprite.m_draw);
+        std::swap(m_size,sprite.m_size);
+        std::swap(m_pos,sprite.m_pos);
+        
+        return *this;
+    }
 
     /////////////////////////////////////////////////////////////
     void Sprite::init()

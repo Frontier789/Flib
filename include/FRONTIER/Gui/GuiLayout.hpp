@@ -14,45 +14,25 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_GUIELEMENT_HPP_INCLUDED
-#define FRONTIER_GUIELEMENT_HPP_INCLUDED
+#ifndef FRONTIER_GUILAYOUTBASE_HPP_INCLUDED
+#define FRONTIER_GUILAYOUTBASE_HPP_INCLUDED
 
-#include <FRONTIER/System/CommonTypes.hpp>
-#include <FRONTIER/Graphics/Drawable.hpp>
-#include <FRONTIER/Gui/GuiCallback.hpp>
-#include <FRONTIER/System/Vector2.hpp>
-#include <FRONTIER/System/String.hpp>
+#include <FRONTIER/System/Delegate.hpp>
+#include <FRONTIER/Gui/GuiElement.hpp>
+#include <vector>
 
-#define FRONTIER_GUIELEMENT
-
-namespace fw
-{
-	class Event;
-}
-
-namespace fg
-{
-	class ShaderManager;
-}
+#define FRONTIER_GUILAYOUTBASE
 
 namespace fgui
 {
-	class GuiContext;
-	class GuiLayout;
-	
 	/////////////////////////////////////////////////////////////
-	/// @brief Basic gui class 
-	///
-	/// @ingroup Gui
+	/// @brief Base class for every Layout class
 	///
 	/////////////////////////////////////////////////////////////
-	class GuiElement : public fg::Drawable, public virtual GuiCallback
+	class GuiLayout : public GuiElement
 	{
-		GuiContext *m_context; ///< The owner context of the element
-		GuiLayout  *m_layout;  ///< The layout that owns the element
-		fm::String m_id; ///< The id of the element
-		fm::vec2 m_size; ///< The size of the element
-		fm::vec2 m_pos;  ///< The position of the element
+		std::vector<GuiElement*> m_elements; ///< The elements of the layout
+		
 	public:
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructr
@@ -60,16 +40,95 @@ namespace fgui
 		/// @param owner The owner context
 		///
 		/////////////////////////////////////////////////////////////
-		GuiElement(GuiContext &owner);
+		GuiLayout(GuiContext &owner);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Default constructr
-		/// 
-		/// @param owner The owner context
-		/// @param size The initial size
+		/// @brief Default destructor
 		///
 		/////////////////////////////////////////////////////////////
-		GuiElement(GuiContext &owner,fm::vec2 size);
+		virtual ~GuiLayout();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the child at given index
+		/// 
+		/// @param index The index of the child to get
+		/// 
+		/// @return Pointer to the child
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual GuiElement *getChildElement(fm::Size index) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the child at given index 
+		/// 
+		/// @param index The index of the child to get
+		/// @param element The new element
+		/// 
+		/// @return Pointer to the old child at the index
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual GuiElement *setChildElement(fm::Size index,GuiElement *element);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the number children
+		/// 
+		/// @return The number of children
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual fm::Size getChildCount() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the number children
+		/// 
+		/// @param childCount The number of children
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setChildCount(fm::Size childCount);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Apply a function to all the chlidren
+		/// 
+		/// @param func The function
+		/// 
+		/////////////////////////////////////////////////////////////
+		void forAll(fm::Delegate<void,GuiElement*,fm::Size,GuiLayout&> func);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Apply a function to all the chlidren
+		/// 
+		/// @param func The function
+		/// 
+		/////////////////////////////////////////////////////////////
+		void forAll(fm::Delegate<void,GuiElement*,fm::Size,const GuiLayout&> func) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Remove a child from the layout
+		/// 
+		/// @param index The index of the child
+		/// @param del Whether to call delete on the child
+		/// 
+		/// @return Pointer to the child (or null if deleted or nonexisting child)
+		/// 
+		/////////////////////////////////////////////////////////////
+		GuiElement *removeChild(fm::Size index,bool del = false);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the child at given index 
+		/// 
+		/// @param index The index of the child to get
+		/// 
+		/// @return Pointer to the child
+		/// 
+		/////////////////////////////////////////////////////////////
+		GuiElement *operator[](fm::Size index) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Handle the change of a child
+		/// 
+		/// @param child The child that changed
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void onChildSize(GuiElement *child);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief draw the gui element
@@ -78,12 +137,6 @@ namespace fgui
 		///
 		/////////////////////////////////////////////////////////////
 		virtual void onDraw(fg::ShaderManager &shader) override;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief draw the gui element using the context's shader
-		///
-		/////////////////////////////////////////////////////////////
-		void onDraw();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief update the gui element
@@ -98,116 +151,8 @@ namespace fgui
 		/// 
 		/// @param ev The event
 		/// 
-		/// @return True iff the event got handled
-		/// 
 		/////////////////////////////////////////////////////////////
-		virtual bool onEvent(fw::Event &ev);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Handle an event and forward to internal functions
-		/// 
-		/// @param ev The event
-		/// 
-		/// @return True iff the event got handled
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual bool handleEvent(fw::Event &ev) final;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the size of the gui element
-		/// 
-		/// @return The size
-		/// 
-		/////////////////////////////////////////////////////////////
-		fm::vec2s getSize() const;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the size of the gui element
-		/// 
-		/// @param size The size
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual void setSize(fm::vec2s size);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the position of the gui element
-		/// 
-		/// @return The position
-		/// 
-		/////////////////////////////////////////////////////////////
-		fm::vec2i getPosition() const;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the position of the gui element
-		/// 
-		/// @param pos The position
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual void setPosition(fm::vec2i pos);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Set owner gui context
-		/// 
-		/// @param context The owner context
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual void setOwnerContext(GuiContext &context);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Get owner gui context
-		/// 
-		/// @return The owner context
-		/// 
-		/////////////////////////////////////////////////////////////
-		GuiContext &getOwnerContext();
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Get owner gui context
-		/// 
-		/// @return The owner context
-		/// 
-		/////////////////////////////////////////////////////////////
-		const GuiContext &getOwnerContext() const;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Check if a point falls in the reqion of the gui element
-		/// 
-		/// @return True iff the point is inside
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual bool contains(fm::vec2 p) const override;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the layout that owns the element
-		/// 
-		/// @param layout The layout
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual void setLayout(GuiLayout *layout);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the layout that owns the element
-		/// 
-		/// @return The layout
-		/// 
-		/////////////////////////////////////////////////////////////
-		GuiLayout *getLayout() const;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the id of the element
-		/// 
-		/// @param id The new id
-		/// 
-		/////////////////////////////////////////////////////////////
-		void setId(const fm::String &id);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the id of the element
-		/// 
-		/// @return The id
-		/// 
-		/////////////////////////////////////////////////////////////
-		const fm::String &getId() const;
+		virtual bool onEvent(fw::Event &ev) override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Find an element by id recursively
@@ -217,8 +162,26 @@ namespace fgui
 		/// @return The element with given id
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual GuiElement *findById(const fm::String &id);
+		virtual GuiElement *findById(const fm::String &id) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Add a child element to the Layout
+		/// 
+		/// @param element The new element
+		/// 
+		/// @return The number of children the layout has
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual fm::Size addChildElement(GuiElement *element);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set owner gui context
+		/// 
+		/// @param context The owner context
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setOwnerContext(GuiContext &context) override;
 	};
 }
 
-#endif // FRONTIER_GUIELEMENT_HPP_INCLUDED
+#endif // FRONTIER_GUILAYOUTBASE_HPP_INCLUDED

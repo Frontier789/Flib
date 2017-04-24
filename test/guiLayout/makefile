@@ -1,3 +1,3 @@
 FPATH=../..
-EXEC=tetRot
+EXEC=guiLayout
 include $(FPATH)/include/FRONTIER/Makefiles/fproject.mk

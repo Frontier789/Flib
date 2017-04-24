@@ -20,6 +20,9 @@ class TicksPerSecondHolder
 {
 public:
 	LARGE_INTEGER ticksPerSecond;
+	bool raisedPrecision;
+	UINT TARGET_RESOLUTION = 1; // 1-millisecond target resolution
+	
 	TicksPerSecondHolder()
 	{
 		HANDLE thread  = GetCurrentThread();
@@ -28,6 +31,27 @@ public:
 		QueryPerformanceFrequency(&ticksPerSecond);
 		
 		SetThreadAffinityMask(thread,mask);
+		
+		
+
+		TIMECAPS tc;
+
+		if (timeGetDevCaps(&tc, sizeof(TIMECAPS)) == TIMERR_NOERROR) 
+		{
+			if (TARGET_RESOLUTION < tc.wPeriodMin) TARGET_RESOLUTION = tc.wPeriodMin;
+			if (TARGET_RESOLUTION > tc.wPeriodMax) TARGET_RESOLUTION = tc.wPeriodMax;
+			
+			timeBeginPeriod(TARGET_RESOLUTION); 
+			raisedPrecision = true;
+		}
+		else
+			raisedPrecision = false;
+	}
+	
+	~TicksPerSecondHolder()
+	{
+		if (raisedPrecision)
+			timeEndPeriod(TARGET_RESOLUTION);
 	}
 };
 

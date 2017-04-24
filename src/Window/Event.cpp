@@ -29,36 +29,6 @@
 namespace fw
 {
 	////////////////////////////////////////////////////////////
-	ButtonEvent::operator fm::vec2i() const
-	{
-		return fm::vec2i(x,y);
-	}
-
-	////////////////////////////////////////////////////////////
-	MotionEvent::operator fm::vec2i() const
-	{
-		return fm::vec2i(x,y);
-	}
-
-	////////////////////////////////////////////////////////////
-	MouseWheelEvent::operator fm::vec2i() const
-	{
-		return fm::vec2i(x,y);
-	}
-
-	////////////////////////////////////////////////////////////
-	ResizeEvent::operator fm::vec2u() const
-	{
-		return fm::vec2u(w,h);
-	}
-
-	////////////////////////////////////////////////////////////
-	DropEvent::operator fm::vec2i() const
-	{
-		return fm::vec2i(x,y);
-	}
-
-	////////////////////////////////////////////////////////////
 	fm::vec2i Mouse::getPosition(const fw::Window &window)
 	{
 		return getPosition(window.getOSWindow());

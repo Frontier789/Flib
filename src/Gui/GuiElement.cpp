@@ -21,14 +21,16 @@
 namespace fgui
 {
 	/////////////////////////////////////////////////////////////
-	GuiElement::GuiElement(GuiContext &owner) : m_context(&owner)
+	GuiElement::GuiElement(GuiContext &owner) : m_context(&owner),
+												m_layout(nullptr)
 	{
 		
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiElement::GuiElement(fm::vec2 size,GuiContext &owner) : m_context(&owner),
-															 m_size(size)
+	GuiElement::GuiElement(GuiContext &owner,fm::vec2 size) : m_context(&owner),
+															  m_layout(nullptr),
+															  m_size(size)
 	{
 		
 	}
@@ -52,19 +54,21 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	void GuiElement::onEvent(fw::Event &ev)
+	bool GuiElement::onEvent(fw::Event &ev)
 	{
 		(void)ev;
+		
+		return false;
 	}
 
 	/////////////////////////////////////////////////////////////
 	bool GuiElement::handleEvent(fw::Event &ev)
 	{
-		onEvent(ev);
+		bool handled = onEvent(ev);
 		
 		GuiCallback::forwardToHandlers(ev);
 		
-		return false;
+		return handled;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -92,6 +96,12 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
+	void GuiElement::setOwnerContext(GuiContext &context)
+	{
+		m_context = &context;
+	}
+
+	/////////////////////////////////////////////////////////////
 	GuiContext &GuiElement::getOwnerContext()
 	{
 		return *m_context;
@@ -107,5 +117,37 @@ namespace fgui
 	bool GuiElement::contains(fm::vec2 p) const
 	{
 		return fm::rect2f(getPosition(),getSize()).contains(p);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiElement::setLayout(GuiLayout *layout)
+	{
+		m_layout = layout;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	GuiLayout *GuiElement::getLayout() const
+	{
+		return m_layout;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiElement::setId(const fm::String &id)
+	{
+		m_id = id;
+	}
+		
+	/////////////////////////////////////////////////////////////
+	const fm::String &GuiElement::getId() const
+	{
+		return m_id;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	GuiElement *GuiElement::findById(const fm::String &id)
+	{
+		if (m_id == id) return this;
+		
+		return nullptr;
 	}
 }

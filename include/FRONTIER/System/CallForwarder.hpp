@@ -85,18 +85,6 @@ namespace fm
 			};
 		};
 
-		template<class OutterPackHead,class... OutterPackTail>
-		class OutterClass
-		{
-		public:
-			template<class... InnerPack>
-			class InnerClass
-			{
-			public:
-				typedef typename OutterClass<OutterPackTail...>::template InnerClass<InnerPack...,OutterPackHead> NextRec;
-			};
-		};
-
 		template<bool,class FuncType,class RType,class... UnusedArgs>
 		class CallDeducer
 		{
@@ -110,6 +98,11 @@ namespace fm
 				{
 					return func(usedArgs...);
 				}
+				
+				static RType call(FuncType *func,UsedArgs... usedArgs,UnusedArgs... /* unusedArgs */)
+				{
+					return (*func)(usedArgs...);
+				}
 
 				enum {
 					Callable = true
@@ -122,22 +115,11 @@ namespace fm
 		{
 		public:
 			template<class... UsedArgs>
-			class Helper
+			class Helper : public CallDeducer<IsCallableWith<FuncType,RType,UsedArgs...,UnusedArgsHead>::value,
+											  FuncType,RType,UnusedArgsTail...>::
+											  template Helper<UsedArgs...,UnusedArgsHead>
 			{
-			public:
-			
-				typedef typename CallDeducer<IsCallableWith<FuncType,RType,UsedArgs...,UnusedArgsHead>::value,
-											 FuncType,RType,UnusedArgsTail...>::
-						template Helper<UsedArgs...,UnusedArgsHead> NextRec;
-						
-				enum {
-					Callable = NextRec::Callable
-				};
 				
-				static RType call(FuncType func,UsedArgs... usedArgs,UnusedArgsHead unusedHead,UnusedArgsTail... unusedTail)
-				{
-					return NextRec::call(func,usedArgs...,unusedHead,unusedTail...);
-				}
 			};
 		};
 
@@ -157,24 +139,10 @@ namespace fm
 	}
 	
 	template<class FuncType,class RType,class... ArgTypes>
-	class CallForwarder
+	class CallForwarder : public priv::CallDeducer<priv::IsCallableWith<FuncType,RType>::value,
+												   FuncType,RType,ArgTypes...>::template Helper<>
 	{
-		typedef typename priv::CallDeducer<priv::IsCallableWith<FuncType,RType>::value,
-										   FuncType,RType,ArgTypes...>::template Helper<> Helper;
-	public:
-		enum {
-			Callable = Helper::Callable
-		};
 		
-		static RType call(FuncType func,ArgTypes... args)
-		{
-			return Helper::call(func,args...);
-		}
-		
-		static RType call(FuncType *func,ArgTypes... args)
-		{
-			return Helper::call(*func,args...);
-		}
 	};		
 }
 #endif // FRONTIER_CALLFORWARDER_HPP_INCLUDED

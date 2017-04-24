@@ -117,7 +117,7 @@ namespace fg
 		/// @param img The image to send to OpenGL
 		///
 		/////////////////////////////////////////////////////////////
-		explicit Texture(const Image &img);
+		Texture(const Image &img);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create a OpenGL texture from an image in a file
