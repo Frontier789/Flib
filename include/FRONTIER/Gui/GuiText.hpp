@@ -100,6 +100,7 @@ namespace fgui
 		const fg::Texture *m_tex; ///< The texture the font uses
 		fg::DrawData m_drawdata;  ///< Data used when drawing
 		fm::vec2 m_viewOffset; ///< The offset of the view rectangle
+		fm::vec2 m_viewSize;   ///< The size of the view rectangle 
 		TextWrap m_wrapMode;   ///< The way the text gets wrapped
 		fm::Size m_charSize;   ///< The caharacter size used when drawing
 		fm::String m_string;   ///< The string being displayed

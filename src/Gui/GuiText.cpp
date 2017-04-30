@@ -335,7 +335,7 @@ namespace fgui
 	{
 		if (getFont())
 		{
-			fm::vec2 viewSize = getSize();
+			fm::vec2 viewSize = m_viewSize;
 			
 			m_drawdata = DrawDataFromText(m_string,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr).getDrawData();
 			
@@ -361,6 +361,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	GuiText::GuiText(GuiContext &owner,fm::vec2 size) : GuiElement(owner,size),
 													    m_tex(nullptr),
+													    m_viewSize(size),
 														m_wrapMode(TextWrapWord),
 													    m_charSize(14),
 													    m_align(TextAlignLeft),
@@ -399,7 +400,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiText::setSize(fm::vec2s size)
 	{
-		GuiElement::setSize(size);
+		m_viewSize = size;
 		updateDrawData();
 	}
 	

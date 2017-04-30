@@ -84,7 +84,7 @@ namespace fgui
 					m_btnPressed[btn] = false;
 					
 					onRelease(btn,p);
-					if ((m_pressPoses[btn] - p).LENGTH() < m_maxClickDist*m_maxClickDist)
+					if (mouseInside())
 					{
 						onClick(btn,p);
 					}
