@@ -339,8 +339,7 @@ namespace fgui
 			
 			m_drawdata = DrawDataFromText(m_string,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr).getDrawData();
 			
-			if (getSize() == fm::vec2())
-				GuiElement::setSize(viewSize);
+			GuiElement::setSize(viewSize);
 			
 			m_tex = &getFont().getTexture();			
 		}

@@ -19,7 +19,7 @@
 
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/Delegate.hpp>
-#include <FRONTIER/Window/Window.hpp>
+#include <FRONTIER/System/Vector2.hpp>
 #include <vector>
 
 #define FRONTIER_GUICALLBACK

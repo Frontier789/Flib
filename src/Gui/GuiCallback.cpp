@@ -15,6 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Gui/GuiCallback.hpp>
+#include <FRONTIER/Window/Event.hpp>
 
 namespace fgui
 {
