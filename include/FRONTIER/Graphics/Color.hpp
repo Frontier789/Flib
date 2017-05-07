@@ -25,6 +25,8 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to hold a color's value in <a href="http://en.wikipedia.org/wiki/RGBA_color_space">RGBA color space</a>
 	///
+	/// @ingroup Graphics
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Color
 	{
@@ -99,6 +101,7 @@ namespace fg
 		/// therefore Color(vec3(0.99,0.98,0.98)) will result in black color (0,0,0,255)
 		///
 		/// @param color The color to be copied
+		/// @param a The alpha value
 		///
 		/////////////////////////////////////////////////////////////
 		Color(const fm::vector3<float> &color,fm::Uint8 a = 255);

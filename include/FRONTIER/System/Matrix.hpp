@@ -34,9 +34,9 @@
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
-	///
-	/// 	@brief Templated class used for manipulating
-	///			   <a href="http://en.wikipedia.org/wiki/Matrix_%28mathematics%29">matricess</a>
+	/// @brief Templated class used for manipulating <a href="http://en.wikipedia.org/wiki/Matrix_%28mathematics%29">matricess</a>
+	/// 
+	/// @ingroup System
 	///
 	/////////////////////////////////////////////////////////////
 	template<Size W,Size H,class T = float>
@@ -288,13 +288,10 @@ namespace fm
 		matrix<W2,H2,T> convert() const;
 		
 		/////////////////////////////////////////////////////////////
-		/// @relates fm::matrix
 		/// @brief Calculates the <a href="http://en.wikipedia.org/wiki/Determinant">determinant</a> of a square matrix
 		///
 		/// It is a slow operation threfore you should implement your own
 		/// method to count the determinant if you plan to use it frequently
-		///
-		/// @param mat The matrix what's determinant is to be calculated
 		///
 		/// @return The determinant
 		///
@@ -303,10 +300,7 @@ namespace fm
 		T det() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @relates fm::matrix
 		/// @brief Calculates the matrix of minors see <a href="http://www.mathsisfun.com/algebra/matrix-inverse-minors-cofactors-adjugate.html">here</a>
-		///
-		/// @param mat The matrix what's matrix of minors is to be calculated
 		///
 		/// @return The matrix of minors
 		///
@@ -315,10 +309,7 @@ namespace fm
 		matrix<W,H,T> minors() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @relates fm::matrix
 		/// @brief Calculates the <a href="http://en.wikipedia.org/wiki/Adjugate_matrix">adjugate</a> of a matrix
-		///
-		/// @param mat The matrix what's adjugate is to be calculated
 		///
 		/// @return The adjugate
 		///
@@ -327,10 +318,7 @@ namespace fm
 		matrix<W,H,T> adjugate() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @relates fm::matrix
 		/// @brief Calculates the <a href="http://en.wikipedia.org/wiki/Invertible_matrix">inverse</a> of a matrix
-		///
-		/// @param mat The matrix what's inverse is to be calculated
 		///
 		/// @return The inverse
 		///
@@ -339,10 +327,7 @@ namespace fm
 		matrix<W,H,T> inverse() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @relates fm::matrix
 		/// @brief Calculate the <a href="http://en.wikipedia.org/wiki/Trace_%28linear_algebra%29">trace</a> of a matrix
-		///
-		/// @param mat The matrix what's trace is to be calculated
 		///
 		/// @return The trace
 		///
@@ -364,7 +349,7 @@ namespace fm
 		T *operator[](Size index);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Access(r only) a row of the matrix
+		/// @brief Access (r only) a row of the matrix
 		///
 		/// Because it returns a pointer to the first element of the row
 		/// an element can be acces as m[x][y]
@@ -893,7 +878,6 @@ namespace fm
 	typedef matrix<4,4,float> mat4;
 	typedef matrix<4,4,long>  mat4u;
 	typedef matrix<4,4,int>   mat4i;
-
 }
 
 #endif //FRONTIER_MATRIX_HPP_INCLUDED

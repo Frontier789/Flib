@@ -75,6 +75,8 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to handle OpenGL shader programs in language <a href="http://en.wikipedia.org/wiki/GLSL">GLSL</a>
 	///
+	/// @ingroup Graphics
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Shader : public fm::NonCopyable, public GlObject
 	{
@@ -522,7 +524,7 @@ namespace fg
 		/// The elements od the input array are forwarded one by one as name + "[" + 0..N-1 + "]"
 		/// 
 		/// @param name The name of the uniform
-		/// @param value The values
+		/// @param values The values
 		///
 		/// @return The error-state of the function
 		///

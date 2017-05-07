@@ -38,6 +38,8 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to hold the texels of an image
 	///
+	/// @ingroup Graphics
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Image
 	{
@@ -285,9 +287,10 @@ namespace fg
 		/// @brief Get the color of a texel
 		///
 		/// @param pos The position of a texel
-		///
-		/// @return The color of the texel
-		///
+		/// @param color The color of the texel
+		/// 
+		/// @return Reference to itself
+		/// 
 		/////////////////////////////////////////////////////////////
 		reference set(fm::vec2s pos,Color color);
 		
@@ -295,8 +298,9 @@ namespace fg
 		/// @brief Get the color of a texel
 		///
 		/// @param pos The position of a texel
-		///
-		/// @return The color of the texel
+		/// @param color The color of the texel
+		/// 
+		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
 		reference setTexel(fm::vec2s pos,Color color);

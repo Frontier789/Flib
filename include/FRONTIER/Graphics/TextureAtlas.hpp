@@ -17,6 +17,7 @@
 #ifndef FRONTIER_TEXTUREATLAS_HPP_INCLUDED
 #define FRONTIER_TEXTUREATLAS_HPP_INCLUDED
 #include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/Graphics/Glyph.hpp>
 #include <FRONTIER/System/util/API.h>
 
@@ -44,6 +45,8 @@ namespace fg
 	/// 
 	/// All uploaded textures are associated with a key of type MappedType
 	/// which with the texture's loaction can be fetced
+	///
+	/// @ingroup Graphics
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class MappedType,class Compare = std::less<MappedType> >
@@ -134,7 +137,7 @@ namespace fg
 		/// @param copy The instance to be copied
 		/// 
 		/////////////////////////////////////////////////////////////
-		TextureAtlas(const TextureAtlas &copy);
+		TextureAtlas(const TextureAtlas &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Default move constructor
@@ -255,7 +258,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference operator=(const TextureAtlas &atlas);
+		reference operator=(const TextureAtlas &atlas) FRONTIER_HEAVYCOPY_QUALIFIER;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Assignment operator

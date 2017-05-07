@@ -24,6 +24,8 @@ namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	/// @brief A simple class used to manage a matrix stack
+	/// 
+	/// @ingroup System
 	///
 	/////////////////////////////////////////////////////////////
 	template<fm::Size W = 4, fm::Size H = 4, class T = float, class Container = std::deque<fm::matrix<W,H,T> > >

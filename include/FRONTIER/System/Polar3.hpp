@@ -30,6 +30,8 @@ namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	/// @brief Templated class for using 3D <a href="https://en.wikipedia.org/wiki/Spherical_coordinate_system">spherical vectors</a>
+	/// 
+	/// @ingroup System
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class A = float>

@@ -150,4 +150,10 @@ namespace fgui
 		
 		return nullptr;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiElement::traverseHierarchy(fm::Delegate<void,GuiElement &> func)
+	{
+		func(*this);
+	}
 }

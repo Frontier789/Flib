@@ -27,6 +27,7 @@ namespace fg
 	///
 	/// @ingroup Graphics
 	/// @see fg::Texture
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API FloatTexture : public Texture
 	{

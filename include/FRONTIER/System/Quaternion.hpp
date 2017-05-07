@@ -31,6 +31,8 @@ namespace fm
 {
 	//////////////////////////////////
 	/// @brief Class for using <a href="http://en.wikipedia.org/wiki/Quaternion">quaternions</a>
+	/// 
+	/// @ingroup System
 	///
 	//////////////////////////////////
 	class FRONTIER_API Quat
@@ -175,8 +177,6 @@ namespace fm
 		/// @brief Convert the quaternion to a matrix
 		///
 		/// The result is a rotation matrix for reference see <a href="http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Quaternion-derived_rotation_matrix">this</a> wikipedia article
-		///
-		/// @param storeOrder The way to store the resulting matrix
 		///
 		/// @return The matrix
 		///

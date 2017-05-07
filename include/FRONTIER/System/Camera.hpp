@@ -35,6 +35,8 @@ namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to handle a 3D or Orthographic Camera
+	/// 
+	/// @ingroup System
 	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Camera
@@ -315,7 +317,7 @@ namespace fm
 		///
 		/// value gets clamed into [-180,180]
 		/// 
-		/// @param pitch The new yaw
+		/// @param yaw The new yaw
 		///
 		/// @return Reference to itself
 		///

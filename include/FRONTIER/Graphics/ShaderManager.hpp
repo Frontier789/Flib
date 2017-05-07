@@ -41,6 +41,8 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to manage OpenGL shaders with a camera, matrix stacks and named attributes
 	///
+	/// @ingroup Graphics
+	///
 	/////////////////////////////////////////////////////////////
     class ShaderManager : public fg::Shader
     {
@@ -91,7 +93,7 @@ namespace fg
 		///
 		/// @param manager The shadermanager to move
 		/// 
-		/// @param Reference to itself
+		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		ShaderManager &operator=(ShaderManager &&manager);
@@ -101,7 +103,7 @@ namespace fg
 		///
 		/// @param manager The shadermanager to swap with
 		/// 
-		/// @param Reference to itself
+		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		ShaderManager &swap(ShaderManager &manager);
@@ -144,6 +146,7 @@ namespace fg
 		/// @param texUVMat The name of the texture position matrix
 		/// @param plyPos The name of the player position uniform
 		/// @param plyView The name of the player view direction uniform
+		/// @param time The name of the time uniform
 		/// 
 		/// @return Reference to itself
 		/// 

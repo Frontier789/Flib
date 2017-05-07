@@ -380,7 +380,14 @@ namespace fg
 			if (draw.componentType)
 				res += glCheck(glDrawElements(draw.primitive,draw.indexCount,draw.componentType,nullptr));
 			else
-				res += glCheck(glDrawArrays(draw.primitive,draw.drawBeg,draw.drawLen));
+			{
+				fm::Size len = draw.drawLen;
+				if (len == 0 && data.hasAttr(fg::Assoc::Position))
+					len = data[fg::Assoc::Position].count;
+					
+				if (len)
+					glDrawArrays(draw.primitive,draw.drawBeg,len);
+			}
 		}
 		
 		if (indexCount == 0 && data.hasAttr(fg::Assoc::Position))

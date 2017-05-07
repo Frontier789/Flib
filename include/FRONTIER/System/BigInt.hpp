@@ -25,6 +25,11 @@ namespace fm
 	template<class> class BigUint;
 
 	//////////////////////////////////////////////////////////////////////////
+	/// @brief Class for storing big signed integers with linear operation time in bytesize
+	/// 
+	/// @ingroup System
+	///
+	//////////////////////////////////////////////////////////////////////////
 	template<class BaseUint>
 	class BigInt
 	{

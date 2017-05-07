@@ -26,6 +26,8 @@ namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	/// @brief A class that functions as a stop-watch
+	/// 
+	/// @ingroup System
 	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Clock
@@ -146,7 +148,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the elapsed time
 		/// 
-		/// @param Time The elapsed time to use
+		/// @param time The elapsed time to use
 		/// 
 		/// @return Reference to itself
 		/// 

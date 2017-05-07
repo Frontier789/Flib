@@ -17,7 +17,6 @@
 #ifndef FRONTIER_EVENT_INL_INCLUDED
 #define FRONTIER_EVENT_INL_INCLUDED
 #include <FRONTIER/System/Vector2.hpp>
-#define FRONTIER_EVENT
 
 namespace fw
 {

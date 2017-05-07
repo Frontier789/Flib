@@ -34,6 +34,8 @@ namespace fg
 	/// @brief Class used to reference a not necesserely existing attribute in a drawdata
 	/// 
 	/// If the attribute does not exist it is created upon assignment
+	///
+	/// @ingroup Graphics
 	/// 
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API AttributeRef

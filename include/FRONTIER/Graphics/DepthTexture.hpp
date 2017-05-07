@@ -30,6 +30,7 @@ namespace fg
 	///
 	/// @ingroup Graphics
 	/// @see fg::Texture
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API DepthTexture : public Texture
 	{

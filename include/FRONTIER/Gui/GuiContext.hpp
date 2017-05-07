@@ -17,6 +17,8 @@
 #ifndef FRONTIER_GUICONTEXT_HPP_INCLUDED
 #define FRONTIER_GUICONTEXT_HPP_INCLUDED
 
+#include <FRONTIER/Graphics/FramedSprite.hpp>
+#include <FRONTIER/Graphics/TextureAtlas.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Result.hpp>
@@ -59,12 +61,13 @@ namespace fgui
 	class GuiContext
 	{
 	protected:
-		std::map<fm::String,fg::Font> m_fonts; ///< The loaded fonts
-		fg::ShaderManager *m_shader; ///< The shader used when drawing
+		fg::TextureAtlas<fm::String>  m_texAtlas; ///< The texture atlas for sprites
+		std::map<fm::String,fg::Font> m_fonts;    ///< The loaded fonts
+		fg::ShaderManager *m_shader;              ///< The shader used when drawing
 		GuiLayout *m_layout; ///< The main layout of the context
-		fm::Clock m_fpsClk;  ///< Clock for measuring fps
-		fm::vec2s m_size; ///< The size of the context
-		fm::Time m_spf;   ///< Second per frame (0 on inf fps)
+		fm::Clock  m_fpsClk; ///< Clock for measuring fps
+		fm::vec2s  m_size;   ///< The size of the context
+		fm::Time   m_spf;    ///< Second per frame (0 on inf fps)
 		
 		void setupShader(); ///< Initialises the shader
 		
@@ -96,6 +99,28 @@ namespace fgui
 		///
 		/////////////////////////////////////////////////////////////
 		virtual ~GuiContext();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Store a sprite in the context
+		/// 
+		/// @param name The name of the sprite
+		/// @param spriteImage The image of the sprite
+		/// @param frameSize The frame size
+		/// 
+		/// @return The sprite
+		/// 
+		/////////////////////////////////////////////////////////////
+		fg::FramedSprite setSprite(const fm::String &name,const fg::Image &spriteImage,const fm::vec2s &frameSize = fm::vec2s());
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Retrieve a named sprite from the context
+		/// 
+		/// @param name The name of the sprite
+		/// 
+		/// @return The sprite
+		/// 
+		/////////////////////////////////////////////////////////////
+		fg::FramedSprite getSprite(const fm::String &name) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Load a font based on its name
@@ -174,6 +199,16 @@ namespace fgui
 		const fg::ShaderManager &getShader() const;
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Draw a drawdata
+		/// 
+		/// @param data The drawdata to use
+		/// 
+		/// @return The result of the operation
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Result draw(const fg::DrawData &data);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Draw an indexset of a drawdata
 		/// 
 		/// @param data The drawdata to use
@@ -182,7 +217,7 @@ namespace fgui
 		/// @return The result of the operation
 		/// 
 		/////////////////////////////////////////////////////////////
-		fm::Result draw(const fg::DrawData &data,fm::Size indexSet = 0);
+		fm::Result draw(const fg::DrawData &data,fm::Size indexSet);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Draw a drawable object
@@ -213,7 +248,7 @@ namespace fgui
 		///
 		/// @param cont The context to swap with
 		/// 
-		/// @param Reference to itself
+		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		GuiContext &swap(GuiContext &cont);
@@ -223,7 +258,7 @@ namespace fgui
 		///
 		/// @param cont The context to move
 		/// 
-		/// @param Reference to itself
+		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		GuiContext &operator=(GuiContext &&cont);

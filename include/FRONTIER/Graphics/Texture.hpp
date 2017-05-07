@@ -47,8 +47,9 @@ namespace fg
 	class Color;
 	
 	/////////////////////////////////////////////////////////////
+	/// @brief Class used to handle OpenGL 2D textures
 	///
-	/// 	@brief Class used to handle OpenGL 2D textures
+	/// @ingroup Graphics
 	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Texture : public GlObject

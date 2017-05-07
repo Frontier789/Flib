@@ -26,6 +26,8 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to encode the result of an operation
 	///
+	/// @ingroup System
+	///
 	/////////////////////////////////////////////////////////////
 	class Result
 	{
@@ -105,7 +107,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Check the error level
 		/// 
-		/// @param errorType The error level to check against
+		/// @param errorLevel The error level to check against
 		/// 
 		/// @return True iff the error level of the result equals to @a errorType
 		///
@@ -125,7 +127,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Check the error level
 		/// 
-		/// @param errorType The error level to check against
+		/// @param errorLevel The error level to check against
 		/// 
 		/// @return False iff the error level of the result equals to @a errorType
 		///

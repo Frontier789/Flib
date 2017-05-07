@@ -10,7 +10,8 @@ int main()
 	cout << "instructions: use Left,Up,Right and W,C,N also you can size the red rectangle with the mouse" << endl;
 	GuiWindow win(vec2(640,480),"gui");
 	
-	GuiText t(u8"ár\t     víztűrő tükör\nfúrógép",vec2(340,140),win);
+	GuiText t(win,u8"ár\t     víztűrő tükör\nfúrógép");
+	t.setSize(vec2(340,140));
 	t.setPosition(win.getSize()/2 - t.getSize()/2);
 	t.setWrap(fgui::TextWrapOff);
 	t.setAlign(fgui::TextAlignCenter);

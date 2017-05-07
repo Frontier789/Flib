@@ -48,6 +48,8 @@ namespace fg
 	//////////////////////////////////
 	/// @brief Reference counted font class that implements <a href="http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02#Creating_a_texture_atlas">Font atlas</a> technique
 	///
+	/// @ingroup Graphics
+	///
 	//////////////////////////////////
 	class FRONTIER_API Font
 	{
@@ -171,7 +173,7 @@ namespace fg
 		///
 		/// @param fileContent A pointer to the beggining of the file in memory
 		/// @param fileSizeInBytes The number of bytes in the loaded file
-		/// @param size The initial size
+		/// @param characterSize The initial size
 		///
 		/// @return The error-state of the function
 		///

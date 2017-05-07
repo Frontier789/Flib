@@ -104,9 +104,10 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	bool GuiLayout::onEvent(fw::Event &ev)
 	{
-		C(getChildCount())
+		fm::Size childCount = getChildCount();
+		C(childCount)
 		{
-			GuiElement *element = getChildElement(i);
+			GuiElement *element = getChildElement(childCount - 1 - i);
 			if (element)
 				if (element->handleEvent(ev))
 					return true;
@@ -191,6 +192,19 @@ namespace fgui
 			GuiElement *element = getChildElement(i);
 			if (element)
 				element->setOwnerContext(context);
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiLayout::traverseHierarchy(fm::Delegate<void,GuiElement &> func)
+	{
+		GuiElement::traverseHierarchy(func);
+		
+		C(getChildCount())
+		{
+			GuiElement *element = getChildElement(i);
+			if (element)
+				element->traverseHierarchy(func);
 		}
 	}
 }

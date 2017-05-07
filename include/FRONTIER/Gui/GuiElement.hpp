@@ -218,6 +218,14 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual GuiElement *findById(const fm::String &id);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Call a function for every gui element in the hierarchy
+		/// 
+		/// @param func The func to call
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void traverseHierarchy(fm::Delegate<void,GuiElement &> func);
 	};
 }
 

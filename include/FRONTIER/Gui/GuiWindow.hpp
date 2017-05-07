@@ -105,7 +105,7 @@ namespace fgui
 		///
 		/// @param win The window to swap with
 		/// 
-		/// @param Reference to itself
+		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		GuiWindow &swap(GuiWindow &win);
@@ -115,7 +115,7 @@ namespace fgui
 		///
 		/// @param win The window to move
 		/// 
-		/// @param Reference to itself
+		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		GuiWindow &operator=(GuiWindow &&win);

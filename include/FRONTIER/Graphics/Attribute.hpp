@@ -32,6 +32,8 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to store a vertex property of a drawing call such as position, color or normal
 	///
+	/// @ingroup Graphics
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Attribute
 	{

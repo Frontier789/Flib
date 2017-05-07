@@ -34,6 +34,8 @@ namespace fg
 
     /////////////////////////////////////////////////////////////
 	/// @brief FramedSprite class with a frame
+	///
+	/// @ingroup Graphics
 	/// 
     /////////////////////////////////////////////////////////////
     class FRONTIER_API FramedSprite : public fg::Drawable
@@ -135,7 +137,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		FramedSprite &setPos(const fm::vec2 &pos);
+		FramedSprite &setPosition(const fm::vec2 &pos);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the onscreen position of the sprite
@@ -143,7 +145,7 @@ namespace fg
 		/// @return The onscreen position
 		/// 
 		/////////////////////////////////////////////////////////////
-		const fm::vec2 &getPos() const;
+		const fm::vec2 &getPosition() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the onscreen size of the sprite
@@ -231,7 +233,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Draw the sprite
 		/// 
-		/// @param The shader to use
+		/// @param shader The shader to use
 		/// 
 		/////////////////////////////////////////////////////////////
 		void onDraw(ShaderManager &shader);

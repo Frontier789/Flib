@@ -110,14 +110,14 @@ namespace fg
     }
 
     /////////////////////////////////////////////////////////////
-    Sprite &Sprite::setPos(const fm::vec2 &pos)
+    Sprite &Sprite::setPosition(const fm::vec2 &pos)
     {
         init();
         m_pos = pos;
         return *this;
     }
 
-    const fm::vec2 &Sprite::getPos() const
+    const fm::vec2 &Sprite::getPosition() const
     {
         return m_pos;
     }

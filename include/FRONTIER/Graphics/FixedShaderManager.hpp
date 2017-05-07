@@ -26,6 +26,8 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	/// @brief Shader manager that utilises the fixed pipline rendering of OpenGL (to be used with version prior to 3.0)
 	///
+	/// @ingroup Graphics
+	///
 	/////////////////////////////////////////////////////////////
     class FixedShaderManager : public fg::ShaderManager
     {
@@ -56,6 +58,7 @@ namespace fg
 		/// @param texUVMat The name of the texture position matrix
 		/// @param plyPos The name of the player position uniform
 		/// @param plyView The name of the player view direction uniform
+		/// @param time The name of the time uniform
 		/// 
 		/// @return Reference to itself
 		/// 

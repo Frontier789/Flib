@@ -14,33 +14,24 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_GUI_MODULE_HPP_INCLUDED
-#define FRONTIER_GUI_MODULE_HPP_INCLUDED
+#ifndef FRONTIER_CALLBACKUSER_INL_INCLUDED
+#define FRONTIER_CALLBACKUSER_INL_INCLUDED
 
-////////////////////////////////////////////////////////////
-/// @defgroup Gui Gui module
-///
-////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////
-/// @brief Namespace used to hold gui classes
-///
-/////////////////////////////////////////////////////////////
 namespace fgui
 {
-
+	/////////////////////////////////////////////////////////////
+	template<class ObjectType,class... ArgTypes>
+	inline void CallbackUser<ObjectType,ArgTypes...>::setCallback(fm::Delegate<void,ObjectType &,ArgTypes...> callback)
+	{
+		m_callback = callback;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ObjectType,class... ArgTypes>
+	inline void CallbackUser<ObjectType,ArgTypes...>::callCallback(ArgTypes... arguments)
+	{
+		m_callback(*((ObjectType*)this),arguments...);
+	}
 }
 
-#include <FRONTIER/Gui/GuiText.hpp>
-#include <FRONTIER/Gui/GuiWindow.hpp>
-#include <FRONTIER/Gui/GuiLayout.hpp>
-#include <FRONTIER/Gui/GuiButton.hpp>
-#include <FRONTIER/Gui/GuiElement.hpp>
-#include <FRONTIER/Gui/PushButton.hpp>
-#include <FRONTIER/Gui/GuiCallback.hpp>
-#include <FRONTIER/Gui/CallbackUser.hpp>
-#include <FRONTIER/Gui/ClickListener.hpp>
-#include <FRONTIER/Gui/MouseMoveListener.hpp>
-
-#endif // FRONTIER_SYSTEM_MODULE_HPP_INCLUDED
+#endif // FRONTIER_CALLBACKUSER_INL_INCLUDED

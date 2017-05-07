@@ -23,8 +23,9 @@
 namespace fg
 {
 	//////////////////////////////////
+	/// @brief Base class for opengl objects that have id such as texture, shader etc
 	///
-	/// 	@brief Base class for opengl objects that have id such as texture, shader etc
+	/// @ingroup Graphics
 	///
 	//////////////////////////////////
     class FRONTIER_API GlObject

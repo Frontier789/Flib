@@ -14,45 +14,52 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_NONCOPYABLE_HPP_INCLUDED
-#define FRONTIER_NONCOPYABLE_HPP_INCLUDED
-#define FRONTIER_NONCOPYABLE
-namespace fm
+#ifndef FRONTIER_CALLBACKUSER_HPP_INCLUDED
+#define FRONTIER_CALLBACKUSER_HPP_INCLUDED
+
+#include <FRONTIER/System/Delegate.hpp>
+
+#define FRONTIER_CALLBACKUSER
+
+namespace fw
+{
+	class Event;
+}
+
+namespace fgui
 {
 	/////////////////////////////////////////////////////////////
-	/// @brief Virtual base class for types that cannot be copied
-	/// 
-	/// @ingroup System
-	/// 
+	/// @brief Base class for classes that feature a callback
+	///
+	/// @ingroup Gui
+	///
 	/////////////////////////////////////////////////////////////
-    class NonCopyable
-    {
-    public:
-    
+	template<class ObjectType,class... ArgTypes>
+	class CallbackUser
+	{
+		fm::Delegate<void,ObjectType &,ArgTypes...> m_callback; ///< The callback
+	public:
+		
 		/////////////////////////////////////////////////////////////
-		/// @brief Default constructor
+		/// @brief Set the callback
+		/// 
+		/// @param callback The callback
 		///
 		/////////////////////////////////////////////////////////////
-        inline NonCopyable() {}
-        
+		void setCallback(fm::Delegate<void,ObjectType &,ArgTypes...> callback);
+		
 		/////////////////////////////////////////////////////////////
-		/// @brief Virtual destructor
+		/// @brief Call the callback
+		/// 
+		/// @param arguments The arguments
 		///
 		/////////////////////////////////////////////////////////////
-        inline virtual ~NonCopyable() {}
-    private:
-        
-		/////////////////////////////////////////////////////////////
-		/// @brief Private deleted copy constructor
-		/// 
-		/////////////////////////////////////////////////////////////
-		NonCopyable(const NonCopyable &) = delete;
-        
-		/////////////////////////////////////////////////////////////
-		/// @brief Private deleted overload of the assignment operator
-		/// 
-		/////////////////////////////////////////////////////////////
-        NonCopyable &operator=(const NonCopyable &) = delete;
-    };
+		void callCallback(ArgTypes... arguments);
+	};
 }
-#endif //FRONTIER_NONCOPYABLE_HPP_INCLUDED
+
+#endif // FRONTIER_CALLBACKUSER_HPP_INCLUDED
+
+#ifndef FRONTIER_DONT_INCLUDE_INL
+	#include <FRONTIER/Gui/CallbackUser.inl>
+#endif

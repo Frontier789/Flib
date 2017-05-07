@@ -136,7 +136,7 @@ namespace fg
 		
 		return glCheck((void)0);
     }
-
+    
 	////////////////////////////////////////////////////////////
     fm::Result FixedShaderManager::draw(const fg::DrawData &data,fm::Size indexBeg,fm::Size indexCount)
     {
@@ -153,7 +153,14 @@ namespace fg
 			if (draw.componentType)
 				glDrawElements(draw.primitive,draw.indexCount,draw.componentType,draw.buf ? draw.buf->getDataPtr() : nullptr);
 			else
-				glDrawArrays(draw.primitive,draw.drawBeg,draw.drawLen);
+			{
+				fm::Size len = draw.drawLen;
+				if (len == 0 && data.hasAttr(fg::Assoc::Position))
+					len = data[fg::Assoc::Position].count;
+					
+				if (len)
+					glDrawArrays(draw.primitive,draw.drawBeg,len);
+			}
         }
 		
 		if (indexCount == 0 && data.hasAttr(fg::Assoc::Position))

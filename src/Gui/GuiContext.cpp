@@ -25,6 +25,71 @@
 namespace fgui
 {
 	/////////////////////////////////////////////////////////////
+	namespace priv
+	{
+		using namespace fg;
+		using namespace fm;
+		Image getUglyButton(vec2 size,Color sarok,Color oldal,Color belsarok,Color beloldal,Color interpBeg,Color interpEnd)
+		{
+			Image img(size);
+			
+			img.forEach([&](vec2s p,Color &c,Image &img) {
+				vec2s s = img.getSize();
+				
+				if (p.x == 0 || p.y == 0 || p.x+1 == s.w || p.y+1 == s.h)
+				{
+					if ((p.x == 0) + (p.y == 0) + (p.x+1 == s.w) + (p.y+1 == s.h) >= 2)
+					{
+						c = sarok;
+					}
+					else 
+						c = oldal;
+				}
+				else if (p.x == 1 || p.y == 1 || p.x+2 == s.w || p.y+2 == s.h)
+				{
+					if ((p.x == 1) + (p.y == 1) + (p.x+2 == s.w) + (p.y+2 == s.h) >= 2)
+					{
+						c = belsarok;
+					}
+					else 
+						c = beloldal;
+				}
+				else
+				{
+					float yval = float(p.y) / s.h;
+					yval = std::sqrt(1 - yval);
+					
+					c = interpEnd * yval + interpBeg * (1 - yval);				
+				}
+			});
+			
+			return img;
+		}
+
+		Image getDefButtonImgNorm()
+		{
+			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(32,32,32,150),Color(32,32,32),Color(230,100),Color(8,8,8,64),Color(218,218,218,64));
+		}
+
+		Image getDefButtonImgHover()
+		{
+			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(32,32,32,150),Color(32,32,32),Color(230,100),Color(68,68,68,44),Color(218,218,218,44));
+		}
+
+		Image getDefButtonImgPress()
+		{
+			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(32,32,32,150),Color(32,32,32),Color(230,100),Color(70,70,78,104),Color(238,238,238,104));
+		}
+
+		void loadDefButtonImg(GuiContext &cont)
+		{
+			cont.setSprite("Button_Bckg_Norm" ,getDefButtonImgNorm (),vec2(4,4));
+			cont.setSprite("Button_Bckg_Hover",getDefButtonImgHover(),vec2(4,4));
+			cont.setSprite("Button_Bckg_Press",getDefButtonImgPress(),vec2(4,4));
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
 	void GuiContext::setupShader()
 	{
 		if (!m_shader) return;
@@ -33,11 +98,9 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiContext::GuiContext() : m_shader(new fg::FixedShaderManager),
-							   m_layout(new GuiLayout(*this))
+	GuiContext::GuiContext() : GuiContext(fm::vec2s())
 	{
-		setupShader();
-		setMaxFps(60);
+		
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -47,6 +110,7 @@ namespace fgui
 	{
 		setupShader();
 		setMaxFps(60);
+		priv::loadDefButtonImg(*this);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -90,6 +154,12 @@ namespace fgui
 	const fg::ShaderManager &GuiContext::getShader() const
 	{
 		return ((GuiContext*)this)->getShader();
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::Result GuiContext::draw(const fg::DrawData &data)
+	{
+		return getShader().draw(data);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -268,6 +338,25 @@ namespace fgui
 		if (fps) m_spf = fm::seconds(1.0 / fps);
 		
 		else m_spf = fm::Time::Zero;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fg::FramedSprite GuiContext::setSprite(const fm::String &name,const fg::Image &spriteImage,const fm::vec2s &frameSize)
+	{
+		fg::Glyph g = m_texAtlas.upload(spriteImage,name,frameSize);
+		
+		return fg::FramedSprite(m_texAtlas.getTexture(),fm::rect2s(g.pos,g.size),frameSize);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fg::FramedSprite GuiContext::getSprite(const fm::String &name) const
+	{
+		fg::Glyph g = m_texAtlas.fetch(name);
+		
+		if (!g.size.area())
+			return fg::FramedSprite();
+			
+		return fg::FramedSprite(m_texAtlas.getTexture(),fm::rect2s(g.pos,g.size),g.leftdown);
 	}
 }
 

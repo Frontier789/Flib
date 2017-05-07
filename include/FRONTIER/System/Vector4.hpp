@@ -29,6 +29,8 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	/// @brief Templated class for managing 4D <a href="http://en.wikipedia.org/wiki/Euclidean_vector">euclidean vectors</a>
 	///
+	/// @ingroup System
+	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	class vector4

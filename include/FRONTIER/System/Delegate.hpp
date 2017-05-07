@@ -24,6 +24,8 @@ namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	/// @brief Delegate class used to encapsulate a function call
+	/// 
+	/// @ingroup System
 	///
 	/////////////////////////////////////////////////////////////
 	template<class R,class... Args>
@@ -85,7 +87,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct delegate from a lambda
 		/// 
-		/// @param func The function to assign
+		/// @param lambda The function to assign
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class LambdaT>
@@ -94,7 +96,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct delegate from a function
 		/// 
-		/// @param func The function to assign
+		/// @param funcptr The function to assign
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class AltR,class... CallArgs>
@@ -128,7 +130,7 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class ObjectType,class AltR,class... CallArgs>
-		Delegate(AltR (ObjectType::*memFunc)(CallArgs...),ObjectType *object);
+		Delegate(AltR (ObjectType::*memFunc)(CallArgs...),ObjectType *pointer);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct delegate from a function
@@ -138,7 +140,7 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class ObjectType,class AltR,class... CallArgs>
-		Delegate(AltR (ObjectType::*memFunc)(CallArgs...),const ObjectType *object) = delete;
+		Delegate(AltR (ObjectType::*memFunc)(CallArgs...),const ObjectType *pointer) = delete;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct delegate from a function
@@ -148,7 +150,7 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class ObjectType,class AltR,class... CallArgs>
-		Delegate(AltR (ObjectType::*memFunc)(CallArgs...) const,const ObjectType *object);
+		Delegate(AltR (ObjectType::*memFunc)(CallArgs...) const,const ObjectType *pointer);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Call the assigned function

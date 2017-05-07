@@ -35,7 +35,7 @@ int main()
 	{
 		Glyph g = font.getGlyph(c);
 		sprites.push_back(Sprite(g));
-		sprites.back().setPos(vec2(w,0) + g.leftdown);
+		sprites.back().setPosition(vec2(w,0) + g.leftdown);
 		w += sprites.back().getSize().w;
 	}
 	
@@ -43,8 +43,8 @@ int main()
 	
 	for (auto &s : sprites)
 	{
-		basePts.push_back(win.getSize()/2 - vec2(w/2,0) + s.getPos());
-		s.setPos(basePts.back());
+		basePts.push_back(win.getSize()/2 - vec2(w/2,0) + s.getPosition());
+		s.setPosition(basePts.back());
 	}
 	
 	Clock waveClk;
@@ -79,7 +79,7 @@ int main()
 					{
 						Glyph g = font.getGlyph(c);
 						sprites.push_back(Sprite(g));
-						sprites.back().setPos(vec2(w,0) + g.leftdown);
+						sprites.back().setPosition(vec2(w,0) + g.leftdown);
 						w += sprites.back().getSize().w;
 					}
 					
@@ -87,8 +87,8 @@ int main()
 					
 					for (auto &s : sprites)
 					{
-						basePts.push_back(win.getSize()/2 - vec2(w/2,0) + s.getPos());
-						s.setPos(basePts.back());
+						basePts.push_back(win.getSize()/2 - vec2(w/2,0) + s.getPosition());
+						s.setPosition(basePts.back());
 					}
 				}
 				
@@ -103,7 +103,7 @@ int main()
 					{
 						Glyph g = font.getGlyph(c);
 						sprites.push_back(Sprite(g));
-						sprites.back().setPos(vec2(w,0) + g.leftdown);
+						sprites.back().setPosition(vec2(w,0) + g.leftdown);
 						w += sprites.back().getSize().w;
 					}
 					
@@ -111,8 +111,8 @@ int main()
 					
 					for (auto &s : sprites)
 					{
-						basePts.push_back(win.getSize()/2 - vec2(w/2,0) + s.getPos());
-						s.setPos(basePts.back());
+						basePts.push_back(win.getSize()/2 - vec2(w/2,0) + s.getPosition());
+						s.setPosition(basePts.back());
 					}
 				}
 			}
@@ -121,7 +121,7 @@ int main()
 		C(sprites.size())
 		{
 			sprites[i].onUpdate();
-			sprites[i].setPos(basePts[i] + getWaveH(i,sprites.size()));
+			sprites[i].setPosition(basePts[i] + getWaveH(i,sprites.size()));
 		}
 		
 		win.clear();

@@ -67,6 +67,8 @@ namespace fg
 	/// 	0  34
 	/// 	0   45
 	///
+	/// @ingroup Graphics
+	///
 	/////////////////////////////////////////////////////////////
 	enum Primitive {
 		Lines         = 1u, ///< render N/2 lines

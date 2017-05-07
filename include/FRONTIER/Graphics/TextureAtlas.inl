@@ -95,14 +95,16 @@ namespace fg
 		};
 	}
 	
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	template<class MT,class Cp>
 	TextureAtlas<MT,Cp>::TextureAtlas(const TextureAtlas &copy) : m_glyphTable(copy.m_glyphTable),
 																  m_impl(new priv::TextureAtlasImpl(*(copy.m_impl))),
 																  m_comp(copy.m_comp)
 	{
-		
+		FRONTIER_HEAVYCOPY_NOTE;
 	}
+#endif
 	
 	/////////////////////////////////////////////////////////////
 	template<class MT,class Cp>
@@ -237,10 +239,13 @@ namespace fg
 		return m_impl->getTexture();
 	}
 
+#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	template<class MT,class Cp>
 	inline TextureAtlas<MT,Cp> &TextureAtlas<MT,Cp>::operator=(const TextureAtlas &atlas)
 	{
+		FRONTIER_HEAVYCOPY_NOTE;
+		
 		delete m_impl;
 		
 		m_glyphTable = atlas.m_glyphTable;
@@ -249,6 +254,7 @@ namespace fg
 		
 		return *this;
 	}
+#endif
 
 	/////////////////////////////////////////////////////////////
 	template<class MT,class Cp>

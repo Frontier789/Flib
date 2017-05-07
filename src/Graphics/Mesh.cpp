@@ -488,4 +488,28 @@ namespace fg
 		
 		return *this;
     }
+    
+	/////////////////////////////////////////////////////////////
+	Mesh Mesh::getCircle(float radius,fm::Size N,const fm::Delegate<float,float &> &rfunc)
+	{
+		Mesh ret;
+		ret.pts.resize(N);
+		ret.uvs.resize(ret.pts.size());
+		ret.faces.push_back(Mesh::Face(fg::TriangleFan,N));
+		
+		C(N)
+		{
+			float v = float(i) / N;
+			float r = (rfunc ? rfunc(v) : 1.0);
+			
+			fm::vec2 p = fm::pol2(radius * r,fm::deg(360.0 * v));
+			
+			ret.pts[i] = p;
+			ret.uvs[i] = p/2 + fm::vec2(.5,.5);
+			
+			ret.faces.back().indices[i] = i;
+		}
+        
+		return ret;
+	}
 }

@@ -127,14 +127,14 @@ namespace fg
     }
 
     /////////////////////////////////////////////////////////////
-    FramedSprite &FramedSprite::setPos(const fm::vec2 &pos)
+    FramedSprite &FramedSprite::setPosition(const fm::vec2 &pos)
     {
         m_pos = pos;
         return *this;
     }
 
     /////////////////////////////////////////////////////////////
-    const fm::vec2 &FramedSprite::getPos() const
+    const fm::vec2 &FramedSprite::getPosition() const
     {
         return m_pos;
     }

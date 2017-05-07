@@ -3,135 +3,185 @@
 
 using namespace std;
 
-#include "defButtonImg.hpp"
+#include "ColorPicker.hpp"
 
-namespace fgui
+/////////////////////////////////////////////////////////////
+/// @brief Listener base class for scrolling
+///
+/////////////////////////////////////////////////////////////
+class ScrollListener : public MouseMoveListener
 {
-	class PushButton : public GuiElement, public ClickListener
-	{
-		fm::Delegate<void,PushButton &> m_callback;
-		FramedSprite m_sprite;
-		GuiText m_text;
-		
-	public:
-		/////////////////////////////////////////////////////////////
-		PushButton(GuiContext &cont);
-		
-		/////////////////////////////////////////////////////////////
-		PushButton(GuiContext &cont,const fm::String &text,const FramedSprite &spr);
-		
-		/////////////////////////////////////////////////////////////
-		virtual void onDraw(fg::ShaderManager &shader) override;
-		
-		/////////////////////////////////////////////////////////////
-		virtual void setSize(fm::vec2s size) override;
-		
-		/////////////////////////////////////////////////////////////
-		virtual void setPosition(fm::vec2i pos) override;
-		
-		/////////////////////////////////////////////////////////////
-		GuiText &getGuiText();
-		
-		/////////////////////////////////////////////////////////////
-		const GuiText &getGuiText() const;
-		
-		/////////////////////////////////////////////////////////////
-		void setCallback(fm::Delegate<void,PushButton &> callback);
-		
-		/////////////////////////////////////////////////////////////
-		virtual void onPress(fw::Mouse::Button button,fm::vec2 p) override;
-	};
+public:
+	/////////////////////////////////////////////////////////////
+	/// @brief Default constructor
+	/// 
+	/////////////////////////////////////////////////////////////
+	ScrollListener();
 	
 	/////////////////////////////////////////////////////////////
-	PushButton::PushButton(GuiContext &cont) : GuiElement(cont),
-											   m_text(cont)
-	{
+	/// @brief Called when the element is scrolled
+	/// 
+	/// @param amount The amount the element is scrolled
+	/// 
+	/////////////////////////////////////////////////////////////
+	virtual void onScroll(float amount);
+};
+
+/////////////////////////////////////////////////////////////
+ScrollListener::ScrollListener()
+{
+	addEventHandler([&](fw::Event &ev) {
 		
-	}
-	
-	/////////////////////////////////////////////////////////////
-	PushButton::PushButton(GuiContext &cont,const fm::String &text,const FramedSprite &spr) : GuiElement(cont),
-																							  m_sprite(spr),
-																							  m_text(cont,text)
-	{
-		setSize(m_text.getSize());
-	}
-	
-	/////////////////////////////////////////////////////////////
-	void PushButton::onDraw(fg::ShaderManager &shader)
-	{
-		m_sprite.onDraw(shader);
-		
-		m_text.onDraw(shader);
-	}
-		
-	/////////////////////////////////////////////////////////////
-	void PushButton::setSize(fm::vec2s size)
-	{ 
-		m_sprite.setSize(size + m_sprite.getFrameSize()*2);
-		
-		m_text.setPosition(getPosition() + m_sprite.getSize() / 2 - m_text.getSize() / 2);
-		
-		GuiElement::setSize(m_sprite.getSize());
-	}
-	
-	/////////////////////////////////////////////////////////////
-	void PushButton::setPosition(fm::vec2i pos)
-	{
-		m_sprite.setPos(pos);
-		
-		m_text.setPosition(pos + getSize() / 2 - m_text.getSize() / 2);
-		
-		GuiElement::setPosition(pos);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	GuiText &PushButton::getGuiText()
-	{
-		return m_text;
-	}
-	
-	/////////////////////////////////////////////////////////////
-	const GuiText &PushButton::getGuiText() const
-	{
-		return m_text;
-	}
-	
-	/////////////////////////////////////////////////////////////
-	void PushButton::setCallback(fm::Delegate<void,PushButton &> callback)
-	{
-		m_callback = callback;
-	}
-	
-	/////////////////////////////////////////////////////////////
-	void PushButton::onPress(fw::Mouse::Button button,fm::vec2)
-	{
-		if (button == fw::Mouse::Left)
+		if (ev.type == fw::Event::MouseWheelMoved)
 		{
-			m_callback(*this);
+			if (mouseInside())
+			{
+				onScroll(ev.wheel.delta);
+			}
 		}
-	}
+	});
+}
+
+/////////////////////////////////////////////////////////////
+void ScrollListener::onScroll(float)
+{
+	
+}
+
+/////////////////////////////////////////////////////////////
+/// @brief Base class for gui classes that can be scrolled
+///
+/////////////////////////////////////////////////////////////
+class GuiScrollBar : public GuiElement, public ScrollListener, public CallbackUser<GuiScrollBar,float>
+{
+	fm::Size m_stateCount; ///< The number of states the scrller can be in (0 for inf)
+	float m_state; ///< The current state in range [0,1]
+	
+public:
+	/////////////////////////////////////////////////////////////
+	/// @brief Default constructor
+	/// 
+	/// @param cont The owner context
+	/// 
+	/////////////////////////////////////////////////////////////
+	GuiScrollBar(GuiContext &cont);
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Called when the element is scrolled
+	/// 
+	/// @param amount The amount the element is scrolled
+	/// 
+	/////////////////////////////////////////////////////////////
+	virtual void onScroll(float amount);
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Set the number of states the scroller can be in
+	/// 
+	/// @param stateCount The number of states (0 for inf)
+	/// 
+	/////////////////////////////////////////////////////////////
+	void setStateCount(fm::Size stateCount);
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Set the current state
+	/// 
+	/// @param state The new current state (will be clamped to [0,1])
+	/// 
+	/////////////////////////////////////////////////////////////
+	void setState(float state);
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Get the number of states the scroller can be in
+	/// 
+	/// @return The number of states (0 for inf)
+	/// 
+	/////////////////////////////////////////////////////////////
+	fm::Size getStateCount();
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Get the current state
+	/// 
+	/// @return The current current state (will be clamped to [0,1])
+	/// 
+	/////////////////////////////////////////////////////////////
+	float getState();
+};
+
+/////////////////////////////////////////////////////////////
+GuiScrollBar::GuiScrollBar(GuiContext &cont) : GuiElement(cont),
+											   m_stateCount(0),
+											   m_state(0)
+{
+	
+}
+
+/////////////////////////////////////////////////////////////
+void GuiScrollBar::onScroll(float amount)
+{
+	m_state = m_state + (m_stateCount ? amount / m_stateCount : amount);
+	callCallback(m_state);
+}
+
+/////////////////////////////////////////////////////////////
+void GuiScrollBar::setStateCount(fm::Size stateCount)
+{
+	m_stateCount = stateCount;
+}
+
+/////////////////////////////////////////////////////////////
+void GuiScrollBar::setState(float state)
+{
+	m_state = state;
+}
+
+/////////////////////////////////////////////////////////////
+fm::Size GuiScrollBar::getStateCount()
+{
+	return m_stateCount;
+}
+
+/////////////////////////////////////////////////////////////
+float GuiScrollBar::getState()
+{
+	return m_state;
 }
 
 int main()
 {
 	GuiWindow win(vec2(640,480),"gui");
 	
-	Texture tex = getDefButtonImg();
-	tex.setSmooth(true);
-	
-	FramedSprite spr;
-	spr.setFrameSize(vec2(4,4));
-	spr.setTexture(tex);
-	
-	fgui::PushButton *pb = new fgui::PushButton(win,"push me",spr);
+	PushButton *pb = new PushButton(win,"push me");
 	pb->setPosition(vec2(100,100));
 	
-	pb->setCallback([&](){cout << "pushed" << endl;});
+	int push_count = 0;
+	
+	pb->setCallback([&](GuiButton &b) {
+		b.setText("yayy pushed " + fm::toString(++push_count) + " times");
+		b.setSize(b.getGuiText().getSize() + vec2(10,10));
+		win.setClearColor(vec4::White);
+	});
+	
+	pb->setSize(vec2(100,50));
+	
+	
+	ColorPicker *cp = new ColorPicker(win);
+	cp->setPosition(vec2(150,150));
+	cp->setCallback([&](ColorPicker &cp,Color c) {
+		win.setClearColor(c.rgba()/255.0);
+	});
+	
+	GuiScrollBar *sb = new GuiScrollBar(win);
+	sb->setPosition(vec2(160,160));
+	sb->setSize(vec2(80,80));
+	sb->setCallback([&]() {
+		cout << "scroll" << endl;
+	});
+	
 	
 	win.getMainLayout().addChildElement(pb);
+	win.getMainLayout().addChildElement(sb);
+	win.getMainLayout().addChildElement(cp);
 	
-	spr.setPos(vec2(50,50));
 	
 	bool running = true;
 	while (running)
@@ -142,18 +192,9 @@ int main()
 		{
 			win.handleEvent(ev);
 			if (ev.type == Event::Closed) running = false;
-			
-			if (ev.type == Event::ButtonPressed)
-			{
-				if (ev.mouse.button == Mouse::Left)
-				{
-					spr.setSize(vec2i(vec2(ev.mouse) - vec2(50,50))/2);
-				}
-			}
 		}
 		
 		win.clear();
-		win.draw(spr);
 		win.drawElements();
 		win.swapBuffers();
 			

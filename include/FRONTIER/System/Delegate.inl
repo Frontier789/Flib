@@ -102,7 +102,7 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class R,class... Args>
 	template<class ObjectType,class AltR,class... CallArgs>
-	inline Delegate<R,Args...>::Delegate(AltR (ObjectType::*memFunc)(CallArgs...),ObjectType *object) : m_impl(new ObjMemFuncDelegate<ObjectType,AltR,ArgumentList<CallArgs...>,R,Args...>(memFunc,object))
+	inline Delegate<R,Args...>::Delegate(AltR (ObjectType::*memFunc)(CallArgs...),ObjectType *pointer) : m_impl(new ObjMemFuncDelegate<ObjectType,AltR,ArgumentList<CallArgs...>,R,Args...>(memFunc,pointer))
 	{
 		
 	}
@@ -110,7 +110,7 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class R,class... Args>
 	template<class ObjectType,class AltR,class... CallArgs>
-	inline Delegate<R,Args...>::Delegate(AltR (ObjectType::*memFunc)(CallArgs...) const,const ObjectType *object) : m_impl(new ObjMemCFuncDelegate<ObjectType,AltR,ArgumentList<CallArgs...>,R,Args...>(memFunc,object))
+	inline Delegate<R,Args...>::Delegate(AltR (ObjectType::*memFunc)(CallArgs...) const,const ObjectType *pointer) : m_impl(new ObjMemCFuncDelegate<ObjectType,AltR,ArgumentList<CallArgs...>,R,Args...>(memFunc,pointer))
 	{
 		
 	}

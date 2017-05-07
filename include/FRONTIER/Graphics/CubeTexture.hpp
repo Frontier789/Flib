@@ -37,6 +37,7 @@ namespace fg
 	///
 	/// @ingroup Graphics
 	/// @see fg::Texture
+	///
 	/////////////////////////////////////////////////////////////
 	class CubeTextureFace : public fg::Texture
 	{

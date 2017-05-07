@@ -38,6 +38,7 @@ namespace fgui
 	protected:
 		fm::vec2 m_prevPos; ///< The last position of the mouse inside the gui element
 		bool m_mouseIn; ///< Indicates the mouse being inside the gui element
+		
 	public:
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor

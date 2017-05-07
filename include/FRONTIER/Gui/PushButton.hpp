@@ -14,45 +14,80 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_NONCOPYABLE_HPP_INCLUDED
-#define FRONTIER_NONCOPYABLE_HPP_INCLUDED
-#define FRONTIER_NONCOPYABLE
-namespace fm
+#ifndef FRONTIER_PUSHBUTTON_HPP_INCLUDED
+#define FRONTIER_PUSHBUTTON_HPP_INCLUDED
+
+#include <FRONTIER/Graphics/FramedSprite.hpp>
+#include <FRONTIER/Gui/GuiButton.hpp>
+
+#define FRONTIER_PUSHBUTTON
+
+namespace fgui
 {
 	/////////////////////////////////////////////////////////////
-	/// @brief Virtual base class for types that cannot be copied
-	/// 
-	/// @ingroup System
-	/// 
+	/// @brief Pushable button with a callback and sprite as background
+	///
+	/// @ingroup Gui
+	///
 	/////////////////////////////////////////////////////////////
-    class NonCopyable
-    {
-    public:
-    
+	class PushButton : public GuiButton
+	{
+		fg::FramedSprite *m_activeSprite; ///< The active state's sprite
+		fg::FramedSprite m_spriteHover;   ///< The sprite to display when the button is hovered
+		fg::FramedSprite m_spritePress;   ///< The sprite to display when pressed
+		fg::FramedSprite m_spriteNorm;    ///< The sprite to display by default
+		
+	protected:
+		/////////////////////////////////////////////////////////////
+		/// @brief Apply a state to the button
+		/// 
+		/// @param state The state to apply
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void applyState(InnerState state) override;
+		
+	public:
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
-		///
-		/////////////////////////////////////////////////////////////
-        inline NonCopyable() {}
-        
-		/////////////////////////////////////////////////////////////
-		/// @brief Virtual destructor
-		///
-		/////////////////////////////////////////////////////////////
-        inline virtual ~NonCopyable() {}
-    private:
-        
-		/////////////////////////////////////////////////////////////
-		/// @brief Private deleted copy constructor
+		/// 
+		/// @param cont The owner context
 		/// 
 		/////////////////////////////////////////////////////////////
-		NonCopyable(const NonCopyable &) = delete;
-        
+		PushButton(GuiContext &cont);
+		
 		/////////////////////////////////////////////////////////////
-		/// @brief Private deleted overload of the assignment operator
+		/// @brief Construct the button with given text
+		/// 
+		/// @param cont The owner context
+		/// @param text The text
 		/// 
 		/////////////////////////////////////////////////////////////
-        NonCopyable &operator=(const NonCopyable &) = delete;
-    };
+		PushButton(GuiContext &cont,const fm::String &text);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief draw the button
+		///
+		/// @param shader The shader to use
+		///
+		/////////////////////////////////////////////////////////////
+		virtual void onDraw(fg::ShaderManager &shader) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the size of the button
+		/// 
+		/// @param size The size
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setSize(fm::vec2s size) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the position of the button
+		/// 
+		/// @param pos The position
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setPosition(fm::vec2i pos) override;
+	};
 }
-#endif //FRONTIER_NONCOPYABLE_HPP_INCLUDED
+
+#endif // FRONTIER_PUSHBUTTON_HPP_INCLUDED

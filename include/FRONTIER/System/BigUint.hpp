@@ -25,11 +25,16 @@ namespace fm
 	template<class> class BigInt;
 	
 	//////////////////////////////////////////////////////////////////////////
+	/// @brief Class for storing big unsigned integers with linear operation time in bytesize
+	/// 
+	/// @ingroup System
+	///
+	//////////////////////////////////////////////////////////////////////////
 	template<class BaseUint>
 	class BigUint
 	{
-		BaseUint lo;
-		BaseUint hi;
+		BaseUint lo; ///< The low part of the number
+		BaseUint hi; ///< The high part of the number
 	public:
 		typedef BaseUint BaseType;
 		

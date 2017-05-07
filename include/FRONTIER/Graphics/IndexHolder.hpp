@@ -30,6 +30,8 @@ namespace fg
 	///
 	/// Automatically uses 16 bits if the indices fit in [0,2^16-1] range
 	///
+	/// @ingroup Graphics
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API IndexHolder
 	{

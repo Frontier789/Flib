@@ -25,9 +25,10 @@ namespace fm
 	template<class> class vector3;
 	template<class> class vector2;
 
-
 	/////////////////////////////////////////////////////////////
 	/// @brief Templated class for using 2D <a href="http://en.wikipedia.org/wiki/Euclidean_vector">euclidean vectors</a>
+	///
+	/// @ingroup System
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>

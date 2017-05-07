@@ -19,6 +19,7 @@
 
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Gui/ClickListener.hpp>
+#include <FRONTIER/Gui/CallbackUser.hpp>
 #include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/Gui/GuiElement.hpp>
 #include <FRONTIER/Gui/GuiText.hpp>
@@ -34,11 +35,12 @@ namespace fgui
 {
 	/////////////////////////////////////////////////////////////
 	/// @brief Basic button class capable of displaying a text and having a callback
+	///
+	/// @ingroup Gui
 	/// 
 	/////////////////////////////////////////////////////////////
-	class GuiButton : public virtual GuiElement, public ClickListener
+	class GuiButton : public GuiElement, public ClickListener, public CallbackUser<GuiButton>
 	{
-		fm::Delegate<void,GuiButton &> m_callback; ///< The callback to call on click
 		GuiText m_text; ///< The gui elem for text display on the button
 		
 	protected:
@@ -49,7 +51,7 @@ namespace fgui
 		enum InnerState {
 			Normal, ///< The mouse is not over the button
 			Hover,  ///< The mouse is on the button
-			Pressed ///< The button is pressed
+			Press   ///< The button is pressed
 		};
 		
 		/////////////////////////////////////////////////////////////
@@ -127,14 +129,6 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		void setText(const fm::String &text);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the callback of the button
-		/// 
-		/// @param callback The callback
-		/// 
-		/////////////////////////////////////////////////////////////
-		void setCallback(fm::Delegate<void,GuiButton &> callback);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Called when the mouse enters the gui element

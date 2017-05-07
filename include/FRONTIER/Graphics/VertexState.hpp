@@ -31,6 +31,8 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	/// @brief Stores vertex state data on gpu
 	///
+	/// @ingroup Graphics
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API VertexState : public fg::GlObject, public fm::NonCopyable
 	{

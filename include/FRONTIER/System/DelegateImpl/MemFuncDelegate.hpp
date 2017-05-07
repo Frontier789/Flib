@@ -41,7 +41,8 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the delegate from a nonconst function pointer
 		/// 
-		/// @param callable The nonconst function pointer to be assigned
+		/// @param memFuncPtr The nonconst function pointer to be assigned
+		/// @param object The object to use when called
 		/// 
 		/////////////////////////////////////////////////////////////
 		MemFuncDelegate(FuncType memFuncPtr,ObjectType object = ObjectType());

@@ -88,30 +88,25 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void GuiButton::setCallback(fm::Delegate<void,GuiButton &> callback)
-	{
-		m_callback = callback;
-	}
-	
-	/////////////////////////////////////////////////////////////
 	void GuiButton::onMouseEnter(fm::vec2)
 	{
 		if (!isPressed(fw::Mouse::Left))
 			applyState(Hover);
+		else
+			applyState(Press);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void GuiButton::onMouseLeave(fm::vec2)
 	{
-		if (!isPressed(fw::Mouse::Left))
-			applyState(Normal);
+		applyState(Normal);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void GuiButton::onPress(fw::Mouse::Button button,fm::vec2)
 	{
 		if (button == fw::Mouse::Left)
-			applyState(Pressed);
+			applyState(Press);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -130,6 +125,6 @@ namespace fgui
 	void GuiButton::onClick(fw::Mouse::Button button,fm::vec2)
 	{
 		if (button == fw::Mouse::Left)
-			m_callback(*this);
+			callCallback();
 	}
 }

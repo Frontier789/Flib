@@ -28,6 +28,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	/// @brief Base class for every Layout class
 	///
+	/// @ingroup Gui
+	///
 	/////////////////////////////////////////////////////////////
 	class GuiLayout : public GuiElement
 	{
@@ -181,6 +183,14 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual void setOwnerContext(GuiContext &context) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Call a function for every gui element in the hierarchy
+		/// 
+		/// @param func The func to call
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void traverseHierarchy(fm::Delegate<void,GuiElement &> func) override;
 	};
 }
 

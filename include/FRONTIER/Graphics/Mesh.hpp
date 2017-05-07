@@ -35,6 +35,8 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	/// @brief A class used to hold all data about a set of vertices
 	///
+	/// @ingroup Graphics
+	///
 	/////////////////////////////////////////////////////////////
     class FRONTIER_API Mesh
     {
@@ -163,7 +165,7 @@ namespace fg
 		/// @brief Calculate the vertices of a torus
 		/// 
 		/// @param majorR The radius of the main circle
-		/// @param mainorR The radius of the secondary circle
+		/// @param minorR The radius of the secondary circle
 		/// @param W The number of vertices on the horizontal belt
 		/// @param H The number of vertices on the vertical belt
 		/// @param rfunc A distort function to be applied to the torus
@@ -177,8 +179,7 @@ namespace fg
 		/// @brief Calculate the vertices of a cube
 		/// 
 		/// @param size The size of the edge of the cube
-		/// @param W The number of vertices on the horizontal side
-		/// @param H The number of vertices on the vertical side
+		/// @param N The number of vertices on the side
 		/// @param rfunc A distort function to be applied to the cube
 		/// 
 		/// @return The mesh calculated
@@ -198,7 +199,20 @@ namespace fg
 		/// @return The mesh calculated
 		/// 
 		/////////////////////////////////////////////////////////////
-        static Mesh getCylinder(float radius = 1,float height = 1, fm::Size W = 20,fm::Size H = 2, const fm::Delegate<float,float &,float &> &rfunc = nullptr);
+        static Mesh getCylinder(float radius = 1,float height = 1,fm::Size W = 20,fm::Size H = 2,const fm::Delegate<float,float &,float &> &rfunc = nullptr);
+		
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Calculate the vertices of a circle
+		/// 
+		/// @param radius The radius of the circle
+		/// @param N The number of vertices on the circle
+		/// @param rfunc A distort function to be applied to the circle
+		/// 
+		/// @return The mesh calculated
+		/// 
+		/////////////////////////////////////////////////////////////
+		static Mesh getCircle(float radius = 1,fm::Size N = 42,const fm::Delegate<float,float &> &rfunc = nullptr);
     };
 }
 

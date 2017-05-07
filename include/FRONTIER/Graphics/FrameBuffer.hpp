@@ -47,6 +47,8 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to crae and handle OpenGL <a href="http://www.opengl.org/wiki/Framebuffer_Object">Framebuffers</a>
 	///
+	/// @ingroup Graphics
+	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API FrameBuffer : public fm::NonCopyable, public GlObject
 	{

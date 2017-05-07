@@ -27,6 +27,7 @@ namespace fg
 {
 	/////////////////////////////////////////////////////////////
 	/// @brief Type used to hint OpenGL on buffer-usage
+	///
 	/////////////////////////////////////////////////////////////
 	enum BufferType {
 		ArrayBuffer = 0x8892, ///< Means that the buffer is generic (may hold position color etc)
@@ -36,6 +37,8 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to handle <a href="http://www.opengl.org/wiki/Buffer_Object">OpenGL buffer objects</a>
+	///
+	/// @ingroup Graphics
 	///
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Buffer : public GlObject
@@ -484,39 +487,3 @@ namespace fg
 #ifndef FRONTIER_DONT_INCLUDE_INL
 	#include <FRONTIER/Graphics/Buffer.inl>
 #endif
-
-////////////////////////////////////////////////////////////
-/// @class fg::Buffer
-/// @ingroup Graphics
-///
-/// fg::Buffer is an interface used to handle OpenGL buffers
-/// It can be used send draw data to OpenGL
-///
-/// Usage example:
-/// Define a red circle with r=10, send the data to OpenGL and use it to draw
-/// @code
-///
-/// fm::vec2 circlePoints[20];
-/// fm::vec3 circleColors[20];
-///
-/// for (int i=0;i<20;i++)
-/// 	circlePoints[i] = fm::pol2(10,fm::deg(i/19.f*360.f)),
-/// 	circleColors[i] = fm::vec4::Red;
-///
-/// fg::Buffer circlePbuf(fg::ArrayBuffer),circleCbuf(fg::ArrayBuffer);
-///
-/// circlePbuf.setData(circlePoints);
-/// circleCbuf.setData(circleColors);
-///
-/// circlePbuf.bind();
-/// glVertexPointer(2,GL_FLOAT,0,0);
-/// circleCbuf.bind();
-/// glColorPointer(3,GL_FLOAT,0,0);
-///
-/// glDrawArrays(fg::LineLoop,0,20);
-///
-/// @endcode
-///
-/// @see fg::GlObject
-///
-////////////////////////////////////////////////////////////

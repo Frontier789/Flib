@@ -39,6 +39,8 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to handle a template argument list
 	///
+	/// @ingroup System
+	///
 	/////////////////////////////////////////////////////////////
 	template<class FirstArg,class... Args>
 	class ArgumentList<FirstArg,Args...>

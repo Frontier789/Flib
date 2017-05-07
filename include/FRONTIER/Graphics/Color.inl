@@ -26,13 +26,13 @@ namespace std
     class basic_istream;
 }
 
-template<class T,class CharT,class CharTraitT>
+template<class CharT,class CharTraitT>
 inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out,const fg::Color &col)
 {
 	return out<<int(col.r)<<' '<<int(col.g)<<' '<<int(col.b)<<' '<<int(col.a);
 }
 
-template<class T,class CharT,class CharTraitT>
+template<class CharT,class CharTraitT>
 inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in,fg::Color &col)
 {
 	int r,g,b,a;
