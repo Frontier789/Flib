@@ -6,7 +6,7 @@ using namespace std;
 
 // handle pos, write color
 
-ColorPicker::ColorPicker(GuiContext &cont) : GuiElement(cont)
+ColorPicker::ColorPicker(GuiContext &cont) : GuiElement(cont), m_sat(1)
 {
 	m_drawData.positions = {vec2(50,0),vec2(0,100),vec2(100,100)};
 	m_drawData.colors    = {vec4(1,0,0),vec4(0,1,0),vec4(0,0,1)};
@@ -24,7 +24,24 @@ ColorPicker::ColorPicker(GuiContext &cont) : GuiElement(cont)
 	
 	m_circle = DrawData(circle);
 }
-	
+
+void transformColors(vec4 (&cols)[3],float m_sat)
+{
+	for (vec4 &c : cols)
+	{
+		if (m_sat < 1)
+		{
+			c = c * m_sat;
+		}
+		else 
+		{
+			c = c * (2 - m_sat) + vec4::White * (m_sat - 1);
+		}
+		
+		c.a = 1;
+	}
+}
+
 Color ColorPicker::getColorAt(vec2 p)
 {
 	vec2 p1 = vec2( 50,  0) + getPosition();
@@ -37,7 +54,11 @@ Color ColorPicker::getColorAt(vec2 p)
 	vec2 lxy = T.inverse() * (p - p3);
 	vec3 l = vec3(lxy,1 - lxy.x - lxy.y);
 	
-	return Color(l*256);
+	vec4 cols[] = {vec4(1,0,0),vec4(0,1,0),vec4(0,0,1)};
+	
+	transformColors(cols,m_sat);
+	
+	return Color( (cols[0]*l.x + cols[1]*l.y + cols[2]*l.z)*255 );
 }
 
 void ColorPicker::onDraw(fg::ShaderManager &shader)
@@ -94,15 +115,20 @@ void ColorPicker::onMouseMoved(fm::vec2 p,fm::vec2 prevP)
 		m_lastp = p;
 	}
 }
-
-bool ColorPicker::onEvent(fw::Event &ev)
-{
-	if (mouseInside())
-	if (ev.type == fw::Event::MouseWheelMoved)
-	{
-		cout << "colorpicker scroll" << endl;
-	}
 	
-	return false;
+void ColorPicker::raiseBrightness(float amount)
+{
+	m_sat *= amount;
+	
+	if (m_sat < 0.001) m_sat = 0.001;
+	if (m_sat > 1.999) m_sat = 1.999;
+	
+	vec4 cols[] = {vec4(1,0,0),vec4(0,1,0),vec4(0,0,1)};
+	
+	transformColors(cols,m_sat);
+	
+	m_drawData.colors = cols;
+	
+	callCallback(getColorAt(m_lastp));
 }
 

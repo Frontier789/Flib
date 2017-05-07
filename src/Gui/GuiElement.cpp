@@ -66,7 +66,10 @@ namespace fgui
 	{
 		bool handled = onEvent(ev);
 		
-		GuiCallback::forwardToHandlers(ev);
+		if (!handled)
+		{
+			handled = GuiCallback::forwardToHandlers(ev);
+		}
 		
 		return handled;
 	}

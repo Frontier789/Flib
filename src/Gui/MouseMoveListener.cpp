@@ -21,7 +21,7 @@ namespace fgui
 {
 	MouseMoveListener::MouseMoveListener() : m_mouseIn(false)
 	{
-		addEventHandler([&](fw::Event &ev){
+		addEventHandler([&](fw::Event &ev) -> bool {
 			
 			if (ev.type == fw::Event::MouseMoved)
 			{
@@ -51,6 +51,18 @@ namespace fgui
 				m_mouseIn = in;
 			}
 			
+			if (ev.type == fw::Event::ButtonReleased)
+			{
+				fm::vec2 p = ev.mouse;
+				bool in = contains(p);
+				
+				if (!m_mouseIn && in)
+				{
+					onMouseEnter(p);
+				}
+			}
+			
+			return false;
 		});
 	}
 

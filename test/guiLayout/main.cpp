@@ -30,15 +30,19 @@ public:
 /////////////////////////////////////////////////////////////
 ScrollListener::ScrollListener()
 {
-	addEventHandler([&](fw::Event &ev) {
+	addEventHandler([&](fw::Event &ev) -> bool {
 		
 		if (ev.type == fw::Event::MouseWheelMoved)
 		{
 			if (mouseInside())
 			{
 				onScroll(ev.wheel.delta);
+				
+				return true;
 			}
 		}
+		
+		return false;
 	});
 }
 
@@ -119,7 +123,7 @@ GuiScrollBar::GuiScrollBar(GuiContext &cont) : GuiElement(cont),
 void GuiScrollBar::onScroll(float amount)
 {
 	m_state = m_state + (m_stateCount ? amount / m_stateCount : amount);
-	callCallback(m_state);
+	callCallback(amount);
 }
 
 /////////////////////////////////////////////////////////////
@@ -173,14 +177,14 @@ int main()
 	GuiScrollBar *sb = new GuiScrollBar(win);
 	sb->setPosition(vec2(160,160));
 	sb->setSize(vec2(80,80));
-	sb->setCallback([&]() {
-		cout << "scroll" << endl;
+	sb->setCallback([&](GuiScrollBar &,float a) {
+		cp->raiseBrightness(pow(1.1,a));
 	});
 	
 	
 	win.getMainLayout().addChildElement(pb);
-	win.getMainLayout().addChildElement(sb);
 	win.getMainLayout().addChildElement(cp);
+	win.getMainLayout().addChildElement(sb);
 	
 	
 	bool running = true;

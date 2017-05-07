@@ -39,7 +39,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	class GuiCallback
 	{
-		std::vector<fm::Delegate<void,fw::Event&>> m_handlers; ///< Internal vector of handlers
+		std::vector<fm::Delegate<bool,fw::Event&>> m_handlers; ///< Internal vector of handlers
 	public:
 		
 		/////////////////////////////////////////////////////////////
@@ -48,15 +48,17 @@ namespace fgui
 		/// @param handler The handler to add
 		///
 		/////////////////////////////////////////////////////////////
-		void addEventHandler(fm::Delegate<void,fw::Event&> handler);
+		void addEventHandler(fm::Delegate<bool,fw::Event&> handler);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Forward event to all handlers
 		/// 
 		/// @param ev The event to forward
-		///
+		/// 
+		/// @return True iff the event is handled
+		/// 
 		/////////////////////////////////////////////////////////////
-		void forwardToHandlers(fw::Event &ev);
+		bool forwardToHandlers(fw::Event &ev);
 	
 		/////////////////////////////////////////////////////////////
 		/// @brief Test if a point is inside the Gui element

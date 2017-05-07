@@ -20,18 +20,20 @@
 namespace fgui
 {
 	/////////////////////////////////////////////////////////////
-	void GuiCallback::addEventHandler(fm::Delegate<void,fw::Event&> handler)
+	void GuiCallback::addEventHandler(fm::Delegate<bool,fw::Event&> handler)
 	{
 		m_handlers.push_back(handler);
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void GuiCallback::forwardToHandlers(fw::Event &ev)
+	bool GuiCallback::forwardToHandlers(fw::Event &ev)
 	{
 		for (auto &func : m_handlers)
 		{
-			func(ev);
+			if (func(ev)) return true;
 		}
+		
+		return false;
 	}
 	
 	/////////////////////////////////////////////////////////////

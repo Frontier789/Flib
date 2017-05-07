@@ -24,7 +24,7 @@ namespace fgui
 		for (auto &clk : m_clickClks) clk.setTime(m_dblClickLength + fm::seconds(1));
 		for (auto &press : m_btnPressed) press = false;
 		
-		addEventHandler([&](fw::Event &ev){
+		addEventHandler([&](fw::Event &ev) -> bool {
 			
 			if (ev.type == fw::Event::ButtonPressed)
 			{
@@ -46,6 +46,8 @@ namespace fgui
 					
 					m_pressPoses[btn] = p;
 					m_clickClks[btn].restart();
+					
+					return true;
 				}
 			}
 			
@@ -71,6 +73,8 @@ namespace fgui
 				{
 					onMouseMoved(p,m_prevPos);
 					m_prevPos = p;
+					
+					return true;
 				}
 			}
 			
@@ -91,6 +95,7 @@ namespace fgui
 				}
 			}
 			
+			return false;
 		});
 	}
 	
