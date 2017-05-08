@@ -34,6 +34,7 @@ namespace fgui
 	class GuiLayout : public GuiElement
 	{
 		std::vector<GuiElement*> m_elements; ///< The elements of the layout
+		GuiElement *m_activeElement; ///< The active element 
 		
 	public:
 		/////////////////////////////////////////////////////////////
@@ -191,6 +192,22 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual void traverseHierarchy(fm::Delegate<void,GuiElement &> func) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the active gui element
+		/// 
+		/// @param element The new active element
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setActiveElement(GuiElement *element);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the active gui element
+		/// 
+		/// @return The active element
+		/// 
+		/////////////////////////////////////////////////////////////
+		GuiElement *getActiveElement() const;
 	};
 }
 

@@ -14,35 +14,47 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_GUI_MODULE_HPP_INCLUDED
-#define FRONTIER_GUI_MODULE_HPP_INCLUDED
+#include <FRONTIER/Gui/GuiScrollBar.hpp>
+#include <FRONTIER/Window/Event.hpp>
 
-////////////////////////////////////////////////////////////
-/// @defgroup Gui Gui module
-///
-////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////
-/// @brief Namespace used to hold gui classes
-///
-/////////////////////////////////////////////////////////////
 namespace fgui
 {
+	/////////////////////////////////////////////////////////////
+	GuiScrollBar::GuiScrollBar(GuiContext &cont) : GuiElement(cont),
+												   m_stateCount(0),
+												   m_state(0)
+	{
+		
+	}
 
+	/////////////////////////////////////////////////////////////
+	void GuiScrollBar::onScroll(float amount)
+	{
+		m_state = m_state + (m_stateCount ? amount / m_stateCount : amount);
+		callCallback(amount);
+	}
+
+	/////////////////////////////////////////////////////////////
+	void GuiScrollBar::setStateCount(fm::Size stateCount)
+	{
+		m_stateCount = stateCount;
+	}
+
+	/////////////////////////////////////////////////////////////
+	void GuiScrollBar::setState(float state)
+	{
+		m_state = state;
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::Size GuiScrollBar::getStateCount()
+	{
+		return m_stateCount;
+	}
+
+	/////////////////////////////////////////////////////////////
+	float GuiScrollBar::getState()
+	{
+		return m_state;
+	}
 }
-
-#include <FRONTIER/Gui/GuiText.hpp>
-#include <FRONTIER/Gui/GuiWindow.hpp>
-#include <FRONTIER/Gui/GuiLayout.hpp>
-#include <FRONTIER/Gui/GuiButton.hpp>
-#include <FRONTIER/Gui/GuiElement.hpp>
-#include <FRONTIER/Gui/PushButton.hpp>
-#include <FRONTIER/Gui/GuiCallback.hpp>
-#include <FRONTIER/Gui/GuiScrollBar.hpp>
-#include <FRONTIER/Gui/CallbackUser.hpp>
-#include <FRONTIER/Gui/ClickListener.hpp>
-#include <FRONTIER/Gui/ScrollListener.hpp>
-#include <FRONTIER/Gui/MouseMoveListener.hpp>
-
-#endif // FRONTIER_SYSTEM_MODULE_HPP_INCLUDED

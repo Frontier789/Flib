@@ -14,35 +14,33 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_GUI_MODULE_HPP_INCLUDED
-#define FRONTIER_GUI_MODULE_HPP_INCLUDED
+#include <FRONTIER/Gui/ScrollListener.hpp>
+#include <FRONTIER/Window/Event.hpp>
 
-////////////////////////////////////////////////////////////
-/// @defgroup Gui Gui module
-///
-////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////
-/// @brief Namespace used to hold gui classes
-///
-/////////////////////////////////////////////////////////////
 namespace fgui
 {
+	/////////////////////////////////////////////////////////////
+	ScrollListener::ScrollListener()
+	{
+		addEventHandler([&](fw::Event &ev) -> bool {
+			
+			if (ev.type == fw::Event::MouseWheelMoved)
+			{
+				if (mouseInside())
+				{
+					onScroll(ev.wheel.delta);
+					
+					return true;
+				}
+			}
+			
+			return false;
+		});
+	}
 
+	/////////////////////////////////////////////////////////////
+	void ScrollListener::onScroll(float)
+	{
+		
+	}
 }
-
-#include <FRONTIER/Gui/GuiText.hpp>
-#include <FRONTIER/Gui/GuiWindow.hpp>
-#include <FRONTIER/Gui/GuiLayout.hpp>
-#include <FRONTIER/Gui/GuiButton.hpp>
-#include <FRONTIER/Gui/GuiElement.hpp>
-#include <FRONTIER/Gui/PushButton.hpp>
-#include <FRONTIER/Gui/GuiCallback.hpp>
-#include <FRONTIER/Gui/GuiScrollBar.hpp>
-#include <FRONTIER/Gui/CallbackUser.hpp>
-#include <FRONTIER/Gui/ClickListener.hpp>
-#include <FRONTIER/Gui/ScrollListener.hpp>
-#include <FRONTIER/Gui/MouseMoveListener.hpp>
-
-#endif // FRONTIER_SYSTEM_MODULE_HPP_INCLUDED

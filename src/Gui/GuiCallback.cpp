@@ -42,4 +42,10 @@ namespace fgui
 		(void)p;
 		return false;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiCallback::setActive(bool)
+	{
+		
+	}
 }

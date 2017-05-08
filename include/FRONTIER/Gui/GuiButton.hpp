@@ -20,7 +20,6 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Gui/ClickListener.hpp>
 #include <FRONTIER/Gui/CallbackUser.hpp>
-#include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/Gui/GuiElement.hpp>
 #include <FRONTIER/Gui/GuiText.hpp>
 

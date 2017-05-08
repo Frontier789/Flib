@@ -114,7 +114,7 @@ void ColorPicker::onMouseMoved(fm::vec2 p,fm::vec2 prevP)
 		callCallback(getColorAt(p));
 		m_lastp = p;
 	}
-}
+} 
 	
 void ColorPicker::raiseBrightness(float amount)
 {

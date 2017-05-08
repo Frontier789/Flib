@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Gui/GuiElement.hpp>
 #include <FRONTIER/Gui/GuiContext.hpp>
+#include <FRONTIER/Gui/GuiLayout.hpp>
 #include <FRONTIER/System/Rect.hpp>
 
 namespace fgui
@@ -158,5 +159,21 @@ namespace fgui
 	void GuiElement::traverseHierarchy(fm::Delegate<void,GuiElement &> func)
 	{
 		func(*this);
+	}
+		
+	/////////////////////////////////////////////////////////////
+	void GuiElement::setActive(bool active)
+	{
+		if (m_layout)
+			m_layout->setActiveElement(active ? this : nullptr);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool GuiElement::isActive() const
+	{
+		if (m_layout)
+			return m_layout->getActiveElement() == this;
+		
+		return false;
 	}
 }

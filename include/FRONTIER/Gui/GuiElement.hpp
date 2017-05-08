@@ -226,6 +226,22 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual void traverseHierarchy(fm::Delegate<void,GuiElement &> func);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set this element as the active element in the owning layout
+		/// 
+		/// @param active True to activate false to clear being active
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setActive(bool active = true) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Check if active in the wning layout
+		/// 
+		/// @return True iff active
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual bool isActive() const;
 	};
 }
 

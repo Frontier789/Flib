@@ -69,6 +69,14 @@ namespace fgui
 		///
 		/////////////////////////////////////////////////////////////
 		virtual bool contains(fm::vec2 p) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set this element as the active element in the owning layout
+		/// 
+		/// @param active True to activate false to clear being active
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setActive(bool active = true);
 	};
 }
 

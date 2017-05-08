@@ -14,35 +14,36 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_GUI_MODULE_HPP_INCLUDED
-#define FRONTIER_GUI_MODULE_HPP_INCLUDED
+#ifndef FRONTIER_SCROLLLISTENERR_HPP_INCLUDED
+#define FRONTIER_SCROLLLISTENERR_HPP_INCLUDED
 
-////////////////////////////////////////////////////////////
-/// @defgroup Gui Gui module
-///
-////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////
-/// @brief Namespace used to hold gui classes
-///
-/////////////////////////////////////////////////////////////
-namespace fgui
-{
-
-}
-
-#include <FRONTIER/Gui/GuiText.hpp>
-#include <FRONTIER/Gui/GuiWindow.hpp>
-#include <FRONTIER/Gui/GuiLayout.hpp>
-#include <FRONTIER/Gui/GuiButton.hpp>
-#include <FRONTIER/Gui/GuiElement.hpp>
-#include <FRONTIER/Gui/PushButton.hpp>
-#include <FRONTIER/Gui/GuiCallback.hpp>
-#include <FRONTIER/Gui/GuiScrollBar.hpp>
-#include <FRONTIER/Gui/CallbackUser.hpp>
-#include <FRONTIER/Gui/ClickListener.hpp>
-#include <FRONTIER/Gui/ScrollListener.hpp>
 #include <FRONTIER/Gui/MouseMoveListener.hpp>
 
-#endif // FRONTIER_SYSTEM_MODULE_HPP_INCLUDED
+#define FRONTIER_SCROLLLISTENERR
+
+namespace fgui
+{
+	/////////////////////////////////////////////////////////////
+	/// @brief Listener base class for scrolling
+	///
+	/////////////////////////////////////////////////////////////
+	class ScrollListener : public MouseMoveListener
+	{
+	public:
+		/////////////////////////////////////////////////////////////
+		/// @brief Default constructor
+		/// 
+		/////////////////////////////////////////////////////////////
+		ScrollListener();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Called when the element is scrolled
+		/// 
+		/// @param amount The amount the element is scrolled
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void onScroll(float amount);
+	};
+}
+
+#endif // FRONTIER_SCROLLLISTENERR_HPP_INCLUDED

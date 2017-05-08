@@ -44,6 +44,8 @@ namespace fgui
 						}
 					}
 					
+					setActive();
+					
 					m_pressPoses[btn] = p;
 					m_clickClks[btn].restart();
 					
@@ -92,6 +94,8 @@ namespace fgui
 					{
 						onClick(btn,p);
 					}
+					
+					setActive(false);
 				}
 			}
 			

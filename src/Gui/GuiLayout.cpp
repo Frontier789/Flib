@@ -21,7 +21,8 @@
 namespace fgui
 {
 	/////////////////////////////////////////////////////////////
-	GuiLayout::GuiLayout(GuiContext &owner) : GuiElement(owner)
+	GuiLayout::GuiLayout(GuiContext &owner) : GuiElement(owner),
+											  m_activeElement(nullptr)
 	{
 		
 	}
@@ -88,6 +89,8 @@ namespace fgui
 		}
 		
 		shader.getModelStack().pop();
+		
+		GuiElement::onDraw(shader);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -104,11 +107,17 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	bool GuiLayout::onEvent(fw::Event &ev)
 	{
+		if (m_activeElement)
+		{
+			if (m_activeElement->handleEvent(ev))
+				return true;
+		}
+		
 		fm::Size childCount = getChildCount();
 		C(childCount)
 		{
 			GuiElement *element = getChildElement(childCount - 1 - i);
-			if (element)
+			if (element && element != m_activeElement)
 				if (element->handleEvent(ev))
 					return true;
 		}
@@ -206,5 +215,21 @@ namespace fgui
 			if (element)
 				element->traverseHierarchy(func);
 		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiLayout::setActiveElement(GuiElement *element)
+	{
+		m_activeElement = element;
+		
+		// forward upwards
+		if (m_activeElement)
+			GuiElement::setActive(this);
+	}
+	 
+	/////////////////////////////////////////////////////////////
+	GuiElement *GuiLayout::getActiveElement() const
+	{
+		return m_activeElement;
 	}
 }
