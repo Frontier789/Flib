@@ -118,7 +118,7 @@ void ColorPicker::onMouseMoved(fm::vec2 p,fm::vec2 prevP)
 	
 void ColorPicker::raiseBrightness(float amount)
 {
-	m_sat *= amount;
+	m_sat = amount;
 	
 	if (m_sat < 0.001) m_sat = 0.001;
 	if (m_sat > 1.999) m_sat = 1.999;

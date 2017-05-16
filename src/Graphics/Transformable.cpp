@@ -14,52 +14,47 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Gui/GuiScrollBar.hpp>
-#include <FRONTIER/Window/Event.hpp>
+#include <FRONTIER/Graphics/Transformable.hpp>
 
-namespace fgui
+namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	GuiScrollBar::GuiScrollBar(GuiContext &cont) : GuiElement(cont),
-												   m_scrollSize(.1),
-												   m_state(0)
+	Transformable::Transformable() : m_size(1,1)
 	{
 		
 	}
 
 	/////////////////////////////////////////////////////////////
-	void GuiScrollBar::onScroll(float amount)
+	Transformable &Transformable::setPosition(const fm::vec2 &pos)
 	{
-		float delta = -amount * m_scrollSize;
-		
-		setState(getState() + delta);
+		m_pos = pos;
+		return *this;
+	}
+
+	const fm::vec2 &Transformable::getPosition() const
+	{
+		return m_pos;
+	}
+
+
+	/////////////////////////////////////////////////////////////
+	Transformable &Transformable::setSize(const fm::vec2 &size)
+	{
+		m_size = size;
+		return *this;
+	}
+
+	const fm::vec2 &Transformable::getSize() const
+	{
+		return m_size;
 	}
 
 	/////////////////////////////////////////////////////////////
-	void GuiScrollBar::setScrollSize(float scrollSize)
+	fm::mat4 Transformable::getMatrix() const
 	{
-		m_scrollSize = scrollSize;
-	}
-
-	/////////////////////////////////////////////////////////////
-	void GuiScrollBar::setState(float state)
-	{
-		if (state < 0) state = 0;
-		if (state > 1) state = 1;
-		
-		m_state = state;
-		callCallback(m_state);
-	}
-
-	/////////////////////////////////////////////////////////////
-	float GuiScrollBar::getScrollSize() const
-	{
-		return m_scrollSize;
-	}
-
-	/////////////////////////////////////////////////////////////
-	float GuiScrollBar::getState() const
-	{
-		return m_state;
+		return fm::mat4(m_size.w,       0,0,m_pos.x,
+							   0,m_size.h,0,m_pos.y,
+							   0,       0,1,0,
+							   0,       0,0,1);
 	}
 }

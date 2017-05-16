@@ -502,13 +502,44 @@ namespace fg
 			float v = float(i) / N;
 			float r = (rfunc ? rfunc(v) : 1.0);
 			
-			fm::vec2 p = fm::pol2(radius * r,fm::deg(360.0 * v));
+			fm::vec2 p = fm::pol2(r,fm::deg(360.0 * v));
 			
-			ret.pts[i] = p;
+			ret.pts[i] = p * radius;
 			ret.uvs[i] = p/2 + fm::vec2(.5,.5);
 			
 			ret.faces.back().indices[i] = i;
 		}
+        
+		return ret;
+	}
+    
+	/////////////////////////////////////////////////////////////
+	Mesh Mesh::getRectangle(float width,float height,fm::Size W,fm::Size H,const fm::Delegate<float,float &,float &> &rfunc)
+	{
+		Mesh ret;
+		ret.pts.resize(2*W + 2*H);
+		ret.uvs.resize(ret.pts.size());
+		ret.faces.push_back(Mesh::Face(fg::TriangleFan,2*W + 2*H));
+		
+		fm::Size index = 0;
+		
+		auto helper = [&](float onx,float ony) {
+			
+			float r = (rfunc ? rfunc(onx,ony) : 1.0);
+			
+			fm::vec2 p(onx * r,ony * r);
+			
+			ret.pts[index] = p * fm::vec2(width,height);
+			ret.uvs[index] = p;
+			
+			ret.faces.back().indices[index] = index;
+			++index;
+		};
+		
+		C(W) helper(float(i)/(W-1),1);
+		C(H) helper(1,1-float(i)/(H-1));
+		C(W) helper(1-float(i)/(W-1),0);
+		C(H) helper(0,float(i)/(H-1));
         
 		return ret;
 	}

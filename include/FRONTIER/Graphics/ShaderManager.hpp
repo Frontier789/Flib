@@ -22,6 +22,7 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/System/Camera.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Clock.hpp>
 #include <FRONTIER/System/Ref.hpp>
 
@@ -44,7 +45,7 @@ namespace fg
 	/// @ingroup Graphics
 	///
 	/////////////////////////////////////////////////////////////
-    class ShaderManager : public fg::Shader
+	class FRONTIER_API ShaderManager : public fg::Shader
     {
     protected:
 		enum MatrixState ///< Internal type used to indicate a matrix name's state

@@ -148,7 +148,7 @@ int main()
 					shader.setUniform("u_doLight",doLight ? 1 : 0);
 				}
 				
-				if (ev.key.code == Keyboard::Plus)
+				if (ev.key.code == Keyboard::Plus || ev.key.code == Keyboard::K)
 				{
 					hex.extendToTwice();
 					

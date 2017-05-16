@@ -18,6 +18,7 @@
 #define FRONTIER_FIXEDSHADERMANAGER_HPP_INCLUDED
 
 #include <FRONTIER/Graphics/ShaderManager.hpp>
+#include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_FIXEDSHADERMANAGER
 
@@ -29,7 +30,7 @@ namespace fg
 	/// @ingroup Graphics
 	///
 	/////////////////////////////////////////////////////////////
-    class FixedShaderManager : public fg::ShaderManager
+	class FRONTIER_API FixedShaderManager : public fg::ShaderManager
     {
 		fm::Result prepareDraw(const fg::DrawData &data); ///< Internal function used to prepare a drawing operation
 		const fg::Texture *m_activeTex; ///< Holds the active texture

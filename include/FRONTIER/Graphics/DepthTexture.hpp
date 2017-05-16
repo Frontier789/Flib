@@ -16,9 +16,12 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_DEPTHTEXTURE_HPP_INCLUDED
 #define FRONTIER_DEPTHTEXTURE_HPP_INCLUDED
+
 #include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
+#include <FRONTIER/System/util/API.h>
+
 #define FRONTIER_DEPTHTEXTURE
 
 namespace fg

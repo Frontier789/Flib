@@ -68,17 +68,17 @@ namespace fgui
 
 		Image getDefButtonImgNorm()
 		{
-			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(32,32,32,150),Color(32,32,32),Color(230,100),Color(8,8,8,64),Color(218,218,218,64));
+			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(124,124,124),Color(32,32,32),Color(240,240,240),Color(193,193,193),Color(243,243,243));
 		}
 
 		Image getDefButtonImgHover()
 		{
-			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(32,32,32,150),Color(32,32,32),Color(230,100),Color(68,68,68,44),Color(218,218,218,44));
+			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(124,124,124),Color(32,32,32),Color(240,240,240),Color(223,223,223),Color(248,248,248));
 		}
 
 		Image getDefButtonImgPress()
 		{
-			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(32,32,32,150),Color(32,32,32),Color(230,100),Color(70,70,78,104),Color(238,238,238,104));
+			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(124,124,124),Color(32,32,32),Color(240,240,240),Color(180,180,180),Color(248,248,248));
 		}
 
 		void loadDefButtonImg(GuiContext &cont)

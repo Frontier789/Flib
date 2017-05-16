@@ -27,7 +27,7 @@ namespace fgui
 	/// @brief Listener base class for scrolling
 	///
 	/////////////////////////////////////////////////////////////
-	class ScrollListener : public MouseMoveListener
+	class ScrollListener : public virtual MouseMoveListener
 	{
 	public:
 		/////////////////////////////////////////////////////////////

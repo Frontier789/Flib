@@ -32,7 +32,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	class GuiScrollBar : public GuiElement, public ScrollListener, public CallbackUser<GuiScrollBar,float>
 	{
-		fm::Size m_stateCount; ///< The number of states the scrller can be in (0 for inf)
+		float m_scrollSize; ///< The amount to change the state when scrolled
 		float m_state; ///< The current state in range [0,1]
 		
 	public:
@@ -53,12 +53,12 @@ namespace fgui
 		virtual void onScroll(float amount);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the number of states the scroller can be in
+		/// @brief Set the size of one scroll
 		/// 
-		/// @param stateCount The number of states (0 for inf)
+		/// @param scrollSize The new scroll size
 		/// 
 		/////////////////////////////////////////////////////////////
-		void setStateCount(fm::Size stateCount);
+		void setScrollSize(float scrollSize);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the current state
@@ -69,12 +69,12 @@ namespace fgui
 		void setState(float state);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the number of states the scroller can be in
+		/// @brief Get the size of one scroll
 		/// 
-		/// @return The number of states (0 for inf)
+		/// @return The scroll size
 		/// 
 		/////////////////////////////////////////////////////////////
-		fm::Size getStateCount();
+		float getScrollSize() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the current state
@@ -82,7 +82,7 @@ namespace fgui
 		/// @return The current current state (will be clamped to [0,1])
 		/// 
 		/////////////////////////////////////////////////////////////
-		float getState();
+		float getState() const;
 	};
 }
 

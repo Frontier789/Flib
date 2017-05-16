@@ -16,6 +16,9 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_DRAWABLE_HPP_INCLUDED
 #define FRONTIER_DRAWABLE_HPP_INCLUDED
+
+#include <FRONTIER/System/util/API.h>
+
 #define FRONTIER_DRAWABLE
 
 namespace fm
@@ -33,7 +36,7 @@ namespace fg
 	/// @ingroup Graphics
 	///
 	/////////////////////////////////////////////////////////////
-	class Drawable
+	class FRONTIER_API Drawable
 	{
 	public:
 		/////////////////////////////////////////////////////////////

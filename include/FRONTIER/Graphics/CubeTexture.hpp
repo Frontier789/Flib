@@ -18,6 +18,7 @@
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Ref.hpp>
 
 namespace fm
@@ -39,7 +40,7 @@ namespace fg
 	/// @see fg::Texture
 	///
 	/////////////////////////////////////////////////////////////
-	class CubeTextureFace : public fg::Texture
+	class FRONTIER_API CubeTextureFace : public fg::Texture
 	{
 		virtual fm::Uint32 getTexRebinding() const; ///< Internal function
 		virtual fm::Uint32 getTexBinding() const; ///< Internal function

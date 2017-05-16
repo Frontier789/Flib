@@ -30,22 +30,16 @@ namespace fgui
 				
 				if (m_mouseIn)
 				{
-					if (in)
-					{
-						onMouseMoved(p,m_prevPos);
-						m_prevPos = p;
-					}
-					else
-					{
+					onMouseMoved(p,m_prevPos);
+					m_prevPos = p;
+					
+					if (!in)
 						onMouseLeave(p);
-					}
 				}
 				else
 				{
 					if (in)
-					{
 						onMouseEnter(p);
-					}
 				}
 				
 				m_mouseIn = in;

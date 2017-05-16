@@ -201,7 +201,6 @@ namespace fg
 		/////////////////////////////////////////////////////////////
         static Mesh getCylinder(float radius = 1,float height = 1,fm::Size W = 20,fm::Size H = 2,const fm::Delegate<float,float &,float &> &rfunc = nullptr);
 		
-		
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculate the vertices of a circle
 		/// 
@@ -213,6 +212,20 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		static Mesh getCircle(float radius = 1,fm::Size N = 42,const fm::Delegate<float,float &> &rfunc = nullptr);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Calculate the vertices of a rectangle
+		/// 
+		/// @param width The width of the rectangle
+		/// @param height The height of the rectangle
+		/// @param W The number of vertices on the horizontal axis
+		/// @param H The number of vertices on the vertical axis
+		/// @param rfunc A distort function to be applied to the circle
+		/// 
+		/// @return The mesh calculated
+		/// 
+		/////////////////////////////////////////////////////////////
+		static Mesh getRectangle(float width = 1,float height = 1,fm::Size W = 2,fm::Size H = 2,const fm::Delegate<float,float &,float &> &rfunc = nullptr);
     };
 }
 
