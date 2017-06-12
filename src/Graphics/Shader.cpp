@@ -326,6 +326,8 @@ namespace fg
 		res = link();
 		if (!res) return res;
 		
+		fillUniformData();
+		
 		return postProcess(data,types,count);
 	}
 
@@ -383,9 +385,35 @@ namespace fg
 		if (!getGlId())
 			return -1;
 
-		int location = hasUniform(name)-1;
+		int location = hasUniform(name) - 1;
 
 		return location;
+	}
+	
+	////////////////////////////////////////////////////////////
+	void Shader::fillUniformData()
+	{
+		GLint unicount;
+		glGetProgramiv(getGlId(),GL_ACTIVE_UNIFORMS,&unicount);
+		
+		GLint maxlen;
+		glGetProgramiv(getGlId(),GL_ACTIVE_UNIFORM_MAX_LENGTH,&maxlen);
+		
+		std::vector<GLchar> buf(maxlen);
+		
+		for (int i=0;i<unicount;++i)
+		{
+			GLsizei written;
+			GLint unisize;
+			GLenum unitype;
+			glGetActiveUniform(getGlId(),i,maxlen,&written,&unisize,&unitype,&buf[0]);
+			
+			UniformData &uniData = m_uniforms[std::string(&buf[0])];
+			
+			uniData.type = unitype;
+			uniData.size = unisize;
+			uniData.location = glGetUniformLocation(getGlId(),&buf[0]);
+		}
 	}
 
 	////////////////////////////////////////////////////////////
@@ -394,20 +422,11 @@ namespace fg
 		if (!getGlId())
 			return 0;
 
-		// check if already in dictionary
-		std::map<std::string, int>::const_iterator it = m_uniforms.find(name);
-		if (it != m_uniforms.end())
-			return it->second+1;
-
-		// get location from GL
-		int location = glGetUniformLocation(getGlId(),name.c_str());
-
-		// insert into dictionary
-		if (location != -1)
-			m_uniforms.insert(std::make_pair(name, location));
-
-		// on error location is -1
-		return location + 1;
+		auto it = m_uniforms.find(name);
+		if (it == m_uniforms.end())
+			return 0;
+		
+		return it->second.location + 1;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -457,46 +476,127 @@ namespace fg
 		// on error location is -1
 		return location + 1;
 	}
-
-	#define CREATE_SET_UNIFORM(argList,callFunc)                                          \
-	fm::Result Shader::setUniform argList                                                 \
-	{                                                                                     \
-		fm::Result res;                                                                   \
-		if (getGlId())                                                                    \
-		{                                                                                 \
-			GLint program;                                                                \
-			res += glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));                   \
-			if ((GLuint)program != getGlId())                                             \
-				res += glCheck(glUseProgram(getGlId()));                                  \
-                                                                                          \
-			int location = getUniformLocation(name);                                      \
-			if (location != -1)                                                           \
-				res += glCheck(callFunc);                                                 \
-			else                                                                          \
-				res += fm::Result("GLSLError",fm::Result::OPFailed,                       \
-								  "UniformNotFound","setUniform",__FILE__,__LINE__,name); \
-                                                                                          \
-			if ((GLuint)program != getGlId())                                             \
-				res += glCheck(glUseProgram(program));                                    \
-		}                                                                                 \
-		return res;                                                                       \
-	}
-
-	CREATE_SET_UNIFORM((const std::string &name,int x),glUniform1i(location,x))
-	CREATE_SET_UNIFORM((const std::string &name,float x),glUniform1f(location,x))
-
-	CREATE_SET_UNIFORM((const std::string &name,const fm::vec2 &v),glUniform2f(location,v.x,v.y))
-	CREATE_SET_UNIFORM((const std::string &name,const fm::vec3 &v),glUniform3f(location,v.x,v.y,v.z))
-	CREATE_SET_UNIFORM((const std::string &name,const fm::vec4 &v),glUniform4f(location,v.x,v.y,v.z,v.w))
-
-	CREATE_SET_UNIFORM((const std::string &name,const fg::Color &c),glUniform4f(location,c.r/255.f,c.g/255.f,c.b/255.f,c.a/255.f))
 	
-	CREATE_SET_UNIFORM((const std::string &name,const fm::mat2 &m),glUniformMatrix2fv(location, 1, GL_FALSE, &(m.transpose())[0][0]))
-	CREATE_SET_UNIFORM((const std::string &name,const fm::mat3 &m),glUniformMatrix3fv(location, 1, GL_FALSE, &(m.transpose())[0][0]))
-	CREATE_SET_UNIFORM((const std::string &name,const fm::mat4 &m),glUniformMatrix4fv(location, 1, GL_FALSE, &(m.transpose())[0][0]))
+	namespace priv
+	{
+		class ProgKeeper
+		{
+			GLint m_newId;
+			GLint m_id;
+		public:
+			fm::Result &res;
+			
+			ProgKeeper(GLint id,fm::Result &res) : m_newId(id), res(res)
+			{
+				glGetIntegerv(GL_CURRENT_PROGRAM,&m_id);
+				
+				if (m_id != m_newId)
+					res += glCheck(glUseProgram(m_newId));
+			}
+			
+			~ProgKeeper()
+			{
+				if (m_id != m_newId)
+				{
+					res += glCheck(glUseProgram(m_id));
+				}
+			}
+		};
+		
+		template<class A,class B> class ConvertHelper                   { public: static A convert(const B &b) {return b;}};
+		template<class A,class B> class ConvertHelper<A,fm::vector2<B>> { public: static A convert(const fm::vector2<B> &b) {return b.x;}};
+		template<class A,class B> class ConvertHelper<A,fm::vector3<B>> { public: static A convert(const fm::vector3<B> &b) {return b.x;}};
+		template<class A,class B> class ConvertHelper<A,fm::vector4<B>> { public: static A convert(const fm::vector4<B> &b) {return b.x;}};
+		
+		template<class InputT>
+		inline fm::Result glUniformForwarder(int loc,fm::Size type,InputT input)
+		{
+			if (type == GL_FLOAT)      { float     v = ConvertHelper<float,InputT>::convert(input); return glCheck(glUniform1f(loc,v));};
+			if (type == GL_FLOAT_VEC2) { fm::vec2  v = input; return glCheck(glUniform2f(loc,v.x,v.y));};
+			if (type == GL_FLOAT_VEC3) { fm::vec3  v = input; return glCheck(glUniform3f(loc,v.x,v.y,v.z));};
+			if (type == GL_FLOAT_VEC4) { fm::vec4  v = input; return glCheck(glUniform4f(loc,v.x,v.y,v.z,v.w));};
+			
+			if (type == GL_INT)        { int       v = ConvertHelper<int,InputT>::convert(input); return glCheck(glUniform1i(loc,v));};
+			if (type == GL_INT_VEC2)   { fm::vec2i v = input; return glCheck(glUniform2i(loc,v.x,v.y));};
+			if (type == GL_INT_VEC3)   { fm::vec3i v = input; return glCheck(glUniform3i(loc,v.x,v.y,v.z));};
+			if (type == GL_INT_VEC4)   { fm::vec4i v = input; return glCheck(glUniform4i(loc,v.x,v.y,v.z,v.w));};
+			
+			if (type == GL_BOOL)       { bool      v = ConvertHelper<bool,InputT>::convert(input); return glCheck(glUniform1i(loc,v));};
+			if (type == GL_BOOL_VEC2)  { fm::vec2b v = input; return glCheck(glUniform2i(loc,v.x,v.y));};
+			if (type == GL_BOOL_VEC3)  { fm::vec3b v = input; return glCheck(glUniform3i(loc,v.x,v.y,v.z));};
+			if (type == GL_BOOL_VEC4)  { fm::vec4b v = input; return glCheck(glUniform4i(loc,v.x,v.y,v.z,v.w));};
+			
+			return fm::Result("GLSLError",fm::Result::OPChanged,
+							  "UniformNotConvertible","setUniform",__FILE__,__LINE__);
+		}
+	}
+	
+	#define FRONTIER_ADD_UNIFORM_CONVERTER_true  else res += priv::glUniformForwarder(dat.location,dat.type,v);
+	#define FRONTIER_ADD_UNIFORM_CONVERTER_false else res += fm::Result("GLSLError",fm::Result::OPChanged,"UniformNotConvertible","setUniform",__FILE__,__LINE__);
+	
+	#define FRONTIER_CREATE_SET_UNIFORM(param,valEnum,convertible,callFunc)                     \
+	fm::Result Shader::setUniform(const std::string &name,param)                                \
+	{                                                                                           \
+		fm::Result res;                                                                         \
+		if (getGlId())                                                                          \
+		{                                                                                       \
+			priv::ProgKeeper keeper(getGlId(),res);                                             \
+			                                                                                    \
+			auto it = m_uniforms.find(name);                                                    \
+			UniformData dat;                                                                    \
+			                                                                                    \
+			if (it == m_uniforms.end())                                                         \
+			{                                                                                   \
+				dat.location = glGetUniformLocation(getGlId(),name.c_str());                    \
+				dat.type = 0;                                                                   \
+				                                                                                \
+				if (dat.location == -1)                                                         \
+					res += fm::Result("GLSLError",fm::Result::OPFailed,                         \
+									  "UniformNotFound","setUniform",__FILE__,__LINE__,name);	\
+			}                                                                                   \
+			else                                                                                \
+				dat = it->second;                                                               \
+			                                                                                    \
+			if (dat.location != -1)                                                             \
+			{                                                                                   \
+				if (dat.type == 0 || dat.type == valEnum)                                       \
+					res += glCheck(callFunc);                                                   \
+				FRONTIER_ADD_UNIFORM_CONVERTER_##convertible                                    \
+			}                                                                                   \
+		}                                                                                       \
+		return res;                                                                             \
+	}
+	
+	FRONTIER_CREATE_SET_UNIFORM(int v,GL_INT,true,glUniform1i(dat.location,v))
+	
+	FRONTIER_CREATE_SET_UNIFORM(const fm::vec2i &v,GL_INT_VEC2,true,glUniform2i(dat.location,v.x,v.y))
+	FRONTIER_CREATE_SET_UNIFORM(const fm::vec3i &v,GL_INT_VEC3,true,glUniform3i(dat.location,v.x,v.y,v.z))
+	FRONTIER_CREATE_SET_UNIFORM(const fm::vec4i &v,GL_INT_VEC4,true,glUniform4i(dat.location,v.x,v.y,v.z,v.w))
+	
+	FRONTIER_CREATE_SET_UNIFORM(float v,GL_FLOAT,true,glUniform1i(dat.location,v))
+	
+	FRONTIER_CREATE_SET_UNIFORM(const fm::vec2f &v,GL_FLOAT_VEC2,true,glUniform2f(dat.location,v.x,v.y))
+	FRONTIER_CREATE_SET_UNIFORM(const fm::vec3f &v,GL_FLOAT_VEC3,true,glUniform3f(dat.location,v.x,v.y,v.z))
+	FRONTIER_CREATE_SET_UNIFORM(const fm::vec4f &v,GL_FLOAT_VEC4,true,glUniform4f(dat.location,v.x,v.y,v.z,v.w))
+	
+	fm::Result Shader::setUniform(const std::string &name,const fg::Color &c)
+	{
+		return setUniform(name,c.rgba()/255);
+	}
+	
+	FRONTIER_CREATE_SET_UNIFORM(const fm::mat2 &m,GL_FLOAT_MAT2,false,glUniformMatrix2fv(dat.location, 1, GL_FALSE, &(m.transpose())[0][0]))
+	FRONTIER_CREATE_SET_UNIFORM(const fm::mat3 &m,GL_FLOAT_MAT3,false,glUniformMatrix3fv(dat.location, 1, GL_FALSE, &(m.transpose())[0][0]))
+	FRONTIER_CREATE_SET_UNIFORM(const fm::mat4 &m,GL_FLOAT_MAT4,false,glUniformMatrix4fv(dat.location, 1, GL_FALSE, &(m.transpose())[0][0]))
+
 
 	////////////////////////////////////////////////////////////
-	fm::Result Shader::setUniform(const std::string &name,fm::Ref<const Texture> tex)
+	fm::Result Shader::setUniform(const std::string &name,const Texture &tex)
+	{
+		return setUniform(name,&tex);
+	}
+	
+	////////////////////////////////////////////////////////////
+	fm::Result Shader::setUniform(const std::string &name,const Texture *tex)
 	{
 		fm::Result res;
 		
@@ -543,9 +643,15 @@ namespace fg
 		
 		return res;
 	}
+	
+	////////////////////////////////////////////////////////////
+	fm::Result Shader::setUniform(const std::string &name,const CubeTexture &tex)
+	{
+		return setUniform(name,&tex);
+	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result Shader::setUniform(const std::string &name,fm::Ref<const CubeTexture> tex)
+	fm::Result Shader::setUniform(const std::string &name,const CubeTexture *tex)
 	{
 		fm::Result res;
 			

@@ -85,6 +85,9 @@ namespace fgui
 	void GuiElement::setSize(fm::vec2s size)
 	{
 		m_size = size;
+		
+		if (m_layout)
+			m_layout->onChildSize(this);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -127,6 +130,9 @@ namespace fgui
 	void GuiElement::setLayout(GuiLayout *layout)
 	{
 		m_layout = layout;
+		
+		if (m_layout)
+			m_layout->onChildSize(this);
 	}
 	
 	/////////////////////////////////////////////////////////////

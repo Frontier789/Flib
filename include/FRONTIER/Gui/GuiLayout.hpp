@@ -33,6 +33,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	class GuiLayout : public GuiElement
 	{
+	protected:
 		std::vector<GuiElement*> m_elements; ///< The elements of the layout
 		GuiElement *m_activeElement; ///< The active element 
 		

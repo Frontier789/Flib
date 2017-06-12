@@ -79,16 +79,12 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiLayout::onDraw(fg::ShaderManager &shader)
 	{
-		shader.getModelStack().push().mul(fm::MATRIX::translation(getPosition()));
-		
 		C(getChildCount())
 		{
 			GuiElement *element = getChildElement(i);
 			if (element)
 				element->onDraw(shader);
 		}
-		
-		shader.getModelStack().pop();
 		
 		GuiElement::onDraw(shader);
 	}

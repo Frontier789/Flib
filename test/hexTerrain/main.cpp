@@ -20,6 +20,8 @@ void printControls()
 		 << "\tWheel: zoom in and out" << endl << endl;
 }
 
+#include <FRONTIER/OpenGL.hpp>
+
 int main()
 {
 	Window win(vec2(640,480),"Hexy",Window::Default /*&~ Window::Resize &~ Window::Maximize*/);
@@ -39,6 +41,9 @@ int main()
 	bool useGeomShader = false;
 	bool doLight = true;
 	bool doGrid  = false;
+	
+	Texture tmp;
+	cout << tmp.loadFromFile("as.png") << endl;
 	
 	if (Shader::isAvailable())
 	{
@@ -81,7 +86,7 @@ int main()
 	
 	Camera &cam = shader.getCamera();
 	shader.setUniform("u_doLight",1);
-	shader.setUniform("u_doGrid",0);
+	shader.setUniform("u_doGrid",false);
 	cam.getProjStack().push(MATRIX::ortho(win.getSize().w*-0.5,win.getSize().h*-0.5,win.getSize().w*0.5,win.getSize().h*0.5));
 	
 	HexTerrain hex(1,useGeomShader);

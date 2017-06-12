@@ -1,6 +1,6 @@
 #version 150
 
-uniform int u_doGrid;
+uniform bool u_doGrid;
 
 in vec4 frag_color;
 in vec2 frag_subp;
@@ -9,7 +9,7 @@ void main()
 {
 	float scl = 1.0;
 	
-	if (u_doGrid == 1)
+	if (u_doGrid)
 	{
 		float lenV = length(frag_subp);
 		float cosV = frag_subp.x / lenV;

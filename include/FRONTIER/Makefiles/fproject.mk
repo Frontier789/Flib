@@ -16,7 +16,14 @@ else
  endif
 endif
 
-override F_LINK_LIBS:=-lf $(F_DEF_LINK_LIBS) $(F_LINK_LIBS)
+
+ifeq ($(F_DYNLINK),1)
+ override F_LINK_LIBS:=-lf-dll $(F_DEF_LINK_LIBS) $(F_LINK_LIBS)
+ F_NEEDED_LIB=libf-dll.a
+else
+ override F_LINK_LIBS:=-lf $(F_DEF_LINK_LIBS) $(F_LINK_LIBS)
+ F_NEEDED_LIB=libf.a
+endif
 
 # compile falgse
 CXXFLAGS=-std=gnu++11 -pedantic -Wall
@@ -32,6 +39,8 @@ endif
 ifeq ($(F_DEBUG),)
  CXXFLAGS+=-O3
 endif
+
+CXXFLAGS+=-DFRONTIER_DEBUG
 
 # executable name
 ifeq ($(EXEC),)
@@ -58,7 +67,7 @@ run: all
 
 clean: clean_o_dir clean_exec
 
-$(TARGET): $(O_FILES) $(FPATH)/$(F_LIB_DIR_NAME)/libf.a
+$(TARGET): $(O_FILES) $(FPATH)/$(F_LIB_DIR_NAME)/$(F_NEEDED_LIB)
 	$(CXX) $(LDFLAGS) -L $(FPATH)/$(F_LIB_DIR_NAME) -o $(TARGET) $(O_FILES) $(F_LINK_LIBS)
 
 $(F_O_DIR)/%.o: %.cpp | $(F_O_DIR)

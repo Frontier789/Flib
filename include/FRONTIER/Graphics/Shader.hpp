@@ -45,6 +45,9 @@ namespace fm
 	typedef vector2<float> vec2;
 	typedef vector3<float> vec3;
 	typedef vector4<float> vec4;
+	typedef vector2<int> vec2i;
+	typedef vector3<int> vec3i;
+	typedef vector4<int> vec4i;
 
 	template<fm::Size W,fm::Size H,class T>
 	class matrix;
@@ -71,7 +74,19 @@ namespace fg
 		Additive,  ///< Destination = Destination + Input
 		Alpha      ///< Destination = Destination*(1-Input.a) + Input*Input.a
 	};
-
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Pod type for describing a uniform's properties
+	///
+	/////////////////////////////////////////////////////////////
+	class UniformData
+	{
+	public:
+		fm::Size type; ///< The type of the uniform
+		fm::Size size; ///< The number of array elements in the uniform
+		int location;  ///< The id of the uniform
+	};
+	
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to handle OpenGL shader programs in language <a href="http://en.wikipedia.org/wiki/GLSL">GLSL</a>
 	///
@@ -110,10 +125,10 @@ namespace fg
 			TexUniformData(int location=0,int slot=0,int act_id=0);
 	    };
 
-		std::vector<unsigned int> m_subShaders;  ///< The id of the shaders that builds up the shader program
-		std::map<std::string, int> m_uniforms;   ///< The "id" of the uniforms and their name
-		std::map<std::string, int> m_attribs;    ///< The "id" of the attributes and their name
 		std::map<std::string, TexUniformData > m_textures; ///< The state and name of the texture uniforms
+		std::map<std::string, UniformData> m_uniforms;     ///< The "id" of the uniforms and their name
+		std::vector<unsigned int> m_subShaders; ///< The id of the shaders that builds up the shader program
+		std::map<std::string, int> m_attribs;   ///< The "id" of the attributes and their name
 		fm::Size m_texCounter; ///< The counter used when activating texture slots
 		fm::Uint32 m_defVao;   ///< Default vao for core profiles
 		BlendMode m_blendMode; ///< The used blending
@@ -257,6 +272,14 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
         int getUniformLocation(const std::string &name);
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Fill the necessary data about uniforms
+		///
+		/// This function is used internally
+		///
+		/////////////////////////////////////////////////////////////
+        void fillUniformData();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Check if a uniform of a given name is present
@@ -362,20 +385,6 @@ namespace fg
 		fm::Result setAttribPointer(const std::string &name,const T *pointer,unsigned int stride = 0);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the value of a float uniform
-		///
-		/// If the shader program is invalid no error will be returnes
-		/// and the shader program will not be modified
-		///
-		/// @param name The name of the uniform
-		/// @param x The value of the uniform
-		///
-		/// @return The error-state of the function
-		///
-		/////////////////////////////////////////////////////////////
-		fm::Result setUniform(const std::string &name,float x);
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an int uniform
 		///
 		/// If the shader program is invalid no error will be returnes
@@ -388,6 +397,62 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Result setUniform(const std::string &name,int x);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of an vec2i uniform
+		///
+		/// If the shader program is invalid no error will be returnes
+		/// and the shader program will not be modified
+		///
+		/// @param name The name of the uniform
+		/// @param v The value of the uniform
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setUniform(const std::string &name,const fm::vec2i &v);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of an vec3i uniform
+		///
+		/// If the shader program is invalid no error will be returnes
+		/// and the shader program will not be modified
+		///
+		/// @param name The name of the uniform
+		/// @param v The value of the uniform
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setUniform(const std::string &name,const fm::vec3i &v);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of an vec4i uniform
+		///
+		/// If the shader program is invalid no error will be returnes
+		/// and the shader program will not be modified
+		///
+		/// @param name The name of the uniform
+		/// @param v The value of the uniform
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setUniform(const std::string &name,const fm::vec4i &v);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of a float uniform
+		///
+		/// If the shader program is invalid no error will be returnes
+		/// and the shader program will not be modified
+		///
+		/// @param name The name of the uniform
+		/// @param x The value of the uniform
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setUniform(const std::string &name,float x);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an vec2 uniform
@@ -499,7 +564,21 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setUniform(const std::string &name,fm::Ref<const Texture> tex);
+		fm::Result setUniform(const std::string &name,const Texture &tex);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of a sampler2D uniform
+		///
+		/// If the shader program is invalid no error will be returnes
+		/// and the shader program will not be modified
+		///
+		/// @param name The name of the uniform
+		/// @param tex The value of the uniform
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setUniform(const std::string &name,const Texture *tex);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a samplerCube uniform
@@ -513,7 +592,21 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setUniform(const std::string &name,fm::Ref<const CubeTexture> tex);
+		fm::Result setUniform(const std::string &name,const CubeTexture &tex);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of a samplerCube uniform
+		///
+		/// If the shader program is invalid no error will be returnes
+		/// and the shader program will not be modified
+		///
+		/// @param name The name of the uniform
+		/// @param tex The value of the uniform
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setUniform(const std::string &name,const CubeTexture *tex);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an array of uniforms

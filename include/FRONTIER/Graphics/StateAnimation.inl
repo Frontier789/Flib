@@ -37,8 +37,11 @@ namespace fg
 	template<class StateType>
 	inline void StateAnimation<StateType>::setState(StateType state)
 	{
-		m_curState = state;
-		onStateChange();
+		if (m_curState != state)
+		{
+			m_curState = state;
+			onStateChange();
+		}
 	}
 
 	/////////////////////////////////////////////////////////////

@@ -5,200 +5,548 @@ using namespace std;
 
 #include "ColorPicker.hpp"
 
-/////////////////////////////////////////////////////////////
-/// @brief Skinned scrollbar gui element
-///
-/////////////////////////////////////////////////////////////
-class ScrollBar : public GuiScrollBar, public ClickListener
+namespace fgui
 {
-	SpriteAnimation m_handleAnim; ///< Sprite anim for handle
-	DrawData m_railDraw; ///< DrawData for the rail
-	float m_grabState;   ///< The state the scrollbar was in when it was grabbed
-	fm::vec2 m_grabp;    ///< The point where the scroller was grabbed
-	bool m_grabbed;      ///< True iff the scrolles is grabbed
+	enum CellAlign {
+		CellTopLeft,
+		CellCenter
+	};
 	
 	/////////////////////////////////////////////////////////////
-	/// @brief Test if a point is inside the drag area
-	/// 
-	/// @param p The point
-	/// 
-	/// @return True iff p is in the drag area
-	/// 
-	/////////////////////////////////////////////////////////////
-	virtual bool inDragArea(const fm::vec2 &p) const;
-	
-public:
-	/////////////////////////////////////////////////////////////
-	/// @brief Default constructor
-	/// 
-	/// @param cont The owning context
-	/// 
-	/////////////////////////////////////////////////////////////
-	ScrollBar(GuiContext &cont);
-	/*
-	/////////////////////////////////////////////////////////////
-	/// @brief Set the size of the gui element
-	/// 
-	/// @param size The size
-	/// 
-	/////////////////////////////////////////////////////////////
-	virtual void setSize(fm::vec2s size) override;
-		*/
-	/////////////////////////////////////////////////////////////
-	/// @brief Called when the mouse moves inside the gui element
-	/// 
-	/// @param p The position of the mouse after moving
-	/// @param prevP The position of the mouse before moving
-	/// 
-	/////////////////////////////////////////////////////////////
-	virtual void onMouseMoved(fm::vec2 p,fm::vec2 prevP) override;
-	
-	/////////////////////////////////////////////////////////////
-	/// @brief Called when a mouse button is pressed while inside the gui element
-	/// 
-	/// @param button The button that was pressed
-	/// @param p The position of the mouse
-	/// 
-	/////////////////////////////////////////////////////////////
-	virtual void onPress(fw::Mouse::Button button,fm::vec2 p) override;
-	
-	/////////////////////////////////////////////////////////////
-	/// @brief Called when a mouse button is released while inside the gui element
-	/// 
-	/// @param button The button that was released
-	/// @param p The position of the mouse
-	/// 
-	/////////////////////////////////////////////////////////////
-	virtual void onRelease(fw::Mouse::Button button,fm::vec2 p) override;
-		
-	/////////////////////////////////////////////////////////////
-	/// @brief draw the gui element
-	///
-	/// @param shader The shader to use
+	/// @brief A layout manager capable of handling a table (grid)
 	///
 	/////////////////////////////////////////////////////////////
-	virtual void onDraw(fg::ShaderManager &shader) override;
-};
-	/////////////////////////////////////////////////////////////
-	bool ScrollBar::inDragArea(const fm::vec2 &p) const
+	class GridLayout : public GuiLayout
 	{
-		vec2 s = getSize();
-		vec2 pt = getPosition();
+		std::vector<float> m_rowHeights; ///< The calculated height for all rows
+		std::vector<float> m_colWidths;  ///< The calculated width for all columns
+		fm::Size m_columnCount; ///< The number of columns
 		
-		float sprH = s.h * getScrollSize();
+		/////////////////////////////////////////////////////////////
+		/// @brief Internal function used to convert index to offset
+		///
+		/// @param index The 2d index to convert to offset
+		///
+		/// @return The offset
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Size indexToOffset(fm::vec2s index) const;
 		
-		return fm::rect2f(pt + vec2(0,(s.h-sprH)*getState()),vec2(s.w,sprH)).contains(p);
+		/////////////////////////////////////////////////////////////
+		/// @brief Internal function used update cell positions
+		///
+		/////////////////////////////////////////////////////////////
+		void updateCellPositions();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Internal data structure used to keep track of cell properties
+		///
+		/////////////////////////////////////////////////////////////
+		class CellData
+		{
+		public:
+			fm::vec2 minSize; ///< The required minimal size of the cell
+			fm::vec2 padding; ///< The padding of the cell
+			CellAlign align;  ///< The align of the cell content
+			
+			CellData(); ///< Default constructor
+		};
+		
+		std::vector<CellData> m_cellData;
+		fm::vec2 m_allMinSize;
+		fm::vec2 m_allPadding;
+		
+	public:
+		/////////////////////////////////////////////////////////////
+		/// @brief Default constructr
+		///
+		/// @param owner The owner context
+		///
+		/////////////////////////////////////////////////////////////
+		GridLayout(GuiContext &owner);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Default destructor
+		///
+		/////////////////////////////////////////////////////////////
+		virtual ~GridLayout() = default;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the position of the gui element
+		/// 
+		/// @param pos The position
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setPosition(fm::vec2i pos) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the child at given 2d index 
+		/// 
+		/// @param index The 2d index of the child to get
+		/// @param element The new element
+		/// 
+		/// @return Pointer to the old child at the index
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual GuiElement *setChildElement(fm::vec2s index,GuiElement *element);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the child at given 2d index
+		/// 
+		/// @param index The 2d index of the child to get
+		/// 
+		/// @return Pointer to the child
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual GuiElement *getChildElement(fm::vec2s index) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Remove a child from the layout at a 2d index
+		/// 
+		/// @param index The 2d index of the child
+		/// @param del Whether to call delete on the child
+		/// 
+		/// @return Pointer to the child (or null if deleted or nonexisting child)
+		/// 
+		/////////////////////////////////////////////////////////////
+		GuiElement *removeChild(fm::vec2s index,bool del = false);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Handle the change of a child
+		/// 
+		/// @param child The child that changed
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void onChildSize(GuiElement *child) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the number of cells in the grid
+		/// 
+		/// @param cellCount The number of cells
+		/// @param del True to delete obsolete cells
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setCellCount(fm::vec2s cellCount,bool del = true);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the number children
+		/// 
+		/// @param childCount The number of children
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setChildCount(fm::Size childCount) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the minimum size for a cell in pixels
+		/// 
+		/// @param index The index of the cell
+		/// @param size The min size of the cell
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setCellSize(fm::vec2s index,fm::vec2 size);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the minimum size for all cells, in pixels
+		/// 
+		/// does not override per-cell settings
+		/// 
+		/// @param size The min size of all cells
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setCellSize(fm::vec2 size);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the minimum width of a column
+		/// 
+		/// @param colIndex The index of the column
+		/// @param width The min width of the column
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setColumnWidth(fm::Size colIndex,float width);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the minimum height of a row
+		/// 
+		/// @param colIndex The index of the row
+		/// @param height The min height of the row
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setRowHeight(fm::Size rowIndex,float height);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the padding for a cell
+		/// 
+		/// @param index The 2d index
+		/// @param padding The new padding
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setPadding(fm::vec2s index,fm::vec2 padding);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the padding for all cell
+		/// 
+		/// does not override per-cell settings
+		/// 
+		/// @param padding The new global padding
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setPadding(fm::vec2 padding);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the number of cells
+		/// 
+		/// @return The number of cells
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::vec2s getCellCount(bool del = false) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the minimum size of a cell
+		/// 
+		/// @param element The new element
+		/// 
+		/// @return The number of children the layout has
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::vec2 getCellSize(fm::vec2s index) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the minimum size for all cells, in pixels
+		/// 
+		/// @return The minimum size for all cells, in pixels
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::vec2 getCellSize() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the minimal width of a column
+		/// 
+		/// @param colIndex The index of the column
+		/// 
+		/// @return The minimal width of the column
+		/// 
+		/////////////////////////////////////////////////////////////
+		float getColumnWidth(fm::Size colIndex) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the minimal height of a row
+		/// 
+		/// @param colIndex The index of the row
+		/// 
+		/// @return The minimal height of the row
+		/// 
+		/////////////////////////////////////////////////////////////
+		float getRowHeight(fm::Size rowIndex) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the padding for a cell
+		/// 
+		/// @param index The 2d index
+		///
+		/// @return The padding
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::vec2 getPadding(fm::vec2s index) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the padding for all cell
+		/// 
+		/// @return The global padding
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::vec2 getPadding() const;
+	};
+	
+	/////////////////////////////////////////////////////////////
+	GridLayout::CellData::CellData() : align(CellCenter)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GridLayout::updateCellPositions()
+	{
+		fm::vec2  maxDist;
+		fm::vec2  pixPos;
+		fm::vec2s cellc = getCellCount();
+		fm::vec2  pos = getPosition();
+		
+		std::vector<float> realColWs = m_colWidths;
+		std::vector<float> realRowHs = m_rowHeights;
+		
+		Cv(cellc)
+		{
+			GuiElement *elem = getChildElement(p);
+			fm::Size index = indexToOffset(p);
+			CellData &data = m_cellData[index];
+			
+			if (elem)
+			{
+				fm::vec2 s = elem->getSize();
+				
+				fm::vec2 padding;
+				padding.w = std::max(data.padding.w,m_allPadding.w);
+				padding.h = std::max(data.padding.h,m_allPadding.h);
+				
+				realColWs[p.x] = std::max(realColWs[p.x],s.w + padding.w*2);
+				realRowHs[p.y] = std::max(realRowHs[p.y],s.h + padding.h*2);
+			}
+			
+			realColWs[p.x] = std::max(realColWs[p.x],std::max(data.minSize.w,m_allMinSize.w));
+			realRowHs[p.y] = std::max(realRowHs[p.y],std::max(data.minSize.h,m_allMinSize.h));
+		}
+		
+		Cy(cellc.h)Cx(cellc.w)
+		{
+			fm::vec2s p(x,y);
+			float cellW = realColWs[p.x];
+			float cellH = realRowHs[p.y];
+			fm::Size index = indexToOffset(p);
+			CellData &data = m_cellData[index];
+			
+			GuiElement *elem = getChildElement(p);
+			if (elem)
+			{
+				if (data.align == CellTopLeft)
+					elem->setPosition(pixPos + pos);
+				
+				if (data.align == CellCenter)
+					elem->setPosition(pixPos + pos + (fm::vec2(cellW,cellH) - elem->getSize())/2 );
+			}
+			
+			pixPos.x += cellW;
+			maxDist.w = std::max(maxDist.w,pixPos.x);
+			
+			if (p.x+1 == cellc.w)
+			{
+				pixPos.x  = 0;
+				pixPos.y += cellH;
+				maxDist.h = std::max(maxDist.h,pixPos.y);
+			}
+		}
+		
+		setSize(maxDist);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Size GridLayout::indexToOffset(fm::vec2s index) const
+	{
+		return index.y * m_columnCount + index.x;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GridLayout::setPosition(fm::vec2i pos)
+	{
+		fm::vec2 oldPos = getPosition();
+		
+		Cv(getCellCount())
+		{
+			GuiElement *elem = getChildElement(p);
+			if (elem)
+				elem->setPosition(elem->getPosition() + pos - oldPos);
+		}
+		
+		GuiLayout::setPosition(pos);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	GridLayout::GridLayout(GuiContext &owner) : GuiLayout(owner),
+												m_columnCount(0)
+	{
+		
+	}
+		
+	/////////////////////////////////////////////////////////////
+	void GridLayout::setCellSize(fm::vec2s index,fm::vec2 size)
+	{
+		m_cellData[indexToOffset(index)].minSize = size;
+		updateCellPositions();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::vec2 GridLayout::getCellSize(fm::vec2s index) const
+	{
+		return m_cellData[indexToOffset(index)].minSize;
 	}
 
 	/////////////////////////////////////////////////////////////
-	ScrollBar::ScrollBar(GuiContext &cont) : GuiScrollBar(cont),
-											 m_grabbed(false)
+	GuiElement *GridLayout::setChildElement(fm::vec2s index,GuiElement *element)
 	{
-		m_handleAnim.setSprite("norm" ,cont.getSprite("Button_Bckg_Norm" ));
-		m_handleAnim.setSprite("press",cont.getSprite("Button_Bckg_Press"));
-		m_handleAnim.setSprite("hover",cont.getSprite("Button_Bckg_Hover"));
-		m_handleAnim.setState("norm");
-		
-		fg::Mesh rectangle = fg::Mesh::getRectangle();
-		
-		rectangle.clr.resize(rectangle.pts.size());
-		C(rectangle.clr.size())
-			rectangle.clr[i] = vec4(.5,.5,.5,.5);
-		
-		m_railDraw = rectangle;
-	}
-	/*
-	/////////////////////////////////////////////////////////////
-	void ScrollBar::setSize(fm::vec2s size)
-	{
-		
-	}
-	*/
-	/////////////////////////////////////////////////////////////
-	void ScrollBar::onMouseMoved(fm::vec2 p,fm::vec2 prevP)
-	{
-		if (m_grabbed)
-		{
-			vec2 s = getSize();
-			
-			float state = m_grabState + (p.y - m_grabp.y) / (s.h - s.h * getScrollSize());
-			
-			setState(state);
-		}
-		else
-		{
-			if (inDragArea(p))
-			{
-				m_handleAnim.setState("hover");
-			}
-			else
-			{
-				m_handleAnim.setState("norm");
-			}
-		}
-	}
-	
-	/////////////////////////////////////////////////////////////
-	void ScrollBar::onPress(fw::Mouse::Button button,fm::vec2 p)
-	{
-		if (button == fw::Mouse::Left)
-		{
-			if (!inDragArea(p))
-			{
-				vec2 s = getSize();
-				
-				float sprH = s.h * getScrollSize();
-				
-				float inp = p.y - getPosition().y - sprH/2;
-				
-				setState(inp / (s.h - sprH));
-			}
-				
-			m_grabState = getState();
-			m_grabbed = true;
-			m_grabp = p;
-			
-			m_handleAnim.setState("press");		
-		}
-	}
-	
-	/////////////////////////////////////////////////////////////
-	void ScrollBar::onRelease(fw::Mouse::Button button,fm::vec2 p)
-	{
-		if (button == fw::Mouse::Left)
-		{
-			m_grabbed = false;
-			
-			m_handleAnim.setState("norm");
-		}
-	}
-	
-	/////////////////////////////////////////////////////////////
-	void ScrollBar::onDraw(fg::ShaderManager &shader)
-	{
-		vec2 p = getPosition();
-		vec2 s = getSize();
-		
-		float sprH = s.h * getScrollSize();
-		
-		mat4 m1 = MATRIX::translation(p + s*vec2(.5,0) - vec2(2,0) + vec2(0,sprH/2)) * MATRIX::scaling(vec2(4,s.h - sprH));
-		
-		shader.getModelStack().push().mul(m1);
-		shader.useTexture(nullptr);
-		shader.draw(m_railDraw);
-		shader.getModelStack().pop();
-		
-		m_handleAnim.setPosition(p + vec2(0,(s.h-sprH)*getState()));
-		m_handleAnim.setSize(vec2(s.w,sprH));
-		m_handleAnim.onDraw(shader);
+		return GuiLayout::setChildElement(indexToOffset(index),element);
 	}
 
+	/////////////////////////////////////////////////////////////
+	GuiElement *GridLayout::getChildElement(fm::vec2s index) const
+	{
+		return GuiLayout::getChildElement(indexToOffset(index));
+	}
+
+	/////////////////////////////////////////////////////////////
+	GuiElement *GridLayout::removeChild(fm::vec2s index,bool del)
+	{
+		return GuiLayout::removeChild(indexToOffset(index),del);
+	}
+
+	/////////////////////////////////////////////////////////////
+	void GridLayout::onChildSize(GuiElement *child)
+	{
+		updateCellPositions();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GridLayout::setCellCount(fm::vec2s cellCount,bool del)
+	{
+		std::vector<GuiElement*> elements_cpy(cellCount.area(),nullptr);
+		std::vector<CellData> cellData_cpy(cellCount.area());
+		
+		fm::vec2s cellnum = getCellCount();
+		
+		Cx(std::max(cellCount.w,cellnum.w))
+		{
+			Cy(std::max(cellCount.h,cellnum.h))
+			{
+				bool inOld = x < cellnum.w && y < cellnum.h;
+				bool inNew = x < cellCount.w && y < cellCount.h;
+				
+				fm::Size oldIndex = y * cellnum.w   + x;
+				fm::Size newIndex = y * cellCount.w + x;
+				
+				if (inOld && inNew)
+				{
+					elements_cpy[newIndex] = m_elements[oldIndex];
+					cellData_cpy[newIndex] = m_cellData[oldIndex];
+				}
+				if (inOld && !inNew)
+				{
+					if (del)
+						delete m_elements[oldIndex];
+				}
+			}
+		}
+		
+		m_colWidths.resize(cellCount.w,0);
+		m_rowHeights.resize(cellCount.h,0);
+		
+		m_columnCount = cellCount.w;
+		
+		m_cellData.swap(cellData_cpy);
+		m_elements.swap(elements_cpy);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::vec2s GridLayout::getCellCount(bool del) const
+	{
+		fm::Size chl = getChildCount();
+		return fm::vec2s(m_columnCount,m_columnCount ? (chl + m_columnCount - 1) / m_columnCount : 0);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GridLayout::setChildCount(fm::Size childCount)
+	{
+		if (!m_columnCount)
+			m_columnCount = 1;
+		
+		setCellCount(fm::vec2s(m_columnCount,(childCount + m_columnCount - 1) / m_columnCount));
+	}
+		
+	/////////////////////////////////////////////////////////////
+	void GridLayout::setCellSize(fm::vec2 size)
+	{
+		m_allMinSize = size;
+		updateCellPositions();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::vec2 GridLayout::getCellSize() const
+	{
+		return m_allMinSize;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GridLayout::setColumnWidth(fm::Size colIndex,float width)
+	{
+		m_colWidths[colIndex] = width;
+		updateCellPositions();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	float GridLayout::getColumnWidth(fm::Size colIndex) const
+	{
+		return m_colWidths[colIndex];
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GridLayout::setRowHeight(fm::Size rowIndex,float height)
+	{
+		m_rowHeights[rowIndex] = height;
+		updateCellPositions();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	float GridLayout::getRowHeight(fm::Size rowIndex) const
+	{
+		return m_rowHeights[rowIndex];
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GridLayout::setPadding(fm::vec2s index,fm::vec2 padding)
+	{
+		m_cellData[indexToOffset(index)].padding = padding;
+		updateCellPositions();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::vec2 GridLayout::getPadding(fm::vec2s index) const
+	{
+		return m_cellData[indexToOffset(index)].padding;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GridLayout::setPadding(fm::vec2 padding)
+	{
+		m_allPadding = padding;
+		updateCellPositions();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::vec2 GridLayout::getPadding() const
+	{
+		return m_allPadding;
+	}
+}
 
 int main()
 {
 	GuiWindow win(vec2(640,480),"gui");
 	
 	int push_count = 0;
+	
+	GridLayout *l = new GridLayout(win);
+	
+	l->setCellCount(vec2(2,3));
+	
+	l->setChildElement(vec2(0,0),new GuiText(win,"R: "));
+	l->setChildElement(vec2(0,1),new GuiText(win,"G: "));
+	l->setChildElement(vec2(0,2),new GuiText(win,"B: "));
+	
+	Color colorRD(0,0,0);
+	
+	auto updateTitle = [&](){
+		win.setTitle("gui (" + fm::toString(colorRD.r) + "," 
+							 + fm::toString(colorRD.g) + ","
+							 + fm::toString(colorRD.b) + ")");
+	};
+	
+	l->setChildElement(vec2(1,0),new ScrollBar(win,vec2(50,15),[&](GuiScrollBar&,float r){colorRD.r = r*255; updateTitle();}));
+	l->setChildElement(vec2(1,1),new ScrollBar(win,vec2(50,15),[&](GuiScrollBar&,float g){colorRD.g = g*255; updateTitle();}));
+	l->setChildElement(vec2(1,2),new ScrollBar(win,vec2(50,15),[&](GuiScrollBar&,float b){colorRD.b = b*255; updateTitle();}));
+	
+	l->setPadding(vec2(10,5));
+	
+	cout << l->getSize() << endl;
+	l->setPosition(win.getSize() - l->getSize());
+	
+	win.getMainLayout().addChildElement(l);
 	
 	C(10)
 	{
@@ -224,7 +572,7 @@ int main()
 	
 	ScrollBar *ssb = new ScrollBar(win);
 	ssb->setSize(vec2(25,300));
-	ssb->setPosition(vec2(640 - 40 - ssb->getSize().w,0));
+	ssb->setPosition(vec2(640 - 20 - ssb->getSize().w,0));
 	ssb->setCallback([&](GuiScrollBar &,float s){
 		cp->raiseBrightness(s);
 	});

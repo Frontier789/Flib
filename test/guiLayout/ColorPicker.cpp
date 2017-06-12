@@ -115,6 +115,11 @@ void ColorPicker::onMouseMoved(fm::vec2 p,fm::vec2 prevP)
 		m_lastp = p;
 	}
 } 
+
+void ColorPicker::onScroll(float amount)
+{
+	raiseBrightness(m_sat + amount / 10.0);
+}
 	
 void ColorPicker::raiseBrightness(float amount)
 {

@@ -21,8 +21,8 @@ namespace fgui
 {
 	/////////////////////////////////////////////////////////////
 	GuiScrollBar::GuiScrollBar(GuiContext &cont) : GuiElement(cont),
-												   m_scrollSize(.1),
-												   m_state(0)
+												   m_scrollState(0),
+												   m_scrollSize(.1)
 	{
 		
 	}
@@ -30,9 +30,9 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiScrollBar::onScroll(float amount)
 	{
-		float delta = -amount * m_scrollSize;
+		float delta = amount * m_scrollSize;
 		
-		setState(getState() + delta);
+		setScrollState(getScrollState() + delta);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -42,13 +42,13 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	void GuiScrollBar::setState(float state)
+	void GuiScrollBar::setScrollState(float state)
 	{
 		if (state < 0) state = 0;
 		if (state > 1) state = 1;
 		
-		m_state = state;
-		callCallback(m_state);
+		m_scrollState = state;
+		callCallback(m_scrollState);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -58,8 +58,8 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	float GuiScrollBar::getState() const
+	float GuiScrollBar::getScrollState() const
 	{
-		return m_state;
+		return m_scrollState;
 	}
 }

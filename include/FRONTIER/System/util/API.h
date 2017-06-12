@@ -22,7 +22,7 @@
 
 		#ifdef FRONTIER_OS_WINDOWS
 			
-			#ifdef FRONTIER_LIBBUILD
+			#ifdef FRONTIER_SHARED_LIBBUILD
 				#define FRONTIER_API __declspec(dllexport)
 			#else 
 				#define FRONTIER_API __declspec(dllimport)

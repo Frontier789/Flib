@@ -81,7 +81,12 @@ namespace fg
 	template<class StateType>
 	inline void SpriteStateAnimation<StateType>::setSprite(const fm::String &stateName,fg::FramedSprite sprite)
 	{
+		bool first = m_stateToSprite.size() == 0;
+		
 		m_stateToSprite[stateName] = sprite;
+		
+		if (first)
+			StateAnimation<StateType>::setState(stateName);
 	}
 
 	/////////////////////////////////////////////////////////////
