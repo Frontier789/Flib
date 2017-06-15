@@ -15,7 +15,7 @@ int main()
 	bool running = true;
 	Clock fpsClock;
 	
-	FixedShaderManager shader;
+	ShaderManager *shader = ShaderManager::getDefaultShader();
 	deque<DrawData*> drawdatas;
 	
 	vector<vec2> points;
@@ -32,7 +32,7 @@ int main()
 	
 	pol2 gravity(70,deg(90));
 	
-	shader.getModelStack().push(MATRIX::ortho(0,win.getSize().h,win.getSize().w,0,1,-1));
+	shader->getModelStack().push(MATRIX::ortho(0,win.getSize().h,win.getSize().w,0,1,-1));
 	
 	bool gPress = false;
 
@@ -259,7 +259,7 @@ int main()
 		
 		win.clear();
 		C(drawdatas.size())
-			shader.draw(*drawdatas[i]);
+			shader->draw(*drawdatas[i]);
 		win.swapBuffers();
 		
 		Sleep(1.0 / 60.0 - fpsClock.getSeconds());
@@ -267,4 +267,5 @@ int main()
 	}
 	
 	C(drawdatas.size()) delete drawdatas[i];
+	delete shader;
 }

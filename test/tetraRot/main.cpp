@@ -57,9 +57,9 @@ int main()
 	Clock fpsClk;
 	Clock rotClk;
 	
-	FixedShaderManager shader;
+	ShaderManager *shader = ShaderManager::getDefaultShader();
 	
-	shader.getCamera().set3D(win.getSize(),vec3(3,3,3),vec3());
+	shader->getCamera().set3D(win.getSize(),vec3(3,3,3),vec3());
 	
 	DrawData dd,ddWf;
 	{
@@ -135,7 +135,7 @@ int main()
 			
 			if (ev.type == Event::Resized)
 			{
-				shader.getCamera().setScreenSize(win.getSize());
+				shader->getCamera().setScreenSize(win.getSize());
 				FrameBuffer::setViewport(rect2s(vec2(),win.getSize()));
 			}
 			
@@ -158,26 +158,26 @@ int main()
 					vec2 delta = p-mouseP;
 					mouseP = p;
 					
-					rotM = Quat(shader.getCamera().u(),-delta.x/80) * Quat(shader.getCamera().r(),-delta.y/80) * rotM;
+					rotM = Quat(shader->getCamera().u(),-delta.x/80) * Quat(shader->getCamera().r(),-delta.y/80) * rotM;
 				}
 			}
 			
 			if (ev.type == Event::MouseWheelMoved)
 			{
-				shader.getCamera().setPos(shader.getCamera().getPos() * pow(2,-ev.wheel.delta));
+				shader->getCamera().setPos(shader->getCamera().getPos() * pow(2,-ev.wheel.delta));
 			}
 		}
 		
 		win.clear();
-		shader.getModelStack().top(rotM);
+		shader->getModelStack().top(rotM);
 		
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(1,1);
-		shader.draw(dd);
+		shader->draw(dd);
 		glDisable(GL_POLYGON_OFFSET_FILL);
 		
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-		shader.draw(ddWf);
+		shader->draw(ddWf);
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		
 		win.swapBuffers();
@@ -185,4 +185,6 @@ int main()
 		Sleep(1.0 / 120.0 - fpsClk.getSeconds());
 		fpsClk.restart();
 	}
+	
+	delete shader;
 }
