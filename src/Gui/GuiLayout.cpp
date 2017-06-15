@@ -220,7 +220,7 @@ namespace fgui
 		
 		// forward upwards
 		if (m_activeElement)
-			GuiElement::setActive(this);
+			GuiElement::setActive(true);
 	}
 	 
 	/////////////////////////////////////////////////////////////
