@@ -48,7 +48,7 @@ namespace fgui
 		if (state > 1) state = 1;
 		
 		m_scrollState = state;
-		callCallback(m_scrollState);
+		callCallback();
 	}
 
 	/////////////////////////////////////////////////////////////

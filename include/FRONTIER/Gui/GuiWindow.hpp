@@ -19,6 +19,7 @@
 
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Gui/GuiContext.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/Window/Window.hpp>
 
 #define FRONTIER_GUIWINDOW
@@ -36,7 +37,7 @@ namespace fgui
 	/// @ingroup Gui
 	///
 	/////////////////////////////////////////////////////////////
-	class GuiWindow : public fw::Window, public GuiContext
+	class FRONTIER_API GuiWindow : public fw::Window, public GuiContext
 	{
 	public:
 		/////////////////////////////////////////////////////////////

@@ -18,6 +18,7 @@
 #define FRONTIER_SCROLLLISTENERR_HPP_INCLUDED
 
 #include <FRONTIER/Gui/MouseMoveListener.hpp>
+#include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_SCROLLLISTENERR
 
@@ -26,8 +27,10 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	/// @brief Listener base class for scrolling
 	///
+	/// @ingroup Gui
+	///
 	/////////////////////////////////////////////////////////////
-	class ScrollListener : public virtual MouseMoveListener
+	class FRONTIER_API ScrollListener : public virtual MouseMoveListener
 	{
 	public:
 		/////////////////////////////////////////////////////////////

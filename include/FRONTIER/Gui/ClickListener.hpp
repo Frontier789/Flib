@@ -20,6 +20,7 @@
 #include <FRONTIER/Gui/MouseMoveListener.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/Window/Event.hpp>
 #include <FRONTIER/System/Clock.hpp>
 #include <FRONTIER/System/Time.hpp>
@@ -36,7 +37,7 @@ namespace fgui
 	/// @ingroup Gui
 	///
 	/////////////////////////////////////////////////////////////
-	class ClickListener : public virtual MouseMoveListener
+	class FRONTIER_API ClickListener : public virtual MouseMoveListener
 	{
 		fm::Clock m_clickClks[fw::Mouse::ButtonCount]; ///< Clock for double click
 		fm::vec2 m_pressPoses[fw::Mouse::ButtonCount]; ///< The position where the button was pressed

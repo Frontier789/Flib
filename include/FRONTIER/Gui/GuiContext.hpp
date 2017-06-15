@@ -20,6 +20,7 @@
 #include <FRONTIER/Graphics/FramedSprite.hpp>
 #include <FRONTIER/Graphics/TextureAtlas.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
@@ -58,7 +59,7 @@ namespace fgui
 	/// @ingroup Gui
 	///
 	/////////////////////////////////////////////////////////////
-	class GuiContext
+	class FRONTIER_API GuiContext
 	{
 	protected:
 		fg::TextureAtlas<fm::String>  m_texAtlas; ///< The texture atlas for sprites

@@ -19,6 +19,7 @@
 
 #include <FRONTIER/Graphics/FramedSprite.hpp>
 #include <FRONTIER/Gui/GuiButton.hpp>
+#include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_PUSHBUTTON
 
@@ -30,7 +31,7 @@ namespace fgui
 	/// @ingroup Gui
 	///
 	/////////////////////////////////////////////////////////////
-	class PushButton : public GuiButton
+	class FRONTIER_API PushButton : public GuiButton
 	{
 		fg::FramedSprite *m_activeSprite; ///< The active state's sprite
 		fg::FramedSprite m_spriteHover;   ///< The sprite to display when the button is hovered
@@ -62,7 +63,7 @@ namespace fgui
 		/// @param text The text
 		/// 
 		/////////////////////////////////////////////////////////////
-		PushButton(GuiContext &cont,const fm::String &text);
+		PushButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback = nullptr);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief draw the button

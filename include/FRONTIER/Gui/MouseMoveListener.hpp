@@ -20,6 +20,7 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Gui/GuiCallback.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_MOUSEMOVELISTENER
 
@@ -33,7 +34,7 @@ namespace fgui
 	/// @ingroup Gui
 	///
 	/////////////////////////////////////////////////////////////
-	class MouseMoveListener : public virtual GuiCallback
+	class FRONTIER_API MouseMoveListener : public virtual GuiCallback
 	{
 	protected:
 		fm::vec2 m_prevPos; ///< The last position of the mouse inside the gui element

@@ -17,10 +17,11 @@
 #ifndef FRONTIER_GUISCROLLBAR_HPP_INCLUDED
 #define FRONTIER_GUISCROLLBAR_HPP_INCLUDED
 
+#include <FRONTIER/Gui/ScrollListener.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Gui/CallbackUser.hpp>
 #include <FRONTIER/Gui/GuiElement.hpp>
-#include <FRONTIER/Gui/ScrollListener.hpp>
+#include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_GUISCROLLBAR
 
@@ -29,8 +30,10 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	/// @brief Base class for gui classes that can be scrolled
 	///
+	/// @ingroup Gui
+	///
 	/////////////////////////////////////////////////////////////
-	class GuiScrollBar : public GuiElement, public ScrollListener, public CallbackUser<GuiScrollBar,float>
+	class FRONTIER_API GuiScrollBar : public GuiElement, public ScrollListener, public CallbackUser<GuiScrollBar>
 	{
 		float m_scrollState; ///< The current state in range [0,1]
 		float m_scrollSize;  ///< The amount to change the state when scrolled

@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////// <!--
+ FRONTIER_API////////////////////////////////////////////////////////////////////////// <!--
 /// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
@@ -22,6 +22,7 @@
 #include <FRONTIER/Gui/GuiElement.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/Graphics/Font.hpp>
 
 #define FRONTIER_GUITEXT
@@ -54,7 +55,7 @@ namespace fgui
 	/// @ingroup Gui
 	/// 
 	/////////////////////////////////////////////////////////////
-	class GuiFont
+	class FRONTIER_API GuiFont
 	{
 	public:
 		fm::String fontName; ///< The name of the font
@@ -99,7 +100,7 @@ namespace fgui
 	/// @ingroup Gui
 	/// 
 	/////////////////////////////////////////////////////////////
-	class GuiText : public GuiElement
+	class FRONTIER_API GuiText : public GuiElement
 	{
 		const fg::Texture *m_tex; ///< The texture the font uses
 		fg::DrawData m_drawdata;  ///< Data used when drawing

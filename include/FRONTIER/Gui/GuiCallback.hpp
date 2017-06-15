@@ -20,6 +20,7 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <vector>
 
 #define FRONTIER_GUICALLBACK
@@ -37,7 +38,7 @@ namespace fgui
 	/// @ingroup Gui
 	///
 	/////////////////////////////////////////////////////////////
-	class GuiCallback
+	class FRONTIER_API GuiCallback
 	{
 		std::vector<fm::Delegate<bool,fw::Event&>> m_handlers; ///< Internal vector of handlers
 	public:

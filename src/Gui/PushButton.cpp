@@ -47,8 +47,8 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	PushButton::PushButton(GuiContext &cont,const fm::String &text) : GuiButton(cont,text),
-																	  m_activeSprite(&m_spriteNorm)
+	PushButton::PushButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback) : GuiButton(cont,text),
+																											  m_activeSprite(&m_spriteNorm)
 	{
 		m_spriteNorm  = cont.getSprite("Button_Bckg_Norm" );
 		m_spriteHover = cont.getSprite("Button_Bckg_Hover");
@@ -56,6 +56,7 @@ namespace fgui
 		
 		setSize(getSize());
 		setPosition(getPosition());
+		setCallback(callback);
 	}
 	
 	/////////////////////////////////////////////////////////////

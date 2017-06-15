@@ -19,6 +19,7 @@
 
 #include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/Gui/GuiElement.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <vector>
 
 #define FRONTIER_GUILAYOUTBASE
@@ -31,7 +32,7 @@ namespace fgui
 	/// @ingroup Gui
 	///
 	/////////////////////////////////////////////////////////////
-	class GuiLayout : public GuiElement
+	class FRONTIER_API GuiLayout : public GuiElement
 	{
 	protected:
 		std::vector<GuiElement*> m_elements; ///< The elements of the layout

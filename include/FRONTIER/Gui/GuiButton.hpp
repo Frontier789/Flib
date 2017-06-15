@@ -21,6 +21,7 @@
 #include <FRONTIER/Gui/ClickListener.hpp>
 #include <FRONTIER/Gui/CallbackUser.hpp>
 #include <FRONTIER/Gui/GuiElement.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/Gui/GuiText.hpp>
 
 #define FRONTIER_GUIBUTTON
@@ -38,7 +39,7 @@ namespace fgui
 	/// @ingroup Gui
 	/// 
 	/////////////////////////////////////////////////////////////
-	class GuiButton : public GuiElement, public ClickListener, public CallbackUser<GuiButton>
+	class FRONTIER_API GuiButton : public GuiElement, public ClickListener, public CallbackUser<GuiButton>
 	{
 		GuiText m_text; ///< The gui elem for text display on the button
 		
@@ -79,7 +80,7 @@ namespace fgui
 		/// @param text The text to use
 		/// 
 		/////////////////////////////////////////////////////////////
-		GuiButton(GuiContext &cont,const fm::String &text);
+		GuiButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback = nullptr);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Draw the button
@@ -128,6 +129,14 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		void setText(const fm::String &text);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Call a function for every gui element in the hierarchy
+		/// 
+		/// @param func The func to call
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void traverseHierarchy(fm::Delegate<void,GuiElement &> func) override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Called when the mouse enters the gui element

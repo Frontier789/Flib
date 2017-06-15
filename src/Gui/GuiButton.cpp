@@ -34,10 +34,11 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	GuiButton::GuiButton(GuiContext &cont,const fm::String &text) : GuiElement(cont),
-																	m_text(cont,text)
+	GuiButton::GuiButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback) : GuiElement(cont),
+																											 m_text(cont,text)
 	{
 		setSize(m_text.getSize());
+		setCallback(callback);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -85,6 +86,13 @@ namespace fgui
 		m_text.setText(text);
 		
 		setSize(getSize());
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiButton::traverseHierarchy(fm::Delegate<void,GuiElement &> func)
+	{
+		func(m_text);
+		func(*this);
 	}
 	
 	/////////////////////////////////////////////////////////////

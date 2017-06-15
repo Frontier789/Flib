@@ -63,7 +63,7 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	ScrollBar::ScrollBar(GuiContext &cont,fm::vec2s size,fm::Delegate<void,GuiScrollBar &,float> callback) : ScrollBar(cont)
+	ScrollBar::ScrollBar(GuiContext &cont,fm::vec2s size,fm::Delegate<void,GuiScrollBar &> callback) : ScrollBar(cont)
 	{
 		setSize(size);
 		setCallback(callback);

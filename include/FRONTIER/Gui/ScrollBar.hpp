@@ -22,6 +22,7 @@
 #include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/Gui/ClickListener.hpp>
 #include <FRONTIER/Gui/GuiScrollBar.hpp>
+#include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_SCROLLBAR
 
@@ -29,6 +30,8 @@ namespace fgui
 {
 	/////////////////////////////////////////////////////////////
 	/// @brief Enum for the scroll direction
+	///
+	/// @ingroup Gui
 	///
 	/////////////////////////////////////////////////////////////
 	enum ScrollDirection {
@@ -43,7 +46,7 @@ namespace fgui
 	/// @brief Skinned scrollbar gui element
 	///
 	/////////////////////////////////////////////////////////////
-	class ScrollBar : public GuiScrollBar, public ClickListener
+	class FRONTIER_API ScrollBar : public GuiScrollBar, public ClickListener
 	{
 		fg::SpriteAnimation m_handleAnim; ///< Sprite anim for handle
 		ScrollDirection m_direction; ///< The direction
@@ -84,7 +87,7 @@ namespace fgui
 		/// @param size The size of the scrollbar
 		/// 
 		/////////////////////////////////////////////////////////////
-		ScrollBar(GuiContext &cont,fm::vec2s size,fm::Delegate<void,GuiScrollBar &,float> callback = nullptr);
+		ScrollBar(GuiContext &cont,fm::vec2s size,fm::Delegate<void,GuiScrollBar &> callback = nullptr);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the size of the gui element

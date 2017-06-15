@@ -21,6 +21,7 @@
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Gui/GuiCallback.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/String.hpp>
 
 #define FRONTIER_GUIELEMENT
@@ -46,7 +47,7 @@ namespace fgui
 	/// @ingroup Gui
 	///
 	/////////////////////////////////////////////////////////////
-	class GuiElement : public fg::Drawable, public virtual GuiCallback
+	class FRONTIER_API GuiElement : public fg::Drawable, public virtual GuiCallback
 	{
 		GuiContext *m_context; ///< The owner context of the element
 		GuiLayout  *m_layout;  ///< The layout that owns the element
