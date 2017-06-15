@@ -44,7 +44,30 @@ namespace fg
 			return "UnknownShader";
 		}
 	}
+		
+	/////////////////////////////////////////////////////////////
+	Shader::TexUniformData::TexUniformData(int location,int slot,int act_id) : location(location),
+																			   slot(slot),
+																			   act_id(act_id)
+	{
+		
+	}
 	
+	/////////////////////////////////////////////////////////////
+	Shader::InputData::InputData(fm::Size type,fm::Size size,int location) : flags(0),
+																			 type(type),
+																			 size(size),
+																			 location(location)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Shader::InputData::isArray() const
+	{
+		return size != 0;
+	}
+
 	/// compile shader objects /////////////////////////////////////////////////////////
     fm::Result Shader::compileSubShader(const std::string &text,unsigned int type,unsigned int &ret)
     {
@@ -201,8 +224,8 @@ namespace fg
 	{
 		m_texCounter = 0;
 		m_textures.clear();
-	    m_attribs.clear();
 		m_uniforms.clear();
+	    m_attributes.clear();
 	}
 
 	/// constructor /////////////////////////////////////////////////////////
@@ -247,7 +270,7 @@ namespace fg
 		m_subShaders.swap(shader.m_subShaders);
 		m_uniforms.swap(shader.m_uniforms);
 		m_textures.swap(shader.m_textures);
-		m_attribs.swap(shader.m_attribs);
+		m_attributes.swap(shader.m_attributes);
 		
 		std::swap(m_texCounter,shader.m_texCounter);
 		std::swap(m_defVao,shader.m_defVao);
@@ -326,7 +349,7 @@ namespace fg
 		res = link();
 		if (!res) return res;
 		
-		fillUniformData();
+		fillAttribAndUniformData();
 		
 		return postProcess(data,types,count);
 	}
@@ -391,29 +414,57 @@ namespace fg
 	}
 	
 	////////////////////////////////////////////////////////////
-	void Shader::fillUniformData()
+	void Shader::fillAttribAndUniformData()
 	{
-		GLint unicount;
-		glGetProgramiv(getGlId(),GL_ACTIVE_UNIFORMS,&unicount);
-		
-		GLint maxlen;
-		glGetProgramiv(getGlId(),GL_ACTIVE_UNIFORM_MAX_LENGTH,&maxlen);
-		
-		std::vector<GLchar> buf(maxlen);
-		
-		for (int i=0;i<unicount;++i)
-		{
-			GLsizei written;
-			GLint unisize;
-			GLenum unitype;
-			glGetActiveUniform(getGlId(),i,maxlen,&written,&unisize,&unitype,&buf[0]);
+		auto uniOrAttribFiller = [&](fm::Size activeFlag,
+									 fm::Size maxLenFlag,
+									 decltype(glGetActiveUniform) glDataGetterFunc,
+									 decltype(glGetUniformLocation) glLocGetterFunc,
+									 decltype(m_uniforms) &inputDataHolder){
+			GLint dataCount;
+			glGetProgramiv(getGlId(),activeFlag,&dataCount);
 			
-			UniformData &uniData = m_uniforms[std::string(&buf[0])];
+			GLint maxlen;
+			glGetProgramiv(getGlId(),maxLenFlag,&maxlen);
 			
-			uniData.type = unitype;
-			uniData.size = unisize;
-			uniData.location = glGetUniformLocation(getGlId(),&buf[0]);
-		}
+			std::vector<GLchar> buf(maxlen);
+			
+			for (int i=0;i<dataCount;++i)
+			{
+				GLsizei written;
+				GLint unisize;
+				GLenum unitype;
+				glDataGetterFunc(getGlId(),i,maxlen,&written,&unisize,&unitype,&buf[0]);
+				
+				std::string name;
+				bool isarray = false;
+				
+				for (fm::Size i=0;i<buf.size();++i)
+				{
+					if (buf[i] == '[')
+					{
+						name = std::string(buf.begin(),buf.begin()+i);
+						isarray = true;
+						break;
+					}
+				}
+				
+				if (!isarray)
+				{
+					name = &buf[0];
+					unisize = 0;
+				}
+				
+				InputData &inputData = inputDataHolder[name];
+				
+				inputData.type = unitype;
+				inputData.size = unisize;
+				inputData.location = glLocGetterFunc(getGlId(),&buf[0]);
+			}
+		};
+		
+		uniOrAttribFiller(GL_ACTIVE_UNIFORMS,GL_ACTIVE_UNIFORM_MAX_LENGTH,glGetActiveUniform,glGetUniformLocation,m_uniforms);
+		uniOrAttribFiller(GL_ACTIVE_ATTRIBUTES,GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,glGetActiveAttrib,glGetAttribLocation,m_attributes);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -421,12 +472,19 @@ namespace fg
 	{
 		if (!getGlId())
 			return 0;
-
-		auto it = m_uniforms.find(name);
-		if (it == m_uniforms.end())
-			return 0;
 		
-		return it->second.location + 1;
+		fm::Size i = name.find('[');
+		
+		if (i == std::string::npos)
+		{
+			auto it = m_uniforms.find(name);
+			if (it == m_uniforms.end())
+				return 0;
+			
+			return it->second.location + 1;			
+		}
+		
+		return glGetUniformLocation(getGlId(),name.c_str()) + 1;	
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -436,11 +494,17 @@ namespace fg
 
 		if (location == -1)
 			return fm::Result("GLError",fm::Result::OPFailed,"AttrNotFound","enableAttribPointer",__FILE__,__LINE__,name);
-
+		
 		if (enable)
-			return glCheck(glEnableVertexAttribArray(location));
+		{
+			m_attributes[name].flags &= FRONTIER_SHADER_ATTRIB_POINTER_ENABLED_BIT;
+			return glCheck(glEnableVertexAttribArray(location));			
+		}
 		else
+		{
+			m_attributes[name].flags &= ~FRONTIER_SHADER_ATTRIB_POINTER_ENABLED_BIT;
 			return glCheck(glDisableVertexAttribArray(location));
+		}
 	}
 
 
@@ -462,19 +526,11 @@ namespace fg
 			return 0;
 
 		// check if already in dictionary
-		std::map<std::string, int>::const_iterator it = m_attribs.find(name);
-		if (it != m_attribs.end())
-			return it->second+1;
+		auto it = m_attributes.find(name);
+		if (it != m_attributes.end())
+			return it->second.location+1;
 
-		// get location from GL
-		int location = glGetAttribLocation(getGlId(),name.c_str());
-
-		// insert into dictionary
-		if (location != -1)
-			m_attribs.insert(std::make_pair(name, location));
-
-		// on error location is -1
-		return location + 1;
+		return 0;
 	}
 	
 	namespace priv

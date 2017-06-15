@@ -30,6 +30,8 @@
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/System/Ref.hpp>
 
+#define FRONTIER_SHADER_ATTRIB_POINTER_ENABLED_BIT (fm::Size(1))
+
 #define FRONTIER_SHADER
 #include <type_traits>
 #include <vector>
@@ -76,18 +78,6 @@ namespace fg
 	};
 	
 	/////////////////////////////////////////////////////////////
-	/// @brief Pod type for describing a uniform's properties
-	///
-	/////////////////////////////////////////////////////////////
-	class UniformData
-	{
-	public:
-		fm::Size type; ///< The type of the uniform
-		fm::Size size; ///< The number of array elements in the uniform
-		int location;  ///< The id of the uniform
-	};
-	
-	/////////////////////////////////////////////////////////////
 	/// @brief Class used to handle OpenGL shader programs in language <a href="http://en.wikipedia.org/wiki/GLSL">GLSL</a>
 	///
 	/// @ingroup Graphics
@@ -124,16 +114,50 @@ namespace fg
 			/////////////////////////////////////////////////////////////
 			TexUniformData(int location=0,int slot=0,int act_id=0);
 	    };
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Pod type for describing a shader input's properties (like uniform or attribute)
+		///
+		/////////////////////////////////////////////////////////////
+		class InputData
+		{
+		public:
+			fm::Size flags; ///< Extra flags 
+			fm::Size type;  ///< The type of the shader input
+			fm::Size size;  ///< The number of array elements in the shader input
+			int location;   ///< The id of the shader input
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Default constructor
+			///
+			/// @param type type
+			/// @param size size
+			/// @param location location
+			///
+			/////////////////////////////////////////////////////////////
+			InputData(fm::Size type=0,fm::Size size=0,int location=0);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Check if the shader input is an array
+			///
+			/// @return True iff the shader input is an array
+			///
+			/////////////////////////////////////////////////////////////
+			bool isArray() const;
+		};
+		
+		typedef InputData UniformData; ///< Uniform data
+		typedef InputData AttribData;  ///< Attribute data
 
 		std::map<std::string, TexUniformData > m_textures; ///< The state and name of the texture uniforms
-		std::map<std::string, UniformData> m_uniforms;     ///< The "id" of the uniforms and their name
+		std::map<std::string, AttribData> m_attributes;    ///< The data of the uniforms
+		std::map<std::string, UniformData> m_uniforms;     ///< The data of the uniforms
 		std::vector<unsigned int> m_subShaders; ///< The id of the shaders that builds up the shader program
-		std::map<std::string, int> m_attribs;   ///< The "id" of the attributes and their name
 		fm::Size m_texCounter; ///< The counter used when activating texture slots
 		fm::Uint32 m_defVao;   ///< Default vao for core profiles
 		BlendMode m_blendMode; ///< The used blending
-		fm::Result link(); ///< Internal function used to link the compiled shaders to the shader program
-		void init();       ///< Internal function used at setup
+		fm::Result link();     ///< Internal function used to link the compiled shaders to the shader program
+		void init();           ///< Internal function used at setup
 		fm::Result freeSubShaders(); ///< Internal function used at clean-up
 		virtual void clearData();    ///< clear uniforms, attributes, textures etc
 		virtual fm::Result postProcess(const std::string *data,const unsigned int *types,unsigned int count); ///< Process source of the successfully loaded shader
@@ -274,12 +298,12 @@ namespace fg
         int getUniformLocation(const std::string &name);
         
 		/////////////////////////////////////////////////////////////
-		/// @brief Fill the necessary data about uniforms
+		/// @brief Fill the necessary data about uniforms and attributes
 		///
 		/// This function is used internally
 		///
 		/////////////////////////////////////////////////////////////
-        void fillUniformData();
+        void fillAttribAndUniformData();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Check if a uniform of a given name is present

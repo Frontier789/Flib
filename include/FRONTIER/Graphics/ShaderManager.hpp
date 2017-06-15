@@ -288,6 +288,17 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
         fm::MatrixStack<4,4,float> &getTexUVStack();
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Get a ShaderManager capable of drawing simple gui elements
+		/// 
+		/// Iff shaders are available, a suitable shader is returned otherwise a 
+		/// FixedShaderManager is returned
+		/// 
+		/// @return The ShaderManager
+		/// 
+		/////////////////////////////////////////////////////////////
+		static ShaderManager *getDefaultShader();
     };
 }
 

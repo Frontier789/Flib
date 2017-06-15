@@ -22,14 +22,6 @@
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	inline Shader::TexUniformData::TexUniformData(int location,int slot,int act_id) : location(location),
-																					  slot(slot),
-																					  act_id(act_id)
-	{
-
-	}
-	
-	/////////////////////////////////////////////////////////////
 	template<class T,class>
 	inline fm::Result Shader::setAttribPointer(const std::string &name,const T *pointer,unsigned int stride)
 	{

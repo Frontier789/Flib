@@ -33,7 +33,7 @@ public:
 int main()
 {
 	GuiWindow win(vec2(640,480),"gui");
-
+	
 	SingletonDrawer drawRedRect;
 	
 	int push_count = 0;

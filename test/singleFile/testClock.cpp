@@ -16,10 +16,11 @@ double testFib(int a)
 {
 	Clock clk;
  	uint64_t val = fib(a);
+ 	(void)val;
  	return clk.getSeconds();
 }
 
-string getWithLeading0(int a,int n=3)
+string getWithLeading0(fm::Size a,fm::Size n=3)
 {
 	string ret = (a ? "" : "0");
 	

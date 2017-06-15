@@ -176,8 +176,10 @@ void HexTerrain::loadColors()
 		return lerp(clrs,heights,d);
 	},
 	[](float d) -> vec4 {
+		/*
 		vec4 clrs1[] = {vec4(61,93,114,255)/255,vec4(.3,.3,.5),vec4(.2,.2,.6),vec4(.3,.3,.7),vec4(.4,.4,.9),vec4(.5,.5,.7),vec4(.7,.7,.8),vec4(1,1,1)};
 		float heights1[] = {                 -1,           -.6,           -.3,           -.1,            .1,           .3,            .5,           1};
+		*/
 		vec4 clrs[] = {vec4(.0,.0,.1),vec4(.1,.1,.2),vec4(.2,.2,.5),vec4(.3,.3,.5),vec4(.7,.7,1),vec4(1,1,1)};
 		float heights[] = {       -1,             -.5,           0,            .3,           .7,          1};
 		

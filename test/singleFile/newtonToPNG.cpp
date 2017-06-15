@@ -81,8 +81,8 @@ public:
 	Color getColorOnPlane(vec2 compP)
 	{
 		vec2 p = compP;
-		int i = 0;
-		int ai = m_iterations;
+		fm::Size i = 0;
+		fm::Size ai = m_iterations;
 		for(;i<m_iterations;++i)
 		{
 			vec2 np = nextZ(p);
@@ -136,7 +136,7 @@ public:
 
 int main()
 {
-	NewtonPlotter plotter(vec2(2048,2048),0.003,vec2(),30,{vec2(-2,0),vec2(),vec2(),vec2(5,0),vec2(),vec2(),vec2(3,0),vec2(),vec2(),vec2(1,0)});
+	NewtonPlotter plotter(vec2(1024,1024),0.003,vec2(),30,{vec2(-2,0),vec2(),vec2(),vec2(5,0),vec2(),vec2(),vec2(3,0),vec2(),vec2(),vec2(1,0)});
 	
 	Image img = plotter.render();
 	

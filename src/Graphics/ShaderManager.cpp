@@ -14,6 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Graphics/FixedShaderManager.hpp>
 #include <FRONTIER/Graphics/ShaderManager.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
@@ -88,10 +89,16 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	ShaderManager &ShaderManager::associate(const std::string &attrName,AssocPoint point,bool overWrite)
 	{
-		if (overWrite)
+		if (overWrite || m_assocPoints.find(point) == m_assocPoints.end())
+		{
 			m_assocPoints[point] = attrName;
-		else if (m_assocPoints.find(point) == m_assocPoints.end())
-				 m_assocPoints[point] = attrName;
+			
+			if (point == Assoc::Color)
+			{
+				bind();
+				glVertexAttrib4f(getAttribLocation(attrName),1,1,1,1);
+			}
+		}
 		
 		return *this;
 	}
@@ -438,5 +445,64 @@ namespace fg
 	fm::MatrixStack<4,4,float> &ShaderManager::getTexUVStack()
 	{
 		return m_stacks[2];
+	}
+	
+	/////////////////////////////////////////////////////////////
+	ShaderManager *ShaderManager::getDefaultShader()
+	{
+		if (Shader::isAvailable())
+		{
+			ShaderManager *shader = new ShaderManager;
+			
+			shader->loadFromMemory(""
+"#version 110\n"
+"\n"
+"#define FRONTIER_MODEL\n"
+"#define FRONTIER_VIEW\n"
+"#define FRONTIER_PROJ\n"
+"#define FRONTIER_POS\n"
+"#define FRONTIER_CLR\n"
+"#define FRONTIER_TEXPOS\n"
+"#define FRONTIER_TEXMAT\n"
+"\n"
+"uniform mat4 FRONTIER_MODEL  u_modelMat;\n"
+"uniform mat4 FRONTIER_VIEW   u_viewMat;\n"
+"uniform mat4 FRONTIER_PROJ   u_projMat;\n"
+"uniform mat4 FRONTIER_TEXMAT u_texUVMat;\n"
+"\n"
+"attribute vec3 FRONTIER_POS    in_pos;\n"
+"attribute vec4 FRONTIER_CLR    in_color;\n"
+"attribute vec2 FRONTIER_TEXPOS in_texpos;\n"
+"\n"
+"varying vec4 va_color;\n"
+"varying vec2 va_texpos;\n"
+"\n"
+"void main()\n"
+"{\n"
+"	gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos,1.0);\n"
+"	\n"
+"	va_color  = in_color;\n"
+"	va_texpos = (u_texUVMat * vec4(in_texpos,0.0,1.0)).xy;\n"
+"}",""
+"#version 110\n"
+"\n"
+"uniform sampler2D u_tex;\n"
+"uniform bool u_useTex;\n"
+"\n"
+"varying vec4 va_color;\n"
+"varying vec2 va_texpos;\n"
+"\n"
+"void main()\n"
+"{\n"
+"	gl_FragColor = va_color;\n"
+"	if (u_useTex)\n"
+"		gl_FragColor *= texture2D(u_tex,va_texpos);\n"
+"}\n");
+			shader->regTexture("u_tex","u_useTex");
+			shader->useTexture(nullptr);
+			return shader;
+		}
+		
+		return new FixedShaderManager;
 	}
 }

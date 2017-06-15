@@ -158,7 +158,7 @@ public:
 	
 	~BallRenderer()
 	{
-		for (int i=0;i<m_objs.size();++i)
+		for (fm::Size i=0;i<m_objs.size();++i)
 		{
 			delete m_objs[i];
 		}
@@ -216,7 +216,7 @@ public:
 		float mnDist = -1;
 		int objectIndex = 0;
 		
-		for (int i=0;i<m_objs.size();++i)
+		for (fm::Size i=0;i<m_objs.size();++i)
 		{
 			float d = m_objs[i]->calcDist(r);
 			

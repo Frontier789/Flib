@@ -37,7 +37,7 @@ HexArray<T> &HexArray<T>::swap(HexArray<T> &arr)
 }
 
 template<class T>
-inline HexArray<T>::HexArray(fm::Size size,T uninited) : m_data(nullptr), m_uninited(uninited)
+inline HexArray<T>::HexArray(fm::Size size,T uninited) : m_uninited(uninited), m_data(nullptr)
 {
 	resize(size);
 }
@@ -159,7 +159,7 @@ inline vector3<T> HexArray<T>::getNormal(vec2i p) const
 		if ((pt.x <= 0 && pt.y >= 0) || 
 			(pt.x >= 0 && pt.y <= 0))
 		{
-			return std::max(std::abs(pt.x),std::abs(pt.y)) <= m_size;
+			return std::max<fm::Size>(std::abs(pt.x),std::abs(pt.y)) <= m_size;
 		}
 		
 		return std::abs(pt.x + pt.y) <= m_size;

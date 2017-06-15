@@ -104,7 +104,7 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiContext::GuiContext(fm::vec2s size) : m_shader(new fg::FixedShaderManager),
+	GuiContext::GuiContext(fm::vec2s size) : m_shader(fg::ShaderManager::getDefaultShader()),
 											 m_layout(new GuiLayout(*this)),
 											 m_size(size)
 	{

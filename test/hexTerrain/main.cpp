@@ -42,9 +42,6 @@ int main()
 	bool doLight = true;
 	bool doGrid  = false;
 	
-	Texture tmp;
-	cout << tmp.loadFromFile("as.png") << endl;
-	
 	if (Shader::isAvailable())
 	{
 		Result res150 = shader150.loadFromFiles("shaders/vert150.glsl","shaders/geom150.glsl","shaders/frag150.glsl");

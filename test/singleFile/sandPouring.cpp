@@ -142,7 +142,7 @@ int main()
 			{
 				double dt = gravityClock.restart();
 				
-				for (int i=0;i<points.size();++i)
+				for (fm::Size i=0;i<points.size();++i)
 				{
 					vec2 appliedGravity = gravity;
 					if (gPress)
