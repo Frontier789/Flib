@@ -13,7 +13,7 @@ F_DYNREQUIRE_WINDOW=System GL Graphics
 F_DYNLINK_TO_GUI=-lf-system-shared -lf-gl-shared -lf-graphics-shared -lf-window-shared
 F_DYNREQUIRE_GUI=System GL Graphics Window
 
-F_DYNLINK_TO_GL=
+F_DYNLINK_TO_GL=-lf-system-shared
 F_DYNREQUIRE_GL=System
 
 F_DYNLINK_TO_ALL=
