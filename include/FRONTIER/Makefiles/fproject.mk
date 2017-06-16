@@ -18,8 +18,8 @@ endif
 
 
 ifeq ($(F_DYNLINK),1)
- override F_LINK_LIBS:=-lf-dll $(F_DEF_LINK_LIBS) $(F_LINK_LIBS)
- F_NEEDED_LIB=libf-dll.a
+ override F_LINK_LIBS:=-lf-shared $(F_DEF_LINK_LIBS) $(F_LINK_LIBS)
+ F_NEEDED_LIB=libf-shared$(F_SO_USEDTARGET)
 else
  override F_LINK_LIBS:=-lf $(F_DEF_LINK_LIBS) $(F_LINK_LIBS)
  F_NEEDED_LIB=libf.a

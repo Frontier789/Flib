@@ -65,7 +65,7 @@ public:
 		float ratio = getRelativeIterationsOnPlane(pOnPlane);
 		if (ratio > 1) ratio = 1;
 		if (ratio < 0) ratio = 0;
-		
+
 		return Color::Black * (1.0 - ratio) + Color::White * (ratio);
 	}
 

@@ -36,23 +36,7 @@ $(F_O_FILES_DIR)/static: | $(F_O_FILES_DIR)
 $(F_O_FILES_DIR)/dynamic: | $(F_O_FILES_DIR)
 	$(CD) $(F_O_FILES_DIR) && $(MKDIR) dynamic
 
-F_MODULES=Graphics System Window GL Gui
-F_DYNLINK_TO_GRAPHICS=-lf-system-dll -lf-gl-dll -lOpenGL32 -lgdi32
-F_DYNREQUIRE_GRAPHICS=System GL
-
-F_DYNLINK_TO_SYSTEM=-lwinmm
-F_DYNREQUIRE_SYSTEM=
-
-F_DYNLINK_TO_WINDOW= -lf-system-dll -lf-gl-dll -lf-graphics-dll -lOpenGL32 -lgdi32
-F_DYNREQUIRE_WINDOW=System GL Graphics
-
-F_DYNLINK_TO_GUI=-lf-system-dll -lf-gl-dll -lf-graphics-dll -lf-window-dll -lOpenGL32 -lgdi32
-F_DYNREQUIRE_GUI=System GL Graphics Window
-
-F_DYNLINK_TO_GL= -lf-system-dll -lOpenGL32
-F_DYNREQUIRE_GL=System
-
-F_DYNLINK_TO_ALL=-lwinmm -lOpenGL32 -lgdi32
+include module_defs.mk
 
 ####  ####  ####  ## generating targets ##  ####  ####  ####
 	
@@ -66,7 +50,7 @@ $(foreach MODULE,$(F_MODULES), \
  $(eval F_$(F_CUR_MODULE)_STATIC_O_FILES=$(addprefix $(F_O_FILES_DIR)/static/$(MODULE)/,$(F_CUR_O_FILES))) \
  $(eval F_$(F_CUR_MODULE)_DYNAMIC_O_FILES=$(addprefix $(F_O_FILES_DIR)/dynamic/$(MODULE)/,$(F_CUR_O_FILES))) \
  $(eval F_$(F_CUR_MODULE)_MODULE_A=$(F_O_FILES_DIR)/libf-$(F_CUR_MODULE_LOWERCASE).a) \
- $(eval F_$(F_CUR_MODULE)_MODULE_SO=$(F_O_FILES_DIR)/$(F_SO_PREFIX)f-$(F_CUR_MODULE_LOWERCASE)$(F_SO_EXTENSION)) \
+ $(eval F_$(F_CUR_MODULE)_MODULE_SO=$(F_O_FILES_DIR)/$(F_SO_PREFIX)f-$(F_CUR_MODULE_LOWERCASE)-shared$(F_SO_EXTENSION)) \
  \
  $(eval F_STATIC_O_FILES+=$(F_$(F_CUR_MODULE)_STATIC_O_FILES)) \
  $(eval F_DYNAMIC_O_FILES+=$(F_$(F_CUR_MODULE)_DYNAMIC_O_FILES)) \
@@ -100,14 +84,14 @@ make_so_files: $(F_MODULE_SO_FILES)
 
 make_lib_f: $(F_O_FILES_DIR)/libf.a
 
-make_so_f: $(F_O_FILES_DIR)/$(F_SO_PREFIX)f$(F_SO_EXTENSION)
+make_so_f: $(F_O_FILES_DIR)/$(F_SO_PREFIX)f-shared$(F_SO_EXTENSION)
 
 
 $(F_O_FILES_DIR)/libf.a: $(F_STATIC_O_FILES) | $(F_O_FILES_DIR)
 	$(AR) $@ $^
 
 
-$(F_O_FILES_DIR)/$(F_SO_PREFIX)f$(F_SO_EXTENSION): $(F_DYNAMIC_O_FILES) | $(F_O_FILES_DIR)
+$(F_O_FILES_DIR)/$(F_SO_PREFIX)f-shared$(F_SO_EXTENSION): $(F_DYNAMIC_O_FILES) | $(F_O_FILES_DIR)
 	$(CXX) -shared -o $@ $^ -L$(F_O_FILES_DIR) $(F_DYNLINK_TO_ALL) $(call F_SO_IMPLIB,$(F_O_FILES_DIR),)
 	
 	
