@@ -20,6 +20,7 @@
 #include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/GL/Is_GLDataType.hpp>
+#include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_ATTRIBUTE
@@ -38,6 +39,7 @@ namespace fg
 	class FRONTIER_API Attribute
 	{
 	public:
+		fg::Buffer::Usage bufferUsage; ///< Buffer usage hint
 		fm::Size componentType; ///< The OpenGL id of the type of components
 		fm::Size components;    ///< The number of components
 		fg::Buffer *buf; ///< The buffer that holds the data 
@@ -54,6 +56,7 @@ namespace fg
 		/// @param componentType The OpenGL id of the type of components
 		/// @param buffer The buffer that holds the data 
 		/// @param ownBuffer Indicates whether the buffer is to be created by this class
+		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// 
 		/////////////////////////////////////////////////////////////
 		Attribute(fm::Size components = 0,
@@ -61,7 +64,8 @@ namespace fg
 				  fm::Size count = 0,
 				  fm::Size componentType = 0,
 				  fg::Buffer *buffer = nullptr,
-				  bool ownBuffer = true);
+				  bool ownBuffer = true,
+				  fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -158,12 +162,13 @@ namespace fg
 		/// and components from T::components
 		/// 
 		/// @param data The data to assign
+		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T,fm::Size N>
-		inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N]);
+		inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N],fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -175,12 +180,13 @@ namespace fg
 		/// 
 		/// @param pointer Pointer to the data to assign
 		/// @param N The number of Ts to requested to be copied
+		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N);
+		inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -191,12 +197,13 @@ namespace fg
 		/// and components from T::components
 		/// 
 		/// @param data The data to assign
+		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T,fm::Size N>
-		inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N]);
+		inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N],fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -208,12 +215,13 @@ namespace fg
 		/// 
 		/// @param pointer Pointer to the data to assign
 		/// @param N The number of Ts to requested to be copied
+		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N);
+		inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -224,6 +232,7 @@ namespace fg
 		/// @param componentType The OpenGL id of the type of components
 		/// @param pointer Pointer to the data to be copied
 		/// @param bytesToCopy Number of bytes to be copied
+		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// 
 		/// @return Reference to itself
 		/// 
@@ -233,7 +242,8 @@ namespace fg
 					   fm::Size count,
 					   fm::Size componentType,
 					   const void *pointer,
-					   fm::Size bytesToCopy);
+					   fm::Size bytesToCopy,
+					   fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -244,6 +254,7 @@ namespace fg
 		/// @param componentType The OpenGL id of the type of components
 		/// @param buffer The buffer that holds the data 
 		/// @param ownBuffer Indicates whether the buffer is to be created by this class
+		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// 
 		/// @return Reference to itself
 		/// 
@@ -253,7 +264,8 @@ namespace fg
 					   fm::Size count,
 					   fm::Size componentType,
 					   fg::Buffer *buffer = nullptr,
-					   bool ownBuffer = true);
+					   bool ownBuffer = true,
+					   fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
 	};
 }
 

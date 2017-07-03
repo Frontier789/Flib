@@ -34,17 +34,17 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class T,fm::Size N>
-	inline AttributeRef &AttributeRef::set(const T (&data)[N])
+	inline AttributeRef &AttributeRef::set(const T (&data)[N],fg::Buffer::Usage bufferUsage)
 	{
-		m_drawData.getAttribute(m_assoc).set(data);
+		m_drawData.getAttribute(m_assoc).set(data,bufferUsage);
 		return *this;
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline AttributeRef &AttributeRef::set(const T *pointer,fm::Size N)
+	inline AttributeRef &AttributeRef::set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage)
 	{
-		m_drawData.getAttribute(m_assoc).set(pointer,N);
+		m_drawData.getAttribute(m_assoc).set(pointer,N,bufferUsage);
 		return *this;
 	}
 }

@@ -130,29 +130,25 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	Time &operator+=(Time &left,const Time &right)
 	{
-		*((long*)&left) += right.asMicroseconds();
-		return left;
+		return left = left + right;
 	}
 
 	/////////////////////////////////////////////////////////////
 	Time &operator-=(Time &left,const Time &right)
 	{
-		*((long*)&left) -= right.asMicroseconds();
-		return left;
+		return left = left - right;
 	}
 
 	/////////////////////////////////////////////////////////////
 	Time &operator*=(Time &left,const double &right)
 	{
-		*((long*)&left) *= right;
-		return left;
+		return left = left * right;
 	}
 
 	/////////////////////////////////////////////////////////////
 	Time &operator/=(Time &left,const double &right)
 	{
-		*((long*)&left) /= right;
-		return left;
+		return left = left / right;
 	}
 
 	/////////////////////////////////////////////////////////////

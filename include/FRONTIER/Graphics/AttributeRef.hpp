@@ -20,6 +20,7 @@
 #include <FRONTIER/Graphics/AssocPoint.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/HeavyToCopy.hpp>
+#include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_ATTRIBUTE_REF
@@ -98,24 +99,26 @@ namespace fg
 		/// @brief Assign data to the referenced attribute
 		/// 
 		/// @param data The data to assign
+		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T,fm::Size N>
-		inline AttributeRef &set(const T (&data)[N]);
+		inline AttributeRef &set(const T (&data)[N],fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the referenced attribute
 		/// 
 		/// @param pointer Pointer to the data to assign
 		/// @param N The number of components to assign
+		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		inline AttributeRef &set(const T *pointer,fm::Size N);
+		inline AttributeRef &set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the referenced attribute
@@ -126,6 +129,7 @@ namespace fg
 		/// @param componentType The OpenGL id of the type of components
 		/// @param pointer Pointer to the data to be copied
 		/// @param bytesToCopy Number of bytes to be copied
+		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// 
 		/// @return Reference to itself
 		/// 
@@ -135,7 +139,8 @@ namespace fg
 						  fm::Size count,
 						  fm::Size componentType,
 						  const void *pointer,
-						  fm::Size bytesToCopy);
+						  fm::Size bytesToCopy,
+						  fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
 	
 		/////////////////////////////////////////////////////////////
 		/// @brief Access the pointed attribute
@@ -154,6 +159,7 @@ namespace fg
 		/// @param componentType The OpenGL id of the type of components
 		/// @param buffer The buffer that holds the data 
 		/// @param ownBuffer Indicates whether the buffer is to be created by this class
+		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// 
 		/// @return Reference to itself
 		/// 
@@ -163,7 +169,8 @@ namespace fg
 						  fm::Size count,
 						  fm::Size componentType,
 						  fg::Buffer *buffer = nullptr,
-						  bool ownBuffer = true);
+						  bool ownBuffer = true,
+						  fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
 	};
 }
 

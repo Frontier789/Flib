@@ -184,8 +184,8 @@ namespace fg
         shader.useTexture(m_tex);
         shader.draw(m_draw);
         shader.useTexture(nullptr);
-        shader.getModelStack().pop();
         shader.getTexUVStack().pop();
+        shader.getModelStack().pop();
     }
 
 

@@ -358,5 +358,11 @@ namespace fgui
 			
 		return fg::FramedSprite(m_texAtlas.getTexture(),fm::rect2s(g.pos,g.size),g.leftdown);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Time GuiContext::getUpdateInterval() const
+	{
+		return m_spf;
+	}
 }
 

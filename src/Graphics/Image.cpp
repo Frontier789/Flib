@@ -61,7 +61,7 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Image::Image(const std::string &filename)
+	Image::Image(const std::string &filename) : m_texels(nullptr)
 	{
 		loadFromFile(filename);
 	}
@@ -221,7 +221,7 @@ namespace fg
 	{
 		Image ret;
 		
-		if (pos.x >= size.w || pos.y >= getSize().h)
+		if (pos.x >= getSize().w || pos.y >= getSize().h)
 			return ret;
 		
 		size.w = std::min(size.w,getSize().w - pos.x);

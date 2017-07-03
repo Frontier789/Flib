@@ -1,18 +1,18 @@
 ////////////////////////////////////////////////////////////////////////// <!--
 /// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)		   ///
-///																	///
+///																	   ///
 /// Flib is licensed under the terms of GNU GPL.					   ///
 /// Therefore you may freely use it in your project,				   ///
-/// modify it, redistribute it without any warranty on the			 ///
-/// condition that this disclaimer is not modified/removed.			///
-/// You may not misclaim the origin of this software.				  ///
-///																	///
-/// If you use this software in your program/project a				 ///
+/// modify it, redistribute it without any warranty on the			   ///
+/// condition that this disclaimer is not modified/removed.			   ///
+/// You may not misclaim the origin of this software.				   ///
+///																	   ///
+/// If you use this software in your program/project a				   ///
 /// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
-/// is not required but highly appreciated.							///
-///																	///
-/// You should have received a copy of GNU GPL with this software	  ///
-///																	///
+/// is not required but highly appreciated.							   ///
+///																	   ///
+/// You should have received a copy of GNU GPL with this software	   ///
+///																       ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
@@ -25,12 +25,14 @@ namespace fg
 						 fm::Size count,
 						 fm::Size componentType,
 						 fg::Buffer *buffer,
-						 bool ownBuffer) : componentType(componentType),
-										   components(components),
-										   buf(buffer ? buffer : new fg::Buffer),
-										   stride(stride),
-										   count(count),
-										   ownBuffer(buffer ? ownBuffer : true)
+						 bool ownBuffer,
+						 fg::Buffer::Usage bufferUsage) : bufferUsage(bufferUsage),
+														  componentType(componentType),
+														  components(components),
+														  buf(buffer ? buffer : new fg::Buffer),
+														  stride(stride),
+														  count(count),
+														  ownBuffer(buffer ? ownBuffer : true)
 	{
 
 	}
@@ -57,8 +59,9 @@ namespace fg
 	{
 		FRONTIER_HEAVYCOPY_NOTE;
 		
+		bufferUsage   = attr.bufferUsage;
 		componentType = attr.componentType;
-		components	= attr.components;
+		components    = attr.components;
 		stride = attr.stride;
 		count  = attr.count;
 		
@@ -90,6 +93,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	Attribute &Attribute::swap(Attribute &attr)
 	{
+		std::swap(bufferUsage,attr.bufferUsage);
 		std::swap(componentType,attr.componentType);
 		std::swap(components,attr.components);
 		std::swap(ownBuffer,attr.ownBuffer);
@@ -106,11 +110,13 @@ namespace fg
 							  fm::Size count,
 							  fm::Size componentType,
 							  const void *pointer,
-							  fm::Size bytesToCopy)
+							  fm::Size bytesToCopy,
+							  fg::Buffer::Usage bufferUsage)
 	{
-		this->components = components;
+		this->bufferUsage = bufferUsage;
+		this->components  = components;
 		this->stride = stride;
-		this->count = count;
+		this->count  = count;
 		this->componentType = componentType;
 		if (!ownBuffer || !buf)
 		{
@@ -118,7 +124,7 @@ namespace fg
 			buf = new fg::Buffer;
 		}
 
-		buf->setData(pointer,bytesToCopy);
+		buf->setData(pointer,bytesToCopy,bufferUsage);
 
 		return *this;
 	}
@@ -129,11 +135,13 @@ namespace fg
 							  fm::Size count,
 							  fm::Size componentType,
 							  fg::Buffer *buf,
-							  bool ownBuffer)
+							  bool ownBuffer,
+							  fg::Buffer::Usage bufferUsage)
 	{
-		this->components = components;
+		this->bufferUsage = bufferUsage;
+		this->components  = components;
 		this->stride = stride;
-		this->count = count;
+		this->count  = count;
 		this->componentType = componentType;
 
 		if (ownBuffer) delete buf;

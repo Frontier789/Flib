@@ -38,6 +38,8 @@ endif
 # compile falgs
 ifeq ($(F_DEBUG),)
  CXXFLAGS+=-O3
+else
+ CXXFLAGS+=-g
 endif
 
 CXXFLAGS+=-DFRONTIER_DEBUG
@@ -64,6 +66,9 @@ all: $(TARGET)
 
 run: all
 	$(TARGET)
+
+run_debug: all
+	gdb $(TARGET) -ex sta -ex c
 
 clean: clean_o_dir clean_exec
 

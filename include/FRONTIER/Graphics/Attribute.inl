@@ -35,30 +35,30 @@ namespace fg
 
     //////////////////////////////////////////////////////////////////////////
     template<class T,fm::Size N>
-    inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T (&data)[N])
+    inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T (&data)[N],fg::Buffer::Usage bufferUsage)
     {
-        return set((const T*)data,N);
+        return set((const T*)data,N,bufferUsage);
     }
 
     //////////////////////////////////////////////////////////////////////////
     template<class T,fm::Size N>
-    inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T (&data)[N])
+    inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T (&data)[N],fg::Buffer::Usage bufferUsage)
     {
-        return set((const T*)data,N);
+        return set((const T*)data,N,bufferUsage);
     }
 
     //////////////////////////////////////////////////////////////////////////
     template<class T>
-    inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T *pointer,fm::Size N)
+    inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage)
     {
-        return set(1,0,N,fg::Is_GLDataType<T>::enumVal,pointer,sizeof(T)*N);
+        return set(1,0,N,fg::Is_GLDataType<T>::enumVal,pointer,sizeof(T)*N,bufferUsage);
     }
 
     //////////////////////////////////////////////////////////////////////////
     template<class T>
-    inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T *pointer,fm::Size N)
+    inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage)
     {
-		return set(T::components,0,N,fg::Is_GLDataType<typename T::component_type>::enumVal,pointer,sizeof(T)*N);
+		return set(T::components,0,N,fg::Is_GLDataType<typename T::component_type>::enumVal,pointer,sizeof(T)*N,bufferUsage);
     }
 }
 

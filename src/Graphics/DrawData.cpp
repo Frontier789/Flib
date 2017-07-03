@@ -63,10 +63,8 @@ namespace fg
     //////////////////////////////////////////////////////////////////////////
 	DrawData::~DrawData()
 	{
-		for (std::map<AssocPoint,Attribute*>::const_iterator it = m_attrs.begin();it != m_attrs.end();++it)
-		{
-			delete it->second;
-		}
+		for (auto it : m_attrs)
+			delete it.second;
 	}
 
     //////////////////////////////////////////////////////////////////////////
@@ -168,7 +166,7 @@ namespace fg
 			
 			std::vector<fm::Uint32> drawIndices[7];
 			
-			C(7) drawIndices[i].resize(counts[i]);
+			C(sizeof(counts)/sizeof(*counts)) drawIndices[i].resize(counts[i]);
 			
 			C(mesh.faces.size())
 			{
@@ -179,7 +177,7 @@ namespace fg
 				offsets[id] += mesh.faces[i].indices.size();
 			}
 			
-			C(7)
+			C(sizeof(counts)/sizeof(*counts))
 				if (counts[i])
 				{
 					m_drawCalls.push_back(DrawCall());
@@ -259,8 +257,12 @@ namespace fg
     //////////////////////////////////////////////////////////////////////////
 	DrawData &DrawData::reset()
 	{
+		for (auto it : m_attrs)
+			delete it.second;
+		
 		m_attrs.clear();
-		m_drawCalls.clear();
+		
+		clearDraws();
 		
 		return *this;
 	}

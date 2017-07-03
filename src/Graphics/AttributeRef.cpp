@@ -59,9 +59,10 @@ namespace fg
 									fm::Size count,
 									fm::Size componentType,
 									const void *pointer,
-									fm::Size bytesToCopy)
+									fm::Size bytesToCopy,
+									fg::Buffer::Usage bufferUsage)
 	{
-		m_drawData.getAttribute(m_assoc).set(components,stride,count,componentType,pointer,bytesToCopy);
+		m_drawData.getAttribute(m_assoc).set(components,stride,count,componentType,pointer,bytesToCopy,bufferUsage);
 		
 		return *this;
 	}
@@ -72,9 +73,10 @@ namespace fg
 									fm::Size count,
 									fm::Size componentType,
 									fg::Buffer *buffer,
-									bool ownBuffer)
+									bool ownBuffer,
+									fg::Buffer::Usage bufferUsage)
 	{
-		m_drawData.getAttribute(m_assoc).set(components,stride,count,componentType,buffer,ownBuffer);
+		m_drawData.getAttribute(m_assoc).set(components,stride,count,componentType,buffer,ownBuffer,bufferUsage);
 		
 		return *this;
 	}
