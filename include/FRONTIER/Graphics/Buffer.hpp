@@ -156,10 +156,6 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Set data of the buffer
 		///
-		/// If OpenGL runs out of memory an error will
-		/// be prompted to fg_log and the object will
-		/// become invalid
-		///
 		/// @param data The data to be sent to OpenGL
 		///
 		/// @return the error-state of the function
@@ -170,10 +166,6 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set data and the usage hint of the buffer
-		///
-		/// If OpenGL runs out of memory an error will
-		/// be prompted to fg_log and the object will
-		/// become invalid
 		///
 		/// @param data The data to be sent to OpenGL
 		/// @param usage Usage hint for OpenGL
@@ -186,10 +178,6 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set data of the buffer
-		///
-		/// If OpenGL runs out of memory an error will
-		/// be prompted to fg_log and the object will
-		/// become invalid
 		///
 		/// @param data The data to be sent to OpenGL
 		/// @param type The type to change the current type of the buffer
@@ -279,15 +267,12 @@ namespace fg
 		/// If read is false the data is not copied from GPU
 		/// If write is false the data is not copied to GPU
 		///
-		/// The buffer should be valid when mapping or else OpenGL will generate an error
-		/// that will be prompted to fg_log
-		///
-		/// Returns 0 on error
+		/// Returns nullptr on error
 		///
 		/// @param read Allow reading the data from GPU
 		/// @param write Allow changing the data
 		///
-		/// @return A pointer to the mapped memory (0 on error)
+		/// @return A pointer to the mapped memory (nullptr on error)
 		///
 		/////////////////////////////////////////////////////////////
 		void *map(bool read = true,bool write = true);
@@ -308,10 +293,7 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the buffer for usage
-		///
-		/// The buffer should be valid when binding or else OpenGL will generate an error
-		/// that will be prompted to fg_log
-		///
+		/// 
 		/// @param targetType The type to bind the buffer to
 		///
 		/// @return the error-state of the function
@@ -321,9 +303,6 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the buffer for usage
-		///
-		/// The buffer should be valid when binding or else OpenGL will generate an error
-		/// that will be prompted to fg_log
 		///
 		/// The type the buffer will be bound is defined when
 		/// When setData or the constructor is called
@@ -358,9 +337,6 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a buffer for usage
 		///
-		/// The buffer should be valid when binding or else OpenGL will generate an error
-		/// that will be prompted to fg_log
-		///
 		/// @param buffer The buffer to bind
 		/// @param targetType The type to bind the buffer to
 		///
@@ -371,9 +347,6 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a buffer for usage
-		///
-		/// The buffer should be valid when binding or else OpenGL will generate an error
-		/// that will be prompted to fg_log
 		///
 		/// @param buffer The buffer to bind
 		/// @param targetType The type to bind the buffer to
@@ -386,8 +359,6 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a buffer for usage
 		///
-		/// The buffer should be valid when binding or else OpenGL will generate an error
-		/// that will be prompted to fg_log
 		/// The buffer will be bound to the target specifed
 		/// by its constructor or the last call on setData
 		///

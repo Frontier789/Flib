@@ -351,6 +351,8 @@ namespace fg
 		
 		fillAttribAndUniformData();
 		
+		m_hasInstancing = ::priv::so_loader.getProcAddr("glVertexAttribDivisor") != nullptr;
+		
 		return postProcess(data,types,count);
 	}
 
@@ -798,5 +800,11 @@ namespace fg
 		if (mode == fg::Alpha)
 			glEnable(GL_BLEND),
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Shader::instancingAvailable() const
+	{
+		return m_hasInstancing;
 	}
 }

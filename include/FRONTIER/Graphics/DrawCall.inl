@@ -29,16 +29,16 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class T,fm::Size N>
-	inline DrawCall &DrawCall::set(const T (&data)[N],fg::Primitive primitive)
+	inline DrawCall &DrawCall::set(const T (&data)[N],fg::Primitive primitive,fm::Size instances)
 	{
-		return set(data,N,primitive);
+		return set(data,N,primitive,instances);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline DrawCall &DrawCall::set(const T *pointer,fm::Size N,fg::Primitive primitive)
+	inline DrawCall &DrawCall::set(const T *pointer,fm::Size N,fg::Primitive primitive,fm::Size instances)
 	{
-		return set(pointer,N,fg::Is_GLDataType<T>::enumVal,sizeof(T)*N,primitive);
+		return set(pointer,N,fg::Is_GLDataType<T>::enumVal,sizeof(T)*N,primitive,instances);
 	}
 }
 

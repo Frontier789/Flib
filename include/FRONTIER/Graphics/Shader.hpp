@@ -156,6 +156,7 @@ namespace fg
 		fm::Size m_texCounter; ///< The counter used when activating texture slots
 		fm::Uint32 m_defVao;   ///< Default vao for core profiles
 		BlendMode m_blendMode; ///< The used blending
+		bool m_hasInstancing;  ///< Stores whether the shader can use instancing
 		fm::Result link();     ///< Internal function used to link the compiled shaders to the shader program
 		void init();           ///< Internal function used at setup
 		fm::Result freeSubShaders(); ///< Internal function used at clean-up
@@ -722,6 +723,14 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		void setBlendMode(fg::BlendMode mode);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Check if instancing is available
+		/// 
+		/// @return True iff instancing is available
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool instancingAvailable() const;
 	};
 
 }

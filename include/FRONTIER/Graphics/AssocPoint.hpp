@@ -36,14 +36,15 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		enum Point {
-			Unused = 0, ///< The attribute is not in use
-			Position,   ///< The attribute encodes position
-			Color,      ///< The attribute encodes color
-			Normal,     ///< The attribute encodes normal
-			TextureUV,  ///< The attribute encodes texture position
-			Tangent,    ///< The attribute encodes tangent vector
-			Bitangent,  ///< The attribute encodes bitangent vector
-			Custom      ///< The attribute encodes a custom property
+			Unused    = 0, ///< The attribute is not in use
+			Position  = 1, ///< The attribute encodes position
+			Color     = 2, ///< The attribute encodes color
+			Normal    = 3, ///< The attribute encodes normal
+			TextureUV = 4, ///< The attribute encodes texture position
+			Tangent   = 5, ///< The attribute encodes tangent vector
+			Bitangent = 6, ///< The attribute encodes bitangent vector
+			Custom    = 7, ///< The attribute encodes a custom property
+			Custom0   = 7  ///< The attribute encodes a custom property
 		};
 	};
 

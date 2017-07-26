@@ -26,13 +26,15 @@ namespace fg
 						 fm::Size componentType,
 						 fg::Buffer *buffer,
 						 bool ownBuffer,
-						 fg::Buffer::Usage bufferUsage) : bufferUsage(bufferUsage),
-														  componentType(componentType),
-														  components(components),
-														  buf(buffer ? buffer : new fg::Buffer),
-														  stride(stride),
-														  count(count),
-														  ownBuffer(buffer ? ownBuffer : true)
+						 fg::Buffer::Usage bufferUsage,
+						 fm::Size instancesPerUpdate) : bufferUsage(bufferUsage),
+														instancesPerUpdate(instancesPerUpdate),
+														componentType(componentType),
+														components(components),
+														buf(buffer ? buffer : new fg::Buffer),
+														stride(stride),
+														count(count),
+														ownBuffer(buffer ? ownBuffer : true)
 	{
 
 	}
@@ -59,11 +61,12 @@ namespace fg
 	{
 		FRONTIER_HEAVYCOPY_NOTE;
 		
-		bufferUsage   = attr.bufferUsage;
-		componentType = attr.componentType;
-		components    = attr.components;
-		stride = attr.stride;
-		count  = attr.count;
+		bufferUsage        = attr.bufferUsage;
+		componentType      = attr.componentType;
+		components         = attr.components;
+		stride             = attr.stride;
+		count              = attr.count;
+		instancesPerUpdate = attr.instancesPerUpdate;
 		
 		if (ownBuffer) delete buf;
 		
@@ -93,8 +96,9 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	Attribute &Attribute::swap(Attribute &attr)
 	{
-		std::swap(bufferUsage,attr.bufferUsage);
+		std::swap(instancesPerUpdate,attr.instancesPerUpdate);
 		std::swap(componentType,attr.componentType);
+		std::swap(bufferUsage,attr.bufferUsage);
 		std::swap(components,attr.components);
 		std::swap(ownBuffer,attr.ownBuffer);
 		std::swap(stride,attr.stride);
@@ -111,13 +115,16 @@ namespace fg
 							  fm::Size componentType,
 							  const void *pointer,
 							  fm::Size bytesToCopy,
-							  fg::Buffer::Usage bufferUsage)
+							  fg::Buffer::Usage bufferUsage,
+							  fm::Size instancesPerUpdate)
 	{
+		this->instancesPerUpdate = instancesPerUpdate;
+		this->componentType = componentType;
 		this->bufferUsage = bufferUsage;
 		this->components  = components;
 		this->stride = stride;
 		this->count  = count;
-		this->componentType = componentType;
+		
 		if (!ownBuffer || !buf)
 		{
 			ownBuffer = true;
@@ -136,13 +143,15 @@ namespace fg
 							  fm::Size componentType,
 							  fg::Buffer *buf,
 							  bool ownBuffer,
-							  fg::Buffer::Usage bufferUsage)
+							  fg::Buffer::Usage bufferUsage,
+							  fm::Size instancesPerUpdate)
 	{
+		this->instancesPerUpdate = instancesPerUpdate;
+		this->componentType = componentType;
 		this->bufferUsage = bufferUsage;
 		this->components  = components;
 		this->stride = stride;
 		this->count  = count;
-		this->componentType = componentType;
 
 		if (ownBuffer) delete buf;
 

@@ -35,30 +35,30 @@ namespace fg
 
     //////////////////////////////////////////////////////////////////////////
     template<class T,fm::Size N>
-    inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T (&data)[N],fg::Buffer::Usage bufferUsage)
+    inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T (&data)[N],fg::Buffer::Usage bufferUsage,fm::Size instancesPerUpdate)
     {
-        return set((const T*)data,N,bufferUsage);
+        return set((const T*)data,N,bufferUsage,instancesPerUpdate);
     }
 
     //////////////////////////////////////////////////////////////////////////
     template<class T,fm::Size N>
-    inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T (&data)[N],fg::Buffer::Usage bufferUsage)
+    inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T (&data)[N],fg::Buffer::Usage bufferUsage,fm::Size instancesPerUpdate)
     {
-        return set((const T*)data,N,bufferUsage);
+        return set((const T*)data,N,bufferUsage,instancesPerUpdate);
     }
 
     //////////////////////////////////////////////////////////////////////////
     template<class T>
-    inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage)
+    inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage,fm::Size instancesPerUpdate)
     {
-        return set(1,0,N,fg::Is_GLDataType<T>::enumVal,pointer,sizeof(T)*N,bufferUsage);
+        return set(1,0,N,fg::Is_GLDataType<T>::enumVal,pointer,sizeof(T)*N,bufferUsage,instancesPerUpdate);
     }
 
     //////////////////////////////////////////////////////////////////////////
     template<class T>
-    inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage)
+    inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage,fm::Size instancesPerUpdate)
     {
-		return set(T::components,0,N,fg::Is_GLDataType<typename T::component_type>::enumVal,pointer,sizeof(T)*N,bufferUsage);
+		return set(T::components,0,N,fg::Is_GLDataType<typename T::component_type>::enumVal,pointer,sizeof(T)*N,bufferUsage,instancesPerUpdate);
     }
 }
 

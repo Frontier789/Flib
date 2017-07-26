@@ -248,12 +248,14 @@ namespace fg
 											{"colormat","color_mat"},
 											{"texturemat","texture_mat","texmat","tex_mat"},
 											{"time","secs","seconds","clock"},
+											
 											{"pos","position","pts"},
 											{"clr","color"},
 											{"nrm","norm","normal"},
 											{"texuv","texcoord","texpos","textureuv","texturecoord","texturepos","tex_uv","tex_coord","tex_pos","texture_uv","texture_coord","texture_pos"},
 											{"tan","tangent"},
-											{"bitan","bitangent"}};
+											{"bitan","bitangent"},
+											{"custom","arbitrary"}};
 		
 		fm::Size matCount = 9;
 		
@@ -275,8 +277,32 @@ namespace fg
 						
 						if (match)
 						{
-							std::string wsp = " \t";
-							if (offset+name.size() == source.size() || wsp.find(source[offset+name.size()]) != std::string::npos)
+							auto isWhiteSpace = [](char c) -> bool {
+								return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+							};
+							
+							bool custom = (nameClass+1 == sizeof(names)/sizeof(*names));
+							
+							if (custom)
+							{
+								int customId = 0;
+								
+								fm::Size k;
+								for (k=0;k+offset+name.size() < source.size() && !isWhiteSpace(source[k+offset+name.size()]);++k)
+								{
+									char c = source[k+offset+name.size()];
+									
+									if (c <= '9' && c >= '0')
+									{
+										customId = customId*10 + c - '0';
+									}
+								}
+								
+								matId = nameClass + customId;
+								delta = name.size() + k;
+								return true;
+							}
+							else if (offset+name.size() == source.size() || isWhiteSpace(source[offset+name.size()]))
 							{
 								matId = nameClass;
 								delta = name.size();
@@ -344,14 +370,17 @@ namespace fg
 		
 		setBlendMode(m_blendMode);
 
-		for (std::map<AssocPoint,std::string>::const_iterator it = m_assocPoints.begin();it != m_assocPoints.end();++it)
+		for (auto it : m_assocPoints)
 		{
-			if (data.hasAttr((fg::Assoc::Point)it->first) && hasAttribute(it->second))
+			if (data.hasAttr((fg::Assoc::Point)it.first) && hasAttribute(it.second))
 			{
-				const fg::Attribute &attr = data[(fg::Assoc::Point)it->first];
+				const fg::Attribute &attr = data[(fg::Assoc::Point)it.first];
 
 				fg::Buffer::bind(attr.buf,fg::ArrayBuffer),
-				res += setAttribPointer(it->second,attr.components,attr.componentType,false,nullptr,attr.stride);
+				res += setAttribPointer(it.second,attr.components,attr.componentType,false,nullptr,attr.stride);
+				
+				if (instancingAvailable())
+					glVertexAttribDivisor(getAttribLocation(it.second),attr.instancesPerUpdate);
 			}
 		}
 		
@@ -385,7 +414,17 @@ namespace fg
 			fg::Buffer::bind(draw.buf,fg::IndexBuffer);
 			
 			if (draw.componentType)
-				res += glCheck(glDrawElements(draw.primitive,draw.indexCount,draw.componentType,nullptr));
+			{
+				if (instancingAvailable())
+				{
+					res += glCheck(glDrawElementsInstanced(draw.primitive,draw.indexCount,draw.componentType,nullptr,draw.instances));
+				}
+				else
+				{
+					C(draw.instances)
+						res += glCheck(glDrawElements(draw.primitive,draw.indexCount,draw.componentType,nullptr));
+				}
+			}
 			else
 			{
 				fm::Size len = draw.drawLen;
@@ -393,7 +432,17 @@ namespace fg
 					len = data[fg::Assoc::Position].count;
 					
 				if (len)
-					glDrawArrays(draw.primitive,draw.drawBeg,len);
+				{
+					if (instancingAvailable())
+					{
+						glDrawArraysInstanced(draw.primitive,draw.drawBeg,len,draw.instances);
+					}
+					else
+					{
+						C(draw.instances)
+							glDrawArrays(draw.primitive,draw.drawBeg,len);
+					}
+				}
 			}
 		}
 		
@@ -401,14 +450,15 @@ namespace fg
 		{
 			res += glCheck(glDrawArrays(fg::Triangles,0,data[fg::Assoc::Position].count));
 		}
-		
-		res += glCheck((void)0);
 
-		for (std::map<AssocPoint,std::string>::const_iterator it = m_assocPoints.begin();it != m_assocPoints.end();++it)
+		for (auto it : m_assocPoints)
 		{
-			if (data.hasAttr((fg::Assoc::Point)it->first) && hasAttribute(it->second))
+			if (data.hasAttr((fg::Assoc::Point)it.first) && hasAttribute(it.second))
 			{
-				enableAttribPointer(it->second,false);
+				enableAttribPointer(it.second,false);
+				
+				if (instancingAvailable())
+					glVertexAttribDivisor(getAttribLocation(it.second),0);
 			}
 		}
 		

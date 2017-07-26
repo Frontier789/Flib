@@ -40,6 +40,7 @@ namespace fg
 	{
 	public:
 		fg::Buffer::Usage bufferUsage; ///< Buffer usage hint
+		fm::Size instancesPerUpdate;   ///< Number of instances between updates
 		fm::Size componentType; ///< The OpenGL id of the type of components
 		fm::Size components;    ///< The number of components
 		fg::Buffer *buf; ///< The buffer that holds the data 
@@ -57,6 +58,7 @@ namespace fg
 		/// @param buffer The buffer that holds the data 
 		/// @param ownBuffer Indicates whether the buffer is to be created by this class
 		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
+		/// @param instancesPerUpdate Number of instances between updates
 		/// 
 		/////////////////////////////////////////////////////////////
 		Attribute(fm::Size components = 0,
@@ -65,7 +67,8 @@ namespace fg
 				  fm::Size componentType = 0,
 				  fg::Buffer *buffer = nullptr,
 				  bool ownBuffer = true,
-				  fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
+				  fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,
+				  fm::Size instancesPerUpdate = 0);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -163,12 +166,13 @@ namespace fg
 		/// 
 		/// @param data The data to assign
 		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
+		/// @param instancesPerUpdate Number of instances between updates
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T,fm::Size N>
-		inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N],fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
+		inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N],fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,fm::Size instancesPerUpdate = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -179,14 +183,15 @@ namespace fg
 		/// and components from T::components
 		/// 
 		/// @param pointer Pointer to the data to assign
-		/// @param N The number of Ts to requested to be copied
+		/// @param N The number of Ts to be requested to be copied
 		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
+		/// @param instancesPerUpdate Number of instances between updates
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
+		inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,fm::Size instancesPerUpdate = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -198,12 +203,13 @@ namespace fg
 		/// 
 		/// @param data The data to assign
 		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
+		/// @param instancesPerUpdate Number of instances between updates
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T,fm::Size N>
-		inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N],fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
+		inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N],fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,fm::Size instancesPerUpdate = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -214,14 +220,15 @@ namespace fg
 		/// and components from T::components
 		/// 
 		/// @param pointer Pointer to the data to assign
-		/// @param N The number of Ts to requested to be copied
+		/// @param N The number of Ts to be requested to be copied
 		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
+		/// @param instancesPerUpdate Number of instances between updates
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
+		inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,fm::Size instancesPerUpdate = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -233,6 +240,7 @@ namespace fg
 		/// @param pointer Pointer to the data to be copied
 		/// @param bytesToCopy Number of bytes to be copied
 		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
+		/// @param instancesPerUpdate Number of instances between updates
 		/// 
 		/// @return Reference to itself
 		/// 
@@ -243,7 +251,8 @@ namespace fg
 					   fm::Size componentType,
 					   const void *pointer,
 					   fm::Size bytesToCopy,
-					   fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
+					   fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,
+					   fm::Size instancesPerUpdate = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -255,6 +264,7 @@ namespace fg
 		/// @param buffer The buffer that holds the data 
 		/// @param ownBuffer Indicates whether the buffer is to be created by this class
 		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
+		/// @param instancesPerUpdate Number of instances between updates
 		/// 
 		/// @return Reference to itself
 		/// 
@@ -265,7 +275,8 @@ namespace fg
 					   fm::Size componentType,
 					   fg::Buffer *buffer = nullptr,
 					   bool ownBuffer = true,
-					   fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw);
+					   fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,
+					   fm::Size instancesPerUpdate = 0);
 	};
 }
 

@@ -384,11 +384,8 @@ namespace test
 	{
 		fm::Size drawCount = getSpriteCount();
 		
-			cout << "updateDrawCount w/ drawCount = " << drawCount << endl;
 		if (drawCount > m_allocSize)
-		{
 			setAllocSize(std::max(drawCount,m_allocSize*2));
-		}
 		
 		m_drawData.getDraw(0).set(0,drawCount*6,fg::Triangles);
 	}
@@ -485,6 +482,151 @@ namespace test
 	/////////////////////////////////////////////////////////////
 	void PerOneSpriteManager::onDraw(ShaderManager &shader)
 	{
+		shader.getTexUVStack().push().mul(m_atlas.getTexture().getPixToUnitMatrix());
+		shader.useTexture(m_atlas.getTexture());
+		
+		shader.draw(m_drawData);
+		
+		shader.getTexUVStack().pop();
+	}
+	
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////
+	void MapBufSpriteManager::updateDrawCount()
+	{
+		fm::Size drawCount = getSpriteCount();
+		
+		if (drawCount > m_allocSize)
+			setAllocSize(std::max(drawCount,m_allocSize*2));
+		
+		m_drawData.getDraw(0).set(0,drawCount*6,fg::Triangles);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MapBufSpriteManager::setAllocSize(fm::Size allocSize)
+	{
+		m_allocSize = allocSize;
+		
+		fm::vec3 *pts = new fm::vec3[allocSize*6];
+		fm::vec2 *uvs = new fm::vec2[allocSize*6];
+		fm::vec4 *clr = new fm::vec4[allocSize*6];
+		
+		C(std::min(allocSize,getSpriteCount()))
+		{
+			Sprite &sprite = getSpriteById(i);
+			Glyph shape = m_atlas.fetch(sprite.getImgId());
+			
+			calcSpriteData6(pts + i*6,clr + i*6,uvs + i*6,sprite,shape);
+		}
+		
+		unMapPtrs();
+		
+		m_drawData.texPositions.set(uvs,allocSize*6);
+		m_drawData.positions   .set(pts,allocSize*6);
+		m_drawData.colors      .set(clr,allocSize*6);
+		
+		delete[] pts;
+		delete[] uvs;
+		delete[] clr;
+		
+		cout << "setAllocSize (map) w/ allocSize = " << allocSize << endl;
+	}
+		
+	/////////////////////////////////////////////////////////////
+	void MapBufSpriteManager::unMapPtrs()
+	{
+		if (m_ptsPtr)
+		{
+			m_ptsPtr = nullptr;
+			m_drawData.positions.getData().buf->unMap();
+		}
+		
+		if (m_uvsPtr)
+		{
+			m_uvsPtr = nullptr;
+			m_drawData.texPositions.getData().buf->unMap();
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MapBufSpriteManager::onDestroySprite(Sprite &sprite)
+	{
+		onCreateSprite(getSpriteById(sprite.getId()));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MapBufSpriteManager::onCreateSprite(Sprite &sprite)
+	{
+		updateDrawCount();
+		
+		onRectChangeSprite(sprite);
+		onImageChangeSprite(sprite);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MapBufSpriteManager::onRectChangeSprite(Sprite &sprite)
+	{
+		fm::vec3 pts[6];
+		fm::vec2 uvs[6];
+		fm::vec4 clr[6];
+		
+		calcSpriteData6(pts,clr,uvs,sprite,m_atlas.fetch(sprite.getImgId()));
+		
+		if (!m_ptsPtr)
+			m_ptsPtr = (fm::vec3*)m_drawData.positions.getData().buf->map(false,true);
+		
+		if (m_ptsPtr)
+			std::memcpy(m_ptsPtr + sprite.getId() * 6,pts,sizeof(pts));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MapBufSpriteManager::onImageChangeSprite(Sprite &sprite)
+	{
+		fm::vec3 pts[6];
+		fm::vec2 uvs[6];
+		fm::vec4 clr[6];
+		
+		calcSpriteData6(pts,clr,uvs,sprite,m_atlas.fetch(sprite.getImgId()));
+		
+		if (!m_uvsPtr)
+			m_uvsPtr = (fm::vec2*)m_drawData.texPositions.getData().buf->map(false,true);
+		
+		if (m_uvsPtr)
+			std::memcpy(m_uvsPtr + sprite.getId() * 6,uvs,sizeof(uvs));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MapBufSpriteManager::onSwapSprite(Sprite &sprite,Sprite &maybeSprite)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MapBufSpriteManager::onSwapSpriteAfter(Sprite &sprite1,Sprite &sprite2)
+	{
+		onRectChangeSprite(sprite1);
+		onImageChangeSprite(sprite1);
+		
+		onRectChangeSprite(sprite2);
+		onImageChangeSprite(sprite2);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	MapBufSpriteManager::MapBufSpriteManager() : m_allocSize(0),
+												 m_ptsPtr(nullptr),
+												 m_uvsPtr(nullptr)
+	{
+		m_drawData.addDraw(0,0,fg::Triangles);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MapBufSpriteManager::onDraw(ShaderManager &shader)
+	{
+		unMapPtrs();
+		
 		shader.getTexUVStack().push().mul(m_atlas.getTexture().getPixToUnitMatrix());
 		shader.useTexture(m_atlas.getTexture());
 		

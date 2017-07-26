@@ -42,6 +42,7 @@ namespace fg
 		fg::Primitive primitive; ///< The primitve to be used
 		fm::Size componentType;  ///< The OpenGL id of the type of the indices
 		fm::Size indexCount;     ///< The number of indices available
+		fm::Size instances;      ///< The number of instances to be drawn
 		fm::Size drawBeg; ///< The first index to be used
 		fm::Size drawLen; ///< The number of indices to be used
 		fg::Buffer *buf;  ///< The buffer that holds the indices
@@ -57,6 +58,7 @@ namespace fg
 		/// @param compType The OpenGL id of the type of the indices
 		/// @param buffer The buffer that holds the indices
 		/// @param ownBuffer Stores whether the buffer was created by this class
+		/// @param instances The number of instances to be drawn
 		/// 
 		/////////////////////////////////////////////////////////////
 		DrawCall(fg::Primitive primitive = fg::Triangles,
@@ -65,7 +67,8 @@ namespace fg
 				 fm::Size drawLen = 0,
 				 fm::Size compType = 0,
 				 fg::Buffer *buffer = nullptr,
-				 bool ownBuffer = true);
+				 bool ownBuffer = true,
+				 fm::Size instances = 1);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -145,12 +148,13 @@ namespace fg
 		/// 
 		/// @param data The data to be assigned
 		/// @param primitive The primitive to be used
+		/// @param instances The number of instances to be drawn
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T,fm::Size N>
-		inline DrawCall &set(const T (&data)[N],fg::Primitive primitive);
+		inline DrawCall &set(const T (&data)[N],fg::Primitive primitive,fm::Size instances = 1);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign index-data and primitive to the drawcall
@@ -158,12 +162,13 @@ namespace fg
 		/// @param pointer Pointer to the data to be assigned
 		/// @param N The number of indices to assign
 		/// @param primitive The primitive to be used
+		/// @param instances The number of instances to be drawn
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		inline DrawCall &set(const T *pointer,fm::Size N,fg::Primitive primitive);
+		inline DrawCall &set(const T *pointer,fm::Size N,fg::Primitive primitive,fm::Size instances = 1);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign index-data and primitive to the drawcall
@@ -173,22 +178,29 @@ namespace fg
 		/// @param compType The OpenGL id of the type of the indices
 		/// @param bytesToCopy The number of bytes to be copied
 		/// @param primitive The primitive to be used
+		/// @param instances The number of instances to be drawn
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		DrawCall &set(const void *ptr,fm::Size indCount,fm::Size compType,fm::Size bytesToCopy,fg::Primitive primitive);
+		DrawCall &set(const void *ptr,
+					  fm::Size indCount,
+					  fm::Size compType,
+					  fm::Size bytesToCopy,
+					  fg::Primitive primitive,
+					  fm::Size instances = 1);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign index-data and primitive to the drawcall
 		/// 
 		/// @param indices The data to be assigned
 		/// @param primitive The primitive to be used
+		/// @param instances The number of instances to be drawn
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		DrawCall &set(const IndexHolder &indices,fg::Primitive primitive);
+		DrawCall &set(const IndexHolder &indices,fg::Primitive primitive,fm::Size instances = 1);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign range-data and primitive to the drawcall
@@ -196,11 +208,12 @@ namespace fg
 		/// @param beg The first index to used
 		/// @param len The number of indices to use
 		/// @param primitive The primitive to be used
+		/// @param instances The number of instances to be drawn
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		DrawCall &set(fm::Size beg,fm::Size len,fg::Primitive primitive);
+		DrawCall &set(fm::Size beg,fm::Size len,fg::Primitive primitive,fm::Size instances = 1);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign range-data to the drawcall
