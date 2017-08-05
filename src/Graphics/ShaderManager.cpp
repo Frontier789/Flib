@@ -245,7 +245,7 @@ namespace fg
 											{"dir","viewdir","view_dir","direction","viewdirection","view_direction"},
 											{"model","modelmat","model_mat"},
 											{"normmat","norm_mat","normalmat","normal_mat"},
-											{"colormat","color_mat"},
+											{"clrmat","clr_mat","colormat","color_mat"},
 											{"texturemat","texture_mat","texmat","tex_mat"},
 											{"time","secs","seconds","clock"},
 											
@@ -514,11 +514,13 @@ namespace fg
 "#define FRONTIER_CLR\n"
 "#define FRONTIER_TEXPOS\n"
 "#define FRONTIER_TEXMAT\n"
+"#define FRONTIER_CLRMAT\n"
 "\n"
 "uniform mat4 FRONTIER_MODEL  u_modelMat;\n"
 "uniform mat4 FRONTIER_VIEW   u_viewMat;\n"
 "uniform mat4 FRONTIER_PROJ   u_projMat;\n"
 "uniform mat4 FRONTIER_TEXMAT u_texUVMat;\n"
+"uniform mat4 FRONTIER_CLRMAT u_colorMat;\n"
 "\n"
 "attribute vec3 FRONTIER_POS    in_pos;\n"
 "attribute vec4 FRONTIER_CLR    in_color;\n"
@@ -531,7 +533,7 @@ namespace fg
 "{\n"
 "	gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos,1.0);\n"
 "	\n"
-"	va_color  = in_color;\n"
+"	va_color  = u_colorMat * in_color;\n"
 "	va_texpos = (u_texUVMat * vec4(in_texpos,0.0,1.0)).xy;\n"
 "}",""
 "#version 110\n"

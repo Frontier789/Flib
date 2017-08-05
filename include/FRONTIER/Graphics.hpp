@@ -39,6 +39,7 @@ namespace fg
 #include <FRONTIER/Graphics/StateAnimation.hpp>
 #include <FRONTIER/Graphics/ShaderManager.hpp>
 #include <FRONTIER/Graphics/Transformable.hpp>
+#include <FRONTIER/Graphics/SpriteManager.hpp>
 #include <FRONTIER/Graphics/DepthTexture.hpp>
 #include <FRONTIER/Graphics/FloatTexture.hpp>
 #include <FRONTIER/Graphics/FontRenderer.hpp>
