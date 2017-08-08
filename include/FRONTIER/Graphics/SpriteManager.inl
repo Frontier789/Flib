@@ -95,7 +95,7 @@ namespace fg
 		m_spriteDatas[sprite.getId()].imgID = imgID;
 		fg::Glyph shape = m_atlas.fetch(imgID);
 		
-		priv::SpriteManagerBaseNonTemplate::handleImageIDChange(sprite.getID(),shape);
+		priv::SpriteManagerBaseNonTemplate::handleImageIDChange(sprite.getId(),shape);
 	}
 
 	/////////////////////////////////////////////////////////////

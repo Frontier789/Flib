@@ -61,7 +61,7 @@ namespace fgui
 		/// @param scrollSize The new scroll size
 		/// 
 		/////////////////////////////////////////////////////////////
-		void setScrollSize(float scrollSize);
+		virtual void setScrollSize(float scrollSize);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the current state

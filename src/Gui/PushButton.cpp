@@ -22,13 +22,13 @@ namespace fgui
 	void PushButton::applyState(InnerState state)
 	{
 		if (state == Normal)
-			m_activeSprite = &m_spriteNorm;
+			m_bckgSprite.setImageID("Button_Bckg_Norm");
 			
 		if (state == Hover)
-			m_activeSprite = &m_spriteHover;
+			m_bckgSprite.setImageID("Button_Bckg_Hover");
 			
 		if (state == Press)
-			m_activeSprite = &m_spritePress;
+			m_bckgSprite.setImageID("Button_Bckg_Press");
 		
 		setSize(getSize());
 		setPosition(getPosition());
@@ -36,24 +36,16 @@ namespace fgui
 	
 	/////////////////////////////////////////////////////////////
 	PushButton::PushButton(GuiContext &cont) : GuiButton(cont),
-											   m_activeSprite(&m_spriteNorm)
+											   m_bckgSprite(cont.getSpriteManager(),"Button_Bckg_Norm")
 	{
-		m_spriteNorm  = cont.getSprite("Button_Bckg_Norm" );
-		m_spriteHover = cont.getSprite("Button_Bckg_Hover");
-		m_spritePress = cont.getSprite("Button_Bckg_Press");
-		
 		setSize(getSize());
 		setPosition(getPosition());
 	}
 	
 	/////////////////////////////////////////////////////////////
 	PushButton::PushButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback) : GuiButton(cont,text),
-																											  m_activeSprite(&m_spriteNorm)
+																											  m_bckgSprite(cont.getSpriteManager(),"Button_Bckg_Norm")
 	{
-		m_spriteNorm  = cont.getSprite("Button_Bckg_Norm" );
-		m_spriteHover = cont.getSprite("Button_Bckg_Hover");
-		m_spritePress = cont.getSprite("Button_Bckg_Press");
-		
 		setSize(getSize());
 		setPosition(getPosition());
 		setCallback(callback);
@@ -62,8 +54,6 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void PushButton::onDraw(fg::ShaderManager &shader)
 	{
-		m_activeSprite->onDraw(shader);
-		
 		GuiButton::onDraw(shader);
 	}
 	
@@ -72,14 +62,14 @@ namespace fgui
 	{
 		fm::vec2s textSize = getGuiText().getSize();
 		
-		textSize += m_activeSprite->getFrameSize() * 2;
+		textSize += m_bckgSprite.getFrameSize() * 2;
 		
 		if (size.w < textSize.w) size.w = textSize.w;
 		if (size.h < textSize.h) size.h = textSize.h;
 		
 		GuiButton::setSize(size);
 		
-		m_activeSprite->setSize(getSize());
+		m_bckgSprite.setSize(getSize());
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -87,6 +77,6 @@ namespace fgui
 	{
 		GuiButton::setPosition(pos);
 		
-		m_activeSprite->setPosition(getPosition());
+		m_bckgSprite.setPosition(getPosition());
 	}
 }

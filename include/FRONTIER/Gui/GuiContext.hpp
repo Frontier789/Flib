@@ -17,9 +17,9 @@
 #ifndef FRONTIER_GUICONTEXT_HPP_INCLUDED
 #define FRONTIER_GUICONTEXT_HPP_INCLUDED
 
-#include <FRONTIER/Graphics/FramedSprite.hpp>
-#include <FRONTIER/Graphics/TextureAtlas.hpp>
+#include <FRONTIER/Graphics/SpriteManager.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/Graphics/Sprite.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Result.hpp>
@@ -62,9 +62,9 @@ namespace fgui
 	class FRONTIER_API GuiContext
 	{
 	protected:
-		fg::TextureAtlas<fm::String>  m_texAtlas; ///< The texture atlas for sprites
-		std::map<fm::String,fg::Font> m_fonts;    ///< The loaded fonts
-		fg::ShaderManager *m_shader;              ///< The shader used when drawing
+		std::map<fm::String,fg::Font> m_fonts; ///< The loaded fonts
+		fg::SpriteManager  m_spriteManager;    ///< The texture atlas for sprites
+		fg::ShaderManager *m_shader;           ///< The shader used when drawing
 		GuiLayout *m_layout; ///< The main layout of the context
 		fm::Clock  m_fpsClk; ///< Clock for measuring fps
 		fm::vec2s  m_size;   ///< The size of the context
@@ -88,14 +88,6 @@ namespace fgui
 		GuiContext(fm::vec2s size);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Move constructor
-		///
-		/// @param cont The context to move
-		///
-		/////////////////////////////////////////////////////////////
-		GuiContext(GuiContext &&cont);
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Default destructr
 		///
 		/////////////////////////////////////////////////////////////
@@ -108,10 +100,8 @@ namespace fgui
 		/// @param spriteImage The image of the sprite
 		/// @param frameSize The frame size
 		/// 
-		/// @return The sprite
-		/// 
 		/////////////////////////////////////////////////////////////
-		fg::FramedSprite setSprite(const fm::String &name,const fg::Image &spriteImage,const fm::vec2s &frameSize = fm::vec2s());
+		void addSprite(const std::string &name,const fg::Image &spriteImage,const fm::vec2s &frameSize = fm::vec2s());
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Retrieve a named sprite from the context
@@ -121,7 +111,23 @@ namespace fgui
 		/// @return The sprite
 		/// 
 		/////////////////////////////////////////////////////////////
-		fg::FramedSprite getSprite(const fm::String &name) const;
+		fg::Sprite getSprite(const std::string &name);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Access the sprite manager of the context
+		/// 
+		/// @return The sprite manager
+		/// 
+		/////////////////////////////////////////////////////////////
+		fg::SpriteManager &getSpriteManager();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Access the sprite manager of the context
+		/// 
+		/// @return The sprite manager
+		/// 
+		/////////////////////////////////////////////////////////////
+		const fg::SpriteManager &getSpriteManager() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Load a font based on its name
@@ -243,26 +249,6 @@ namespace fgui
 		///
 		/////////////////////////////////////////////////////////////
 		virtual void setSize(fm::vec2s size);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Swap two gui contexts
-		///
-		/// @param cont The context to swap with
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-		GuiContext &swap(GuiContext &cont);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Move assignment operator
-		///
-		/// @param cont The context to move
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-		GuiContext &operator=(GuiContext &&cont);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the main layout of the context

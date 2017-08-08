@@ -34,7 +34,6 @@ namespace fg
 
 }
 
-#include <FRONTIER/Graphics/SpriteStateAnimation.hpp>
 #include <FRONTIER/Graphics/FixedShaderManager.hpp>
 #include <FRONTIER/Graphics/StateAnimation.hpp>
 #include <FRONTIER/Graphics/ShaderManager.hpp>
@@ -44,7 +43,6 @@ namespace fg
 #include <FRONTIER/Graphics/FloatTexture.hpp>
 #include <FRONTIER/Graphics/FontRenderer.hpp>
 #include <FRONTIER/Graphics/RenderStates.hpp>
-#include <FRONTIER/Graphics/FramedSprite.hpp>
 #include <FRONTIER/Graphics/TextureAtlas.hpp>
 #include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/Graphics/FrameBuffer.hpp>

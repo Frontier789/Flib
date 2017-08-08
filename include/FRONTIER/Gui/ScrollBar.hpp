@@ -17,11 +17,11 @@
 #ifndef FRONTIER_SCROLLBAR_HPP_INCLUDED
 #define FRONTIER_SCROLLBAR_HPP_INCLUDED
 
-#include <FRONTIER/Graphics/SpriteStateAnimation.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/Gui/ClickListener.hpp>
 #include <FRONTIER/Gui/GuiScrollBar.hpp>
+#include <FRONTIER/Graphics/Sprite.hpp>
 #include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_SCROLLBAR
@@ -48,18 +48,18 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API ScrollBar : public GuiScrollBar, public ClickListener
 	{
-		fg::SpriteAnimation m_handleAnim; ///< Sprite anim for handle
 		ScrollDirection m_direction; ///< The direction
+		fg::Sprite m_handleSprite;   ///< Sprite for handle
 		fg::DrawData m_railDraw;     ///< DrawData for the rail
 		float m_grabState; ///< The state the scrollbar was in when it was grabbed
 		fm::vec2 m_grabp;  ///< The point where the scroller was grabbed
 		bool m_grabbed;    ///< True iff the scrolles is grabbed
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Setup the rail draw for the current size
+		/// @brief Setup the draws for the current size
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void setupRail();
+		virtual void setupDraws();
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Test if a point is inside the drag area
@@ -90,12 +90,28 @@ namespace fgui
 		ScrollBar(GuiContext &cont,fm::vec2s size,fm::Delegate<void,GuiScrollBar &> callback = nullptr);
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Set the size of one scroll
+		/// 
+		/// @param scrollSize The new scroll size
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setScrollSize(float scrollSize) override;
+	
+		/////////////////////////////////////////////////////////////
 		/// @brief Set the size of the gui element
 		/// 
 		/// @param size The size
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual void setSize(fm::vec2s size) override;
+	
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the position of the gui element
+		/// 
+		/// @param pos The position
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setPosition(fm::vec2i pos) override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Called when the mouse moves inside the gui element

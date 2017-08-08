@@ -29,7 +29,7 @@ namespace fg
 				{
 					if(pts)
 					{
-						fm::vec2 locp = tpt[x] * size - size / 2;
+						fm::vec2 locp = tpt[x] * size;
 						(*pts)[x] = pos + fm::vec3(locp.x * rightv + locp.y * dir,0);
 					}
 					if (uvs)
@@ -49,7 +49,7 @@ namespace fg
 					fm::vec2 coef0011(p.x > 1.5f,p.y > 1.5f);
 					fm::vec2 coef0101 = p - coef0011*2;
 					
-					fm::vec2 locp = coef0011 * size + (coef0101 - coef0011) * shape.leftdown - size * 0.5;
+					fm::vec2 locp = coef0011 * size + (coef0101 - coef0011) * shape.leftdown;
 					
 					return pos + fm::vec3(locp.x * rightv + locp.y * dir,0);
 				};
@@ -464,7 +464,7 @@ namespace fg
 "{\n"
 "	vec2 coef0011 = vec2(greaterThan(in_tpt,vec2(1.5,1.5)));\n"
 "	vec2 coef0101 = mod(in_tpt,vec2(2.0,2.0));\n"
-"	vec2 locp = coef0011 * in_siz + (coef0101 - coef0011) * in_frm - in_siz * 0.5;\n"
+"	vec2 locp = coef0011 * in_siz + (coef0101 - coef0011) * in_frm;\n"
 "	\n"
 "	vec2 r = vec2(in_dir.y,-in_dir.x);\n"
 "	\n"
@@ -518,7 +518,7 @@ namespace fg
 "\n"
 "void main()\n"
 "{\n"
-"	vec2 locp = in_siz * (in_tpt - vec2(.5,.5));\n"
+"	vec2 locp = in_siz * in_tpt;\n"
 "	\n"
 "	vec2 r = vec2(in_dir.y,-in_dir.x);\n"
 "	\n"

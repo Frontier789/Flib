@@ -83,9 +83,9 @@ namespace fgui
 
 		void loadDefButtonImg(GuiContext &cont)
 		{
-			cont.setSprite("Button_Bckg_Norm" ,getDefButtonImgNorm (),vec2(4,4));
-			cont.setSprite("Button_Bckg_Hover",getDefButtonImgHover(),vec2(4,4));
-			cont.setSprite("Button_Bckg_Press",getDefButtonImgPress(),vec2(4,4));
+			cont.addSprite("Button_Bckg_Norm" ,getDefButtonImgNorm (),vec2(4,4));
+			cont.addSprite("Button_Bckg_Hover",getDefButtonImgHover(),vec2(4,4));
+			cont.addSprite("Button_Bckg_Press",getDefButtonImgPress(),vec2(4,4));
 		}
 	}
 	
@@ -104,19 +104,14 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiContext::GuiContext(fm::vec2s size) : m_shader(fg::ShaderManager::getDefaultShader()),
+	GuiContext::GuiContext(fm::vec2s size) : m_spriteManager(true),
+											 m_shader(fg::ShaderManager::getDefaultShader()),
 											 m_layout(new GuiLayout(*this)),
 											 m_size(size)
 	{
 		setupShader();
 		setMaxFps(60);
 		priv::loadDefButtonImg(*this);
-	}
-
-	/////////////////////////////////////////////////////////////
-	GuiContext::GuiContext(GuiContext &&cont) : m_shader(nullptr)
-	{
-		cont.swap(*this);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -247,27 +242,6 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	GuiContext &GuiContext::swap(GuiContext &cont)
-	{
-		m_fonts.swap(cont.m_fonts);
-		std::swap(m_shader,cont.m_shader);
-		std::swap(m_layout,cont.m_layout);
-		
-		m_layout->setOwnerContext(*this);
-		m_layout->setSize(getSize());
-		cont.m_layout->setOwnerContext(cont);
-		cont.m_layout->setSize(cont.getSize());
-		
-		return *this;
-	}
-
-	/////////////////////////////////////////////////////////////
-	GuiContext &GuiContext::operator=(GuiContext &&cont)
-	{
-		return this->swap(cont);
-	}
-	
-	/////////////////////////////////////////////////////////////
 	void GuiContext::setMainLayout(GuiLayout *layout,bool delPrevLayout)
 	{
 		if (delPrevLayout)
@@ -313,6 +287,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiContext::drawElements()
 	{
+		this->draw(getSpriteManager());
 		this->draw(getMainLayout());
 	}
 	
@@ -341,22 +316,27 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fg::FramedSprite GuiContext::setSprite(const fm::String &name,const fg::Image &spriteImage,const fm::vec2s &frameSize)
+	void GuiContext::addSprite(const std::string &name,const fg::Image &spriteImage,const fm::vec2s &frameSize)
 	{
-		fg::Glyph g = m_texAtlas.upload(spriteImage,name,frameSize);
-		
-		return fg::FramedSprite(m_texAtlas.getTexture(),fm::rect2s(g.pos,g.size),frameSize);
+		m_spriteManager.addImage(spriteImage,name,frameSize);
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fg::FramedSprite GuiContext::getSprite(const fm::String &name) const
+	fg::Sprite GuiContext::getSprite(const std::string &name)
 	{
-		fg::Glyph g = m_texAtlas.fetch(name);
-		
-		if (!g.size.area())
-			return fg::FramedSprite();
-			
-		return fg::FramedSprite(m_texAtlas.getTexture(),fm::rect2s(g.pos,g.size),g.leftdown);
+		return m_spriteManager.getSprite(name);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fg::SpriteManager &GuiContext::getSpriteManager()
+	{
+		return m_spriteManager;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	const fg::SpriteManager &GuiContext::getSpriteManager() const
+	{
+		return m_spriteManager;
 	}
 	
 	/////////////////////////////////////////////////////////////

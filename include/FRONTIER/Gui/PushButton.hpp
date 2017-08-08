@@ -17,7 +17,7 @@
 #ifndef FRONTIER_PUSHBUTTON_HPP_INCLUDED
 #define FRONTIER_PUSHBUTTON_HPP_INCLUDED
 
-#include <FRONTIER/Graphics/FramedSprite.hpp>
+#include <FRONTIER/Graphics/Sprite.hpp>
 #include <FRONTIER/Gui/GuiButton.hpp>
 #include <FRONTIER/System/util/API.h>
 
@@ -33,10 +33,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API PushButton : public GuiButton
 	{
-		fg::FramedSprite *m_activeSprite; ///< The active state's sprite
-		fg::FramedSprite m_spriteHover;   ///< The sprite to display when the button is hovered
-		fg::FramedSprite m_spritePress;   ///< The sprite to display when pressed
-		fg::FramedSprite m_spriteNorm;    ///< The sprite to display by default
+		fg::Sprite m_bckgSprite; ///< The background sprite
 		
 	protected:
 		/////////////////////////////////////////////////////////////

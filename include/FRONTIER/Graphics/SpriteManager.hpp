@@ -26,6 +26,7 @@
 #include <FRONTIER/Graphics/Glyph.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <string>
 
 namespace fg
 {
@@ -408,7 +409,7 @@ namespace fg
 		friend SpriteBase<ImageID>;
 	};
 	
-	typedef SpriteManagerBase<int> SpriteManager;
+	typedef SpriteManagerBase<std::string> SpriteManager;
 }
 
 #endif // FRONTIER_SPRITEMANAGER_HPP_INCLUDED

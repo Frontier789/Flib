@@ -11,12 +11,10 @@ using namespace std;
  
  */	
 
-#define NAMESPACE_TO_TEST fg
-
 class SpriteTester : public Drawable
 {
-	std::vector<NAMESPACE_TO_TEST::Sprite> m_sprites;
-	NAMESPACE_TO_TEST::SpriteManager *m_manager;
+	std::vector<fg::Sprite> m_sprites;
+	fg::SpriteManager *m_manager;
 	fm::Size m_usedSprites;
 	bool m_recreateSprites;
 	float m_moveSprites;
@@ -26,7 +24,7 @@ class SpriteTester : public Drawable
 	
 public:
 	/////////////////////////////////////////////////////////////
-	SpriteTester(NAMESPACE_TO_TEST::SpriteManager *newManager,
+	SpriteTester(fg::SpriteManager *newManager,
 				 fm::vec2 winSize) : m_manager(nullptr),
 									 m_usedSprites(10),
 									 m_recreateSprites(false),
@@ -70,14 +68,14 @@ public:
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void setManager(NAMESPACE_TO_TEST::SpriteManager *newManager)
+	void setManager(fg::SpriteManager *newManager)
 	{
 		delete m_manager;
 		m_manager = newManager;
-		m_sprites = std::vector<NAMESPACE_TO_TEST::Sprite>();
+		m_sprites = std::vector<fg::Sprite>();
 		
 		C(6)
-			m_manager->addImage(m_snowImg.getSubImage(vec2(i*100,0),vec2(100,100)),i,fm::vec2(10,5));
+			m_manager->addImage(m_snowImg.getSubImage(vec2(i*100,0),vec2(100,100)),fm::toString(i).str(),fm::vec2(10,5));
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -111,7 +109,7 @@ public:
 		vec2 s,p;
 		randSizePos(s,p);
 		
-		m_sprites.emplace_back(*m_manager,rand()%6);
+		m_sprites.emplace_back(*m_manager,fm::toString(rand()%6).str());
 		m_sprites.back().setPosition(p).setSize(s).setDirection((m_winSize/2 - p).sgn());
 	}
 	
@@ -131,7 +129,7 @@ public:
 		
 		for (fm::Size index=0;index<m_sprites.size()*m_moveSprites;++index)
 		{
-			NAMESPACE_TO_TEST::Sprite &spr = m_sprites[index];
+			fg::Sprite &spr = m_sprites[index];
 			vec2 siz = spr.getSize();
 			
 			if (siz.area() < 10)
@@ -181,7 +179,7 @@ int main()
 	cout << Buffer::keepShadowCopy() << endl;
 	cout << win.getShader().instancingAvailable() << endl;
 	
-	NAMESPACE_TO_TEST::SpriteManager *manager = new NAMESPACE_TO_TEST::SpriteManager(false);
+	fg::SpriteManager *manager = new fg::SpriteManager(false);
 	SpriteTester tester(manager,win.getSize());
 	
 	GuiText *scText = new GuiText(win,"10");

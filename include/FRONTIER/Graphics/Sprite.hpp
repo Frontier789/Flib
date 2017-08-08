@@ -20,6 +20,7 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <string>
 
 namespace fg
 {
@@ -174,6 +175,14 @@ namespace fg
 		fm::vec2 getSize() const;
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the frame size of the sprite
+		/// 
+		/// @return The frame size
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::vec2 getFrameSize() const;
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Get the id of the sprite
 		/// 
 		/// Mainly used by SpriteManager
@@ -215,7 +224,7 @@ namespace fg
 		friend SpriteManagerBase<ImageID>;
 	};
 	
-	typedef SpriteBase<int> Sprite;
+	typedef SpriteBase<std::string> Sprite;
 }
 
 #endif // FRONTIER_SPRITE_HPP_INCLUDED

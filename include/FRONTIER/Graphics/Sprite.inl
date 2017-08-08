@@ -180,6 +180,13 @@ namespace fg
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
+	fm::vec2 SpriteBase<ImageID>::getFrameSize() const
+	{
+		return getManager()->getAtlas().fetch(getImageID()).leftdown;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ImageID>
 	fm::Size SpriteBase<ImageID>::getId() const
 	{
 		return m_id;

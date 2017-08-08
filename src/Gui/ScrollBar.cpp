@@ -15,6 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/ShaderManager.hpp>
+#include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/Gui/GuiContext.hpp>
 #include <FRONTIER/Graphics/Mesh.hpp>
 #include <FRONTIER/Gui/ScrollBar.hpp>
@@ -22,9 +23,62 @@
 namespace fgui
 {
 	/////////////////////////////////////////////////////////////
-	void ScrollBar::setupRail()
+	void ScrollBar::setupDraws()
 	{
+		fm::vec2 p = getPosition();
+		fm::vec2 s = getSize();
+		float scrollSize = getScrollSize();
+		fm::vec2 sprS = s * scrollSize;
+		float scrollState = getScrollState();
 		
+		fm::vec2 pts[12];
+		fm::vec2 tpt[] = {fm::vec2(0,0),fm::vec2(1,0),fm::vec2(1,1),fm::vec2(0,0),fm::vec2(1,1),fm::vec2(0,1)};
+		
+		auto mixF = [&](float a,float b,float s,bool fst) -> float {
+			
+			if (a > b)
+				return fst ? a : b;
+			
+			return a * (1-s) + b * s;
+		};
+		
+		if (getScrollDirection() == ScrollHorizontal)
+		{
+			m_handleSprite.setPosition(p + fm::vec2i((s.w-sprS.w)*scrollState,0));
+			m_handleSprite.setSize(fm::vec2i(sprS.w,s.h));
+			
+			C(6)
+				pts[i+0] = fm::vec2(mixF(p.x + sprS.w/2,m_handleSprite.getPosition().x,tpt[i].x,false),
+									p.y + s.h/2 - 2 + 4 * tpt[i].y);
+			
+			C(6)
+				pts[i+6] = fm::vec2(mixF(m_handleSprite.getPosition().x + m_handleSprite.getSize().w, p.x + s.w - sprS.w/2, tpt[i].x,true),
+									p.y + s.h/2 - 2 + 4 * tpt[i].y);
+		}
+		else
+		{
+			C(6) 
+				pts[i+0] = p + s*fm::vec2(.5,0) - fm::vec2(2,0) + 
+						   fm::vec2(0,sprS.h/2) + tpt[i] * fm::vec2(4,std::max(0.f,(s.h-sprS.h)*(1 - scrollState) - sprS.h/2));
+			
+			C(6) 
+				pts[i+6] = p + s*fm::vec2(.5,0) - fm::vec2(2,0) + 
+						   fm::vec2(0,(s.h-sprS.h)*(1.f - scrollState) + sprS.h - 1) + 
+						   tpt[i] * fm::vec2(4,std::max(0.f,s.h - sprS.h*3/2 - (s.h-sprS.h)*(1 - scrollState)));
+			
+			m_handleSprite.setPosition(p + fm::vec2i(0,(s.h-sprS.h)*(1 - scrollState)));
+			m_handleSprite.setSize(fm::vec2(s.w,sprS.h));
+			
+			C(6)
+				pts[i+0] = fm::vec2(p.x + s.w/2 - 2 + 4 * tpt[i].x,
+									mixF(p.y + sprS.h/2,m_handleSprite.getPosition().y,tpt[i].y,false));
+			
+			C(6)
+				pts[i+6] = fm::vec2(p.x + s.w/2 - 2 + 4 * tpt[i].x,
+									mixF(m_handleSprite.getPosition().y + m_handleSprite.getSize().h, p.y + s.h - sprS.h/2, tpt[i].y,true));
+		}
+		
+		m_railDraw.positions = pts;
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -47,19 +101,17 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	ScrollBar::ScrollBar(GuiContext &cont) : GuiScrollBar(cont),
 											 m_direction(ScrollDefault),
+											 m_handleSprite(cont.getSpriteManager(),"Button_Bckg_Norm"),
 											 m_grabbed(false)
 	{
-		m_handleAnim.setSprite("norm" ,cont.getSprite("Button_Bckg_Norm" ));
-		m_handleAnim.setSprite("press",cont.getSprite("Button_Bckg_Press"));
-		m_handleAnim.setSprite("hover",cont.getSprite("Button_Bckg_Hover"));
+		fm::vec4 clr[12];
+		C(12)
+			clr[i] = fm::vec4(.5,.5,.5,.5);
 		
-		fg::Mesh rectangle = fg::Mesh::getRectangle();
+		m_railDraw.colors = clr;
+		m_railDraw.addDraw(0,12,fg::Triangles);
 		
-		rectangle.clr.resize(rectangle.pts.size());
-		C(rectangle.clr.size())
-			rectangle.clr[i] = fm::vec4(.5,.5,.5,.5);
-		
-		m_railDraw = rectangle;
+		setupDraws();
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -70,11 +122,27 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
+	void ScrollBar::setScrollSize(float scrollSize)
+	{
+		GuiScrollBar::setScrollSize(scrollSize);
+		
+		setupDraws();
+	}
+	
+	/////////////////////////////////////////////////////////////
 	void ScrollBar::setSize(fm::vec2s size)
 	{
 		GuiScrollBar::setSize(size);
 		
-		setupRail();
+		setupDraws();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void ScrollBar::setPosition(fm::vec2i pos)
+	{
+		GuiScrollBar::setPosition(pos);
+		
+		setupDraws();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -96,10 +164,11 @@ namespace fgui
 			}
 			
 			setScrollState(state);
+			setupDraws();
 		}
 		else
 		{
-			m_handleAnim.setState(inDragArea(p) ? "hover" : "norm");
+			m_handleSprite.setImageID(inDragArea(p) ? "Button_Bckg_Hover" : "Button_Bckg_Norm");
 		}
 	}
 	
@@ -125,13 +194,15 @@ namespace fgui
 					
 					setScrollState(1 - inp / (s.h - sprS.h));
 				}
+				
+				setupDraws();
 			}
 				
 			m_grabState = getScrollState();
 			m_grabbed = true;
 			m_grabp = p;
 			
-			m_handleAnim.setState("press");		
+			m_handleSprite.setImageID("Button_Bckg_Press");	
 		}
 	}
 	
@@ -142,44 +213,27 @@ namespace fgui
 		{
 			m_grabbed = false;
 			
-			m_handleAnim.setState("norm");
+			m_handleSprite.setImageID("Button_Bckg_Norm");
 		}
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void ScrollBar::onDraw(fg::ShaderManager &shader)
 	{
-		fm::vec2 p = getPosition();
-		fm::vec2 s = getSize();
-		fm::vec2 sprS = s * getScrollSize();
-		
-		fm::mat4 m1;
-		
-		if (getScrollDirection() == ScrollHorizontal)
-		{
-			m1 = fm::MATRIX::translation(p + s*fm::vec2(0,.5) - fm::vec2(0,2) + fm::vec2(sprS.w/2,0)) * fm::MATRIX::scaling(fm::vec2(s.w - sprS.w,4));
-			m_handleAnim.setPosition(p + fm::vec2((s.w-sprS.w)*getScrollState(),0));
-			m_handleAnim.setSize(fm::vec2(sprS.w,s.h));
-		}
-		else
-		{
-			m1 = fm::MATRIX::translation(p + s*fm::vec2(.5,0) - fm::vec2(2,0) + fm::vec2(0,sprS.h/2)) * fm::MATRIX::scaling(fm::vec2(4,s.h - sprS.h));
-			m_handleAnim.setPosition(p + fm::vec2(0,(s.h-sprS.h)*(1 - getScrollState())));
-			m_handleAnim.setSize(fm::vec2(s.w,sprS.h));
-		}
-		
-		shader.getModelStack().push().mul(m1);
 		shader.useTexture(nullptr);
 		shader.draw(m_railDraw);
-		shader.getModelStack().pop();
-		
-		m_handleAnim.onDraw(shader);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void ScrollBar::setScrollDirection(ScrollDirection direction)
 	{
-		m_direction = direction;
+		if (m_direction != direction)
+		{
+			if (getScrollDirection() != direction)
+				setupDraws();
+			
+			m_direction = direction;
+		}
 	}
 	
 	/////////////////////////////////////////////////////////////
