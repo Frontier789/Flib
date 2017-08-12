@@ -21,6 +21,7 @@
 
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
+#include <FRONTIER/System/Delegate.hpp>
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
@@ -31,6 +32,8 @@
 #include <FRONTIER/System/Ref.hpp>
 
 #define FRONTIER_SHADER_ATTRIB_POINTER_ENABLED_BIT (fm::Size(1))
+#define FRONTIER_SHADER_UNIFORM_ASSOCIATED_BIT (fm::Size(2))
+#define FRONTIER_SHADER_ATTRIB_ASSOCIATED_BIT  (fm::Size(2))
 
 #define FRONTIER_SHADER
 #include <type_traits>
@@ -85,6 +88,49 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Shader : public fm::NonCopyable, public GlObject
 	{
+	public:
+		/////////////////////////////////////////////////////////////
+		/// @brief Pod type for describing a shader input's properties (like uniform or attribute)
+		///
+		/////////////////////////////////////////////////////////////
+		class InputData
+		{
+		public:
+			fm::Size flags; ///< Extra flags 
+			fm::Size type;  ///< The type of the shader input
+			fm::Size size;  ///< The number of array elements in the shader input
+			int location;   ///< The id of the shader input
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Default constructor
+			///
+			/// @param type type
+			/// @param size size
+			/// @param location location
+			///
+			/////////////////////////////////////////////////////////////
+			InputData(fm::Size type=0,fm::Size size=0,int location=0);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Check if the shader input is an array
+			///
+			/// @return True iff the shader input is an array
+			///
+			/////////////////////////////////////////////////////////////
+			bool isArray() const;
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Check if the shader input is an associated one meaning the shader manager manages it
+			///
+			/// @return True iff the shader input is an associated one
+			///
+			/////////////////////////////////////////////////////////////
+			bool isAssociated() const;
+		};
+		
+		typedef InputData UniformData; ///< Uniform data
+		typedef InputData AttribData;  ///< Attribute data
+		
 	protected:
 		/////////////////////////////////////////////////////////////
 		/// @brief Class used to store data about uniform textures
@@ -115,40 +161,6 @@ namespace fg
 			TexUniformData(int location=0,int slot=0,int act_id=0);
 	    };
 		
-		/////////////////////////////////////////////////////////////
-		/// @brief Pod type for describing a shader input's properties (like uniform or attribute)
-		///
-		/////////////////////////////////////////////////////////////
-		class InputData
-		{
-		public:
-			fm::Size flags; ///< Extra flags 
-			fm::Size type;  ///< The type of the shader input
-			fm::Size size;  ///< The number of array elements in the shader input
-			int location;   ///< The id of the shader input
-			
-			/////////////////////////////////////////////////////////////
-			/// @brief Default constructor
-			///
-			/// @param type type
-			/// @param size size
-			/// @param location location
-			///
-			/////////////////////////////////////////////////////////////
-			InputData(fm::Size type=0,fm::Size size=0,int location=0);
-			
-			/////////////////////////////////////////////////////////////
-			/// @brief Check if the shader input is an array
-			///
-			/// @return True iff the shader input is an array
-			///
-			/////////////////////////////////////////////////////////////
-			bool isArray() const;
-		};
-		
-		typedef InputData UniformData; ///< Uniform data
-		typedef InputData AttribData;  ///< Attribute data
-
 		std::map<std::string, TexUniformData > m_textures; ///< The state and name of the texture uniforms
 		std::map<std::string, AttribData> m_attributes;    ///< The data of the uniforms
 		std::map<std::string, UniformData> m_uniforms;     ///< The data of the uniforms
@@ -731,6 +743,22 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool instancingAvailable() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Run a function on all uniforms
+		/// 
+		/// @param func The function to call
+		/// 
+		/////////////////////////////////////////////////////////////
+		void forAllUniforms(fm::Delegate<void,std::string,UniformData> func) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Run a function on all attributes
+		/// 
+		/// @param func The function to call
+		/// 
+		/////////////////////////////////////////////////////////////
+		void forAllAttribs(fm::Delegate<void,std::string,AttribData> func) const;
 	};
 
 }

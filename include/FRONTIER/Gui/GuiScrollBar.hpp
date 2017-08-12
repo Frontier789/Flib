@@ -69,7 +69,7 @@ namespace fgui
 		/// @param state The new current state (will be clamped to [0,1])
 		/// 
 		/////////////////////////////////////////////////////////////
-		void setScrollState(float state);
+		virtual void setScrollState(float state);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the size of one scroll

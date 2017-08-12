@@ -96,7 +96,7 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the child at given 2d index 
 		/// 
-		/// @param index The 2d index of the child to get
+		/// @param index The 2d index of the child to set
 		/// @param element The new element
 		/// 
 		/// @return Pointer to the old child at the index

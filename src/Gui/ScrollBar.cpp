@@ -130,6 +130,22 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
+	void ScrollBar::setScrollState(float state)
+	{
+		GuiScrollBar::setScrollState(state);
+		
+		setupDraws();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void ScrollBar::onScroll(float amount)
+	{
+		GuiScrollBar::onScroll(amount);
+		
+		onMouseMoved(m_lastHoverp,m_lastHoverp);
+	}
+	
+	/////////////////////////////////////////////////////////////
 	void ScrollBar::setSize(fm::vec2s size)
 	{
 		GuiScrollBar::setSize(size);
@@ -170,6 +186,8 @@ namespace fgui
 		{
 			m_handleSprite.setImageID(inDragArea(p) ? "Button_Bckg_Hover" : "Button_Bckg_Norm");
 		}
+		
+		m_lastHoverp = p;
 	}
 	
 	/////////////////////////////////////////////////////////////

@@ -51,6 +51,7 @@ namespace fgui
 		ScrollDirection m_direction; ///< The direction
 		fg::Sprite m_handleSprite;   ///< Sprite for handle
 		fg::DrawData m_railDraw;     ///< DrawData for the rail
+		fm::vec2 m_lastHoverp;       ///< Last hover position
 		float m_grabState; ///< The state the scrollbar was in when it was grabbed
 		fm::vec2 m_grabp;  ///< The point where the scroller was grabbed
 		bool m_grabbed;    ///< True iff the scrolles is grabbed
@@ -96,6 +97,22 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual void setScrollSize(float scrollSize) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the current state
+		/// 
+		/// @param state The new current state (will be clamped to [0,1])
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setScrollState(float state) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Called when the element is scrolled
+		/// 
+		/// @param amount The amount the element is scrolled
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void onScroll(float amount) override;
 	
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the size of the gui element

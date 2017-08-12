@@ -47,7 +47,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API ShaderManager : public fg::Shader
     {
-    protected:
+    public:
 		enum MatrixState ///< Internal type used to indicate a matrix name's state
 		{
 			UnknownMat, ///< The matrix name is not known to exist
@@ -177,7 +177,7 @@ namespace fg
         virtual ShaderManager &useTexture(fm::Ref<const fg::Texture> tex,fm::Size texIndex = 0);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the camera
+		/// @brief Get the camera of the shader
 		/// 
 		/// @return the camera
 		/// 
@@ -185,12 +185,28 @@ namespace fg
 		fm::Camera &getCamera();
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the camera
+		/// @brief Get the camera of the shader
 		/// 
 		/// @return the camera
 		/// 
 		/////////////////////////////////////////////////////////////
 		const fm::Camera &getCamera() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the clock of the shader
+		/// 
+		/// @return the clock
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Clock &getClock();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the clock of the shader
+		/// 
+		/// @return the clock
+		/// 
+		/////////////////////////////////////////////////////////////
+		const fm::Clock &getClock() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Clear all associations

@@ -24,6 +24,7 @@
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/GL/GL_CHECK.hpp>
+#include <FRONTIER/System/Ref.hpp>
 #include <FRONTIER/OpenGL.hpp>
 #include <cstring>
 

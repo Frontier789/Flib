@@ -18,6 +18,7 @@
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
+#include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>
@@ -66,6 +67,12 @@ namespace fg
 	bool Shader::InputData::isArray() const
 	{
 		return size != 0;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Shader::InputData::isAssociated() const
+	{
+		return flags & FRONTIER_SHADER_UNIFORM_ASSOCIATED_BIT;
 	}
 
 	/// compile shader objects /////////////////////////////////////////////////////////
@@ -631,7 +638,7 @@ namespace fg
 	FRONTIER_CREATE_SET_UNIFORM(const fm::vec3i &v,GL_INT_VEC3,true,glUniform3i(dat.location,v.x,v.y,v.z))
 	FRONTIER_CREATE_SET_UNIFORM(const fm::vec4i &v,GL_INT_VEC4,true,glUniform4i(dat.location,v.x,v.y,v.z,v.w))
 	
-	FRONTIER_CREATE_SET_UNIFORM(float v,GL_FLOAT,true,glUniform1i(dat.location,v))
+	FRONTIER_CREATE_SET_UNIFORM(float v,GL_FLOAT,true,glUniform1f(dat.location,v))
 	
 	FRONTIER_CREATE_SET_UNIFORM(const fm::vec2f &v,GL_FLOAT_VEC2,true,glUniform2f(dat.location,v.x,v.y))
 	FRONTIER_CREATE_SET_UNIFORM(const fm::vec3f &v,GL_FLOAT_VEC3,true,glUniform3f(dat.location,v.x,v.y,v.z))
@@ -806,5 +813,19 @@ namespace fg
 	bool Shader::instancingAvailable() const
 	{
 		return m_hasInstancing;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void Shader::forAllUniforms(fm::Delegate<void,std::string,UniformData> func) const
+	{
+		for (auto &pr : m_uniforms)
+			func(pr.first,pr.second);
+	}
+
+	/////////////////////////////////////////////////////////////
+	void Shader::forAllAttribs(fm::Delegate<void,std::string,AttribData> func) const
+	{
+		for (auto &pr : m_attributes)
+			func(pr.first,pr.second);
 	}
 }
