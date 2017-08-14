@@ -60,7 +60,7 @@ float Frame::getFadeInAmount()
 {
 	float secs = m_fadeInClk.getSeconds();
 	
-	const float transitionTime = .4;
+	const float transitionTime = .3;
 	
 	float val = 1;
 	if (secs < transitionTime)
@@ -155,6 +155,8 @@ public:
 	
 	void onUpdate(const fm::Time &/* dt */) override {};
 	void onDraw(fg::ShaderManager &shader) override;
+	
+	ShaderManager &getTopManager();
 };
 
 FrameStack::FrameStack(fm::vec2 winSize,
@@ -188,18 +190,9 @@ void FrameStack::collectShaders(fm::String folder)
 		
 		if (in_vert && in_frag)
 		{
-			cout << "shader_" << i << " found, loading" << endl;
-			
 			fm::Result res = loadShader(vertFile.str(),fragFile.str());
 			if (!res)
-				cout << "\tError loading shader, shader not added to stack: " << res << endl;
-			else
-			{
-				cout << "\tSuccess" << endl;
-				m_curManagers.back()->forAllUniforms([&](std::string name,Shader::UniformData data){
-					cout << "\tuniform: " << name << " flags: " << data.flags << endl;
-				});
-			}
+				cout << "\tError loading shader nr. " << i << ", shader not added to stack: " << res << endl;
 		}
 		else
 			found = false;
@@ -266,6 +259,11 @@ void FrameStack::onDraw(fg::ShaderManager &shader)
 		framePtr->onDraw(shader);
 }
 
+ShaderManager &FrameStack::getTopManager()
+{
+	return *m_curManagers[m_frames.back()->getShaderId()];
+}
+
 void FrameStack::addFrame(fm::Size shaderId,bool leftFade,bool fade)
 {
 	m_frames.push_back(new Frame(shaderId,*m_curManagers[shaderId],leftFade,fade,m_layout));
@@ -301,6 +299,11 @@ int main()
 	FrameStack frameStack(win.getSize(),layout);
 	frameStack.collectShaders();
 	
+	bool btnPressed[6];
+	C(sizeof(btnPressed)/sizeof(*btnPressed)) btnPressed[i] = false;
+	bool rightPressed = false;
+	fm::vec2 lastMousP;
+	
 	Clock fpsDispClk;
 	bool running = true;
 	for (fm::Size frameCounter=0;running;++frameCounter)
@@ -311,6 +314,16 @@ int main()
 			win.setTitle("shady " + fm::toString(frameCounter));
 			frameCounter = 0;
 		}
+		
+		
+		fm::vec3 delta(btnPressed[3] - btnPressed[1],
+					   btnPressed[5] - btnPressed[4],
+					   btnPressed[0] - btnPressed[2]);
+		
+		Camera &cam = frameStack.getTopManager().getCamera();
+		
+		cam.movePos((delta.x * -cam.r() + delta.y * cam.u() + delta.z * cam.f()) * 0.1);
+	
 		
 		// win.handlePendingEvents();
 		Event ev;
@@ -325,7 +338,6 @@ int main()
 			}
 			if (ev.type == Event::FocusGained)
 			{
-				cout << "focus gained, reloading" << endl;
 				frameStack.collectShaders();
 			}
 			if (ev.type == Event::KeyPressed)
@@ -341,6 +353,24 @@ int main()
 				if (ev.key.code == Keyboard::L)
 				{
 					cout << "sprite count: " << win.getSpriteManager().getSpriteCount() << endl;
+					
+					auto &manager = win.getSpriteManager();
+					
+					C(manager.getSpriteCount())
+					{
+						auto &sprite = manager.getSpriteById(i);
+						
+						cout << i << ": " << sprite.getPosition() << " , " << sprite.getSize() << " , " << sprite.getDirection() << endl;
+					}
+					cout << "instancing: " << (manager.useInstancing() ? "on" : "off") << endl;
+					cout << "model:" << endl;
+					cout << win.getShader().getModelStack().top()<< endl;
+					cout << "view:" << endl;
+					cout << win.getShader().getViewStack().top() << endl;
+					cout << "proj:" << endl;
+					cout << win.getShader().getProjStack().top() << endl;
+					
+					cout << endl;
 				}
 				if (ev.key.code == Keyboard::Left)
 				{
@@ -349,6 +379,62 @@ int main()
 				if (ev.key.code == Keyboard::Right)
 				{
 					frameStack.nextFrame(false);
+				}
+				
+				if (ev.key.code == Keyboard::W) btnPressed[0] = true;
+				if (ev.key.code == Keyboard::A) btnPressed[1] = true;
+				if (ev.key.code == Keyboard::S) btnPressed[2] = true;
+				if (ev.key.code == Keyboard::D) btnPressed[3] = true;
+				if (ev.key.code == Keyboard::LShift) btnPressed[4] = true;
+				if (ev.key.code == Keyboard::Space)  btnPressed[5] = true;
+			}
+			
+			if (ev.type == Event::KeyReleased)
+			{
+				if (ev.key.code == Keyboard::W) btnPressed[0] = false;
+				if (ev.key.code == Keyboard::A) btnPressed[1] = false;
+				if (ev.key.code == Keyboard::S) btnPressed[2] = false;
+				if (ev.key.code == Keyboard::D) btnPressed[3] = false;
+				if (ev.key.code == Keyboard::LShift) btnPressed[4] = false;
+				if (ev.key.code == Keyboard::Space)  btnPressed[5] = false;
+			}
+			
+			if (ev.type == Event::MouseMoved)
+			{
+				if (rightPressed)
+				{
+					vec2 delta = vec2(ev.motion) - win.getSize()/2;
+					
+					if (delta.LENGTH() > 2)
+					{
+						cam.addYaw(delta.x * 0.01);
+						cam.addPitch(delta.y * -0.01);
+						
+						Mouse::setPosition(win.getSize() / 2,win);
+					}
+				}
+			}
+			
+			if (ev.type == Event::ButtonPressed)
+			{
+				if (ev.mouse.button == Mouse::Right)
+				{
+					rightPressed = true;
+					win.showCursor(false);
+					Mouse::setPosition(win.getSize() / 2,win);
+					
+					lastMousP = ev.mouse;
+				}
+			}
+			
+			if (ev.type == Event::ButtonReleased)
+			{
+				if (ev.mouse.button == Mouse::Right)
+				{
+					rightPressed = false;
+					
+					Mouse::setPosition(lastMousP,win);
+					win.showCursor(true);
 				}
 			}
 		}

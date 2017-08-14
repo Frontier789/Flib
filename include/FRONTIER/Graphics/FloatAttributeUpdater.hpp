@@ -34,7 +34,6 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API FloatAttributeUpdater
 	{
-	public:
 		std::vector<float> m_data; ///< The data
 		fg::Attribute &m_attrib;   ///< Reference to the attribute needed to be updated
 		fm::Size m_firstUpdated;   ///< The index of the first item updated
@@ -46,6 +45,7 @@ namespace fg
 		bool m_lastTimeMap;        ///< Stores whether last time map was used
 		float *m_mappedPtr;        ///< The pointer to the mapped data
 		
+	public:
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the number of floats per item

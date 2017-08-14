@@ -36,11 +36,12 @@ namespace fg
 	void FloatAttributeUpdater::update(fm::Size index,const float *value)
 	{
 		std::memcpy(&m_data[index*getFloatsPerItem()],value,getBytesPerItem());
+		m_uploads++;
+		
 		/*
 		if (!m_mappedPtr && m_lastTimeMap)
 			m_mappedPtr = (float*)m_attrib.buf->map(false,true);
 		
-		m_uploads++;
 		
 		m_lastTimeMap = m_uploads > 20;
 		
@@ -49,8 +50,16 @@ namespace fg
 		else
 			m_attrib.buf->updateData(value,sizeof(float) * m_floatPerVec,sizeof(float) * m_floatPerVec * index);
 		*/
-		m_firstUpdated = std::min(m_firstUpdated,index);
-		m_lastUpdated  = std::max(m_lastUpdated ,index);
+		if (m_uploads == 1)
+		{
+			m_firstUpdated = index;
+			m_lastUpdated  = index;
+		}
+		else
+		{
+			m_firstUpdated = std::min(m_firstUpdated,index);
+			m_lastUpdated  = std::max(m_lastUpdated ,index);
+		}
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -69,8 +78,7 @@ namespace fg
 	void FloatAttributeUpdater::setCapacity(fm::Size capacity)
 	{
 		unMap();
-		m_firstUpdated = m_data.size() / getFloatsPerItem() - 1;
-		m_lastUpdated  = 0;
+		m_uploads = 0;
 		
 		m_attrib.set(m_floatPerVec,
 					 0,
@@ -98,9 +106,7 @@ namespace fg
 			setCapacity(std::max<fm::Size>(m_capacity*2,5));
 		}
 		else
-		{
 			update(m_data.size() / getFloatsPerItem() - 1,value);
-		}
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -110,9 +116,6 @@ namespace fg
 		
 		if (m_data.size() < m_capacity/4 * getFloatsPerItem())
 			setCapacity(m_capacity/2);
-		
-		if (m_lastUpdated * getFloatsPerItem() == m_data.size())
-			m_lastUpdated--;
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -130,17 +133,17 @@ namespace fg
 	{
 		unMap();
 		
-		if (m_firstUpdated <= m_lastUpdated)
+		if (m_uploads > 0 && m_data.size())
 		{
+			m_firstUpdated = std::min(m_firstUpdated,m_data.size() / getFloatsPerItem() - 1);
+			m_lastUpdated  = std::min(m_lastUpdated ,m_data.size() / getFloatsPerItem() - 1);
+			
 			fm::Size elemCount = m_lastUpdated - m_firstUpdated + 1;
 			
 			m_attrib.buf->updateData((void*)&m_data[m_firstUpdated*getFloatsPerItem()],
 									 getBytesPerItem() * elemCount,
 									 getBytesPerItem() * m_firstUpdated);
 		}
-		
-		m_firstUpdated = m_data.size() / getFloatsPerItem() - 1;
-		m_lastUpdated  = 0;
 		
 		m_uploads = 0;
 	}
