@@ -21,6 +21,8 @@
 #include <FRONTIER/System/util/API.h>
 #include <vector>
 
+#define FRONTIER_FLOATATTRIBUPDATER
+
 namespace fg
 {
 	class Attribute;

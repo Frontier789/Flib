@@ -29,7 +29,7 @@ vec3 cam_dir   = u_camDir;
 vec3 cam_right = normalize(cross(vec3(0,1,0),cam_dir));
 vec3 cam_up    = cross(cam_dir,cam_right);
 
-vec3 sun_dir   = normalize(vec3(4.0,5.0,0.0));
+vec3 sun_dir   = normalize(vec3(4.0,5.0,5.0));
 
 int max_steps  = int(min(u_secs*5.0,128.0));
 float min_dist = 0.01; 
@@ -58,9 +58,25 @@ vec3 rotateX(vec3 p,float a)
 					p.y * sin(a) + p.z * cos(a));
 }
 
+vec3 rotateY(vec3 p,float a)
+{
+	return vec3(p.x * cos(a) - p.z * sin(a),p.y,
+				p.x * sin(a) + p.z * cos(a));
+}
+
 float Union(float a,float b)
 {
 	return min(a,b);
+}
+
+float Substract(float a,float b)
+{
+	return max(a,-b);
+}
+
+float Modulate(float a,float m)
+{
+	return mod(a,m) - m/2.0;
 }
 
 float Noodle(float a,float l)
@@ -68,14 +84,33 @@ float Noodle(float a,float l)
 	return (abs(a - l) - abs(a + l)) / 2.0 + a;
 }
 
+float cube_dist(vec3 p,vec3 b)
+{
+	vec3 d = abs(p) - b;
+	return min(max(d.x,max(d.y,d.z)),0.0) + length(max(d,0.0));
+}
+
+float repc_dist(vec3 p,float s)
+{
+	vec3 d = abs(p) - vec3(s);
+	return min(max(d.x,d.y),min(max(d.x,d.z),max(d.z,d.y)));
+}
+
 float dist_func(vec3 p)
 {
-	return Union(Union(Union(Union(
-							 sphere_dist(p + vec3(0.0,0.0,-10.0))-2.0,
-							 sphere_dist(p + vec3(5.0,0.0,-10.0))-2.0),
-							 p.y+3.2),
-							 torus_dist(rotateX(p + vec3(-5.0,0.0,-10.0),u_secs * 2.5),3.0,1.0 + sin(u_secs))),
-							 sphere_dist(vec3(Noodle(p.x,sin(u_secs)*10.0+10.0),p.y,p.z-25.0))-2.0);
+	float d = cube_dist(p + vec3(0.0,0.0,10.0),vec3(3.0));
+	
+	float r = 1.0;
+	
+	for (int i=0;i<4;i++)
+	{
+		d = Substract(d,repc_dist(vec3(Modulate(p.x+3.0,r*6.0),
+									   Modulate(p.y+3.0,r*6.0),
+									   Modulate(p.z+13.0,r*6.0)),r));
+		r /= 3.0;
+	}
+	
+	return d;
 }
 
 float norm_helper_derivate(vec3 p,vec3 d,float h)
@@ -120,7 +155,7 @@ vec4 get_color_at(vec3 p,int it,float shadow)
 {
 	vec3 n = get_normal(p);
 	
-	float dp = dot(sun_dir,n);
+	float dp = max(dot(sun_dir,n),0.2);
 	
 	float camD = length(p - cam_pos);
 	

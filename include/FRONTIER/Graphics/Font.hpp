@@ -29,6 +29,7 @@
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/System/util/API.h>
+
 #define FRONTIER_FONT
 #include <string>
 #include <map>
@@ -44,6 +45,8 @@ namespace fm
 namespace fg
 {
 	class FontRenderer;
+	template<class> class SpriteManagerBase;
+	template<class> class SpriteBase;
 
 	//////////////////////////////////
 	/// @brief Reference counted font class that implements <a href="http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02#Creating_a_texture_atlas">Font atlas</a> technique
@@ -53,7 +56,7 @@ namespace fg
 	//////////////////////////////////
 	class FRONTIER_API Font
 	{
-	private:
+	public:
 		/////////////////////////////////////////////////////////////
 		/// @brief Uniquely defines a character
 		///
@@ -68,19 +71,24 @@ namespace fg
 			Identifier();
 
 			/////////////////////////////////////////////////////////////
-			Identifier(const fm::Uint32 &codePoint,unsigned int style);
+			Identifier(const fm::Uint32 &codePoint,unsigned int style = 0);
 
 			/////////////////////////////////////////////////////////////
 			bool operator<(const Identifier &other) const;
 		};
-	
-		mutable std::map<unsigned int,TextureAtlas<Identifier> > *m_texAtlases; ///< Maps characer sizes to different font atlases
+		
+	private:
+		mutable std::map<unsigned int,SpriteManagerBase<Identifier> > *m_spriteManagers; ///< Maps characer sizes to sprite managers
 		FontRenderer *m_renderer; ///< A pointer to a fg::Font::Renderer that does the rendering part
 		fm::Size *m_refCount; ///< The reference count
+		
+		TextureAtlas<Identifier> &getTexAtl(unsigned int charSize = 0) const; ///< Helper function that returns a texture atlas as needed
 		
 	public:
 		typedef Font &reference;
 		typedef const Font &const_reference;
+		
+		typedef SpriteBase<Identifier> Sprite;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
@@ -310,6 +318,33 @@ namespace fg
 		const Texture &getTexture() const;
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the currently used sprite manager
+		///
+		/// @return The sprite manager
+		///
+		/////////////////////////////////////////////////////////////
+		const SpriteManagerBase<Identifier> &getSpriteManager() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the currently used sprite manager
+		///
+		/// @return The sprite manager
+		///
+		/////////////////////////////////////////////////////////////
+		SpriteManagerBase<Identifier> &getSpriteManager();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get a sprite for a code point
+		/// 
+		/// @param letter The codepoint
+		/// @param style The style to use
+		/// 
+		/// @return The sprite
+		///
+		/////////////////////////////////////////////////////////////
+		SpriteBase<Identifier> getSprite(fm::Uint32 letter,unsigned int style = 0);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Set the image of a glyph manually
 		///
 		/// @param img The image of the glyph
@@ -372,6 +407,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		void init();
 	};
+	
+	typedef Font::Sprite FontSprite;
 }
 
 #endif // FRONTIER_FONT_HPP_INCLUDED

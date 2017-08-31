@@ -284,6 +284,8 @@ namespace fg
 				
 				delete[] uvs;
 			}
+			
+			handleSizeChange(spriteIndex,shape.size);
 		}
 		
 		/////////////////////////////////////////////////////////////

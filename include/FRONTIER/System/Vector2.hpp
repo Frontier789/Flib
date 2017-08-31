@@ -244,7 +244,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Reflect the vector on @a target
 		///
-		/// v * (v <B>·</B> target) / |v|^2 - v;
+		/// target * (v <B>·</B> target) / |v|^2 - v;
 		///
 		/// @param target The vector to reflect on
 		///

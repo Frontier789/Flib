@@ -106,7 +106,7 @@ void raymarch(inout Ray ray,inout int it)
 }
 
 void main()
-{
+{	
 	Ray ray = getViewRay();
 	int it  = 0;
 	

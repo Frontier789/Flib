@@ -28,6 +28,8 @@
 #include <FRONTIER/System/Vector2.hpp>
 #include <string>
 
+#define FRONTIER_SPRITEMANAGER
+
 namespace fg
 {
 	class Image;

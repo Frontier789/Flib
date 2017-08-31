@@ -22,6 +22,8 @@
 #include <FRONTIER/System/Vector2.hpp>
 #include <string>
 
+#define FRONTIER_SPRITE
+
 namespace fg
 {
 	template<class> class SpriteManagerBase;

@@ -5,6 +5,13 @@
 
 using namespace std;
 
+/*
+ *  Font -> SpriteManager
+ *  BSP
+ *  Fa
+ *  
+ */
+
 class Frame : public fg::Drawable
 {
 	fg::ShaderManager &m_shader;
@@ -175,8 +182,13 @@ FrameStack::~FrameStack()
 void FrameStack::collectShaders(fm::String folder)
 {
 	fm::Size activeFrame = 0;
+	fm::Camera cam;
+	
 	if (m_frames.size())
+	{
 		activeFrame = m_frames.back()->getShaderId();
+		cam = m_curManagers[activeFrame]->getCamera();
+	}
 	
 	deleteManagers();
 	
@@ -197,10 +209,12 @@ void FrameStack::collectShaders(fm::String folder)
 		else
 			found = false;
 	}
-	cout << endl;
 	
 	if (activeFrame < m_curManagers.size())
+	{
 		addFrame(activeFrame,true,false);
+		 m_curManagers[activeFrame]->getCamera() = cam;
+	}
 }
 
 fm::Result FrameStack::loadShader(const std::string &vertFile,const std::string &fragFile)

@@ -22,7 +22,7 @@ float comp_len2(vec2 c)
 	return c.x*c.x + c.y*c.y;
 }
 
-float mandelAt(vec2 p)
+float mandelAt(vec2 p,bool continous)
 {
 	vec2 seed = p;
 	vec2 z = p;
@@ -32,8 +32,7 @@ float mandelAt(vec2 p)
 		z = comp_sqr(z) + seed;
 		if(comp_len2(z) > 4.0) 
 		{
-			return(float(n) + 1.0 - log(log(length(z)))/log(2.0));
-			// return float(n);
+			return continous ? (float(n) + 1.0 - log(log(length(z)))/log(2.0)) : float(n);
 		}	
 	}
 	
@@ -56,5 +55,7 @@ void main()
 	
 	float zoom = pow(2.0,time_ratio * 18.0);
 	
-	gl_FragColor = mandelColor(mandelAt((va_pos - u_winSize/2.0) / 200.0 / zoom + offset));
+	vec2 pt = (va_pos - u_winSize/2.0) / 200.0 / zoom + offset;
+	
+	gl_FragColor = mandelColor(mandelAt(pt,true));
 }
