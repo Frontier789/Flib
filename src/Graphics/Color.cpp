@@ -59,13 +59,13 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	const fm::vector3<fm::Uint8> &Color::rgb() const
 	{
-		return *((fm::vector3<fm::Uint8>*)this);
+		return *((const fm::vector3<fm::Uint8>*)this);
 	}
 
 	/////////////////////////////////////////////////////////////
 	const fm::vector4<fm::Uint8> &Color::rgba() const
 	{
-		return *((fm::vector4<fm::Uint8>*)this);
+		return *((const fm::vector4<fm::Uint8>*)this);
 	}
 
 	/////////////////////////////////////////////////////////////

@@ -442,6 +442,20 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	auto operator+(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x+right.x)>;
+	
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator +
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise addition of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator+(const vector4<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x+right.x)>;
+
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -458,6 +472,20 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
+	/// @brief Overload of binary operator -
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise subtraction of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator-(const vector4<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x-right.x)>;
+
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
 	/// @brief Overload of binary operator *
 	///
 	/// @param left Left operand (vector)
@@ -468,6 +496,20 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	auto operator*(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x*right.x)>;
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator *
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise multiplication of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator*(const vector4<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x*right.x)>;
+
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -484,6 +526,20 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
+	/// @brief Overload of binary operator /
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise division of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator/(const vector4<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x/right.x)>;
+
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
 	/// @brief Overload of binary operator %
 	///
 	/// @param left Left operand (vector)
@@ -493,7 +549,20 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator%(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x%right.x)>;
+	auto operator%(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x+right.x)>;
+	
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator %
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Memberwise modulo of @a left and @a right
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator%(const vector4<T> &left,const vector3<T2> &right) -> vector4<decltype(left.x+right.x)>;
 	
 	
 	
@@ -553,7 +622,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator%(const vector4<T> &left,const T2 &right) -> vector4<decltype(left.x%right)>;
+	auto operator%(const vector4<T> &left,const T2 &right) -> vector4<decltype(left.x+right)>;
 	
 	
 	
@@ -563,6 +632,33 @@ namespace fm
 					   A x= B                  
 					                          
 	\* * * * * * * * * * * * * * * * * * * * */
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator +=
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Reference to @a left
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> &operator+=(vector4<T> &left,const vector4<T2> &right);
+	
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator +=
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Reference to @a left
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> &operator+=(vector4<T> &left,const vector3<T2> &right);
+	
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -579,6 +675,20 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
+	/// @brief Overload of binary operator -=
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Reference to @a left
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> &operator-=(vector4<T> &left,const vector3<T2> &right);
+	
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
 	/// @brief Overload of binary operator *=
 	///
 	/// @param left Left operand (vector)
@@ -589,6 +699,20 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	vector4<T> &operator*=(vector4<T> &left,const vector4<T2> &right);
+	
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator *=
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Reference to @a left
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> &operator*=(vector4<T> &left,const vector3<T2> &right);
+	
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -602,6 +726,20 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	vector4<T> &operator/=(vector4<T> &left,const vector4<T2> &right);
+	
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator /=
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Reference to @a left
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> &operator/=(vector4<T> &left,const vector3<T2> &right);
+
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -615,6 +753,19 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	vector4<T> &operator%=(vector4<T> &left,const vector4<T2> &right);
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator %=
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return Reference to @a left
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	vector4<T> &operator%=(vector4<T> &left,const vector3<T2> &right);
 	
 	
 	
@@ -686,6 +837,20 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
+	/// @brief Overload of binary operator ==
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return True if @a left and @a right are the same
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	bool operator==(const vector4<T> &left,const vector3<T2> &right);
+	
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
 	/// @brief Overload of binary operator !=
 	///
 	/// @param left Left operand (vector)
@@ -696,6 +861,19 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	bool operator!=(const vector4<T> &left,const vector4<T> &right);
+	
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::vector4
+	/// @brief Overload of binary operator !=
+	///
+	/// @param left Left operand (vector)
+	/// @param right Right operand (vector)
+	///
+	/// @return True if @a left and @a right are not the same
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	bool operator!=(const vector4<T> &left,const vector3<T> &right);
 	
 	
 	

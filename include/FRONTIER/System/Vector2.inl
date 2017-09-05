@@ -218,6 +218,15 @@ namespace fm
 		return vector2<decltype(left.x+right.x)>(left.x+right.x,
 												 left.y+right.y);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator+(const vector2<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x+right.x)>
+	{
+		return vector3<decltype(left.x+right.x)>(left.x+right.x,
+												 left.y+right.y,
+												 right.z);
+	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
@@ -225,6 +234,15 @@ namespace fm
 	{
 		return vector2<decltype(left.x-right.x)>(left.x-right.x,
 												 left.y-right.y);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator-(const vector2<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x-right.x)>
+	{
+		return vector3<decltype(left.x-right.x)>(left.x-right.x,
+												 left.y-right.y,
+												 right.z);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -237,6 +255,15 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
+	inline auto operator*(const vector2<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x*right.x)>
+	{
+		return vector3<decltype(left.x*right.x)>(left.x*right.x,
+												 left.y*right.y,
+												 right.z);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
 	inline auto operator/(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x/right.x)>
 	{
 		return vector2<decltype(left.x/right.x)>(left.x/right.x,
@@ -245,10 +272,28 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator%(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x%right.x)>
+	inline auto operator/(const vector2<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x/right.x)>
 	{
-		return vector2<decltype(left.x%right.x)>(left.x%right.x,
-												 left.y%right.y);
+		return vector3<decltype(left.x/right.x)>(left.x/right.x,
+												 left.y/right.y,
+												 right.z);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator%(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x+right.x)>
+	{
+		return vector2<decltype(left.x+right.x)>(std::fmod(left.x,right.x),
+												 std::fmod(left.y,right.y));
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline auto operator%(const vector2<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x+right.x)>
+	{
+		return vector3<decltype(left.x+right.x)>(std::fmod(left.x,right.x),
+												 std::fmod(left.y,right.y),
+												 right.z);
 	}
 	
 	
@@ -285,10 +330,10 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator%(const vector2<T> &left,const T2 &right) -> vector2<decltype(left.x%right)>
+	auto operator%(const vector2<T> &left,const T2 &right) -> vector2<decltype(left.x+right)>
 	{
-		return vector2<decltype(left.x%right)>(left.x%right,
-											   left.y%right);
+		return vector2<decltype(left.x+right)>(std::fmod(left.x,right),
+											   std::fmod(left.y,right));
 	}
 	
 	
@@ -307,6 +352,15 @@ namespace fm
 		left.y+=right.y;
 		return left;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector2<T> &operator+=(vector2<T> &left,const vector3<T2> &right)
+	{
+		left.x+=right.x;
+		left.y+=right.y;
+		return left;
+	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
@@ -316,9 +370,28 @@ namespace fm
 		left.y-=right.y;
 		return left;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector2<T> &operator-=(vector2<T> &left,const vector3<T2> &right)
+	{
+		left.x-=right.x;
+		left.y-=right.y;
+		return left;
+	}
+	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	inline vector2<T> &operator*=(vector2<T> &left,const vector2<T2> &right)
+	{
+		left.x*=right.x;
+		left.y*=right.y;
+		return left;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector2<T> &operator*=(vector2<T> &left,const vector3<T2> &right)
 	{
 		left.x*=right.x;
 		left.y*=right.y;
@@ -336,10 +409,19 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
+	inline vector2<T> &operator/=(vector2<T> &left,const vector3<T2> &right)
+	{
+		left.x/=right.x;
+		left.y/=right.y;
+		return left;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
 	inline vector2<T> &operator%=(vector2<T> &left,const vector2<T2> &right)
 	{
-		left.x%=right.x;
-		left.y%=right.y;
+		left.x=std::fmod(left.x,right.x);
+		left.y=std::fmod(left.y,right.y);
 		return left;
 	}
 	
@@ -376,8 +458,8 @@ namespace fm
 	template<class T,class T2>
 	vector2<T> &operator%=(vector2<T> &left,const T2 &right)
 	{
-		left.x%=right;
-		left.y%=right;
+		left.x=std::fmod(left.x,right);
+		left.y=std::fmod(left.y,right);
 		
 		return left;
 	}
@@ -399,7 +481,21 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
+	inline bool operator==(const vector2<T> &left,const vector3<T2> &right)
+	{
+		return left.x==right.x && left.y==right.y;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
 	inline bool operator!=(const vector2<T> &left,const vector2<T2> &right)
+	{
+		return left.x!=right.x || left.y!=right.y;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline bool operator!=(const vector2<T> &left,const vector3<T2> &right)
 	{
 		return left.x!=right.x || left.y!=right.y;
 	}
@@ -415,16 +511,16 @@ namespace fm
 	template<class T>
 	auto operator-(const vector2<T> &vec) -> vector2<decltype(-vec.x)>
 	{
-		return vector2<decltype(-vec.x)>(vec.x*T(-1),
-										 vec.y*T(-1));
+		return vector2<decltype(-vec.x)>(-vec.x,
+										 -vec.y);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	auto operator+(const vector2<T> &vec) -> vector2<decltype(+vec.x)>
 	{
-		return vector2<decltype(-vec.x)>(vec.x*T(1),
-										 vec.y*T(1));
+		return vector2<decltype(+vec.x)>(+vec.x,
+										 +vec.y);
 	}
 }
 

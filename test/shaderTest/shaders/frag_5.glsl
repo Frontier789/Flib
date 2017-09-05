@@ -31,7 +31,7 @@ vec3 cam_up    = cross(cam_dir,cam_right);
 
 vec3 sun_dir   = normalize(vec3(4.0,5.0,5.0));
 
-int max_steps  = int(min(u_secs*5.0,128.0));
+int max_steps  = int(min(u_secs*5.0,42.0));
 float min_dist = 0.01; 
 
 Ray getViewRay()
@@ -102,12 +102,12 @@ float dist_func(vec3 p)
 	
 	float r = 1.0;
 	
-	for (int i=0;i<4;i++)
+	for (int i=0;i<5;i++)
 	{
 		d = Substract(d,repc_dist(vec3(Modulate(p.x+3.0,r*6.0),
 									   Modulate(p.y+3.0,r*6.0),
 									   Modulate(p.z+13.0,r*6.0)),r));
-		r /= 3.0;
+		r /= 3.01 + r*0.1;
 	}
 	
 	return d;

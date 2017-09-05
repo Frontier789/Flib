@@ -1,7 +1,14 @@
 #include <Frontier.hpp>
 #include <iostream>
 
-using namespace std;
+using std::cout;
+using std::endl;
+
+template<class T>
+T fv3(vector2<T> v)
+{
+	return v.x + v.y;
+}
 
 int main()
 {
@@ -22,4 +29,20 @@ int main()
 	cout << "  " << vec2(3,4).dot(vec2(7,8)) << "    " << vec3(1,2,3).dot(vec3(0,0,1)) << endl;
 	cout << "  vectorial product" << endl;
 	cout << "  " << vec2(3,4).perp() << "    " << vec3(1,2,3).cross(vec3(0,0,1)) << endl;
+	cout << "  calling a vec function with different vec type" << endl;
+	cout << "  " << fv3<float>(vec3f(1,2,3)) << "    " << fv3<int>(vec3f(1.1,2.9,5.3)) << endl;
+	
+	cout << "  operations between different vec types" << endl;
+	cout << "  " << vec2(1,2) + vec3(4,5,6) << endl;
+	cout << "  " << vec3(1,2,4) / vec2(2) << endl;
+	cout << "  " << vec3(1,2,4) % vec2(0.6) << endl;
+	cout << "  " << vec3(1,2,4) - vec4(0.6) << endl;
+	cout << "  " << vec2(-5.2,3) % vec3(1.6) << endl;
+	cout << "  " << vec4(-5.2,3,2,3) % vec3(1.6) << endl;
+	
+	vec3 a;
+	vec2 b;
+	
+	a += b;
+	b += a;
 }

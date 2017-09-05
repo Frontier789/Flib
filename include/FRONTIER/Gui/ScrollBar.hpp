@@ -48,6 +48,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API ScrollBar : public GuiScrollBar, public ClickListener
 	{
+	public:
 		ScrollDirection m_direction; ///< The direction
 		fg::Sprite m_handleSprite;   ///< Sprite for handle
 		fg::DrawData m_railDraw;     ///< DrawData for the rail

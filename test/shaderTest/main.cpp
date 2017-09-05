@@ -6,10 +6,13 @@
 using namespace std;
 
 /*
- *  Font -> SpriteManager
  *  BSP
- *  Fa
- *  
+ *  Glob. Ill.
+ *  Sprite -> Text
+ *  Vec2 vs Vec3 fix
+ *  Fourier test
+ *  tree upgrade
+ *  SDF font/text
  */
 
 class Frame : public fg::Drawable
@@ -183,6 +186,8 @@ void FrameStack::collectShaders(fm::String folder)
 {
 	fm::Size activeFrame = 0;
 	fm::Camera cam;
+	cam.setPitch(deg(80));
+	cam.setYaw(deg(10));
 	
 	if (m_frames.size())
 	{
@@ -213,7 +218,7 @@ void FrameStack::collectShaders(fm::String folder)
 	if (activeFrame < m_curManagers.size())
 	{
 		addFrame(activeFrame,true,false);
-		 m_curManagers[activeFrame]->getCamera() = cam;
+		m_curManagers[activeFrame]->getCamera() = cam;
 	}
 }
 
@@ -462,3 +467,4 @@ int main()
 		win.applyFpsLimit();
 	}
 }
+
