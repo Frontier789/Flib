@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_ANGLE_INL_INCLUDED
 #define FRONTIER_ANGLE_INL_INCLUDED
+#include <cmath>
 
 namespace fm
 {
@@ -46,6 +47,17 @@ namespace fm
 	T Angle<T>::asDeg() const
 	{
 		return T(180.0) * m_amount / T(3.14159265358979);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	Angle<T> Angle<T>::standardize() const
+	{
+		T f = std::fmod(m_amount,T(F_PI * 2));
+		if (f < -F_PI) f += T(F_PI);
+		if (f >  F_PI) f -= T(F_PI);
+		
+		return fm::deg(f);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -99,9 +111,16 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator/(const Angle<T> &left,const Angle<T2> &right) -> Angle<decltype(left.asRad()/right.asRad())>
+	auto operator/(const Angle<T> &left,const Angle<T2> &right) -> decltype(left.asRad()/right.asRad())
 	{
-		return Angle<decltype(left.asRad()/right.asRad())>(left.asRad() / right.asRad());
+		return decltype(left.asRad()/right.asRad())(left.asRad()/right.asRad());
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator%(const Angle<T> &left,const Angle<T2> &right) -> Angle<decltype(left.asRad()+right.asRad())>
+	{
+		return Angle<decltype(left.asRad()+right.asRad())>(std::fmod(left.asRad(),right));
 	}
 
 	/////////////////////////////////////////////////////////////

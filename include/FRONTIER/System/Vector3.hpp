@@ -226,6 +226,16 @@ namespace fm
 		T LENGTH() const;
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the area of the 3D vector
+		///
+		/// v.x*v.y*v.z
+		///
+		/// @return Area of the vector
+		///
+		/////////////////////////////////////////////////////////////
+		T volume() const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Get the normed version of the 3D vector
 		///
 		/// v/|v|
@@ -283,7 +293,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Project the vector to a plane
 		///
-		/// target - target * (v <B>·</B> target) / |v|^2
+		/// v - normal * (v <B>·</B> normal) / |v|^2
 		///
 		/// @param normal the normal vector of the plane
 		///

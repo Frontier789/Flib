@@ -18,7 +18,7 @@
 #define FRONTIER_MATRIXSTACK_HPP_INCLUDED
 #include <FRONTIER/System/Matrix.hpp>
 #define FRONTIER_MATRIXSTACK
-#include <deque>
+#include <vector>
 
 namespace fm
 {
@@ -28,7 +28,7 @@ namespace fm
 	/// @ingroup System
 	///
 	/////////////////////////////////////////////////////////////
-	template<fm::Size W = 4, fm::Size H = 4, class T = float, class Container = std::deque<fm::matrix<W,H,T> > >
+	template<fm::Size W = 4, fm::Size H = 4, class T = float, class Container = std::vector<fm::matrix<W,H,T> > >
 	class MatrixStack
 	{
 		Container m_container; ///< The underlying container

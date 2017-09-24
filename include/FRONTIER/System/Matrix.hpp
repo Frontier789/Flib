@@ -860,6 +860,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
         matrix<4,4,float> lookAt(const vec3 &cam_pos,const vec3 &target_pos,const vec3 &up_dir);
 	}
+	using namespace MATRIX;
 	
 	template<Size W,Size H,class T>
 	const bool matrix<W,H,T>::isSquare = (W == H);

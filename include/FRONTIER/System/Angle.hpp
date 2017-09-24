@@ -83,6 +83,14 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		T asRad() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Translate the angle into the range [+180°,-180°]
+		///
+		/// @return The standardized angle
+		///
+		/////////////////////////////////////////////////////////////
+		Angle<T> standardize() const;
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -173,7 +181,20 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator/(const Angle<T> &left,const Angle<T2> &right) -> Angle<decltype(left.asRad()/right.asRad())>;
+	auto operator/(const Angle<T> &left,const Angle<T2> &right) -> decltype(left.asRad()/right.asRad());
+
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::Angle
+	/// @brief Overload of binary operator %
+	///
+	/// @param left Left operand (Angle)
+	/// @param right Right operand (Angle)
+	///
+	/// @return Result of the modulus operator
+	///
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	auto operator%(const Angle<T> &left,const Angle<T2> &right) -> Angle<decltype(left.asRad()+right.asRad())>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Angle
