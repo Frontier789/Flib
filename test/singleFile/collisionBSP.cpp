@@ -76,6 +76,7 @@ public:
 		CollRock &rock = rocks.back();
 		
 		rock.setImageID("normal");
+		rock.setSize(vec2(rockSize*2+4));
 		rock.setPosition(p);
 		rock.setVelocity(v);
 	}

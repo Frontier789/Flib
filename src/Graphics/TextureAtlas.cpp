@@ -75,8 +75,11 @@ namespace fg
 			}
 
 			/////////////////////////////////////////////////////////////
-			Node *insert(const fm::vec2s &rctSize,const fm::vec2s &imgSize)
+			Node *insert(fm::vec2s rctSize,const fm::vec2s &imgSize,bool keepDistance = true)
 			{
+				if (keepDistance)
+					rctSize += fm::vec2s(1,1);
+				
 				Node *best = nullptr;
 				findBest(rctSize,imgSize,best);
 				if (best)
