@@ -624,6 +624,10 @@ namespace fm
 	String toString(unsigned long      num,fm::Size base = 10);
 	String toString(long long          num,fm::Size base = 10);
 	String toString(unsigned long long num,fm::Size base = 10);
+	
+	String toString(float num,      fm::Size precision = 4);
+	String toString(double num,     fm::Size precision = 4);
+	String toString(long double num,fm::Size precision = 4);
 }
 
 #endif // FRONTIER_STRING_HPP_INCLUDED

@@ -753,4 +753,45 @@ namespace fm
 
 		return ret;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	String toString(float num,fm::Size precision)
+	{
+		return toString((long double)num,precision);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	String toString(double num,fm::Size precision)
+	{
+		return toString((long double)num,precision);
+	}
+	
+	namespace priv
+	{
+		long double power(long double x,fm::Size y)
+		{
+			long double temp;
+			if (y == 0) return 1;
+
+			temp = power(x, y/2);
+			
+			if (y % 2)
+				return x * temp * temp;
+			else
+				return temp * temp;
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	String toString(long double num,fm::Size precision)
+	{
+		bool mns = num < (long double)0.0;
+		
+		if (mns) num = -num;
+		
+		fm::Uint64 wholePart = num;
+		fm::Uint64 approx = (num - fm::Uint64(num)) * priv::power(fm::Uint64(10),precision);
+		
+		return (mns ? "-" : "") + fm::toString(wholePart) + "." + fm::toString(approx);
+	}
 }
