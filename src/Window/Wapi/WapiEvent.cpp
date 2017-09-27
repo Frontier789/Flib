@@ -15,6 +15,8 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Wapi/WapiWindow.hpp>
+#include <FRONTIER/System/Delegate.hpp>
+#include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/Window/Event.hpp>
 #include <windows.h>
 
@@ -162,5 +164,118 @@ namespace fw
 		fm::vec2i winPos;
 		window.getPosition(winPos.w,winPos.h);
 		Mouse::setPosition(pos+winPos);
+	}
+	
+	namespace Wapi
+	{
+		void imageToMasks(const fg::Image &image,fm::Uint8 transparencyLimit,
+						  HBITMAP &hAndMaskBitmap, HBITMAP &hXorMaskBitmap)
+		{
+			HDC hDC        = ::GetDC(NULL);
+			HDC hAndMaskDC = ::CreateCompatibleDC(hDC); 
+			HDC hXorMaskDC = ::CreateCompatibleDC(hDC);
+			
+			hAndMaskBitmap	= ::CreateCompatibleBitmap(hDC,image.getSize().w,image.getSize().h);
+			hXorMaskBitmap	= ::CreateCompatibleBitmap(hDC,image.getSize().w,image.getSize().h);
+
+			HBITMAP hOldAndMaskBitmap = (HBITMAP)::SelectObject(hAndMaskDC,hAndMaskBitmap);
+			HBITMAP hOldXorMaskBitmap = (HBITMAP)::SelectObject(hXorMaskDC,hXorMaskBitmap);
+			
+			image.forEach([&](fm::vec2s p,fg::Color c){
+				if(c.a < transparencyLimit)
+				{
+					::SetPixel(hAndMaskDC,p.x,p.y,RGB(255,255,255));
+					::SetPixel(hXorMaskDC,p.x,p.y,RGB(0,0,0));
+				}
+				else
+				{
+					::SetPixel(hAndMaskDC,p.x,p.y,RGB(0,0,0));
+					::SetPixel(hXorMaskDC,p.x,p.y,RGB(c.r,c.g,c.b));
+				}
+			});
+			
+			::SelectObject(hAndMaskDC,hOldAndMaskBitmap);
+			::SelectObject(hXorMaskDC,hOldXorMaskBitmap);
+
+			::DeleteDC(hXorMaskDC);
+			::DeleteDC(hAndMaskDC);
+
+			::ReleaseDC(NULL,hDC);
+		}
+
+		HCURSOR imageToHCursor(const fg::Image &image,
+							   fm::vec2s clickSpot = fm::vec2s(),
+							   fm::Uint8 transparencyLimit = 128)
+		{
+			if (!image.getSize().area()) return NULL;
+			
+			HCURSOR hRetCursor = NULL;
+			
+			HBITMAP hAndMask = NULL;
+			HBITMAP hXorMask = NULL;
+			imageToMasks(image,transparencyLimit,hAndMask,hXorMask);
+			
+			if(!hAndMask || !hXorMask) return NULL;
+
+			ICONINFO iconinfo   = {0,0,0,0,0};
+			iconinfo.fIcon		= FALSE;
+			iconinfo.xHotspot	= clickSpot.x;
+			iconinfo.yHotspot	= clickSpot.y;
+			iconinfo.hbmMask	= hAndMask;
+			iconinfo.hbmColor	= hXorMask;
+
+			hRetCursor = ::CreateIconIndirect(&iconinfo);
+			
+			return hRetCursor;
+		}
+		
+		HCURSOR &getMouseCursorHandle(void *impl)
+		{
+			return *((HCURSOR*)impl);
+		}
+		
+		void deleteMouseCursorHandle(void *&impl)
+		{
+			if (impl)
+			{
+				::DestroyIcon(getMouseCursorHandle(impl));
+				
+				delete (HCURSOR*)impl;
+				
+				impl = nullptr;
+			}
+		}
+		
+		void newMouseCursorHandle(void *&impl)
+		{
+			if (impl)
+				deleteMouseCursorHandle(impl);
+			
+			impl = new HCURSOR(0);
+		}
+	}
+	
+	
+	/////////////////////////////////////////////////////////////
+	MouseCursor::~MouseCursor()
+	{
+		Wapi::deleteMouseCursorHandle(m_impl);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MouseCursor::loadFromImage(const fg::Image &img,
+					   fm::vec2s clickSpot,
+					   fm::Uint8 transparencyLimit)
+	{
+		Wapi::newMouseCursorHandle(m_impl);
+		
+		Wapi::getMouseCursorHandle(m_impl) = Wapi::imageToHCursor(img,clickSpot,transparencyLimit);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MouseCursor::setAsCurrent() const
+	{
+		if (m_impl)
+			SetCursor(Wapi::getMouseCursorHandle(m_impl));
 	}
 }

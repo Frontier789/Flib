@@ -32,8 +32,10 @@ int main()
 			
 			if (ev.type == Event::KeyPressed)
 			{
-				if (ev.key.code == Keyboard::Left)  t.setAlign(TextAlignLeft);
-				if (ev.key.code == Keyboard::Right) t.setAlign(TextAlignRight);
+				if (ev.key.code == Keyboard::Plus)   t.setCharacterSize(t.getCharacterSize()+1);
+				if (ev.key.code == Keyboard::Minus)  t.setCharacterSize(t.getCharacterSize()-1);
+				if (ev.key.code == Keyboard::Left)   t.setAlign(TextAlignLeft);
+				if (ev.key.code == Keyboard::Right)  t.setAlign(TextAlignRight);
 				if (ev.key.code == Keyboard::Up) t.setAlign(TextAlignCenter);
 				if (ev.key.code == Keyboard::W)  t.setWrap(TextWrapWord);
 				if (ev.key.code == Keyboard::N)  t.setWrap(TextWrapOff);
@@ -64,7 +66,7 @@ int main()
 				float sn1 = sin(deg(dist))*0.5+0.5;
 				float sn2 = sin(deg(dist*2+50))*0.5+0.5;
 				float sn3 = sin(deg(dist*3+80))*0.5+0.5;
-				t.setColor(vec4(vec3(sn1,sn2,sn3)*.4,1));
+				t.setColor(vec4(vec3(sn1,sn2,sn3)*.2,1));
 			}
 			
 			if (ev.type == Event::ButtonReleased)

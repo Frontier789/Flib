@@ -15,6 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Window/Xlib/XlibGLContext.hpp>
+#include <FRONTIER/System/Delegate.hpp>
 #include <X11/cursorfont.h>
 #include <mutex>
 #include <string>
@@ -84,14 +85,14 @@ namespace fw
 		#endif
 		
 		std::deque< ::Window> xwins;
-		std::deque< fw::Mouse::Cursor> xCurrCursors;
+		std::deque< ::Cursor> xCurrCursors;
 		
 		void regXWin(::Window win)
 		{
 			FRONTIER_LOCK_MUTEX(priv::globXwinMutex);
 			
 			xwins.push_back(win);
-			xCurrCursors.push_back(fw::Mouse::Arrow);
+			xCurrCursors.push_back(None);
 			
 			FRONTIER_UNLOCK_MUTEX(priv::globXwinMutex);
 		}
@@ -142,16 +143,9 @@ namespace fw
 			::Cursor fetch(Mouse::Cursor cursor)
 			{
 				if (!disp)
-				{
-					if (globDispN > 0) globDispN++;
-					else
-					{
-						globDisp = XOpenDisplay(NULL);
-						globDispN = 1;
-					}
-					
-					disp = globDisp;
-				}
+					disp = fw::priv::getGlobDisp();
+
+				FRONTIER_LOCK_MUTEX(priv::globDispMutex);
 				
 				fm::Size index = (int)cursor;
 				
@@ -180,6 +174,8 @@ namespace fw
 				
 					cur = XCreateFontCursor(disp,data[index]);
 				}
+
+				FRONTIER_UNLOCK_MUTEX(priv::globDispMutex);
 				
 				return cur;
 			}
@@ -187,13 +183,11 @@ namespace fw
 		
 		CurHolder curHolder;
 	}
-	
-	void Mouse::setCursor(Mouse::Cursor cursor)
+
+	void setCursorXlib(::Cursor cursor)
 	{
 		FRONTIER_LOCK_MUTEX(priv::globXwinMutex);
 		FRONTIER_LOCK_MUTEX(priv::globDispMutex);
-		
-		// priv::globCursor = cursor;
 		
 		if (priv::globDisp)
 			C(priv::xwins.size())
@@ -201,16 +195,168 @@ namespace fw
 				{
 					priv::xCurrCursors[i] = cursor;
 					
-					XDefineCursor(priv::globDisp,priv::xwins[i],priv::curHolder.fetch(cursor));
+					XDefineCursor(priv::globDisp,priv::xwins[i],cursor);
 				}
 		
 		
 		FRONTIER_UNLOCK_MUTEX(priv::globDispMutex);
 		FRONTIER_UNLOCK_MUTEX(priv::globXwinMutex);
 	}
-		
+	
+	void Mouse::setCursor(Mouse::Cursor cursor)
+	{
+		setCursorXlib(priv::curHolder.fetch(cursor));
+	}
+	
+	
 	namespace Xlib
 	{
+		struct MouseCursorData
+		{
+			::Cursor cursor;
+			::Display *display;
+		};
+		
+		Cursor imageToCursor(const fg::Image &image,
+							 fm::vec2s clickSpot,
+							 fm::Uint8 transparencyLimit,
+							 ::Display *disp);
+		
+		void freeMouseCursorData(void *&dataPtr)
+		{
+			if (dataPtr)
+			{
+				MouseCursorData &data = *(MouseCursorData*)dataPtr;
+				XFreeCursor(data.display,data.cursor),
+				fw::priv::freeGlobDisp(data.display);
+				
+				delete (MouseCursorData*)dataPtr;
+				dataPtr = nullptr;
+			}
+		}
+		
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	MouseCursor::~MouseCursor()
+	{
+		Xlib::freeMouseCursorData(m_impl);
+	}
+	
+	
+	/////////////////////////////////////////////////////////////
+	void MouseCursor::loadFromImage(const fg::Image &img,
+									fm::vec2s clickSpot,
+									fm::Uint8 transparencyLimit)
+	{
+		Xlib::freeMouseCursorData(m_impl);
+		
+		Xlib::MouseCursorData *ptr = new Xlib::MouseCursorData;
+		ptr->display = fw::priv::getGlobDisp();
+		ptr->cursor  = Xlib::imageToCursor(img,clickSpot,transparencyLimit,ptr->display);
+		
+		m_impl = ptr;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MouseCursor::setAsCurrent() const
+	{
+		if (m_impl)
+			setCursorXlib( ((Xlib::MouseCursorData *)m_impl)->cursor );
+	}
+	
+	namespace Xlib
+	{
+		Cursor imageToCursor(const fg::Image &image,
+							 fm::vec2s clickSpot,
+							 fm::Uint8 transparencyLimit,
+							 ::Display *disp)
+		{
+			fm::vec2s s = image.getSize();
+			fm::Size scanline = s.w / 8 + (s.w % 8 ? 1 : 0);
+
+			fm::Size freq[256] = {0};
+			fm::Size sum = 0;
+			fm::Size inCount = 0;
+
+			image.forEach([&](fm::vec2s /*p*/,fg::Color &c) {
+				if (c.a >= transparencyLimit)
+				{
+					fm::Size grey = 0.2126*c.r + 0.7152*c.g + 0.0722*c.b;
+					freq[grey]++;
+					inCount++;
+					sum += grey;
+				}
+			});
+
+			float avg = sum / float(inCount); 
+			fm::Size sumSmall = 0, sumBig = 0;
+			fm::Size inSmall = 0,  inBig  = 0;
+
+			C(avg)
+			{
+				sumSmall += i * freq[i];
+				inSmall  += freq[i];
+			}
+
+			sumBig = sum - sumSmall;
+			inBig  = inCount - inSmall;
+
+			XColor foreground, background;
+
+			foreground.pixel = 0;
+			foreground.red = 65535 / 255 * float(sumBig) / inBig;
+			foreground.green = 65535 / 255 * float(sumBig) / inBig;
+			foreground.blue = 65535 / 255 * float(sumBig) / inBig;
+			foreground.flags = DoRed | DoGreen | DoBlue;
+
+			background.pixel = 0;
+			background.red = 65535 / 255 * float(sumSmall) / inSmall;
+			background.green = 65535 / 255 * float(sumSmall) / inSmall;
+			background.blue = 65535 / 255 * float(sumSmall) / inSmall;
+			background.flags = DoRed | DoGreen | DoBlue;
+
+			char *cur_bits  = new char[scanline * s.h];
+			char *mask_bits = new char[scanline * s.h];
+
+			C(scanline * s.h) cur_bits[i] = 0, mask_bits[i] = 0;
+
+			image.forEach([&](fm::vec2s p,fg::Color &c) {
+				
+				fm::Size byteOffset = p.y * scanline + p.x / 8;
+				fm::Size bitOffset  = p.x % 8;
+
+				if (c.a >= transparencyLimit)
+				{
+					mask_bits[byteOffset] |= 1 << bitOffset;
+					
+					fm::Size grey = 0.2126*c.r + 0.7152*c.g + 0.0722*c.b;
+
+					if (grey > avg)
+					{
+						cur_bits[byteOffset] |= 1 << bitOffset;
+					}
+				}
+			});
+
+
+			::Window rwin = DefaultRootWindow(disp);
+				
+			Pixmap source = XCreateBitmapFromData(disp, rwin,
+					   cur_bits, s.w, s.h);
+			Pixmap mask = XCreateBitmapFromData(disp, rwin,
+					   mask_bits, s.w, s.h);
+			::Cursor cursor = XCreatePixmapCursor(disp, source, mask,
+					   &foreground, &background,
+					   clickSpot.x, clickSpot.y);
+
+			XFreePixmap(disp, source);
+			XFreePixmap(disp, mask);
+
+			return cursor;
+		}
+		
 		fm::Result GLContext::createContext(GLXFBConfig config,::GLXContext sharedContext)
 		{
 			// chack for OpenGL support

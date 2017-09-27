@@ -321,8 +321,8 @@ namespace fgui
 		{
 			if (!font) return fg::DrawData();
 			
-			metrics = font.getMetrics();
 			font.setCharacterSize(charSize);
+			metrics = font.getMetrics();
 			
 			findWordBoundaries();
 			renderCharacters();
@@ -419,10 +419,10 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiText::onDraw(fg::ShaderManager &shader)
 	{
-		if (!getFont()) return;
+		if (!getFont() || !m_tex) return;
 		
 		shader.getModelStack().push().mul(fm::MATRIX::translation(getPosition()));
-		shader.getTexUVStack().push().mul(getFont().getTexture().getPixToUnitMatrix());
+		shader.getTexUVStack().push().mul(m_tex->getPixToUnitMatrix());
 		shader.useTexture(m_tex);
 		shader.draw(m_drawdata);
 		shader.getTexUVStack().pop();

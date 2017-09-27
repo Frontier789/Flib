@@ -1,4 +1,4 @@
-#version 110
+#version 130
 
 #define FRONTIER_SECONDS
 
@@ -9,7 +9,10 @@ uniform float FRONTIER_SECONDS u_secs;
 varying vec2 va_pos;
 
 float pi = 3.14159265358979;
-float time_ratio = sin(u_secs / 12.0 * pi / 2.0 - pi / 2.0)*.5+.5;
+float zoom_time = 4.0;
+float real_time = u_secs /* 0.0 + 8.0*/;
+float time_ratio = sin(real_time / zoom_time * pi / 2.0 - pi / 2.0)*.5+.5;
+float discrete_time = float(int(real_time / 4.0 / zoom_time));
 
 
 vec2 comp_sqr(vec2 c)
@@ -49,9 +52,19 @@ vec4 mandelColor(float coef)
 				1.0);
 }
 
+const vec2 pts[6] = vec2[](
+	vec2(-0.7,0.35),
+	vec2(-0.101115,0.956298),
+	vec2(-0.74803,0.1),
+	vec2(-0.000201 ,-0.813793),
+	vec2(-0.745428,0.113009),
+	vec2(-0.23514,0.827215)
+);
+
 void main()
 {
-	vec2 offset = vec2(-0.7,0.35);
+	int id = int(discrete_time) % 6;
+	vec2 offset = pts[id];
 	
 	float zoom = pow(2.0,time_ratio * 18.0);
 	

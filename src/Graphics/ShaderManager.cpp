@@ -223,7 +223,7 @@ namespace fg
 			res += glCheck(setUniform(m_matNames[1],m_cam.getViewMat()));
 
 		if (m_matState[2] == FoundMat)
-			res += glCheck(setUniform(m_matNames[2],m_cam.getPos()));
+			res += glCheck(setUniform(m_matNames[2],m_cam.getPosition()));
 
 		if (m_matState[3] == FoundMat)
 			res += glCheck(setUniform(m_matNames[3],m_cam.getViewDir()));
@@ -517,7 +517,7 @@ namespace fg
 			ShaderManager *shader = new ShaderManager;
 			
 			shader->loadFromMemory(""
-"#version 110\n"
+"#version 130\n"
 "\n"
 "#define FRONTIER_MODEL\n"
 "#define FRONTIER_VIEW\n"
@@ -534,12 +534,12 @@ namespace fg
 "uniform mat4 FRONTIER_TEXMAT u_texUVMat;\n"
 "uniform mat4 FRONTIER_CLRMAT u_colorMat;\n"
 "\n"
-"attribute vec3 FRONTIER_POS    in_pos;\n"
-"attribute vec4 FRONTIER_CLR    in_color;\n"
-"attribute vec2 FRONTIER_TEXPOS in_texpos;\n"
+"in vec2 FRONTIER_TEXPOS in_texpos;\n"
+"in vec3 FRONTIER_POS    in_pos;\n"
+"in vec4 FRONTIER_CLR    in_color;\n"
 "\n"
-"varying vec4 va_color;\n"
-"varying vec2 va_texpos;\n"
+"out vec4 va_color;\n"
+"out vec2 va_texpos;\n"
 "\n"
 "void main()\n"
 "{\n"
@@ -548,19 +548,20 @@ namespace fg
 "	va_color  = u_colorMat * in_color;\n"
 "	va_texpos = (u_texUVMat * vec4(in_texpos,0.0,1.0)).xy;\n"
 "}",""
-"#version 110\n"
+"#version 130\n"
 "\n"
 "uniform sampler2D u_tex;\n"
 "uniform bool u_useTex;\n"
 "\n"
-"varying vec4 va_color;\n"
-"varying vec2 va_texpos;\n"
+"in vec4 va_color;\n"
+"in vec2 va_texpos;\n"
+"out vec4 out_color;\n"
 "\n"
 "void main()\n"
 "{\n"
-"	gl_FragColor = va_color;\n"
+"	out_color = va_color;\n"
 "	if (u_useTex)\n"
-"		gl_FragColor *= texture2D(u_tex,va_texpos);\n"
+"		out_color *= texture2D(u_tex,va_texpos);\n"
 "}\n");
 			shader->regTexture("u_tex","u_useTex");
 			shader->useTexture(nullptr);

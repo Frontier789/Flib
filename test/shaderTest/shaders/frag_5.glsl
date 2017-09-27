@@ -1,14 +1,12 @@
-#version 110
+#version 140
 
 #define FRONTIER_SECONDS
-#define FRONTIER_PLY_POS
-#define FRONTIER_VIEW_DIR
+#define FRONTIER_VIEWMAT
 
 uniform vec2 u_winSize;
 
 uniform float FRONTIER_SECONDS u_secs;
-uniform vec3 FRONTIER_PLY_POS u_camPos;
-uniform vec3 FRONTIER_VIEW_DIR u_camDir;
+uniform mat4 FRONTIER_VIEWMAT u_viewMat;
 
 varying vec2 va_pos;
 
@@ -24,8 +22,8 @@ struct Ray
 	vec3 dir;
 };
 
-vec3 cam_pos   = u_camPos;
-vec3 cam_dir   = u_camDir;
+vec3 cam_pos   = vec3(inverse(u_viewMat) * vec4(0.0,0.0,0.0,1.0));
+vec3 cam_dir   = vec3(inverse(u_viewMat) * vec4(0.0,0.0,-1.0,0.0));
 vec3 cam_right = normalize(cross(vec3(0,1,0),cam_dir));
 vec3 cam_up    = cross(cam_dir,cam_right);
 
@@ -74,6 +72,13 @@ float Substract(float a,float b)
 	return max(a,-b);
 }
 
+vec2 SubstractMat(float a,float b,float mat_a,float mat_b)
+{
+	if (a > -b) return vec2(a,mat_a);
+	
+	return vec2(-b,mat_b);
+}
+
 float Modulate(float a,float m)
 {
 	return mod(a,m) - m/2.0;
@@ -111,6 +116,23 @@ float dist_func(vec3 p)
 	}
 	
 	return d;
+}
+
+vec2 dist_func_mat(vec3 p)
+{
+	vec2 dmat = vec2(cube_dist(vec3(p.x,p.y,p.z+10.0),vec3(3.0)),0.0);
+	
+	float r = 1.0;
+	
+	for (int i=0;i<5;i++)
+	{
+		dmat = SubstractMat(dmat.x,repc_dist(vec3(Modulate(p.x+3.0,r*6.0),
+									   Modulate(p.y+3.0,r*6.0),
+									   Modulate(p.z+13.0,r*6.0)),r),dmat.y,float(i+1));
+		r /= 3.01 + r*0.1;
+	}
+	
+	return dmat;
 }
 
 float norm_helper_derivate(vec3 p,vec3 d,float h)
@@ -171,6 +193,27 @@ vec4 get_color_at(vec3 p,int it,float shadow)
 	*/
 }
 
+vec4 get_color_at_mat(vec3 p,int it,float shadow,float mat)
+{
+	vec3 n = get_normal(p);
+	
+	float dp = max(dot(sun_dir,n),0.2);
+	
+	float camD = length(p - cam_pos);
+	
+	float fog = max(min(camD/8.0,1.0),0.0);
+	fog = fog*fog;
+	
+	shadow = shadow * .8 + .2;
+	
+	return vec4(mix(vec3(get_ao(p,n)*dp*shadow),vec3(.0,.0,.0),fog) * vec3(sin(mat+0.5)*.5+.5,sin(mat*3.2+.3)*.5+.5,sin(mat*2.0+.9)*.5+.5),1.0);
+	/*
+	return vec4(get_normal(p),1.0); // normal based
+	
+	return vec4(vec3(float(it)/float(max_steps)),1.0); // step count base
+	*/
+}
+
 float get_shadow(in Ray ray)
 {
 	float res = 1.0;
@@ -206,6 +249,23 @@ void raymarch(inout Ray ray,inout int it)
 	}
 }
 
+
+void raymarch_mat(inout Ray ray,inout int it,inout float mat)
+{
+	for (int i=0;i<=max_steps;i++)
+	{
+		vec2 distm = dist_func_mat(ray.pos);
+		
+		it = i;
+		mat = distm.y;
+		
+		if (distm.x < min_dist)
+			i = max_steps;
+		
+		ray.pos += ray.dir * distm.x;
+	}
+}
+
 vec4 calc_color()
 {
 	Ray ray = getViewRay();
@@ -225,7 +285,28 @@ vec4 calc_color()
 	}
 }
 
+vec4 calc_color_mat()
+{
+	Ray ray = getViewRay();
+	int it = 0;
+	
+	float mat = 0.0;
+	
+	raymarch_mat(ray,it,mat);
+	
+	if (it == max_steps)
+		return vec4(0.0,0.0,0.0,1.0);
+	else
+	{
+		Ray shadow_ray = Ray(ray.pos + sun_dir * (min_dist + 0.1),sun_dir);
+		
+		float shadow = get_shadow(shadow_ray);
+		
+		return get_color_at_mat(ray.pos,it,shadow,mat);
+	}
+}
+
 void main()
 {
-	gl_FragColor = calc_color();
+	gl_FragColor = calc_color_mat();
 }

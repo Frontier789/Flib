@@ -28,10 +28,24 @@
 
 namespace fw
 {
+	/////////////////////////////////////////////////////////////
+	MouseCursor::MouseCursor(const fg::Image &img,
+							 fm::vec2s clickSpot,
+							 fm::Uint8 transparencyLimit) : m_impl(nullptr)
+	{
+		loadFromImage(img,clickSpot,transparencyLimit);
+	}
+	
 	////////////////////////////////////////////////////////////
 	fm::vec2i Mouse::getPosition(const fw::Window &window)
 	{
 		return getPosition(window.getOSWindow());
+	}
+
+	/////////////////////////////////////////////////////////////
+	void Mouse::setCursor(const MouseCursor &cursor)
+	{
+		cursor.setAsCurrent();
 	}
 
 	////////////////////////////////////////////////////////////

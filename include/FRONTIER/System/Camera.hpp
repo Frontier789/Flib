@@ -41,42 +41,24 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Camera
 	{
-		/////////////////////////////////////////////////////////////
-		/// @brief Class used hold 3d data
-		///
-		/////////////////////////////////////////////////////////////
-		class Data3D
+	public:
+		enum Projection
 		{
-		public:
-			vec2   screenSize; ///< The size of the "canvas" of the camera in pixels
-			float  znear;      ///< The distance of the near clipping plane
-			float  zfar;       ///< The distance of the far  clipping plane
-			vec3   pos;        ///< The position of the camera in world-space
-			
-			vec3   viewDir; ///< The 3D direction the camera faces
-			Anglef fov;     ///< The field of view (if in 3D mode)
+			Perspective,
+			Orthogonal
 		};
 		
-		/////////////////////////////////////////////////////////////
-		/// @brief Class used hold 2d data
-		///
-		/////////////////////////////////////////////////////////////
-		class Data2D
-		{
-		public:
-			vec2  screenSize; ///< The size of the "canvas" of the camera in pixels
-			float znear;      ///< The distance of the near clipping plane
-			float zfar;       ///< The distance of the far  clipping plane
-			vec3  pos;        ///< The position of the camera in world-space
-		};
-		
-		union
-		{
-			Data2D m_data2d; ///< The 2D mode data
-			Data3D m_data3d; ///< The 3D mode data
-		};
-		
-		bool m_3d; ///< Indicates whether the camera uses perspective projection or orthographic
+	private:
+		vec3   m_up;    ///< The up vector
+		vec3   m_pos;   ///< The position of the camera in world-space
+		vec3   m_right; ///< The right vector
+		float  m_zfar;  ///< The distance of the far  clipping plane
+		float  m_znear; ///< The distance of the near clipping plane
+		vec3   m_viewDir;        ///< The 3D direction the camera faces
+		vec2   m_canvasSize;     ///< The size of the "canvas" of the camera in pixels
+		bool   m_limitPitch;     ///< Denote whether pitch is to be limited to [-pi/2,pi/2]
+		Anglef m_fieldOfView;    ///< The field of view (if in 3D mode)
+		Projection m_projection; ///< Indicates whether the camera uses perspective projection or orthographic
 		
 		MatrixStack<4,4,float> m_projStack; ///< Holds the projection stack
 		MatrixStack<4,4,float> m_viewStack; ///< Holds the view stack
@@ -96,7 +78,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct a Camera with 3D projection set up
 		///
-		/// @param screenSize The size of the screen the camera projects to
+		/// @param canvasSize The size of the imaginary canvas the camera projects to
 		/// @param pos The position of the camera in world-space
 		/// @param target The 3D point The camera targets
 		/// @param fov The field of view (if in 3D mode)
@@ -104,15 +86,7 @@ namespace fm
 		/// @param zfar The distance of the far clipping plane
 		///
 		/////////////////////////////////////////////////////////////
-		Camera(const vec2 &screenSize,const vec3 &pos,const vec3 &target,const Anglef &fov = fm::deg(90),float znear = .1,float zfar = 100);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct a Camera with 2D projection set up
-		///
-		/// @param screenSize The size of the screen the camera projects to
-		///
-		/////////////////////////////////////////////////////////////
-		Camera(const vec2 &screenSize);
+		Camera(const vec2 &canvasSize,const vec3 &pos,const vec3 &target = vec3(0,0,-1),const Anglef &fov = fm::deg(90),float znear = .1,float zfar = 100);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the current projection matrix
@@ -120,7 +94,7 @@ namespace fm
 		/// @return The current projection matrix
 		///
 		/////////////////////////////////////////////////////////////
-		const mat4 &getProjMat() const;
+		mat4 getProjMat() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the current view matrix
@@ -128,7 +102,7 @@ namespace fm
 		/// @return The current view matrix
 		///
 		/////////////////////////////////////////////////////////////
-		const mat4 &getViewMat() const;
+		mat4 getViewMat() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the view direction to face @a target (to target - pos)
@@ -158,7 +132,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference setPos(const vec3 &pos);
+		reference setPosition(const vec3 &pos);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move the camera
@@ -168,17 +142,25 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference movePos(const vec3 &delta);
+		reference movePosition(const vec3 &delta);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Change the screen size
+		/// @brief Change the virtual canvas size
 		///
-		/// @param screenSize The new screen size
+		/// @param canvasSize The new canvas size
 		///
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference setScreenSize(const vec2 &screenSize);
+		reference setCanvasSize(const vec2 &canvasSize);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the virtual canvas size
+		///
+		/// @return The canvas size
+		///
+		/////////////////////////////////////////////////////////////
+		vec2 getCanvasSize() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the vector facing upward relative to the camera
@@ -197,9 +179,17 @@ namespace fm
 		vec3 r() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the vector facing forward (equals to u().cross(r()) ) relative to the camera
+		/// @brief Get the vector facing forward relative to the camera
 		///
 		/// @return The forward vector
+		///
+		/////////////////////////////////////////////////////////////
+		vec3 v() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the forward vector projected onto the XZ plane 
+		///
+		/// @return The vector
 		///
 		/////////////////////////////////////////////////////////////
 		vec3 f() const;
@@ -210,7 +200,7 @@ namespace fm
 		/// @return The forward vector
 		///
 		/////////////////////////////////////////////////////////////
-		const vec3 &getViewDir() const;
+		vec3 getViewDir() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the current position of the camera
@@ -218,25 +208,12 @@ namespace fm
 		/// @return The current position
 		///
 		/////////////////////////////////////////////////////////////
-		const vec3 &getPos() const;
+		vec3 getPosition() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set up a 3D camera
 		///
-		/// @param screenSize The size of the screen the camera projects to
-		/// @param fov The field of view (if in 3D mode)
-		/// @param znear The distance of the near clipping plane
-		/// @param zfar The distance of the far clipping plane
-		///
-		/// @return Reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference set3D(const vec2 &screenSize,const Anglef &fov = fm::deg(90),float znear = .1,float zfar = 100);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Set up a 3D camera
-		///
-		/// @param screenSize The size of the screen the camera projects to
+		/// @param canvasSize The size of the screen the camera projects to
 		/// @param pos The position of the camera in world-space
 		/// @param target The 3D point The camera targets
 		/// @param fov The field of view (if in 3D mode)
@@ -246,19 +223,19 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference set3D(const vec2 &screenSize,const vec3 &pos,const vec3 &target,const Anglef &fov = fm::deg(90),float znear = .1,float zfar = 100);
+		reference set3D(const vec2 &canvasSize,const vec3 &pos,const vec3 &target = vec3(0,0,-1),const Anglef &fov = fm::deg(90),float znear = .1,float zfar = 100);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set up a 2D camera
+		/// @brief Create a default 2D setup
 		///
-		/// @param screenSize The size of the screen the camera projects to
+		/// @param canvasSize The size of the screen the camera projects to
 		/// @param znear The distance of the near clipping plane
 		/// @param zfar The distance of the far clipping plane
 		///
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference set2D(const vec2 &screenSize,float znear = -1,float zfar = 1);
+		reference set2D(const vec2 &canvasSize,float znear = -1,float zfar = 100);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the projection stack
@@ -277,12 +254,22 @@ namespace fm
 		MatrixStack<4,4,float> &getViewStack();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Check if the camera is in 3D mode
+		/// @brief Get the projection method
 		///
-		/// @return True iff the camera is in 3D mode
+		/// @return The projection method
 		///
 		/////////////////////////////////////////////////////////////
-		bool is3D() const;
+		Projection getProjection() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the projection method
+		///
+		/// @param proj The projection method
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference setProjection(Projection proj);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the pitch of the camera
@@ -301,52 +288,72 @@ namespace fm
 		Anglef getYaw() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the pitch of the camera
+		/// @brief Get the roll of the camera
 		///
-		/// value gets clamed into [-90,90]
+		/// @return The roll of the camera
+		///
+		/////////////////////////////////////////////////////////////
+		Anglef getRoll() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the pitch of the camera
 		/// 
 		/// @param pitch The new pitch
 		/// 
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference setPitch(const Anglef &pitch);
+		reference setPitch(Anglef pitch);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the yaw of the camera
-		///
-		/// value gets clamed into [-180,180]
 		/// 
 		/// @param yaw The new yaw
 		///
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference setYaw(const Anglef &yaw);
+		reference setYaw(Anglef yaw);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the roll of the camera
+		/// 
+		/// @param roll The new roll
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference setRoll(Anglef roll);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Add to the pitch of the camera
-		///
-		/// the resulting value gets clamed into [-90,90]
 		/// 
 		/// @param delta The difference to add
 		///
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference addPitch(const Anglef &delta);
+		reference addPitch(Anglef delta);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Add to the yaw of the camera
-		///
-		/// the resulting value gets clamed into [-180,180]
 		/// 
 		/// @param delta The difference to add
 		///
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference addYaw(const Anglef &delta);
+		reference addYaw(Anglef delta);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Add to the roll of the camera
+		/// 
+		/// @param delta The difference to add
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference addRoll(Anglef delta);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the near clipping plane distance
@@ -383,6 +390,24 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		float getFar() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get whether the pitch is being limited
+		///
+		/// @return True iff the pitch is being limited
+		///
+		/////////////////////////////////////////////////////////////
+		bool getLimitPitch() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set whether the pitch is being limited
+		///
+		/// @param limit True iff the pitch is being limited
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference setLimitPitch(bool limit);
 	};
 }
 

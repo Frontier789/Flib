@@ -31,6 +31,11 @@
 #include <string>
 #include <vector>
 
+namespace fg
+{
+	class Image;
+}
+
 namespace fw
 {
 	/////////////////////////////////////////////////////////////
@@ -152,7 +157,54 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		static bool isKeyHeld(Key key);
 	};
-
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Class used to store a mouse corsor
+	///
+	/// @ingroup Window
+	///
+	/////////////////////////////////////////////////////////////
+	class FRONTIER_API MouseCursor
+	{
+		void *m_impl; ///< System dependent implementation
+	public:
+		/////////////////////////////////////////////////////////////
+		/// @brief Default constructor
+		///
+		/// @param img The image to use
+		/// @param clickSpot The position where the mouse clicks
+		/// @param transparencyLimit The limit below the texel is considered transparent
+		///
+		/////////////////////////////////////////////////////////////
+		MouseCursor(const fg::Image &img,
+					fm::vec2s clickSpot = fm::vec2s(),
+					fm::Uint8 transparencyLimit = 128);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Default destructor
+		///
+		/////////////////////////////////////////////////////////////
+		~MouseCursor();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Load an image 
+		///
+		/// @param img The image to use
+		/// @param clickSpot The position where the mouse clicks
+		/// @param transparencyLimit The limit below the texel is considered transparent
+		///
+		/////////////////////////////////////////////////////////////
+		void loadFromImage(const fg::Image &img,
+						   fm::vec2s clickSpot = fm::vec2s(),
+						   fm::Uint8 transparencyLimit = 128);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set this cursor as current
+		///
+		/////////////////////////////////////////////////////////////
+		void setAsCurrent() const;
+	};
+	
 	/////////////////////////////////////////////////////////////
 	/// @brief Simple class used to store button enumerations and state check function
 	///
@@ -192,7 +244,7 @@ namespace fw
 			Arrow,           ///< The default arrow cursor
 			IBeam,           ///< The text entering cursor
 			Click,           ///< The clickable cursor
-			No,              ///< The forbidding cursir
+			No,              ///< The forbidding cursor
 			Loading,         ///< The loading cursor
 			SizeTop,         ///< The sizer cursor to top side
 			SizeLeft,        ///< The sizer cursor to left side
@@ -211,7 +263,15 @@ namespace fw
 		/// @param cursor The new cursor
 		///
 		/////////////////////////////////////////////////////////////
-		static void setCursor(Cursor cursor);
+		static void setCursor(Mouse::Cursor cursor);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Change the cursor
+		///
+		/// @param cursor The new cursor
+		///
+		/////////////////////////////////////////////////////////////
+		static void setCursor(const MouseCursor &cursor);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the cursor's distance from the upper left corner

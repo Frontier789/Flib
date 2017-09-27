@@ -64,6 +64,11 @@ float Modulate(float a,float m)
 	return mod(a,m) - m/2.0;
 }
 
+float rander(float v)
+{
+	return fract(sin(v*4512.12 + 12.45)*7865.12);
+}
+
 float dist_func(vec3 p)
 {
 	return Union(
@@ -72,7 +77,7 @@ float dist_func(vec3 p)
 				length(vec3(Modulate(p.x,10.0),Modulate(p.y - 5.0 - u_secs*5.0,10.0),p.z - 35.0)) - 3.0,
 				p.y+6.0
 			),
-			length(vec3(Modulate(7.0 - p.x,5.0),Modulate(sin(u_secs*2.0)-6.0 - p.y,5.0),Modulate(8.0 - p.z,5.0))) - 3.0	
+			length(vec3(Modulate(7.0 - p.x + rander(pow(1.5,p.y)),5.0),Modulate(sin(u_secs*2.0)-6.0 - p.y,5.0),Modulate(8.0 - p.z,5.0))) - 3.0	
 		),
 		length(vec3(Modulate(7.0 - p.x,5.0),sin(u_secs*2.0)-6.0 - p.y,8.0 - p.z)) - 1.0	- sin(u_secs)
 	);

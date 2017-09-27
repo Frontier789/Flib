@@ -8,11 +8,20 @@ using namespace std;
 /*
  *  BSP
  *  Glob. Ill.
+ *  -save approximation when camera is still
+ *  -keep track of pos on texture when recursing
  *  Sprite -> Text
- *  Vec2 vs Vec3 fix
  *  Fourier test
- *  tree upgrade
+ *    tree upgrade
  *  SDF font/text
+ *    custom pic cursor
+ *  bring unique sprite back
+ *  rework old tests
+ *  EditText
+ *  FIX CAMERA
+ *    glowing tetrarot
+ *  convolution applier
+ *    fm::toString(float)
  */
 
 class Frame : public fg::Drawable
@@ -186,6 +195,7 @@ void FrameStack::collectShaders(fm::String folder)
 {
 	fm::Size activeFrame = 0;
 	fm::Camera cam;
+	cam.set3D(m_winSize,vec3());
 	cam.setPitch(deg(80));
 	cam.setYaw(deg(10));
 	
@@ -238,6 +248,7 @@ fm::Result FrameStack::loadShader(const std::string &vertFile,const std::string 
 	{
 		m_curManagers.back()->setUniform("u_winSize",fm::vec2(m_winSize));
 		m_curManagers.back()->getClock().setTime(m_clk.getTime());
+		m_curManagers.back()->getCamera().set3D(m_winSize,vec3());
 	}
 	
 	return res;
@@ -309,6 +320,7 @@ void FrameStack::nextFrame(bool right)
 int main()
 {
 	GuiWindow win(vec2(640,480),"shady");
+	cout<<glGetString(GL_VERSION)<<endl;
 	
 	win.enableKeyRepeat();
 	
@@ -341,7 +353,7 @@ int main()
 		
 		Camera &cam = frameStack.getTopManager().getCamera();
 		
-		cam.movePos((delta.x * -cam.r() + delta.y * cam.u() + delta.z * cam.f()) * 0.1);
+		cam.movePosition((delta.x * -cam.r() + delta.y * vec3(0,1,0) + delta.z * cam.f()) * 0.1);
 	
 		
 		// win.handlePendingEvents();
@@ -390,6 +402,10 @@ int main()
 					cout << win.getShader().getProjStack().top() << endl;
 					
 					cout << endl;
+					
+					cout << "campos: " << cam.getPosition() << endl;
+					cout << "camdir: " << cam.getViewDir() << endl;
+					cout << "3d:     " << (cam.getProjection()==Camera::Perspective) << endl;
 				}
 				if (ev.key.code == Keyboard::Left)
 				{
@@ -426,8 +442,8 @@ int main()
 					
 					if (delta.LENGTH() > 2)
 					{
-						cam.addYaw(delta.x * 0.01);
 						cam.addPitch(delta.y * -0.01);
+						cam.addYaw(delta.x * -0.01);
 						
 						Mouse::setPosition(win.getSize() / 2,win);
 					}
