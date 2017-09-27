@@ -52,13 +52,13 @@ fm::Result checkFramebufferStatus(const std::string &func,const std::string &fil
 {
 	unsigned int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
-		return fm::Result("GLError",fm::Result::OPFailed,"FrameBufferError",func,file,line,"wrong size");
+		return fm::Result("GLresor",fm::Result::OPFailed,"FrameBufferresor",func,file,line,"wrong size");
 	
 	if (status == GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
-		return fm::Result("GLError",fm::Result::OPFailed,"FrameBufferError",func,file,line,"no color attachment");
+		return fm::Result("GLresor",fm::Result::OPFailed,"FrameBufferresor",func,file,line,"no color attachment");
 	
 	if (status == GL_FRAMEBUFFER_UNSUPPORTED)
-		return fm::Result("GLError",fm::Result::OPFailed,"FrameBufferError",func,file,line,"FBO not supported by GL");
+		return fm::Result("GLresor",fm::Result::OPFailed,"FrameBufferresor",func,file,line,"FBO not supported by GL");
 	
 	return fm::Result();
 }
@@ -161,9 +161,9 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	fm::Result FrameBuffer::create(const Texture **colorAttachments,fm::Size count,const DepthBuffer &depthBuf)
 	{
-		fm::Result err;
+		fm::Result res = setColorAttachments(colorAttachments,count);
 		
-		if ((err = setColorAttachments(colorAttachments,count))) return err;
+		if (!res) return res;
 		
 		return setDepthBuffer(depthBuf);
 	}
@@ -184,15 +184,16 @@ namespace fg
 		if (!colorAttachments || !count)
 			return fm::Result();
 		
-		fm::Result err;
+		fm::Result res;
 		
 		ObjectBinder binder(getGlId());
 		C(count)
 		{
 			const Texture *ptr = *(colorAttachments+i);
 			
-			if ((err = glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, ptr->getTexTarget(), ptr->getGlId(), 0))))
-				return err;
+			res = glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, ptr->getTexTarget(), ptr->getGlId(), 0));
+			
+			if (!res) return res;
 
 			fm::vec2s size = ptr->getRealSize();
 
@@ -205,10 +206,10 @@ namespace fg
 			GLenum *drawBuffers = new GLenum[count];
 			C(count)
 				drawBuffers[i] = GL_COLOR_ATTACHMENT0+i;
-			err += glCheck(glDrawBuffers(count, drawBuffers));
+			res += glCheck(glDrawBuffers(count, drawBuffers));
 			delete[] drawBuffers;
 			
-			if (err) return err;
+			if (!res) return res;
 		}
 		
 		
@@ -220,24 +221,24 @@ namespace fg
 	{
 		init();
 		
-		fm::Result err;
+		fm::Result res;
 
 		if (depthBuf.dtex)
 		{
 			ObjectBinder binder(getGlId());
-			err += glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthBuf.dtex->getTexTarget(), depthBuf.dtex->getGlId(), 0));
+			res += glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthBuf.dtex->getTexTarget(), depthBuf.dtex->getGlId(), 0));
 		}
 		else if (depthBuf.width && depthBuf.height)
 		{
 			ObjectBinder binder(getGlId());
-			if (glIsRenderbuffer(m_depthBufID)==GL_FALSE)
-				err += glCheck(glGenRenderbuffers(1, &m_depthBufID));
-			err += glCheck(glBindRenderbuffer(GL_RENDERBUFFER, m_depthBufID));
-			err += glCheck(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, depthBuf.width, depthBuf.height));
-			err += glCheck(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBufID));
+			if (glIsRenderbuffer(m_depthBufID) == GL_FALSE)
+				res += glCheck(glGenRenderbuffers(1, &m_depthBufID));
+			res += glCheck(glBindRenderbuffer(GL_RENDERBUFFER, m_depthBufID));
+			res += glCheck(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, depthBuf.width, depthBuf.height));
+			res += glCheck(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBufID));
 		}
 		
-		if (err) return err;
+		if (!res) return res;
 		
 		return checkFramebufferStatus("FrameBuffer.setDepthBuffer",__FILE__,__LINE__);
 	}
@@ -258,14 +259,12 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	fm::Result FrameBuffer::bind(const FrameBuffer *fbo)
 	{
-		fm::Result err = glCheck(glBindFramebuffer(GL_FRAMEBUFFER, fbo ? fbo->getGlId() : 0));
+		fm::Result res = glCheck(glBindFramebuffer(GL_FRAMEBUFFER, fbo ? fbo->getGlId() : 0));
 		
-		if (!err && fbo)
-		{
+		if (res && fbo)
 			glViewport(0,0,fbo->m_width,fbo->m_height);
-		}
 		
-		return err;
+		return res;
 	}
 
 	////////////////////////////////////////////////////////////

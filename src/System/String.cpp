@@ -792,6 +792,9 @@ namespace fm
 		fm::Uint64 wholePart = num;
 		fm::Uint64 approx = (num - fm::Uint64(num)) * priv::power(fm::Uint64(10),precision);
 		
-		return (mns ? "-" : "") + fm::toString(wholePart) + "." + fm::toString(approx);
+		fm::String fractPart = fm::toString(approx);
+		fractPart = fm::String(precision - fractPart.size(),'0') + fractPart;
+		
+		return (mns ? "-" : "") + fm::toString(wholePart) + "." + fractPart;
 	}
 }

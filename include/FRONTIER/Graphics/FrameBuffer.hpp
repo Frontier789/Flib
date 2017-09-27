@@ -148,7 +148,7 @@ namespace fg
 		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
 		///
 		/////////////////////////////////////////////////////////////
-		explicit FrameBuffer(const Texture **colorAttachments,fm::Size count = 1,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
+		explicit FrameBuffer(const Texture **colorAttachments,fm::Size count = 1,const DepthBuffer &depthBuf = DepthBuffer::noDepthBuffer);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the framebuffer from attachments and depth buffer
@@ -157,7 +157,7 @@ namespace fg
 		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
 		///
 		/////////////////////////////////////////////////////////////
-		explicit FrameBuffer(const Texture &colorAttachment,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
+		explicit FrameBuffer(const Texture &colorAttachment,const DepthBuffer &depthBuf = DepthBuffer::noDepthBuffer);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
