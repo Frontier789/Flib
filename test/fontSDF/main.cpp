@@ -200,6 +200,32 @@ Image imageToSDF(const Image &img,int maxDist,Delegate<bool,Color> inF = [](Colo
 	return ret;
 }
 
+Image imageToSDF_gauss(const Image &img,int maxDist,Delegate<bool,Color> inF = [](Color c){return c.a > 127;})
+{
+	Image tmpImg(img.getSize() + vec2(maxDist*2),Color::Black);
+	
+	Cv(img.getSize())
+		tmpImg.setTexel(p + vec2(maxDist),inF(img.getTexel(p)) ? Color::White : Color::Black);
+	
+	Texture tex(tmpImg);
+	/*
+	{1/4,1/2,1/4}
+	{1/16.0,1/8.0,5/8.0,1/8.0,1/16.0}
+	*/
+	TextureConvolution conv({1,1,1,1,1,1,1,1,1},nullptr,true);
+	
+	conv.applyTo(tex,maxDist);
+	
+	tex.copyToImage(tmpImg);
+	
+	tmpImg.forEach([](fm::vec2s p,Color &c){
+		c.a = c.r;
+		c.rgb() = vec3(255);
+	});
+	
+	return tmpImg;
+}
+
 
 DrawData buildDrawData(vec2 A,vec2 B,vec2 S)
 {
@@ -254,7 +280,7 @@ int main()
 			
 			Aimg.saveToFile("a_ori.png");
 			fm::Clock clk;
-			Aimg = imageToSDF(Aimg,25);
+			Aimg = imageToSDF_gauss(Aimg,25);
 			cout << clk.getSeconds() << endl;
 			Aimg.saveToFile("am.png");
 			// return 0;
@@ -281,7 +307,11 @@ int main()
 	fm::Result res = shader.loadFromFiles("shaders/font1.vert","shaders/font1.frag");
 	shader.regTexture("u_tex");
 	
-	if (!res) cout << res << endl;
+	if (!res)
+	{
+		cout << "Font Shader failed to load" << endl;
+		cout << res << endl;
+	}
 	
 	win.getMainLayout().addChildElement(new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
 		shader.setUniform("u_thickness",sb.getScrollState());

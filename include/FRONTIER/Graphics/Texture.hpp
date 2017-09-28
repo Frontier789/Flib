@@ -302,10 +302,24 @@ namespace fg
 		/// 
 		/// @param error The error returned
 		/// 
-		/// @return reference to itself
+		/// @return the copied image
 		///
 		/////////////////////////////////////////////////////////////
 		Image copyToImage(fm::Result *error = nullptr) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy the content of the texture to client-memory
+		///
+		/// If available an FBO will be used to retrieve the data
+		/// if not glGetTexImage will be used (if available)
+		/// if neither of the above then a white fg::Image (same size as texture) is returned
+		/// 
+		/// @param target The image to copy to (uses allocated data if available)
+		/// 
+		/// @return The result
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result copyToImage(Image &target) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the texture for usage

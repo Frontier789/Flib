@@ -318,6 +318,8 @@ namespace fg
 			}
 		}
 		
+		FrameBuffer::bind(nullptr);
+		
 		return *this;
 	}
 

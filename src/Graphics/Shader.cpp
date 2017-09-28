@@ -149,7 +149,7 @@ namespace fg
 		if (!getGlId())
 			getGlId() = glCreateProgram();
 	}
-
+	
     ////////////////////////////////////////////////////////////
 	fm::Result Shader::link()
 	{
@@ -208,9 +208,9 @@ namespace fg
 			res += glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
 			res += glCheck(glUseProgram(getGlId()));
 
-			glGenVertexArrays(1, &m_defVao);
-    		glBindVertexArray(m_defVao);
-
+			res += glCheck(glGenVertexArrays(1, &m_defVao));
+    		res += glCheck(glBindVertexArray(m_defVao));
+			
 			res += glCheck(glUseProgram(program));
 		}
 
@@ -248,6 +248,12 @@ namespace fg
 	{
 		if (getGlId() && glIsProgram(getGlId()))
 		{
+			GLint program;
+			glGetIntegerv(GL_CURRENT_PROGRAM,&program);
+			
+			if (fm::Uint32(program) == getGlId())
+				glUseProgram(0);
+			
 			freeSubShaders();
 			glDeleteProgram(getGlId());
 			

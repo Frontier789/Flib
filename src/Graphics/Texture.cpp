@@ -328,7 +328,25 @@ namespace fg
 	{
 		if (!getGlId())
 			return Image();
-
+		
+		Image ret;
+		
+		fm::Result res = copyToImage(ret);
+		
+		if (error) *error = res;
+		
+		return ret;
+	}
+	
+	////////////////////////////////////////////////////////////
+	fm::Result Texture::copyToImage(Image &target) const
+	{
+		if (!getGlId())
+			return fm::Result();
+		
+		if (target.getSize() != getSize())
+			target.create(getSize());
+		
 		fm::Result res;
 
 		if (fg::FrameBuffer::isAvailable())
@@ -351,25 +369,21 @@ namespace fg
 			}
 
 			// read back texture
-			fg::Image ret;
-			ret.create(m_size);
-			res += glCheck(glReadPixels(0,0,m_size.w,m_size.h,getFormat(),getType(),ret.getPtr()));
+			res += glCheck(glReadPixels(0,0,m_size.w,m_size.h,getFormat(),getType(),target.getPtr()));
 			glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
 			glDeleteFramebuffers(1,&fb_id);
-			return ret;
+			return res;
 		}
 
 		// prepare image
 		priv::TextureSaver save(getTexBinding(),getTexRebinding());
-		Image ret;
-		ret.create(m_size);
 
 		// if npot textures are present or m_size is pot
 		if (m_size == m_realSize)
 		{
 			// simply copy back texture
 			bind();
-			res += glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),ret.getPtr()));
+			res += glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),target.getPtr()));
 		}
 		else
 		{
@@ -380,7 +394,7 @@ namespace fg
 
 			// cut the useful part
 			const Color *src = &allPixels[0];
-			Color *dst = ret.getPtr();
+			Color *dst = target.getPtr();
 
 			C((fm::Size)m_size.h)
 			{
@@ -390,10 +404,7 @@ namespace fg
 			}
 		}
 
-		if (error)
-			*error = res;
-
-		return ret;
+		return res;
 	}
 
 	////////////////////////////////////////////////////////////

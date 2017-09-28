@@ -10,10 +10,10 @@ uniform mat4 FRONTIER_MODEL  u_modelMat;
 uniform mat4 FRONTIER_VIEW   u_viewMat;
 uniform mat4 FRONTIER_PROJ   u_projMat;
 
-attribute vec2 FRONTIER_POS in_pos;
-attribute vec2 FRONTIER_TEXPOS in_uvs;
+in vec2 FRONTIER_POS in_pos;
+in vec2 FRONTIER_TEXPOS in_uvs;
 
-varying vec2 va_texp;
+out vec2 va_texp;
 
 void main()
 {

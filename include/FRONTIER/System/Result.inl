@@ -54,7 +54,7 @@ namespace fm
 	}
 }
 
-#include <FRONTIER/System/util/PredefStreams.hpp>
+#include <iosfwd>
 
 template<class CharT,class CharTraitT>
 inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::Result &res)

@@ -698,7 +698,7 @@ namespace fm
 	}
 }
 
-#include <FRONTIER/System/util/PredefStreams.hpp>
+#include <iosfwd>
 
 template<class T,class CharT,class CharTraitT>
 inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::vector3<T> &vec)

@@ -767,7 +767,7 @@ namespace fm
 	}
 }
 
-#include <FRONTIER/System/util/PredefStreams.hpp>
+#include <iosfwd>
 
 ////////////////////////////////////////////////////////////
 template<size_t W,size_t H,class T,class CharT,class CharTraitT>

@@ -1,10 +1,12 @@
-#version 110
+#version 130
 
 uniform sampler2D u_tex;
 uniform float u_thickness;
 uniform float u_pov;
 
-varying vec2 va_texp;
+in vec2 va_texp;
+
+out vec4 out_color;
 
 float contour(in float d,in float w) 
 {
@@ -24,7 +26,7 @@ void main()
 	vec4 c2 = texture2D(u_tex,va_texp+vec2(-0.02,-0.04));
 	c.a = (c.a < u_thickness || c.a > u_thickness+0.2) ? 0.0 : 1.0;
 	c2 = c2.a < u_thickness*1.7 ? vec4(0.0,0.0,1.0,c2.a/u_thickness/1.7) : vec4(0.0,0.0,1.0,1.0);
-	gl_FragColor = c*c.a + c2*c2.a;
+	out_color = c*c.a + c2*c2.a;
 	*/
 
 
@@ -55,5 +57,5 @@ void main()
 
     // -------
 
-	gl_FragColor = vec4(vec3(0.0), alpha);
+	out_color = vec4(vec3(0.0), alpha);
 }
