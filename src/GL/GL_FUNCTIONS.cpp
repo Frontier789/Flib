@@ -97,8 +97,6 @@ namespace fg
 		if (!p1) p1 = dlopen("libGLES_CM.so", RTLD_NOW|RTLD_LOCAL);
 		
 		if (!p1) p1 = dlopen("libGLESv1_CM.so", RTLD_NOW|RTLD_LOCAL);
-		
-		if (!p1) fg::OpenGL_log << "Error: No GLES shared object found" << std::endl;
 	}
 	
 	priv::SO_LOADER::~SO_LOADER()
@@ -108,6 +106,8 @@ namespace fg
 	
 	void (*priv::SO_LOADER::getProcAddr(const std::string &name))()
 	{
+		if (!pl) return nullptr;
+		
 		void *symbol = dlsym(p1, name.c_str());
 		if (!symbol) 
 		{
@@ -115,10 +115,6 @@ namespace fg
 			std::string name2 = '_'+name;
 			
 			symbol = dlsym(p1, name2.c_str());
-			
-			if (!symbol)
-				fg::OpenGL_log << "Error: Couldn't find symbol " << name 
-						   << " (" << (const char *)dlerror() << ")" <<std::endl;
 		}
 		return (void(*)())symbol;
 	}
@@ -197,7 +193,9 @@ namespace fg
 #endif // A linux that is not android
 
 #ifndef FRONTIER_HAS_SO_LOADER 
-	#warning No retrieveProcAddress implementation!
+	#ifndef FRONTIER_MISSING_IMPL_NO_WARNING
+		#warning No retrieveProcAddress implementation!
+	#endif
 	
 	priv::SO_LOADER::SO_LOADER()
 	{

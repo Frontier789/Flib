@@ -23,7 +23,9 @@
 #elif defined(FRONTIER_OS_LINUX) && !defined(FRONTIER_OS_ANDROID)
 	#include "Xlib/XlibEvent.cpp"
 #else
-	#warning No EventImpl!
+	#ifndef FRONTIER_MISSING_IMPL_NO_WARNING
+		#warning No EventImpl!
+	#endif
 #endif
 
 namespace fw

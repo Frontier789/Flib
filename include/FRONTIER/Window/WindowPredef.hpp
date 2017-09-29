@@ -77,7 +77,9 @@ union _XEvent;
 			typedef bool (*WindowEventCallback)(Window*);
 		}
 	}
-	#warning No window nor glcontext!
+	#ifndef FRONTIER_MISSING_IMPL_NO_WARNING
+		#warning No window nor glcontext!
+	#endif
 	#define FRONTIER_NO_WINDOW
 	#define FRONTIER_NO_CONTEXT
 #endif
