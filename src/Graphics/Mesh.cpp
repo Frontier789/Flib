@@ -324,7 +324,7 @@ namespace fg
     	float epsilon;
     	Comparator(float ep) : epsilon(ep) {}
 
-        bool operator()(const fm::vec3 &l,const fm::vec3 &r)
+		bool operator()(const fm::vec3 &l,const fm::vec3 &r) const
         {
 			if ((l-r).length() < epsilon) return false;
             if (l.x != r.x) return l.x < r.x;
@@ -397,15 +397,15 @@ namespace fg
 				C(faces[faceIndex].indices.size())
 					pToInds[pts[faces[faceIndex].indices[i]]].insert(faces[faceIndex].indices[i]);
 
-				for (std::map<fm::vec3,std::set<fm::Size>,Comparator >::const_iterator it = pToInds.begin();it != pToInds.end();++it)
+				for (const auto &it : pToInds)
 				{
 					fm::vec3 n;
 					
-					for (std::set<fm::Size>::const_iterator pit = it->second.begin();pit != it->second.end();++pit)
-						n += norms[*pit];
+					for (const auto &pit : it.second)
+						n += norms[pit];
 					
-					for (std::set<fm::Size>::const_iterator pit = it->second.begin();pit != it->second.end();++pit)
-						norms[*pit] = n;
+					for (const auto &pit : it.second)
+						norms[pit] = n;
 				}
 			}
 		}
