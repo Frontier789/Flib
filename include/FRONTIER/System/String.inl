@@ -106,15 +106,12 @@ namespace fm
 				first += bytes+1;
 				continue;
 			}
-
-			switch (bytes)
+			
+			for (int i=0;i<=bytes && bytes<6;++i)
 			{
-				case 5: c += (fm::Uint8)*first++; c <<= 6;
-				case 4: c += (fm::Uint8)*first++; c <<= 6;
-				case 3: c += (fm::Uint8)*first++; c <<= 6;
-				case 2: c += (fm::Uint8)*first++; c <<= 6;
-				case 1: c += (fm::Uint8)*first++; c <<= 6;
-				case 0: c += (fm::Uint8)*first++;
+				c += (fm::Uint8)*first++;
+				
+				if (i != bytes) c <<= 6;
 			}
 
 			c -= priv::getOffsetUTF8(bytes);

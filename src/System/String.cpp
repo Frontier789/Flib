@@ -284,13 +284,10 @@ namespace fm
 		        C(bytes)
 		        	ret.push_back('a');
 
-		        switch (bytes)
-		        {
-		            case 4: ret[ret.size()-bytes+3] = ((ch | FRONTIER_BYTEMARK) & FRONTIER_BYTEMASK); ch >>= 6;
-		            case 3: ret[ret.size()-bytes+2] = ((ch | FRONTIER_BYTEMARK) & FRONTIER_BYTEMASK); ch >>= 6;
-		            case 2: ret[ret.size()-bytes+1] = ((ch | FRONTIER_BYTEMARK) & FRONTIER_BYTEMASK); ch >>= 6;
-		            case 1: ret[ret.size()-bytes+0] =  (ch | FRONTIER_FIRSTBYTEMARK[bytes]);
-	        	}
+				if (bytes >= 4 && bytes <= 4) { ret[ret.size()-bytes+3] = ((ch | FRONTIER_BYTEMARK) & FRONTIER_BYTEMASK); ch >>= 6; }
+				if (bytes >= 3 && bytes <= 4) { ret[ret.size()-bytes+2] = ((ch | FRONTIER_BYTEMARK) & FRONTIER_BYTEMASK); ch >>= 6; }
+				if (bytes >= 2 && bytes <= 4) { ret[ret.size()-bytes+1] = ((ch | FRONTIER_BYTEMARK) & FRONTIER_BYTEMASK); ch >>= 6; }
+				if (bytes >= 1 && bytes <= 4) { ret[ret.size()-bytes+0] = (ch | FRONTIER_FIRSTBYTEMARK[bytes]);                     }
 			}
 		}
 
