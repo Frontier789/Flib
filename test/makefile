@@ -1,16 +1,12 @@
-PROJECT_FOLDERS=$(wildcard */makefile)
+PROJECT_MAKEFILES=$(wildcard */makefile)
+PROJECT_FOLDERS=$(PROJECT_MAKEFILES:/makefile=)
 
 FPATH=..
 include $(FPATH)/include/FRONTIER/Makefiles/common.mk
 
-define EOL
+all clean: $(PROJECT_FOLDERS)
 
+.PHONY: force
 
-endef
-
-# for every subfolder that has a makefile call make in it
-all:
-	$(foreach folder,$(PROJECT_FOLDERS:/makefile=),$(MAKE) --no-print-directory -C $(folder) CXX=$(CXX) ${EOL})
-
-clean:
-	$(foreach folder,$(PROJECT_FOLDERS:/makefile=),$(MAKE) clean --no-print-directory -C $(folder) ${EOL})
+$(PROJECT_FOLDERS):: force
+	-$(MAKE) --no-print-directory -C $@ $(MAKECMDGOALS) CXX=$(CXX)

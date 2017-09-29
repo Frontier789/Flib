@@ -9,6 +9,7 @@ ifneq ($(F_DEBUG),)
 endif
 
 # common tools
+MAKE=make
 MKDIR=mkdir
 RRM=$(F_RRM)
 RM=$(F_RM)
