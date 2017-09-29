@@ -17,14 +17,7 @@
 #ifndef FRONTIER_COLOR_INL_INCLUDED
 #define FRONTIER_COLOR_INL_INCLUDED
 
-namespace std
-{
-    template<typename,typename>
-    class basic_ostream;
-    
-    template<typename,typename>
-    class basic_istream;
-}
+#include <iosfwd>
 
 template<class CharT,class CharTraitT>
 inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out,const fg::Color &col)

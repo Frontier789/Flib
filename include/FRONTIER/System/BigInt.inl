@@ -541,14 +541,7 @@ namespace fm
 	}
 }
 
-namespace std
-{
-    template<typename,typename>
-    class basic_ostream;
-    
-    template<typename,typename>
-    class basic_istream;
-}
+#include <iosfwd>
 
 ////////////////////////////////////////////////////////////
 template<class BaseUint,class CharT,class CharTraitT>
