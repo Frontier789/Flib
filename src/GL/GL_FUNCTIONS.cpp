@@ -106,7 +106,7 @@ namespace fg
 	
 	void (*priv::SO_LOADER::getProcAddr(const std::string &name))()
 	{
-		if (!pl) return nullptr;
+		if (!p1) return nullptr;
 		
 		void *symbol = dlsym(p1, name.c_str());
 		if (!symbol) 

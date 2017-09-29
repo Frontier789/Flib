@@ -70,10 +70,10 @@ $(foreach MODULE,$(F_MODULES), \
 	$(CXX) -shared -o $$@ $(F_$(F_CUR_MODULE)_DYNAMIC_O_FILES) -L$(F_O_FILES_DIR) $(F_DYNLINK_TO_$(F_CUR_MODULE)) $(call F_SO_IMPLIB,$(F_O_FILES_DIR),-$(F_CUR_MODULE_LOWERCASE)) ) \
  \
  $(eval $(F_O_FILES_DIR)/static/$(MODULE)/%.o: $(MODULE)/%.cpp | $(F_O_FILES_DIR)/static/$(MODULE) ; \
-	$(CXX) $(CXXFLAGS) -I $(F_PATH_TO_INCLUDE) -c $$< -o $$@ ) \
+	$(CXX) $(CXXFLAGS) $(CXX_WNO_FLAGS) -I $(F_PATH_TO_INCLUDE) -c $$< -o $$@ ) \
  \
  $(eval $(F_O_FILES_DIR)/dynamic/$(MODULE)/%.o: $(MODULE)/%.cpp | $(F_O_FILES_DIR)/dynamic/$(MODULE) ; \
-	$(CXX) -shared $(F_SO_CXXFLAGS) $(CXXFLAGS) -I $(F_PATH_TO_INCLUDE) -c $$< -o $$@ ) \
+	$(CXX) -shared $(F_SO_CXXFLAGS) $(CXXFLAGS) $(CXX_WNO_FLAGS) -I $(F_PATH_TO_INCLUDE) -c $$< -o $$@ ) \
 )
 
 ####  ####  ####  ##                    ##  ####  ####  ####
