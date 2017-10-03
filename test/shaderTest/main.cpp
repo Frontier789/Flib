@@ -18,10 +18,12 @@ using namespace std;
  *  bring unique sprite back
  *  rework old tests
  *  EditText
- *  FIX CAMERA
+ *    FIX CAMERA
  *    glowing tetrarot
- *  convolution applier
+ *    convolution applier
  *    fm::toString(float)
+ *  pump up Transition<T>
+ *  image to SDF converter
  */
 
 class Frame : public fg::Drawable

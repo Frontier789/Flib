@@ -113,23 +113,22 @@ void buildDrawData(int depth,DrawData &dd,DrawData &ddWf,DrawData &ddGw)
 	
 }
 
-/*********
- *
- *
- *  Logika - átnéz    . 1hét 
- *  Nummód - átnéz    . 1hét 
- *  Anal   - átnéz    . 1hét
- *  OAF    - tesztek  . 1hét
- *  Sztech - feladat  . 2hét
- *
- *
- *********/
+void printUsage()
+{
+	cout << "usage: \n" 
+		 << "\tHold mouse button and drag to rotate\n"
+		 << "\tScroll to zoom\n"
+		 << "\tG: Toggle glow" << endl;
+}
 
 int main()
 {
+	printUsage();
+	
 	GuiWindow win(vec2(640,480),"Rotx");
 	win.setDepthTest(LEqual);
 	win.setClearColor(vec4::Black);
+	win.enableKeyRepeat();
 	
 	cout << glGetString(GL_VERSION) << endl;
 	cout << glGetString(GL_VENDOR) << endl;
@@ -160,7 +159,9 @@ int main()
 	bool leftDown = false;
 	vec2 mouseP;
 	
-	bool renderBlur = true;
+	Transition<float> glowAm(50,50);
+	
+	bool renderBlur = TextureConvolution::isAvailable();
 	
 	for (int loop=0;running;++loop)
 	{
@@ -184,7 +185,15 @@ int main()
 					glowTexture.copyToImage().scale(win.getSize()).flipVertically().saveToFile("glow.png");
 					
 				if (ev.key.code == Keyboard::G)
-					renderBlur = !renderBlur;
+				{
+					if (!renderBlur)
+					{
+						renderBlur = true;
+						glowAm.set(max<float>(glowAm.get(),1),50,seconds(.2));
+					}
+					else
+						glowAm.set(glowAm.get(),0,seconds(.2));
+				}
 			}
 			
 			if (ev.type == Event::Resized)
@@ -224,6 +233,12 @@ int main()
 		
 		win.clear();
 		
+		int blurAm = glowAm.get();
+		if (renderBlur && blurAm == 0)
+		{
+			renderBlur = false;
+		}
+		
 		if (renderBlur)
 		{
 			shader->getModelStack().top(rotM);
@@ -232,7 +247,7 @@ int main()
 			glowFBO.clear(true,true);
 			shader->draw(ddGw);
 			
-			blurConv.applyTo(glowTexture,51);
+			blurConv.applyTo(glowTexture,blurAm);
 			
 			
 			FrameBuffer::bind(nullptr);

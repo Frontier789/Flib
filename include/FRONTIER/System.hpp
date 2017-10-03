@@ -48,6 +48,7 @@ namespace fm
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Camera.hpp>
 #include <FRONTIER/System/Polar2.hpp>
+#include <FRONTIER/System/KDTree.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>
