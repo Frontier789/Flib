@@ -47,6 +47,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		class SpriteManagerBaseNonTemplate : public fg::Drawable
 		{
+		public:
 			fg::DrawData m_drawData; ///< The drawData
 			bool m_useFrames; ///< Indicates whether frames are used
 			
@@ -252,7 +253,7 @@ namespace fg
 			/// @param tex The texture from the atlas
 			/// 
 			/////////////////////////////////////////////////////////////
-			void onDraw(fg::ShaderManager &shader,fg::Texture &tex);
+			void onDrawTex(fg::ShaderManager &shader,fg::Texture &tex);
 			
 			template<class ImageID>
 			friend class SpriteBase;

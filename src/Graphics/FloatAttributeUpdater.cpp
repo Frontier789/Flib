@@ -26,7 +26,6 @@ namespace fg
 																		 m_vecsPerItem(vecsPerItem),
 																		 m_capacity(0),
 																		 m_uploads(0),
-																		 m_lastTimeMap(false),
 																		 m_mappedPtr(nullptr)
 	{
 		
@@ -38,18 +37,6 @@ namespace fg
 		std::memcpy(&m_data[index*getFloatsPerItem()],value,getBytesPerItem());
 		m_uploads++;
 		
-		/*
-		if (!m_mappedPtr && m_lastTimeMap)
-			m_mappedPtr = (float*)m_attrib.buf->map(false,true);
-		
-		
-		m_lastTimeMap = m_uploads > 20;
-		
-		if (m_mappedPtr)
-			std::memcpy(m_mappedPtr + index*m_floatPerVec,value,sizeof(float)*m_floatPerVec);
-		else
-			m_attrib.buf->updateData(value,sizeof(float) * m_floatPerVec,sizeof(float) * m_floatPerVec * index);
-		*/
 		if (m_uploads == 1)
 		{
 			m_firstUpdated = index;

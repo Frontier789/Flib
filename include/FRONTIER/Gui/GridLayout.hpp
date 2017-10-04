@@ -102,7 +102,7 @@ namespace fgui
 		/// @return Pointer to the old child at the index
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual GuiElement *setChildElement(fm::vec2s index,GuiElement *element);
+		virtual GuiElement *setChildElement2D(fm::vec2s index,GuiElement *element);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the child at given 2d index
@@ -112,7 +112,7 @@ namespace fgui
 		/// @return Pointer to the child
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual GuiElement *getChildElement(fm::vec2s index) const;
+		virtual GuiElement *getChildElement2D(fm::vec2s index) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Remove a child from the layout at a 2d index

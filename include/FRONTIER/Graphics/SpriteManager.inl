@@ -158,7 +158,7 @@ namespace fg
 	template<class ImageID>
 	inline void SpriteManagerBase<ImageID>::onDraw(fg::ShaderManager &shader)
 	{
-		return priv::SpriteManagerBaseNonTemplate::onDraw(shader,m_atlas.getTexture());
+		return priv::SpriteManagerBaseNonTemplate::onDrawTex(shader,m_atlas.getTexture());
 	}
 }
 

@@ -38,7 +38,7 @@ namespace fgui
 		
 		Cv(cellc)
 		{
-			GuiElement *elem = getChildElement(p);
+			GuiElement *elem = getChildElement2D(p);
 			fm::Size index = indexToOffset(p);
 			CellData &data = m_cellData[index];
 			
@@ -66,7 +66,7 @@ namespace fgui
 			fm::Size index = indexToOffset(p);
 			CellData &data = m_cellData[index];
 			
-			GuiElement *elem = getChildElement(p);
+			GuiElement *elem = getChildElement2D(p);
 			if (elem)
 			{
 				fm::vec2 cellS(cellW,cellH);
@@ -102,7 +102,7 @@ namespace fgui
 		
 		Cv(getCellCount())
 		{
-			GuiElement *elem = getChildElement(p);
+			GuiElement *elem = getChildElement2D(p);
 			if (elem)
 				elem->setPosition(elem->getPosition() + pos - oldPos);
 		}
@@ -131,13 +131,13 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiElement *GridLayout::setChildElement(fm::vec2s index,GuiElement *element)
+	GuiElement *GridLayout::setChildElement2D(fm::vec2s index,GuiElement *element)
 	{
 		return GuiLayout::setChildElement(indexToOffset(index),element);
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiElement *GridLayout::getChildElement(fm::vec2s index) const
+	GuiElement *GridLayout::getChildElement2D(fm::vec2s index) const
 	{
 		return GuiLayout::getChildElement(indexToOffset(index));
 	}

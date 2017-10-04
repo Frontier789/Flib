@@ -564,14 +564,14 @@ namespace fg
 																		m_spriteCount(0),
 																		m_glyphGetterFunc(glyphGetterFunc)
 		{
+			m_useInstancing = ::priv::so_loader.getProcAddr("glVertexAttribDivisor") != nullptr;
+			
 			setupDrawData();
 			loadShader();
-			
-			m_useInstancing = ::priv::so_loader.getProcAddr("glVertexAttribDivisor") != nullptr;
 		}
 
 		/////////////////////////////////////////////////////////////
-		void SpriteManagerBaseNonTemplate::onDraw(fg::ShaderManager &shader,fg::Texture &tex)
+		void SpriteManagerBaseNonTemplate::onDrawTex(fg::ShaderManager &shader,fg::Texture &tex)
 		{
 			if (useInstancing())
 			{

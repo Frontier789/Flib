@@ -44,7 +44,6 @@ namespace fg
 		fm::Size m_vecsPerItem;    ///< Number of vecs per item
 		fm::Size m_capacity;       ///< The number of allocated items
 		fm::Size m_uploads;        ///< The number of uploads done
-		bool m_lastTimeMap;        ///< Stores whether last time map was used
 		float *m_mappedPtr;        ///< The pointer to the mapped data
 		
 	public:
