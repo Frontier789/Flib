@@ -47,7 +47,6 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		class SpriteManagerBaseNonTemplate : public fg::Drawable
 		{
-		public:
 			fg::DrawData m_drawData; ///< The drawData
 			bool m_useFrames; ///< Indicates whether frames are used
 			

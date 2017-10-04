@@ -45,7 +45,6 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API DrawData
 	{
-	public:
 		mutable std::map<AssocPoint,Attribute*> m_attrs; ///< Maps the association points to attributes
 		std::vector<DrawCall> m_drawCalls; ///< Stores drawing calls
 
