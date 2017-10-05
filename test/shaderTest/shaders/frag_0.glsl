@@ -1,4 +1,4 @@
-#version 110
+#version 130
 
 #define FRONTIER_SECONDS
 
@@ -6,7 +6,9 @@ uniform vec2 u_winSize;
 
 uniform float FRONTIER_SECONDS u_secs;
 
-varying vec2 va_pos;
+in vec2 va_pos;
+
+out vec4 out_color;
 
 void main()
 {
@@ -15,5 +17,5 @@ void main()
 	vec2  direction = delta / dOrigin;
 	float angle = acos(direction.x) * sign(direction.y);
 	
-	gl_FragColor = vec4(vec3(sin(dOrigin / 10.0 + cos(angle * 3.0 + dOrigin / (sin(u_secs) * 200.0)) * 10.0 - u_secs*10.0)*0.5 + 0.5),1.0);
+	out_color = vec4(vec3(sin(dOrigin / 10.0 + cos(angle * 3.0 + dOrigin / (sin(u_secs) * 200.0)) * 10.0 - u_secs*10.0)*0.5 + 0.5),1.0);
 }

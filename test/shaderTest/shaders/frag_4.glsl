@@ -1,4 +1,4 @@
-#version 110
+#version 130
 
 #define FRONTIER_SECONDS
 #define FRONTIER_PLY_POS
@@ -10,7 +10,7 @@ uniform float FRONTIER_SECONDS u_secs;
 uniform vec3 FRONTIER_PLY_POS u_camPos;
 uniform vec3 FRONTIER_VIEW_DIR u_camDir;
 
-varying vec2 va_pos;
+in vec2 va_pos;
 
 uniform float u_fov_userdef;
 float real_fov = 130.0 - u_fov_userdef * 70.0;
@@ -167,6 +167,8 @@ vec4 get_color(Ray ray,int it)
 	return vec4(mix(scene_color,vec3(.5),fog),1.0);
 }
 
+out vec4 out_color;
+
 void main()
 {
 	Ray ray = getViewRay();
@@ -175,7 +177,7 @@ void main()
 	raymarch(ray,it);
 	
 	if (it == max_steps || ray.pos.y > max_height)
-		gl_FragColor = get_sky_color(ray.dir);
+		out_color = get_sky_color(ray.dir);
 	else
-		gl_FragColor = get_color(ray,it);
+		out_color = get_color(ray,it);
 }

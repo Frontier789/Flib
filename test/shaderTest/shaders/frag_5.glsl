@@ -8,7 +8,7 @@ uniform vec2 u_winSize;
 uniform float FRONTIER_SECONDS u_secs;
 uniform mat4 FRONTIER_VIEWMAT u_viewMat;
 
-varying vec2 va_pos;
+in vec2 va_pos;
 
 uniform float u_fov_userdef;
 float real_fov = 130.0 - u_fov_userdef * 70.0;
@@ -306,7 +306,9 @@ vec4 calc_color_mat()
 	}
 }
 
+out vec4 out_color;
+
 void main()
 {
-	gl_FragColor = calc_color_mat();
+	out_color = calc_color_mat();
 }

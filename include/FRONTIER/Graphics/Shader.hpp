@@ -64,6 +64,7 @@ namespace fm
 
 namespace fg
 {
+	class ShaderSource;
 	class CubeTexture;
 	class Texture;
 	class Color;
@@ -273,6 +274,18 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
         fm::Result loadFromMemory(const std::string *data,const unsigned int *types,unsigned int count);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the shader program from sources stored in memory
+		///
+		/// @param data A pointer to the sources to be compiled
+		/// @param types A pointer to the types of shaders
+		/// @param count The number of shaders in the shader program
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result loadFromMemory(const fg::ShaderSource *data,const unsigned int *types,unsigned int count);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the shader program from sources stored in memory

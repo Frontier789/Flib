@@ -6,7 +6,7 @@ uniform vec2 u_winSize;
 
 uniform float FRONTIER_SECONDS u_secs;
 
-varying vec2 va_pos;
+in vec2 va_pos;
 
 float pi = 3.14159265358979;
 float zoom_time = 4.0;
@@ -61,6 +61,8 @@ const vec2 pts[6] = vec2[](
 	vec2(-0.23514,0.827215)
 );
 
+out vec4 out_color;
+
 void main()
 {
 	int id = int(discrete_time) % 6;
@@ -70,5 +72,5 @@ void main()
 	
 	vec2 pt = (va_pos - u_winSize/2.0) / 200.0 / zoom + offset;
 	
-	gl_FragColor = mandelColor(mandelAt(pt,true));
+	out_color = mandelColor(mandelAt(pt,true));
 }

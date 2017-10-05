@@ -44,6 +44,7 @@ namespace fg
 #include <FRONTIER/Graphics/FloatTexture.hpp>
 #include <FRONTIER/Graphics/FontRenderer.hpp>
 #include <FRONTIER/Graphics/RenderStates.hpp>
+#include <FRONTIER/Graphics/ShaderSource.hpp>
 #include <FRONTIER/Graphics/TextureAtlas.hpp>
 #include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/Graphics/FrameBuffer.hpp>

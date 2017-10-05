@@ -1,4 +1,5 @@
 #include <FRONTIER/Graphics/SpriteManager.hpp>
+#include <FRONTIER/Graphics/ShaderSource.hpp>
 #include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/Graphics/AssocPoint.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
@@ -330,7 +331,7 @@ namespace fg
 				fm::vec3 pts[4];
 				getControlPoints(pts,spriteIndex);
 				
-				return (pts[0] + pts[2])/2;
+				return pts[0];
 			}
 		}
 		
@@ -431,119 +432,77 @@ namespace fg
 		{
 			if (useInstancing())
 			{
+				ShaderSource vertSource{130,{{"FRONTIER_MODEL ",""},
+											 {"FRONTIER_VIEW  ",""},
+											 {"FRONTIER_PROJ  ",""},
+											 {"FRONTIER_TEXMAT",""},
+											 {"FRONTIER_POS   ",""},
+											 {"FRONTIER_CUSTOM_0",""},
+											 {"FRONTIER_CUSTOM_1",""},
+											 {"FRONTIER_CUSTOM_2",""},
+											 {"FRONTIER_CUSTOM_3",""},
+											 {"FRONTIER_CUSTOM_4",""}},
+											{{"mat4 FRONTIER_TEXMAT","u_texMat  "},
+											 {"mat4 FRONTIER_MODEL ","u_modelMat"},
+											 {"mat4 FRONTIER_VIEW  ","u_viewMat "},
+											 {"mat4 FRONTIER_PROJ  ","u_projMat "}},
+											{{"vec2 FRONTIER_POS     ","in_tpt"},
+											 {"vec3 FRONTIER_CUSTOM_0","in_pos"},
+											 {"vec2 FRONTIER_CUSTOM_1","in_dir"},
+											 {"vec2 FRONTIER_CUSTOM_2","in_siz"},
+											 {"vec2 FRONTIER_CUSTOM_3","in_uvp"},
+											 {"vec2 FRONTIER_CUSTOM_4","in_uvs"}},
+											{{"vec2","va_texp"}},
+											"",
+											{},
+											""};
+				
+					
+				ShaderSource fragSource{130,{},
+											{{"int      ","u_wireFrame"},
+											 {"sampler2D","u_tex      "}},
+											{{"vec2","va_texp"}},
+											{{"vec4","out_color"}},
+											"",
+											{},
+											R"(
+						vec4 c = texture2D(u_tex,va_texp);
+						out_color = vec4(c.rgb * float(1 - u_wireFrame),1.0 - (1.0 - c.a)*(1.0 - float(u_wireFrame)));
+											  )"};
+				
 				if (m_useFrames)
 				{
-					m_insError = m_instancingShader.loadFromMemory(
-"#version 130\n"
-"\n"
-"#define FRONTIER_MODEL\n"
-"#define FRONTIER_VIEW\n"
-"#define FRONTIER_PROJ\n"
-"#define FRONTIER_TEXMAT\n"
-"#define FRONTIER_POS\n"
-"#define FRONTIER_CUSTOM_0\n"
-"#define FRONTIER_CUSTOM_1\n"
-"#define FRONTIER_CUSTOM_2\n"
-"#define FRONTIER_CUSTOM_3\n"
-"#define FRONTIER_CUSTOM_4\n"
-"#define FRONTIER_CUSTOM_5\n"
-"\n"
-"uniform mat4 FRONTIER_TEXMAT u_texMat;\n"
-"uniform mat4 FRONTIER_MODEL  u_modelMat;\n"
-"uniform mat4 FRONTIER_VIEW   u_viewMat;\n"
-"uniform mat4 FRONTIER_PROJ   u_projMat;\n"
-"\n"
-"in vec2 FRONTIER_POS      in_tpt;\n"
-"in vec3 FRONTIER_CUSTOM_0 in_pos;\n"
-"in vec2 FRONTIER_CUSTOM_1 in_dir;\n"
-"in vec2 FRONTIER_CUSTOM_2 in_siz;\n"
-"in vec2 FRONTIER_CUSTOM_3 in_uvp;\n"
-"in vec2 FRONTIER_CUSTOM_4 in_uvs;\n"
-"in vec2 FRONTIER_CUSTOM_5 in_frm;\n"
-"\n"
-"out vec2 va_texp;\n"
-"\n"
-"void main()\n"
-"{\n"
-"	vec2 coef0011 = vec2(greaterThan(in_tpt,vec2(1.5,1.5)));\n"
-"	vec2 coef0101 = mod(in_tpt,vec2(2.0,2.0));\n"
-"	vec2 locp = coef0011 * in_siz + (coef0101 - coef0011) * in_frm;\n"
-"	\n"
-"	vec2 r = vec2(in_dir.y,-in_dir.x);\n"
-"	\n"
-"	gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos.xy + locp.x * r + locp.y * in_dir,in_pos.z,1.0);\n"
-"	\n"
-"	vec2 va_nrmp = coef0011 * in_uvs + (coef0101 - coef0011) * in_frm;\n"
-"	va_texp = vec2(u_texMat * vec4(in_uvp + va_nrmp,0.0,1.0));\n"
-"}\n",
-"#version 130\n"
-"\n"
-"uniform int u_wireFrame;"
-"uniform sampler2D u_tex;\n"
-"\n"
-"in vec2 va_texp;\n"
-"out vec4 out_color;\n"
-"\n"
-"void main()\n"
-"{\n"
-"	vec4 c = texture2D(u_tex,va_texp);\n"
-"	out_color = vec4(c.rgb * float(1 - u_wireFrame),1.0 - (1.0 - c.a)*(1.0 - float(u_wireFrame)));\n"
-"}\n");
+					vertSource.defines.push_back(ShaderSource::DefineData{"FRONTIER_CUSTOM_5",""});
+					vertSource.inputs.push_back( ShaderSource::VariableData{"vec2 FRONTIER_CUSTOM_5","in_frm"});
+					vertSource.mainBody = R"(
+						vec2 coef0011 = vec2(greaterThan(in_tpt,vec2(1.5,1.5)));
+						vec2 coef0101 = mod(in_tpt,vec2(2.0,2.0));
+						vec2 locp = coef0011 * in_siz + (coef0101 - coef0011) * in_frm;
+						
+						vec2 r = vec2(in_dir.y,-in_dir.x);
+						
+						gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos.xy + locp.x * r + locp.y * in_dir,in_pos.z,1.0);
+						
+						vec2 va_nrmp = coef0011 * in_uvs + (coef0101 - coef0011) * in_frm;
+						va_texp = vec2(u_texMat * vec4(in_uvp + va_nrmp,0.0,1.0));
+											)";
+					
+					
 				}
 				else
 				{
-					m_insError = m_instancingShader.loadFromMemory(
-"#version 130\n"
-"\n"
-"#define FRONTIER_MODEL\n"
-"#define FRONTIER_VIEW\n"
-"#define FRONTIER_PROJ\n"
-"#define FRONTIER_TEXMAT\n"
-"#define FRONTIER_POS\n"
-"#define FRONTIER_CUSTOM_0\n"
-"#define FRONTIER_CUSTOM_1\n"
-"#define FRONTIER_CUSTOM_2\n"
-"#define FRONTIER_CUSTOM_3\n"
-"#define FRONTIER_CUSTOM_4\n"
-"\n"
-"uniform mat4 FRONTIER_TEXMAT u_texMat;\n"
-"uniform mat4 FRONTIER_MODEL  u_modelMat;\n"
-"uniform mat4 FRONTIER_VIEW   u_viewMat;\n"
-"uniform mat4 FRONTIER_PROJ   u_projMat;\n"
-"\n"
-"in vec2 FRONTIER_POS      in_tpt;\n"
-"in vec3 FRONTIER_CUSTOM_0 in_pos;\n"
-"in vec2 FRONTIER_CUSTOM_1 in_dir;\n"
-"in vec2 FRONTIER_CUSTOM_2 in_siz;\n"
-"in vec2 FRONTIER_CUSTOM_3 in_uvp;\n"
-"in vec2 FRONTIER_CUSTOM_4 in_uvs;\n"
-"\n"
-"out vec2 va_texp;\n"
-"\n"
-"void main()\n"
-"{\n"
-"	vec2 locp = in_siz * in_tpt;\n"
-"	\n"
-"	vec2 r = vec2(in_dir.y,-in_dir.x);\n"
-"	\n"
-"	gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos.xy + locp.x * r + locp.y * in_dir,in_pos.z,1.0);\n"
-"	\n"
-"	va_texp = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs,0.0,1.0));\n"
-"}\n",
-"#version 130\n"
-"\n"
-"uniform int u_wireFrame;"
-"uniform sampler2D u_tex;\n"
-"\n"
-"in vec2 va_texp;\n"
-"out vec4 out_color;\n"
-"\n"
-"void main()\n"
-"{\n"
-"	vec4 c = texture2D(u_tex,va_texp);\n"
-"	out_color = vec4(c.rgb * float(1 - u_wireFrame),1.0 - (1.0 - c.a)*(1.0 - float(u_wireFrame)));\n"
-"}\n");
+					vertSource.mainBody = R"(
+						vec2 locp = in_siz * in_tpt;
+						
+						vec2 r = vec2(in_dir.y,-in_dir.x);
+						
+						gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos.xy + locp.x * r + locp.y * in_dir,in_pos.z,1.0);
+						
+						va_texp = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs,0.0,1.0));
+											)";
 				}
+				
+				m_insError = m_instancingShader.loadFromMemory(vertSource,fragSource);
 			
 				m_instancingShader.regTexture("u_tex");
 			}
@@ -564,7 +523,7 @@ namespace fg
 																		m_spriteCount(0),
 																		m_glyphGetterFunc(glyphGetterFunc)
 		{
-			m_useInstancing = ::priv::so_loader.getProcAddr("glVertexAttribDivisor") != nullptr;
+			m_useInstancing = true; //::priv::so_loader.getProcAddr("glVertexAttribDivisor") != nullptr;
 			
 			setupDrawData();
 			loadShader();

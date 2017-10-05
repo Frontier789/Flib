@@ -1,4 +1,4 @@
-#version 110
+#version 130
 
 #define FRONTIER_SECONDS
 #define FRONTIER_PLY_POS
@@ -10,7 +10,7 @@ uniform float FRONTIER_SECONDS u_secs;
 uniform vec3 FRONTIER_PLY_POS u_camPos;
 uniform vec3 FRONTIER_VIEW_DIR u_camDir;
 
-varying vec2 va_pos;
+in vec2 va_pos;
 
 uniform float u_fov_userdef;
 float real_fov = 130.0 - u_fov_userdef * 70.0;
@@ -190,7 +190,9 @@ vec4 calc_color()
 	}
 }
 
+out vec4 out_color;
+
 void main()
 {
-	gl_FragColor = calc_color();
+	out_color = calc_color();
 }

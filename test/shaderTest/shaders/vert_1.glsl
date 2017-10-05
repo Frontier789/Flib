@@ -1,12 +1,12 @@
-#version 110
+#version 130
 
 #define FRONTIER_POS
 
 uniform vec2 u_winSize;
 
-attribute vec2 FRONTIER_POS in_pos;
+in vec2 FRONTIER_POS in_pos;
 
-varying vec2 va_pos;
+out vec2 va_pos;
 
 void main()
 {

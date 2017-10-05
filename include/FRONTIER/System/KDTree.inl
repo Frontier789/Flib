@@ -166,7 +166,7 @@ namespace fm
 	template<class VectorType,fm::Size Dim,class AxisType>
 	void KDTree<VectorType,Dim,AxisType>::buildKDTRange(fm::Size first,fm::Size last,fm::Size depth)
 	{
-		if (first+1 == last) return;
+		if (first+1 >= last) return;
 		
 		fm::Size mid = (first+last)/2;
 		
@@ -218,6 +218,8 @@ namespace fm
 	template<class VectorType,fm::Size Dim,class AxisType>
 	VectorType KDTree<VectorType,Dim,AxisType>::getNearest(VectorType p) const
 	{
+		if (!m_data.size()) return p;
+		
 		return getNearestRange(p,0,m_data.size(),0);
 	}
 
@@ -225,7 +227,7 @@ namespace fm
 	template<class VectorType,fm::Size Dim,class AxisType>
 	VectorType KDTree<VectorType,Dim,AxisType>::operator()(VectorType p) const
 	{
-		return getNearestRange(p,0,m_data.size(),0);
+		return getNearest(p);
 	}
 }
 

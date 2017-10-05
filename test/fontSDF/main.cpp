@@ -213,7 +213,7 @@ Image imageToSDF_kdTree(const Image &img,int maxDist,Delegate<bool,Color> inF = 
 		if (data[p].inShape && data.isEdge(p))
 			pts.push_back(p);
 	
-	fm::KDTree2 kdTree(std::move(pts));
+	fm::KDTree2 kdTree(std::move(pts)); 
 	
 	Image ret;
 	ret.create(data.size);
@@ -395,7 +395,7 @@ int main()
 			
 			Aimg.saveToFile("a_ori.png");
 			fm::Clock clk;
-			Aimg = imageToSDF_manhattan(Aimg,25);
+			Aimg = imageToSDF_kdTree(Aimg,25);
 			cout << clk.getSeconds() << endl;
 			Aimg.saveToFile("am.png");
 			Aimg = Aimg.scale(Aimg.getSize()*.1);
@@ -445,71 +445,7 @@ int main()
 			win.handleEvent(ev);
 			if (ev.type == Event::Closed) running = false;
 			if (ev.type == Event::FocusLost) running = false;
-			if (ev.type == Event::KeyPressed)
-			{
-				if (ev.key.code == Keyboard::Enter)
-				{
-					SpriteManager &sprMgr = win.getSpriteManager();
-					cout << sprMgr.getSpriteCount() << endl;
-					C(sprMgr.getSpriteCount())
-					{
-						Sprite &spr = sprMgr.getSpriteById(i);
-						cout << "i= " << i << endl;
-						cout << "p= " << spr.getPosition() << endl;
-						cout << "s= " << spr.getSize() << endl;
-						cout << "d= " << spr.getImageID() << endl;
-					}
-					cout << endl;
-					sprMgr.getAtlas().getTexture().copyToImage().saveToFile("lol.png");
-					
-					DrawData &dd = win.getSpriteManager().SpriteManagerBaseNonTemplate::m_drawData;
-					
-					cout << "nAttrs: " << dd.m_attrs.size() << endl;
-					cout << "nDrawCalls: " << dd.m_drawCalls.size() << endl;
-					cout << " draw0.primitive= " << dd.m_drawCalls[0].primitive << endl;
-					cout << " draw0.componentType= " << dd.m_drawCalls[0].componentType << endl;
-					cout << " draw0.indexCount= " << dd.m_drawCalls[0].indexCount << endl;
-					cout << " draw0.instances= " << dd.m_drawCalls[0].instances << endl;
-					cout << " draw0.drawBeg= " << dd.m_drawCalls[0].drawBeg << endl;
-					cout << " draw0.drawLen= " << dd.m_drawCalls[0].drawLen << endl;
-					cout << " draw0.buf= " << dd.m_drawCalls[0].buf << endl;
-					cout << " draw0.ownBuffer= " << dd.m_drawCalls[0].ownBuffer << endl;
-					
-					for (const auto &it : dd.m_attrs)
-					{
-						cout << it.first << ".bufferUsage= " << it.second->bufferUsage << endl;
-						cout << it.first << ".instancesPerUpdate= " << it.second->instancesPerUpdate << endl;
-						cout << it.first << ".componentType= " << it.second->componentType << endl;
-						cout << it.first << ".components= " << it.second->components << endl;
-						cout << it.first << ".buf= " << it.second->buf << endl;
-						cout << it.first << ".stride= " << it.second->stride << endl;
-						cout << it.first << ".count= " << it.second->count << endl;
-						cout << it.first << ".ownBuffer= " << it.second->ownBuffer << endl;
-						break;
-					}
-		/*
-nAttrs: 8
-nDrawCalls: 1
- draw0.primitive= 4
- draw0.componentType= 0
- draw0.indexCount= 0
- draw0.instances= 3
- draw0.drawBeg= 0
- draw0.drawLen= 0
- draw0.buf= 0
- draw0.ownBuffer= 0
-1.bufferUsage= 35040
-1.instancesPerUpdate= 0
-1.componentType= 0
-1.components= 0
-1.buf= 0x2839ed0
-1.stride= 0
-1.count= 0
-1.ownBuffer= 1
-		*/
-		
-				}
-			}
+			
 			if (ev.type == Event::ButtonPressed)
 			{
 				if (ev.mouse.button == Mouse::Right)

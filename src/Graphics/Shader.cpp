@@ -14,6 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Graphics/ShaderSource.hpp>
 #include <FRONTIER/Graphics/CubeTexture.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
@@ -367,6 +368,14 @@ namespace fg
 		m_hasInstancing = ::priv::so_loader.getProcAddr("glVertexAttribDivisor") != nullptr;
 		
 		return postProcess(data,types,count);
+	}
+
+	////////////////////////////////////////////////////////////
+	fm::Result Shader::loadFromMemory(const fg::ShaderSource *data,const unsigned int *types,unsigned int count)
+	{
+		std::vector<std::string> strings(data,data + count);
+		
+		return loadFromMemory(&strings[0],types,count);
 	}
 
 

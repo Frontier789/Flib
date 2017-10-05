@@ -1,4 +1,4 @@
-#version 110
+#version 130
 
 #define FRONTIER_SECONDS
 #define FRONTIER_PLY_POS
@@ -10,7 +10,7 @@ uniform float FRONTIER_SECONDS u_secs;
 uniform vec3 FRONTIER_PLY_POS u_camPos;
 uniform vec3 FRONTIER_VIEW_DIR u_camDir;
 
-varying vec2 va_pos;
+in vec2 va_pos;
 
 uniform float u_k_userdef;
 
@@ -110,6 +110,8 @@ void raymarch(inout Ray ray,inout int it)
 	}
 }
 
+out vec4 out_color;
+
 void main()
 {	
 	Ray ray = getViewRay();
@@ -118,11 +120,11 @@ void main()
 	raymarch(ray,it);
 	
 	if (it == max_steps)
-		gl_FragColor = vec4(0.0,0.0,0.0,1.0);
+		out_color = vec4(0.0,0.0,0.0,1.0);
 	else
 	{
 		Ray shadow_ray = Ray(ray.pos + sun_dir * (min_dist + 0.1),sun_dir);
 		
-		gl_FragColor = get_color_at(ray.pos,it,1.0);
+		out_color = get_color_at(ray.pos,it,1.0);
 	}
 }
