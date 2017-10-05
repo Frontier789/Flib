@@ -502,9 +502,53 @@ namespace fg
 											)";
 				}
 				
-				m_insError = m_instancingShader.loadFromMemory(vertSource,fragSource);
+				m_insError = m_shader.loadFromMemory(vertSource,fragSource);
 			
-				m_instancingShader.regTexture("u_tex");
+				m_shader.regTexture("u_tex");
+			}
+			else
+			{
+				ShaderSource vertSource{130,{{"FRONTIER_MODEL ",""},
+											 {"FRONTIER_VIEW  ",""},
+											 {"FRONTIER_PROJ  ",""},
+											 {"FRONTIER_POS   ",""},
+											 {"FRONTIER_CLR   ",""},
+											 {"FRONTIER_CLRMAT",""},
+											 {"FRONTIER_TEXPOS",""},
+											 {"FRONTIER_TEXMAT",""}},
+											{{"mat4 FRONTIER_TEXMAT","u_texUVMat"},
+											 {"mat4 FRONTIER_MODEL ","u_modelMat"},
+											 {"mat4 FRONTIER_VIEW  ","u_viewMat "},
+											 {"mat4 FRONTIER_CLRMAT","u_colorMat"},
+											 {"mat4 FRONTIER_PROJ  ","u_projMat "}},
+											{{"vec3 FRONTIER_POS     ","in_pos   "},
+											 {"vec2 FRONTIER_TEXPOS  ","in_texpos"},
+											 {"vec4 FRONTIER_CLR     ","in_color "}},
+											{{"vec4","va_color "},
+											 {"vec2","va_texpos"}},
+											"",
+											{},
+											R"(
+					gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos,1.0);
+					
+					va_color  = u_colorMat * in_color;
+					va_texpos = (u_texUVMat * vec4(in_texpos,0.0,1.0)).xy;
+											   )"};
+				
+				ShaderSource fragSource{130,{},
+											{{"sampler2D","u_tex"}},
+											{{"vec4","va_color "},
+											 {"vec2","va_texpos"}},
+											{{"vec4","out_color"}},
+											"",
+											{},
+											R"(
+					out_color = va_color * texture2D(u_tex,va_texpos);
+											   )"};
+				
+				m_insError = m_shader.loadFromMemory(vertSource,fragSource);
+			
+				m_shader.regTexture("u_tex");
 			}
 		}
 
@@ -523,7 +567,7 @@ namespace fg
 																		m_spriteCount(0),
 																		m_glyphGetterFunc(glyphGetterFunc)
 		{
-			m_useInstancing = true; //::priv::so_loader.getProcAddr("glVertexAttribDivisor") != nullptr;
+			m_useInstancing = ::priv::so_loader.getProcAddr("glVertexAttribDivisor") != nullptr;
 			
 			setupDrawData();
 			loadShader();
@@ -540,29 +584,23 @@ namespace fg
 				m_uvpProp.prepareDraw();
 				m_uvsProp.prepareDraw();
 				m_frmProp.prepareDraw();
-				
-				m_instancingShader.getModelStack().top(shader.getModelStack().top());
-				m_instancingShader.getViewStack().top(shader.getViewStack().top());
-				m_instancingShader.getProjStack().top(shader.getProjStack().top());
-				
-				m_instancingShader.getTexUVStack().push().mul(tex.getPixToUnitMatrix());
-				
-				m_instancingShader.useTexture(tex);
-				m_instancingShader.draw(m_drawData);
-				
-				m_instancingShader.getTexUVStack().pop();
 			}
 			else
 			{
 				m_vertPtsProp.prepareDraw();
 				m_vertUVsProp.prepareDraw();
-				
-				shader.getTexUVStack().push().mul(tex.getPixToUnitMatrix());
-				shader.useTexture(tex);
-				
-				shader.draw(m_drawData);
-				shader.getTexUVStack().pop();
 			}
+			
+			m_shader.getModelStack().top(shader.getModelStack().top());
+			m_shader.getViewStack().top(shader.getViewStack().top());
+			m_shader.getProjStack().top(shader.getProjStack().top());
+			
+			m_shader.getTexUVStack().push().mul(tex.getPixToUnitMatrix());
+			
+			m_shader.useTexture(tex);
+			m_shader.draw(m_drawData);
+			
+			m_shader.getTexUVStack().pop();
 		}
 	}
 }

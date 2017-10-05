@@ -60,7 +60,7 @@ namespace fg
 			FloatAttributeUpdater m_vertPtsProp; ///< Property for vertex poses
 			FloatAttributeUpdater m_vertUVsProp; ///< Property for vertex texture poses
 			
-			fg::ShaderManager m_instancingShader; ///< The shader used when instancing
+			fg::ShaderManager m_shader; ///< The shader used when drawing
 			fm::Size m_spriteCount; ///< Number of sprites managed
 			fm::Result m_insError;  ///< The result of the shader loading
 			bool m_useInstancing;   ///< Indicates whether instancing is used

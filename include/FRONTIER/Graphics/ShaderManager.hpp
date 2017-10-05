@@ -69,6 +69,9 @@ namespace fg
 		void clearData(); ///< Internal function used to clear all data
 
     public:
+		typedef ShaderManager &reference;
+		typedef const ShaderManager &const_reference;
+    	
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		///
@@ -305,6 +308,16 @@ namespace fg
 		/////////////////////////////////////////////////////////////
         fm::MatrixStack<4,4,float> &getTexUVStack();
         
+		/////////////////////////////////////////////////////////////
+		/// @brief Copy stacks from another manager
+		/// 
+		/// @param source The manager to copy from
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		ShaderManager &copyStacksFrom(const ShaderManager &source);
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a ShaderManager capable of drawing simple gui elements
 		/// 

@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/FixedShaderManager.hpp>
 #include <FRONTIER/Graphics/ShaderManager.hpp>
+#include <FRONTIER/Graphics/ShaderSource.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/GL/Is_GLDataType.hpp>
@@ -508,6 +509,13 @@ namespace fg
 	{
 		return m_stacks[2];
 	}
+		
+	/////////////////////////////////////////////////////////////
+	ShaderManager &ShaderManager::copyStacksFrom(const ShaderManager &source)
+	{
+		m_stacks = source.m_stacks;
+		return *this;
+	}
 	
 	/////////////////////////////////////////////////////////////
 	ShaderManager *ShaderManager::getDefaultShader()
@@ -516,53 +524,48 @@ namespace fg
 		{
 			ShaderManager *shader = new ShaderManager;
 			
-			shader->loadFromMemory(""
-"#version 130\n"
-"\n"
-"#define FRONTIER_MODEL\n"
-"#define FRONTIER_VIEW\n"
-"#define FRONTIER_PROJ\n"
-"#define FRONTIER_POS\n"
-"#define FRONTIER_CLR\n"
-"#define FRONTIER_TEXPOS\n"
-"#define FRONTIER_TEXMAT\n"
-"#define FRONTIER_CLRMAT\n"
-"\n"
-"uniform mat4 FRONTIER_MODEL  u_modelMat;\n"
-"uniform mat4 FRONTIER_VIEW   u_viewMat;\n"
-"uniform mat4 FRONTIER_PROJ   u_projMat;\n"
-"uniform mat4 FRONTIER_TEXMAT u_texUVMat;\n"
-"uniform mat4 FRONTIER_CLRMAT u_colorMat;\n"
-"\n"
-"in vec2 FRONTIER_TEXPOS in_texpos;\n"
-"in vec3 FRONTIER_POS    in_pos;\n"
-"in vec4 FRONTIER_CLR    in_color;\n"
-"\n"
-"out vec4 va_color;\n"
-"out vec2 va_texpos;\n"
-"\n"
-"void main()\n"
-"{\n"
-"	gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos,1.0);\n"
-"	\n"
-"	va_color  = u_colorMat * in_color;\n"
-"	va_texpos = (u_texUVMat * vec4(in_texpos,0.0,1.0)).xy;\n"
-"}",""
-"#version 130\n"
-"\n"
-"uniform sampler2D u_tex;\n"
-"uniform bool u_useTex;\n"
-"\n"
-"in vec4 va_color;\n"
-"in vec2 va_texpos;\n"
-"out vec4 out_color;\n"
-"\n"
-"void main()\n"
-"{\n"
-"	out_color = va_color;\n"
-"	if (u_useTex)\n"
-"		out_color *= texture2D(u_tex,va_texpos);\n"
-"}\n");
+			ShaderSource vertSource{130,{{"FRONTIER_MODEL ",""},
+										 {"FRONTIER_VIEW  ",""},
+										 {"FRONTIER_PROJ  ",""},
+										 {"FRONTIER_POS   ",""},
+										 {"FRONTIER_CLR   ",""},
+										 {"FRONTIER_CLRMAT",""},
+										 {"FRONTIER_TEXPOS",""},
+										 {"FRONTIER_TEXMAT",""}},
+										{{"mat4 FRONTIER_TEXMAT","u_texUVMat"},
+										 {"mat4 FRONTIER_MODEL ","u_modelMat"},
+										 {"mat4 FRONTIER_VIEW  ","u_viewMat "},
+										 {"mat4 FRONTIER_CLRMAT","u_colorMat"},
+										 {"mat4 FRONTIER_PROJ  ","u_projMat "}},
+										{{"vec3 FRONTIER_POS     ","in_pos   "},
+										 {"vec2 FRONTIER_TEXPOS  ","in_texpos"},
+										 {"vec4 FRONTIER_CLR     ","in_color "}},
+										{{"vec4","va_color "},
+										 {"vec2","va_texpos"}},
+										"",
+										{},
+										R"(
+				gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos,1.0);
+				
+				va_color  = u_colorMat * in_color;
+				va_texpos = (u_texUVMat * vec4(in_texpos,0.0,1.0)).xy;
+										   )"};
+			
+			ShaderSource fragSource{130,{},
+										{{"sampler2D","u_tex"},
+										 {"bool","u_useTex"}},
+										{{"vec4","va_color "},
+										 {"vec2","va_texpos"}},
+										{{"vec4","out_color"}},
+										"",
+										{},
+										R"(
+				out_color = va_color;
+				if (u_useTex)
+					out_color *= texture2D(u_tex,va_texpos);
+										   )"};
+			
+			shader->loadFromMemory(vertSource,fragSource);
 			shader->regTexture("u_tex","u_useTex");
 			shader->useTexture(nullptr);
 			return shader;
