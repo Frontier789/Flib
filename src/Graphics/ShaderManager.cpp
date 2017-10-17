@@ -549,7 +549,8 @@ namespace fg
 				
 				va_color  = u_colorMat * in_color;
 				va_texpos = (u_texUVMat * vec4(in_texpos,0.0,1.0)).xy;
-										   )"};
+										   )",
+										fg::VertexShader};
 			
 			ShaderSource fragSource{130,{},
 										{{"sampler2D","u_tex"},
@@ -563,7 +564,8 @@ namespace fg
 				out_color = va_color;
 				if (u_useTex)
 					out_color *= texture2D(u_tex,va_texpos);
-										   )"};
+										   )",
+										fg::FragmentShader};
 			
 			shader->loadFromMemory(vertSource,fragSource);
 			shader->regTexture("u_tex","u_useTex");

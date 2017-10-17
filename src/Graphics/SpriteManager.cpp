@@ -3,6 +3,7 @@
 #include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/Graphics/AssocPoint.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
+#include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
 
 namespace fg
@@ -85,6 +86,13 @@ namespace fg
 														const fm::vec2 &size,
 														const fm::vec2 &dir)
 		{
+			if (!m_shader.isLoaded() && m_shaderResult)
+				loadShader();
+			
+			if (m_drawData.getDrawCount() == 0)
+				setupDrawData();
+			
+			
 			fm::vec2 uvsPos = shape.pos;
 			fm::vec2 uvsSiz = shape.size;
 			fm::vec2 frameS = shape.leftdown;
@@ -381,7 +389,13 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		const fm::Result &SpriteManagerBaseNonTemplate::getShaderLoadResult() const
 		{
-			return m_insError;
+			return m_shaderResult;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		fg::ShaderManager &SpriteManagerBaseNonTemplate::getShader()
+		{
+			return m_shader;
 		}
 		
 		/////////////////////////////////////////////////////////////
@@ -428,11 +442,15 @@ namespace fg
 		}
 		
 		/////////////////////////////////////////////////////////////
-		void SpriteManagerBaseNonTemplate::loadShader()
+		fm::Result SpriteManagerBaseNonTemplate::loadShader(fm::Delegate<void,fg::ShaderSource &> sourceTransformer)
 		{
+			ShaderSource vertSource,fragSource;
+			
+			m_useInstancing = ::priv::so_loader.getProcAddr("glVertexAttribDivisor") != nullptr;
+			
 			if (useInstancing())
 			{
-				ShaderSource vertSource{130,{{"FRONTIER_MODEL ",""},
+				vertSource=ShaderSource{130,{{"FRONTIER_MODEL ",""},
 											 {"FRONTIER_VIEW  ",""},
 											 {"FRONTIER_PROJ  ",""},
 											 {"FRONTIER_TEXMAT",""},
@@ -455,36 +473,36 @@ namespace fg
 											{{"vec2","va_texp"}},
 											"",
 											{},
-											""};
+											"",
+											fg::VertexShader};
 				
 					
-				ShaderSource fragSource{130,{},
-											{{"int      ","u_wireFrame"},
-											 {"sampler2D","u_tex      "}},
+				fragSource=ShaderSource{130,{},
+											{{"sampler2D","u_tex"}},
 											{{"vec2","va_texp"}},
 											{{"vec4","out_color"}},
 											"",
 											{},
 											R"(
-						vec4 c = texture2D(u_tex,va_texp);
-						out_color = vec4(c.rgb * float(1 - u_wireFrame),1.0 - (1.0 - c.a)*(1.0 - float(u_wireFrame)));
-											  )"};
+	out_color = texture2D(u_tex,va_texp);
+											  )",
+											fg::FragmentShader};
 				
 				if (m_useFrames)
 				{
 					vertSource.defines.push_back(ShaderSource::DefineData{"FRONTIER_CUSTOM_5",""});
 					vertSource.inputs.push_back( ShaderSource::VariableData{"vec2 FRONTIER_CUSTOM_5","in_frm"});
 					vertSource.mainBody = R"(
-						vec2 coef0011 = vec2(greaterThan(in_tpt,vec2(1.5,1.5)));
-						vec2 coef0101 = mod(in_tpt,vec2(2.0,2.0));
-						vec2 locp = coef0011 * in_siz + (coef0101 - coef0011) * in_frm;
-						
-						vec2 r = vec2(in_dir.y,-in_dir.x);
-						
-						gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos.xy + locp.x * r + locp.y * in_dir,in_pos.z,1.0);
-						
-						vec2 va_nrmp = coef0011 * in_uvs + (coef0101 - coef0011) * in_frm;
-						va_texp = vec2(u_texMat * vec4(in_uvp + va_nrmp,0.0,1.0));
+	vec2 coef0011 = vec2(greaterThan(in_tpt,vec2(1.5,1.5)));
+	vec2 coef0101 = mod(in_tpt,vec2(2.0,2.0));
+	vec2 locp = coef0011 * in_siz + (coef0101 - coef0011) * in_frm;
+	
+	vec2 r = vec2(in_dir.y,-in_dir.x);
+	
+	gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos.xy + locp.x * r + locp.y * in_dir,in_pos.z,1.0);
+	
+	vec2 va_nrmp = coef0011 * in_uvs + (coef0101 - coef0011) * in_frm;
+	va_texp = vec2(u_texMat * vec4(in_uvp + va_nrmp,0.0,1.0));
 											)";
 					
 					
@@ -492,23 +510,19 @@ namespace fg
 				else
 				{
 					vertSource.mainBody = R"(
-						vec2 locp = in_siz * in_tpt;
-						
-						vec2 r = vec2(in_dir.y,-in_dir.x);
-						
-						gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos.xy + locp.x * r + locp.y * in_dir,in_pos.z,1.0);
-						
-						va_texp = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs,0.0,1.0));
+	vec2 locp = in_siz * in_tpt;
+	
+	vec2 r = vec2(in_dir.y,-in_dir.x);
+	
+	gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos.xy + locp.x * r + locp.y * in_dir,in_pos.z,1.0);
+	
+	va_texp = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs,0.0,1.0));
 											)";
 				}
-				
-				m_insError = m_shader.loadFromMemory(vertSource,fragSource);
-			
-				m_shader.regTexture("u_tex");
 			}
 			else
 			{
-				ShaderSource vertSource{130,{{"FRONTIER_MODEL ",""},
+				vertSource=ShaderSource{130,{{"FRONTIER_MODEL ",""},
 											 {"FRONTIER_VIEW  ",""},
 											 {"FRONTIER_PROJ  ",""},
 											 {"FRONTIER_POS   ",""},
@@ -525,31 +539,38 @@ namespace fg
 											 {"vec2 FRONTIER_TEXPOS  ","in_texpos"},
 											 {"vec4 FRONTIER_CLR     ","in_color "}},
 											{{"vec4","va_color "},
-											 {"vec2","va_texpos"}},
+											 {"vec2","va_texp  "}},
 											"",
 											{},
 											R"(
 					gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos,1.0);
 					
 					va_color  = u_colorMat * in_color;
-					va_texpos = (u_texUVMat * vec4(in_texpos,0.0,1.0)).xy;
-											   )"};
+					va_texp = (u_texUVMat * vec4(in_texpos,0.0,1.0)).xy;
+											   )",
+											fg::VertexShader};
 				
-				ShaderSource fragSource{130,{},
+				fragSource=ShaderSource{130,{},
 											{{"sampler2D","u_tex"}},
 											{{"vec4","va_color "},
-											 {"vec2","va_texpos"}},
+											 {"vec2","va_texp  "}},
 											{{"vec4","out_color"}},
 											"",
 											{},
 											R"(
-					out_color = va_color * texture2D(u_tex,va_texpos);
-											   )"};
-				
-				m_insError = m_shader.loadFromMemory(vertSource,fragSource);
-			
-				m_shader.regTexture("u_tex");
+					out_color = va_color * texture2D(u_tex,va_texp);
+											   )",
+											fg::FragmentShader};
 			}
+			
+			sourceTransformer(vertSource);
+			sourceTransformer(fragSource);
+			
+			m_shaderResult = m_shader.loadFromMemory(vertSource,fragSource);
+		
+			m_shader.regTexture("u_tex");
+			
+			return m_shaderResult;
 		}
 
 		/////////////////////////////////////////////////////////////
@@ -565,17 +586,17 @@ namespace fg
 																		m_vertPtsProp(m_drawData[fg::Assoc::Position],3,m_useFrames ? 54 : 6),
 																		m_vertUVsProp(m_drawData[fg::Assoc::TextureUV],2,m_useFrames ? 54 : 6),
 																		m_spriteCount(0),
+																		m_useInstancing(false),
 																		m_glyphGetterFunc(glyphGetterFunc)
 		{
-			m_useInstancing = ::priv::so_loader.getProcAddr("glVertexAttribDivisor") != nullptr;
 			
-			setupDrawData();
-			loadShader();
 		}
 
 		/////////////////////////////////////////////////////////////
 		void SpriteManagerBaseNonTemplate::onDrawTex(fg::ShaderManager &shader,fg::Texture &tex)
 		{
+			if (!m_spriteCount) return;
+			
 			if (useInstancing())
 			{
 				m_posProp.prepareDraw();

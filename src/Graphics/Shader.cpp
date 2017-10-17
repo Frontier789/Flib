@@ -371,11 +371,14 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result Shader::loadFromMemory(const fg::ShaderSource *data,const unsigned int *types,unsigned int count)
+	fm::Result Shader::loadFromMemory(const fg::ShaderSource *data,unsigned int count)
 	{
-		std::vector<std::string> strings(data,data + count);
+		std::vector<std::string>  strings(data,data + count);
+		std::vector<unsigned int> types(count);
+		C(count)
+			types[i] = data[i].type;
 		
-		return loadFromMemory(&strings[0],types,count);
+		return loadFromMemory(&strings[0],&types[0],count);
 	}
 
 
@@ -618,7 +621,7 @@ namespace fg
 	fm::Result Shader::setUniform(const std::string &name,param)                                \
 	{                                                                                           \
 		fm::Result res;                                                                         \
-		if (getGlId())                                                                          \
+		if (isLoaded())                                                                          \
 		{                                                                                       \
 			priv::ProgKeeper keeper(getGlId(),res);                                             \
 			                                                                                    \
@@ -680,7 +683,7 @@ namespace fg
 	{
 		fm::Result res;
 		
-		if (getGlId())
+		if (isLoaded())
 		{
 			GLint program;
 			res += glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
@@ -735,7 +738,7 @@ namespace fg
 	{
 		fm::Result res;
 			
-		if (getGlId())
+		if (isLoaded())
 		{
 			GLint program;
 			res += glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
@@ -784,7 +787,7 @@ namespace fg
     {
 		fm::Result res;
 		
-		if (getGlId())
+		if (isLoaded())
 		{
 			int location = getAttribLocation(name);
 
@@ -842,5 +845,11 @@ namespace fg
 	{
 		for (auto &pr : m_attributes)
 			func(pr.first,pr.second);
+	}
+
+	/////////////////////////////////////////////////////////////
+	bool Shader::isLoaded() const
+	{
+		return getGlId();
 	}
 }

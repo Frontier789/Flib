@@ -80,6 +80,18 @@ namespace fg
 		Additive,  ///< Destination = Destination + Input
 		Alpha      ///< Destination = Destination*(1-Input.a) + Input*Input.a
 	};
+
+	/////////////////////////////////////////////////////////////
+	/// @brief Encodes types f shader
+	///
+	/////////////////////////////////////////////////////////////
+	enum ShaderType {
+		VertexShader         = 0x8b31, ///< Vertex shader
+		TessControlShader    = 0x8e88, ///< Tesselation control shader
+		TessEvaluationShader = 0x8e87, ///< Tesselation evaluation shader
+		GeometryShader = 0x8dd9, ///< Geometry shader
+		FragmentShader = 0x8b30  ///< Fragment shader
+	};
 	
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to handle OpenGL shader programs in language <a href="http://en.wikipedia.org/wiki/GLSL">GLSL</a>
@@ -279,13 +291,12 @@ namespace fg
 		/// @brief Load the shader program from sources stored in memory
 		///
 		/// @param data A pointer to the sources to be compiled
-		/// @param types A pointer to the types of shaders
 		/// @param count The number of shaders in the shader program
 		///
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result loadFromMemory(const fg::ShaderSource *data,const unsigned int *types,unsigned int count);
+		fm::Result loadFromMemory(const fg::ShaderSource *data,unsigned int count);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Load the shader program from sources stored in memory
@@ -772,6 +783,14 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		void forAllAttribs(fm::Delegate<void,std::string,AttribData> func) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Check if the shader is successfully loaded 
+		/// 
+		/// @param func The function to call
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool isLoaded() const;
 	};
 
 }

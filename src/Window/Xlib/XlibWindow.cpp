@@ -63,20 +63,15 @@ std::string getProperty(Display *disp,Window win,Atom property,Atom rtype,bool d
 	while(after > 0) 
 	{
 		if(XGetWindowProperty(disp,win,property,offset,rsize,del ? True : False,
-	                          rtype,&type,&format,&nitems,&after,(unsigned char **)&data) != Success)
+	                          rtype,&type,&format,&nitems,&after,(unsigned char **)&data) != Success || type == None || !data)
 	    	break;
-	    if(type == None)
-	        break;
-		if(data) 
-		{
+		else {
 			char *ptr = data;
 			for (unsigned int i=0;i<nitems * format / 8;i++,ptr++)
 				ret+=*ptr;
 			XFree(data);
 			offset += nitems / (32 / format);
 		}
-		else
-			break;
 	}
 	return ret;
 }

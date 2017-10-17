@@ -283,7 +283,7 @@ DrawData buildDrawData(vec2 A,vec2 B,vec2 S)
 	ret.positions = pts;
 	ret.texPositions = uvs;
 	
-	return ret;
+	return ret; 
 }
 
 class TextTester : public GuiElement
@@ -294,18 +294,120 @@ class TextTester : public GuiElement
 public:
 	TextTester(GuiContext &owner) : GuiElement(owner,owner.getSize())
 	{
+		fm::Result res = m_spriteMgr.loadShader([](ShaderSource &source){
+			
+			if (source.type == fg::VertexShader)
+			{
+				source.outputs.push_back(fg::ShaderSource::OutputData{"vec2","va_texpEnv[4]"});
+				source.mainBody += R"(
+	va_texpEnv[0] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(1.0,0.0),0.0,1.0));
+	va_texpEnv[1] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(0.0,1.0),0.0,1.0));
+	va_texpEnv[2] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(-1.,0.0),0.0,1.0));
+	va_texpEnv[3] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(0.0,-1.),0.0,1.0));
+									 )";
+				
+			}
+			if (source.type == fg::FragmentShader)
+			{
+				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_thickness"});
+				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_pov"});
+				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_dscale"});
+				source.inputs.  push_back(fg::ShaderSource::OutputData {"vec2","va_texpEnv[4]"});
+				source.globals += R"(
+float contour(in float d,in float w) 
+{
+	return smoothstep(0.5 - w, 0.5 + w, d * u_thickness * 2.0);
+}
+
+float samp(in vec2 uv,in float w)
+{
+	return contour(texture2D(u_tex, uv).a, w);
+}
+									)";
+				source.mainBody =/* R"(
+				
+				
+				vec4 c = texture2D(u_tex,va_texp);
+	
+    float dist = c.a;
+
+	float width = pow(fwidth(dist),0.2 / u_pov);
+
+    float alpha = contour( dist, width );
+
+    float dscale = 0.354;
+    vec2 duv = vec2(dscale) * (dFdx(va_texp) + dFdy(va_texp));
+    vec4 box = vec4(va_texp-duv, va_texp+duv);
+
+    float asum = samp( box.xy, width )
+               + samp( box.zw, width )
+               + samp( box.xw, width )
+               + samp( box.zy, width );
+
+	alpha = (alpha + 0.4 * asum) / (1.0 + 0.4*4.0);
+
+	out_color = vec4(vec3(0.0), alpha);
+				
+				)";*/
+				
+				R"(
+	float dist = texture2D(u_tex,va_texp).a;
+	float distEnv[4] = float[4]( texture2D(u_tex,va_texpEnv[0]).a, 
+								 texture2D(u_tex,va_texpEnv[1]).a, 
+								 texture2D(u_tex,va_texpEnv[2]).a, 
+								 texture2D(u_tex,va_texpEnv[3]).a );
+
+	float width = pow( abs(distEnv[0] - dist) + abs(distEnv[1] - dist),0.4 / u_pov);
+
+	float alpha = contour( dist, width );
+
+	float dscale = u_dscale;
+	vec2 duv = vec2(dscale) * (abs(va_texpEnv[0] - va_texp) + abs(va_texpEnv[1] - va_texp));
+	vec4 box = vec4(va_texp-duv, va_texp+duv);
+
+	float asum = samp( box.xy, width )
+			   + samp( box.zw, width )
+			   + samp( box.xw, width )
+			   + samp( box.zy, width );
+
+	alpha = (alpha + 0.4 * asum) / (1.0 + 0.4*4.0);
+
+	out_color = vec4(vec3(0.0), alpha);
+									)";
+			}
+				cout << source << endl;
+			
+		});
+		if (!res) cout << res << endl;
+		
 		m_sampletext = u8"árvíztűrő tükörfúrógép :)";
 		buildSprites();
+	}
+	
+	void setThickness(float v)
+	{
+		m_spriteMgr.getShader().setUniform("u_thickness",v);
+	}
+	
+	void setPov(float v)
+	{
+		m_spriteMgr.getShader().setUniform("u_pov",v);
+	}
+	
+	void setDscale(float v)
+	{
+		m_spriteMgr.getShader().setUniform("u_dscale",v);
 	}
 	
 	void buildSprites()
 	{
 		// render glyphs
-		getOwnerContext().getDefaultFont().setCharacterSize(500);
+		Font font = getOwnerContext().getDefaultFont();
+		font.setCharacterSize(500);
 		std::vector<fg::Image *> renderImgs(m_sampletext.size());
 		for (fm::Size i=0;i<m_sampletext.size();++i)
 		{
-			fg::Image img = getOwnerContext().getDefaultFont().renderGlyph(m_sampletext[i]);
+			fg::Image img = font.renderGlyph(m_sampletext[i]);
 			renderImgs[i] = new fg::Image(std::move(img));
 		}
 		
@@ -343,14 +445,23 @@ public:
 		for (fm::Size i=0;i<m_sampletext.size();++i) delete sdfImgs[i];
 		for (fm::Size i=0;i<m_sampletext.size();++i) delete renderImgs[i];
 		
-		vec2 offset;
+		vec2 offset(0,maxH*2.5);
 		// generate sprites
-		for (fm::Size i=0;i<m_sampletext.size();++i)
+		float mul = 1;
+		font.setCharacterSize(500);
+		for (int sizes=0;sizes<10;++sizes)
 		{
-			m_sprites.emplace_back(m_spriteMgr,fm::toString(i)+"_"+keyName);
-			vec2 s = m_sprites.back().getSize();
-			m_sprites.back().setPosition(vec2(offset.x,maxH - s.h));
-			offset.x += s.x;
+			for (fm::Size i=0;i<m_sampletext.size();++i)
+			{
+				m_sprites.emplace_back(m_spriteMgr,fm::toString(i)+"_"+keyName);
+				vec2 s = m_sprites.back().getSize() * mul;
+				m_sprites.back().setSize(s);
+				m_sprites.back().setPosition(offset + font.getGlyph(m_sampletext[i]).leftdown * mul * .1);
+				offset.x += s.x+1;
+			}
+			offset.x = 0;
+			offset.y += maxH * mul;
+			mul *= .8;
 		}
 	}
 	
@@ -363,7 +474,7 @@ public:
 int main()
 {
 	GuiWindow win(vec2(640,480),"sdf");
-	win.setClearColor(vec4::Black);
+	win.setClearColor(vec4::White);
 
 	TextTester *tester = new TextTester(win);
 	win.getMainLayout().addChildElement(tester);
@@ -377,7 +488,7 @@ int main()
 	PushButton *pb = new PushButton(win,"lol",[&](){
 		Mouse::setCursor(cur);
 	});
-	pb->setPosition(vec2(0,40));
+	pb->setPosition(vec2(0,54));
 	
 	win.getMainLayout().addChildElement(pb);
 	
@@ -424,15 +535,25 @@ int main()
 	
 	win.getMainLayout().addChildElement(new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
 		shader.setUniform("u_thickness",sb.getScrollState());
+		tester->setThickness(sb.getScrollState());
 	}));
 	
 	ScrollBar *sb = new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
 		shader.setUniform("u_pov",sb.getScrollState());
+		tester->setPov(sb.getScrollState());
 	});
 	
 	sb->setPosition(vec2(0,18)); 
 	
 	win.getMainLayout().addChildElement(sb);
+	
+	ScrollBar *sb2 = new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
+		tester->setDscale(sb.getScrollState());
+	});
+	
+	sb2->setPosition(vec2(0,36)); 
+	
+	win.getMainLayout().addChildElement(sb2);
 	
 	bool inMoveState = false;
 	bool running = true;

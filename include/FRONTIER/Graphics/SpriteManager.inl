@@ -34,8 +34,7 @@ namespace fg
 	template<class ImageID>
 	inline SpriteManagerBase<ImageID>::SpriteManagerBase(bool useFrames) : SpriteManagerBaseNonTemplate(useFrames,&priv::glyphGetterFunc<ImageID>)
 	{
-		fg::Image tmp(fm::vec2(1,1),fg::Color::White);
-		addImage(tmp,ImageID());
+		
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -114,8 +113,14 @@ namespace fg
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
-	inline fm::vec2 SpriteManagerBase<ImageID>::getImageSize(ImageID id) const
+	inline fm::vec2 SpriteManagerBase<ImageID>::getImageSize(ImageID id)
 	{
+		if (id == ImageID() && !m_atlas.isUploaded(id))
+		{
+			fg::Image tmp(fm::vec2(1,1),fg::Color::White);
+			addImage(tmp,ImageID());
+		}
+		
 		return m_atlas.fetch(id).size;
 	}
 	

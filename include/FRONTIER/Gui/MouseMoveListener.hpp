@@ -26,8 +26,6 @@
 
 namespace fgui
 {
-	class GuiWindow;
-	
 	/////////////////////////////////////////////////////////////
 	/// @brief Listener for mouse enter, leave, move
 	///

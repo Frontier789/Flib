@@ -61,19 +61,13 @@ namespace fg
 			FloatAttributeUpdater m_vertUVsProp; ///< Property for vertex texture poses
 			
 			fg::ShaderManager m_shader; ///< The shader used when drawing
-			fm::Size m_spriteCount; ///< Number of sprites managed
-			fm::Result m_insError;  ///< The result of the shader loading
-			bool m_useInstancing;   ///< Indicates whether instancing is used
+			fm::Size m_spriteCount;     ///< Number of sprites managed
+			fm::Result m_shaderResult;  ///< The result of the shader loading
+			bool m_useInstancing;       ///< Indicates whether instancing is used
 			
 			fg::Glyph (*m_glyphGetterFunc)(SpriteManagerBaseNonTemplate*,fm::Size); ///< Function for propagating glyph back
 		
 		protected:
-			/////////////////////////////////////////////////////////////
-			/// @brief Load the needed shader
-			/// 
-			/////////////////////////////////////////////////////////////
-			void loadShader();
-			
 			/////////////////////////////////////////////////////////////
 			/// @brief Load the draw data
 			/// 
@@ -135,6 +129,16 @@ namespace fg
 			
 		public:
 			/////////////////////////////////////////////////////////////
+			/// @brief Load the needed shader
+			/// 
+			/// @param sourceDeformer The function to apply to the shader source
+			/// 
+			/// @return The result of the load operation
+			/// 
+			/////////////////////////////////////////////////////////////
+			fm::Result loadShader(fm::Delegate<void,fg::ShaderSource &> sourceTransformer = nullptr);
+			
+			/////////////////////////////////////////////////////////////
 			/// @brief Check if the manager uses instancing
 			/// 
 			/// @return True iff instancing is in use
@@ -149,6 +153,14 @@ namespace fg
 			/// 
 			/////////////////////////////////////////////////////////////
 			const fm::Result &getShaderLoadResult() const;
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Get the shader used
+			/// 
+			/// @return The shader
+			/// 
+			/////////////////////////////////////////////////////////////
+			fg::ShaderManager &getShader();
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Handle changing the image id of a sprite
@@ -354,7 +366,7 @@ namespace fg
 		/// @return The size of the image
 		/// 
 		/////////////////////////////////////////////////////////////
-		fm::vec2 getImageSize(ImageID id) const;
+		fm::vec2 getImageSize(ImageID id);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the underlying atlas

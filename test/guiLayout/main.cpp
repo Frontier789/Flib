@@ -42,9 +42,9 @@ int main()
 	
 	l->setCellCount(vec2(2,3));
 	
-	l->setChildElement(vec2(0,0),new GuiText(win,"R: "));
-	l->setChildElement(vec2(0,1),new GuiText(win,"G: "));
-	l->setChildElement(vec2(0,2),new GuiText(win,"B: "));
+	l->setChildElement2D(vec2(0,0),new GuiText(win,"R: "));
+	l->setChildElement2D(vec2(0,1),new GuiText(win,"G: "));
+	l->setChildElement2D(vec2(0,2),new GuiText(win,"B: "));
 	
 	Color colorRD(0,0,0);
 	
@@ -54,9 +54,9 @@ int main()
 							 + fm::toString(colorRD.b) + ")");
 	};
 	
-	l->setChildElement(vec2(1,0),new ScrollBar(win,vec2(50,15),[&](GuiScrollBar &sb){colorRD.r = sb.getScrollState()*255; updateTitle();}));
-	l->setChildElement(vec2(1,1),new ScrollBar(win,vec2(50,15),[&](GuiScrollBar &sb){colorRD.g = sb.getScrollState()*255; updateTitle();}));
-	l->setChildElement(vec2(1,2),new ScrollBar(win,vec2(50,15),[&](GuiScrollBar &sb){colorRD.b = sb.getScrollState()*255; updateTitle();}));
+	l->setChildElement2D(vec2(1,0),new ScrollBar(win,vec2(50,15),[&](GuiScrollBar &sb){colorRD.r = sb.getScrollState()*255; updateTitle();}));
+	l->setChildElement2D(vec2(1,1),new ScrollBar(win,vec2(50,15),[&](GuiScrollBar &sb){colorRD.g = sb.getScrollState()*255; updateTitle();}));
+	l->setChildElement2D(vec2(1,2),new ScrollBar(win,vec2(50,15),[&](GuiScrollBar &sb){colorRD.b = sb.getScrollState()*255; updateTitle();}));
 	
 	l->setPadding(vec2(5,2));
 	

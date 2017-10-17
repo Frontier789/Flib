@@ -40,7 +40,7 @@ namespace fgui
 	bool GuiCallback::contains(fm::vec2 p) const
 	{
 		(void)p;
-		return false;
+		return true;
 	}
 	
 	/////////////////////////////////////////////////////////////

@@ -57,5 +57,5 @@ void main()
 
     // -------
 
-	out_color = vec4(vec3(0.0), alpha);
+	out_color = vec4(vec3(1.0), alpha);
 }

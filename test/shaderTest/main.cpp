@@ -6,14 +6,14 @@
 using namespace std;
 
 /*
- *  BSP
+ *    BSP -> KDTRee
  *  Glob. Ill.
  *  -save approximation when camera is still
  *  -keep track of pos on texture when recursing
- *  Sprite -> Text
+.*  Sprite -> Text
  *  Fourier test
  *    tree upgrade
- *  SDF font/text
+.*  SDF font/text
  *    custom pic cursor
  *  bring unique sprite back
  *  rework old tests
@@ -23,7 +23,8 @@ using namespace std;
  *    convolution applier
  *    fm::toString(float)
  *  pump up Transition<T>
- *  image to SDF converter
+.*  image to SDF converter
+ *  
  */
 
 class Frame : public fg::Drawable
@@ -115,8 +116,8 @@ void Frame::buildLayout(GridLayout *layout)
 	
 	C(layout->getCellCount().h)
 	{
-		GuiText *nameText  = (GuiText*)layout->getChildElement(vec2(0,i));
-		ScrollBar *scrollb = (ScrollBar*)layout->getChildElement(vec2(1,i));
+		GuiText *nameText  = (GuiText*)layout->getChildElement2D(vec2(0,i));
+		ScrollBar *scrollb = (ScrollBar*)layout->getChildElement2D(vec2(1,i));
 		uni_vals[nameText->getText().str()] = scrollb->getScrollState();
 	}
 	
@@ -127,7 +128,7 @@ void Frame::buildLayout(GridLayout *layout)
 		GuiText *nameText = new GuiText(layout->getOwnerContext(),uniforms[i]);
 		nameText->setColor(vec4::White);
 		
-		layout->setChildElement(vec2(0,i),nameText);
+		layout->setChildElement2D(vec2(0,i),nameText);
 		
 		GuiText *valText = new GuiText(layout->getOwnerContext(),"0%");
 		valText->setColor(vec4::White);
@@ -140,8 +141,8 @@ void Frame::buildLayout(GridLayout *layout)
 		
 		scrollBar->setScrollState(uni_vals[uniforms[i]]);
 		
-		layout->setChildElement(vec2(2,i),valText);
-		layout->setChildElement(vec2(1,i),scrollBar);
+		layout->setChildElement2D(vec2(2,i),valText);
+		layout->setChildElement2D(vec2(1,i),scrollBar);
 	}
 	
 }

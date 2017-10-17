@@ -281,8 +281,7 @@ namespace fm
 		        else                       bytes = 3,
 		                                   ch = invalidSign;
 
-		        C(bytes)
-		        	ret.push_back('a');
+		        C(bytes) ret.push_back('a');
 
 				if (bytes >= 4 && bytes <= 4) { ret[ret.size()-bytes+3] = ((ch | FRONTIER_BYTEMARK) & FRONTIER_BYTEMASK); ch >>= 6; }
 				if (bytes >= 3 && bytes <= 4) { ret[ret.size()-bytes+2] = ((ch | FRONTIER_BYTEMARK) & FRONTIER_BYTEMASK); ch >>= 6; }

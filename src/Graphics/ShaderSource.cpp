@@ -26,12 +26,12 @@ namespace fg
 		
 		ret += "#version " + fm::toString(version).str() + "\n\n";
 		
-		for (auto data : defines)  ret += "#define " + data.name + " " + data.value + "\n"; ret+="\n";
-		for (auto data : uniforms) ret += "uniform " + data.type + " " + data.name + ";\n"; ret+="\n";
-		for (auto data : inputs)   ret += "in "      + data.type + " " + data.name + ";\n"; ret+="\n";
-		for (auto data : outputs)  ret += "out "     + data.type + " " + data.name + ";\n"; ret+="\n";
+		for (auto data : defines)  { ret += "#define " + data.name + " " + data.value + "\n"; } ret+="\n";
+		for (auto data : uniforms) { ret += "uniform " + data.type + " " + data.name + ";\n"; } ret+="\n";
+		for (auto data : inputs)   { ret += "in "      + data.type + " " + data.name + ";\n"; } ret+="\n";
+		for (auto data : outputs)  { ret += "out "     + data.type + " " + data.name + ";\n"; } ret+="\n";
 		
-		ret += globals;
+		ret += globals + "\n";
 		
 		ret += "void main()\n";
 		ret += "{\n";

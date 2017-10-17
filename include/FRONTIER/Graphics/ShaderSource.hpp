@@ -48,6 +48,7 @@ namespace fg
 		StringT                   globals;   ///< Global text
 		std::vector<FunctionData> functions; ///< Functions
 		StringT                   mainBody;  ///< Main bdy text
+		unsigned int              type;      ///< The type of the shader
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Class used to build a shader's source code
