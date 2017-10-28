@@ -24,7 +24,8 @@ using namespace std;
  *    fm::toString(float)
  *  pump up Transition<T>
 .*  image to SDF converter
- *  
+ *    fproject: use $FPATH
+ *  make install target
  */
 
 class Frame : public fg::Drawable

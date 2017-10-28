@@ -25,9 +25,6 @@ else
  F_NEEDED_LIB=libf.a
 endif
 
-# compile falgse
-CXXFLAGS=-std=gnu++11 -pedantic -Wall
-
 # linker flags
 ifeq ($(LDFLAGS),)
  ifeq ($(F_DEBUG),)
@@ -45,19 +42,15 @@ endif
 CXXFLAGS+=-DFRONTIER_DEBUG
 
 # executable name
-ifeq ($(EXEC),)
- EXEC=exec
-endif
+EXEC?=exec
 
 # path to flib root
-ifeq ($(FPATH),)
+ifeq ($(wildcard $(FPATH)),)
  FPATH=..
 endif
 
 # cpp files to compile
-ifeq ($(F_CPP_FILES),)
- F_CPP_FILES=$(notdir $(wildcard *.cpp))
-endif
+F_CPP_FILES?=$(notdir $(wildcard *.cpp))
 
 TARGET=$(EXEC)$(F_EXEC_EXT)
 O_FILES=$(addprefix $(F_O_DIR)/,$(notdir $(F_CPP_FILES:.cpp=.o)))

@@ -34,7 +34,7 @@ namespace fg
 	template<class ImageID>
 	inline SpriteManagerBase<ImageID>::SpriteManagerBase(bool useFrames) : SpriteManagerBaseNonTemplate(useFrames,&priv::glyphGetterFunc<ImageID>)
 	{
-		
+		m_atlas.getTexture().setSmooth(true);
 	}
 	
 	/////////////////////////////////////////////////////////////

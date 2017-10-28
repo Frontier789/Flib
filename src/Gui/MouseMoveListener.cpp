@@ -84,5 +84,11 @@ namespace fgui
 	{
 		return m_mouseIn;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::vec2 MouseMoveListener::getLastMousePos() const
+	{
+		return m_prevPos;
+	}
 }
 
