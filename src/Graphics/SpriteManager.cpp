@@ -418,8 +418,10 @@ namespace fg
 				}
 				else
 				{
+					const fm::vec2 pts[] = {fm::vec2(0,0),fm::vec2(0,1),fm::vec2(1,1),fm::vec2(1,0)};
+					
 					m_drawData.addDraw(0,4,fg::TriangleFan);
-					m_drawData.positions = {fm::vec2(0,0),fm::vec2(0,1),fm::vec2(1,1),fm::vec2(1,0)};
+					m_drawData.positions = pts;
 				}
 				m_drawData[fg::Assoc::Custom+0].instancesPerUpdate = 1;
 				m_drawData[fg::Assoc::Custom+1].instancesPerUpdate = 1;
