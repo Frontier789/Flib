@@ -219,8 +219,10 @@ namespace fg
 			
 			m_texture.create(s);
 			
+			const fm::vec2 pts[] = {fm::vec2(-1,-1),fm::vec2(1,-1),fm::vec2(1,1),fm::vec2(-1,-1),fm::vec2(1,1),fm::vec2(-1,1)};
+			
 			m_fboFirst.create(m_texture);
-			m_drawData.positions = {fm::vec2(-1,-1),fm::vec2(1,-1),fm::vec2(1,1),fm::vec2(-1,-1),fm::vec2(1,1),fm::vec2(-1,1)};
+			m_drawData.positions = pts;
 			
 			m_shader.setUniform("u_texSize",s);
 		
