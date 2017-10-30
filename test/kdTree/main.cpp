@@ -63,7 +63,7 @@ int main()
 	
 	KDTree2 nearestPoint(&pts[0],pts.size());
 	
-	GuiWindow win(vec2(640,480),"sdf");
+	GuiWindow win(vec2(640,480),"kdTree");
 	win.setClearColor(vec4::White);
 	
 	win.getShader().getCamera().setFar(1);
