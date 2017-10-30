@@ -45,6 +45,7 @@ namespace fgui
 #include <FRONTIER/Gui/CallbackUser.hpp>
 #include <FRONTIER/Gui/ClickListener.hpp>
 #include <FRONTIER/Gui/ScrollListener.hpp>
+#include <FRONTIER/Gui/TransformListener.hpp>
 #include <FRONTIER/Gui/MouseMoveListener.hpp>
 
 #endif // FRONTIER_SYSTEM_MODULE_HPP_INCLUDED
