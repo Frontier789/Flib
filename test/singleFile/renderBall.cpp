@@ -125,7 +125,7 @@ public:
 			
 		}
 		
-		vec3 getNormal(vec3 pt,vec3 from)
+		vec3 getNormal(vec3,vec3 from)
 		{
 			if ((p-from).dot(n) > 0) return -n;
 			

@@ -88,7 +88,7 @@ inline HexArray<T> HexArray<T>::reduceToHalf() const
 {
 	HexArray<T> ret(m_size/2,m_uninited);
 
-	ret.forAll([&](T &val,vec2i p){
+	ret.forAll([&](T &,vec2i p){
 		
 		ret.getHeight(p) = getHeight(p*2);
 

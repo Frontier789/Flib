@@ -74,7 +74,7 @@ void ColorPicker::onDraw(fg::ShaderManager &shader)
 	shader.getModelStack().pop();
 }
 
-void ColorPicker::onPress(fw::Mouse::Button button,fm::vec2 p)
+void ColorPicker::onPress(fw::Mouse::Button,fm::vec2 p)
 {
 	callCallback(getColorAt(p));
 	m_lastp = p;
@@ -86,7 +86,7 @@ bool ColorPicker::contains(fm::vec2 p) const
 	return p.x*2 + p.y >= 100 && p.x*2 - p.y <= 100 && p.y <= 100;
 }
 
-void ColorPicker::onMouseMoved(fm::vec2 p,fm::vec2 prevP)
+void ColorPicker::onMouseMoved(fm::vec2 p,fm::vec2)
 {
 	if (isPressed(Mouse::Left))
 	{

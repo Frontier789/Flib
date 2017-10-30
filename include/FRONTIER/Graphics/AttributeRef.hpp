@@ -99,6 +99,17 @@ namespace fg
 		/// @brief Assign data to the referenced attribute
 		/// 
 		/// @param data The data to assign
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		inline AttributeRef &operator=(std::initializer_list<T> data);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Assign data to the referenced attribute
+		/// 
+		/// @param data The data to assign
 		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// @param instancesPerUpdate Number of instances between updates
 		/// 

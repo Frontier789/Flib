@@ -80,7 +80,7 @@ int main()
 	
 	ColorPicker *cp = new ColorPicker(win);
 	cp->setPosition(vec2(150,150));
-	cp->setCallback([&](ColorPicker &cp,Color c) {
+	cp->setCallback([&](ColorPicker &,Color c) {
 		win.setClearColor(c.rgba()/255.0);
 	});
 	

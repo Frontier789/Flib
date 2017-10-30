@@ -274,12 +274,12 @@ void Tree::letLeavesFall(fm::Time dt)
 	buildBranchDraw();
 }
 
-void Tree::addBranch(Branch &branch)
+void Tree::addBranch(Branch &)
 {
 	branchCount++;
 }
 
-void Tree::remBranch(Branch &branch)
+void Tree::remBranch(Branch &)
 {
 	branchCount--;
 }
@@ -746,7 +746,7 @@ int main()
 					fm::Size maxDepth = 0;
 					std::map<fm::Size,fm::Size> depthToCount;
 					
-					tree.trunk->traverse([&](Branch &b,fm::Size depth){
+					tree.trunk->traverse([&](Branch &,fm::Size depth){
 						maxDepth = max(maxDepth,depth);
 						depthToCount[depth]++;
 					});

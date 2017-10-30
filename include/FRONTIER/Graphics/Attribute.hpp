@@ -24,6 +24,7 @@
 #include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_ATTRIBUTE
+#include <initializer_list>
 #include <type_traits>
 
 namespace fg
@@ -138,7 +139,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T,fm::Size N>
-		inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &operator=(const T (&data)[N]);
+		inline Attribute &operator=(const T (&data)[N]);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -153,8 +154,8 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		template<class T,fm::Size N>
-		inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &operator=(const T (&data)[N]);
+		template<class T>
+		inline Attribute &operator=(std::initializer_list<T> data);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute

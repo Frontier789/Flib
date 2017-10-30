@@ -157,12 +157,14 @@ public:
 	/////////////////////////////////////////////////////////////
 	void onMouseEnter(fm::vec2 p) override
 	{
-		
+		(void)p;
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void onMouseLeave(fm::vec2 p) override
 	{
+		(void)p;
+		
 		if (!isPressed(Mouse::Left))
 		{
 			Mouse::setCursor(Mouse::Arrow);
@@ -172,6 +174,8 @@ public:
 	/////////////////////////////////////////////////////////////
 	void onRelease(fw::Mouse::Button button,fm::vec2 p) override
 	{
+		(void)p;
+		
 		if (button == fw::Mouse::Left)
 		{
 			sideGrab = -1;

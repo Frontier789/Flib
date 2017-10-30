@@ -254,7 +254,7 @@ Image imageToSDF_gauss(const Image &img,int maxDist,Delegate<bool,Color> inF = [
 	
 	tex.copyToImage(tmpImg);
 	
-	tmpImg.forEach([](fm::vec2s p,Color &c){
+	tmpImg.forEach([](fm::vec2s,Color &c){
 		c.a = c.r;
 		c.rgb() = vec3(255);
 	});

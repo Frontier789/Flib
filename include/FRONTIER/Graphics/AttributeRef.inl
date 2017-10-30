@@ -31,6 +31,14 @@ namespace fg
 		m_drawData.getAttribute(m_assoc).set(data);
 		return *this;
 	}
+    
+    //////////////////////////////////////////////////////////////////////////
+    template<class T>
+	inline AttributeRef &AttributeRef::operator=(std::initializer_list<T> data)
+    {
+		m_drawData.getAttribute(m_assoc) = data;
+		return *this;
+    }
 
 	/////////////////////////////////////////////////////////////
 	template<class T,fm::Size N>

@@ -21,16 +21,16 @@ namespace fg
 {
     //////////////////////////////////////////////////////////////////////////
     template<class T,fm::Size N>
-	inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::operator=(const T (&data)[N])
+	inline Attribute &Attribute::operator=(const T (&data)[N])
     {
         return set(data);
     }
-
+    
     //////////////////////////////////////////////////////////////////////////
-    template<class T,fm::Size N>
-    inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::operator=(const T (&data)[N])
+    template<class T>
+	inline Attribute &Attribute::operator=(std::initializer_list<T> data)
     {
-        return set(data);
+        return set(data.begin(),data.size());
     }
 
     //////////////////////////////////////////////////////////////////////////
