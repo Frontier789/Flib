@@ -27,6 +27,15 @@ namespace fg
 	{
 		setData(&coefs[0],fm::vec2s(N,1),target,normalize,true);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline TextureConvolution::TextureConvolution(std::initializer_list<T> coefs,
+												  fm::Ref<Texture> target,
+												  bool normalize)
+	{
+		setData(coefs.begin(),fm::vec2s(coefs.size(),1),target,normalize,true);
+	}
 		
 	/////////////////////////////////////////////////////////////
 	template<fm::Size W,fm::Size H,class T>
@@ -35,6 +44,15 @@ namespace fg
 												  bool normalize)
 	{
 		setData(&coefs[0][0],fm::vec2s(W,H),target,normalize,false);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline TextureConvolution::TextureConvolution(std::initializer_list<std::initializer_list<T>> coefs,
+												  fm::Ref<Texture> target,
+												  bool normalize)
+	{
+		setData(coefs.begin(),fm::vec2s(coefs.size(),coefs.begin()->size()),target,normalize,true);
 	}
 	
 	/////////////////////////////////////////////////////////////

@@ -112,6 +112,17 @@ namespace fg
 		TextureConvolution(const T (&coefs)[N],fm::Ref<Texture> target = nullptr,bool normalize = false);
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Construct a linear convolution
+		/// 
+		/// @param coefs The coefficients of the convolution
+		/// @param target The target texture
+		/// @param normalize Scale the coefficients to sum to 1
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		TextureConvolution(std::initializer_list<T> coefs,fm::Ref<Texture> target = nullptr,bool normalize = false);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Construct a 2D convolution
 		/// 
 		/// @param coefs The coefficients of the convolution
@@ -121,6 +132,17 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		template<fm::Size W,fm::Size H,class T>
 		TextureConvolution(const T (&coefs)[W][H],fm::Ref<Texture> target = nullptr,bool normalize = false);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct a linear convolution
+		/// 
+		/// @param coefs The coefficients of the convolution
+		/// @param target The target texture
+		/// @param normalize Scale the coefficients to sum to 1
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		TextureConvolution(std::initializer_list<std::initializer_list<T>> coefs,fm::Ref<Texture> target = nullptr,bool normalize = false);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the target texture of the convolution

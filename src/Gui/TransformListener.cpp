@@ -15,7 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Gui/TransformListener.hpp>
-#include <FRONTIER/System/polar2.hpp>
+#include <FRONTIER/System/Polar2.hpp>
 #include <FRONTIER/Window/Event.hpp>
 
 namespace fgui
