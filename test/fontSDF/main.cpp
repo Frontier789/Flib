@@ -447,9 +447,9 @@ float samp(in vec2 uv,in float w)
 		
 		vec2 offset(0,maxH*2.5);
 		// generate sprites
-		float mul = 1;
+		float mul = .5;
 		font.setCharacterSize(500);
-		for (int sizes=0;sizes<10;++sizes)
+		for (int sizes=0;sizes<20;++sizes)
 		{
 			for (fm::Size i=0;i<m_sampletext.size();++i)
 			{
@@ -461,7 +461,7 @@ float samp(in vec2 uv,in float w)
 			}
 			offset.x = 0;
 			offset.y += maxH * mul;
-			mul *= .8;
+			mul *= .9;
 		}
 	}
 	
