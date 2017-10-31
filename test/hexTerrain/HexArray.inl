@@ -162,7 +162,7 @@ inline vector3<T> HexArray<T>::getNormal(vec2i p) const
 			return std::max<fm::Size>(std::abs(pt.x),std::abs(pt.y)) <= m_size;
 		}
 		
-		return std::abs(pt.x + pt.y) <= m_size;
+		return fm::Size(std::abs(pt.x + pt.y)) <= m_size;
 	};
 	
 	const T h_scale = T(5.0);

@@ -16,7 +16,6 @@ class SpriteTester : public Drawable
 	std::vector<fg::Sprite> m_sprites;
 	fg::SpriteManager *m_manager;
 	fm::Size m_usedSprites;
-	bool m_recreateSprites;
 	float m_moveSprites;
 	fm::Time m_elapsed;
 	Image m_snowImg;
@@ -27,7 +26,6 @@ public:
 	SpriteTester(fg::SpriteManager *newManager,
 				 fm::vec2 winSize) : m_manager(nullptr),
 									 m_usedSprites(10),
-									 m_recreateSprites(false),
 									 m_moveSprites(0),
 									 m_winSize(winSize)
 	{

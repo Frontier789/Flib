@@ -19,6 +19,7 @@
 #include <FRONTIER/Gui/GuiContext.hpp>
 #include <FRONTIER/Graphics/Mesh.hpp>
 #include <FRONTIER/Gui/ScrollBar.hpp>
+#include <FRONTIER/System/Rect.hpp>
 
 namespace fgui
 {
