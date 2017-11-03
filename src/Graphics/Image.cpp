@@ -22,8 +22,10 @@
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/System/util/C.hpp>
+#include <FRONTIER/System/Rect.hpp>
 #include <fstream>
 #include <cstring>
+#include <queue>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STBI_NO_SIMD
@@ -117,7 +119,10 @@ namespace fg
 			m_texels = new Color[m_size.area()];
 		}
 		
-		memcpy(m_texels,texels,m_size.area() * sizeof(*texels));
+		if (texels)
+		{
+			memcpy(m_texels,texels,m_size.area() * sizeof(*texels));
+		}
 		
 		return *this;
 	}
@@ -422,7 +427,221 @@ namespace fg
 	{
 		return m_texels;
 	}
+	
+	namespace 
+	{
+		class SDFData
+		{
+		public:
+			fm::vec2i nearestPix;
+			bool processed;
+			bool inShape;
+			
+			SDFData() : processed(false),
+						inShape(false)
+			{
+				
+			}
+		};
 
+		class SDFDataField
+		{
+		public:
+			std::vector<SDFData> data;
+			fm::vec2s size;
+			SDFData dummy;
+			
+			SDFDataField(fm::vec2s s) : data(s.area(),SDFData()),
+										size(s)
+			{
+				dummy.processed = true;
+			}
+			
+			SDFData &at(fm::vec2i p)
+			{
+				if (p.x < 0 || p.y < 0 || p.x >= (int)size.w || p.y >= (int)size.h)
+					return dummy;
+				
+				return data[p.y * size.w + p.x];
+			}
+			
+			inline SDFData &operator[](fm::vec2i p)
+			{
+				return at(p);
+			}
+			
+			bool isEdge(fm::vec2i p)
+			{
+				fm::Size neighboursIn = 0;
+				neighboursIn += (int)at(p+fm::vec2i(1,0)).inShape;
+				neighboursIn += (int)at(p+fm::vec2i(0,1)).inShape;
+				neighboursIn += (int)at(p+fm::vec2i(-1,0)).inShape;
+				neighboursIn += (int)at(p+fm::vec2i(0,-1)).inShape;
+				
+				if (neighboursIn > 0 && neighboursIn < 4) return true;
+				
+				return (neighboursIn == 0 &&  at(p).inShape) || 
+					   (neighboursIn == 4 && !at(p).inShape);
+			}
+		};
+
+		Image imageToSDF_manhattan(const Image &img,fm::Size maxDist,fm::Delegate<bool,Color> inF) 
+		{
+			auto distFunc = [](fm::vec2i v) -> fm::Size {
+				return abs(v.x) + abs(v.y);
+			};
+			
+			SDFDataField data(img.getSize() + fm::vec2(maxDist*2));
+			
+			Cv(img.getSize())
+				data[p + fm::vec2(maxDist)].inShape = inF(img.getTexel(p));
+			
+			std::queue<fm::vec2i> sorOut;
+			std::queue<fm::vec2i> sorIn;
+			
+			Cv(data.size)
+			{
+				if (data[p].inShape && data.isEdge(p))
+					sorOut.push(p);
+					
+				if (!data[p].inShape && data.isEdge(p))
+					sorIn.push(p);
+			}
+			
+			fm::vec2i ns[] = {fm::vec2i(1,0),fm::vec2i(0,1),fm::vec2i(-1,0),fm::vec2i(0,-1)};
+			
+			for (int K=0;K<2;++K)
+			{
+				std::queue<fm::vec2i> &sor = K ? sorIn : sorOut;
+					
+				while (!sor.empty())
+				{
+					fm::vec2i p = sor.front();
+					sor.pop();
+					
+					
+					for (auto n : ns)
+					{
+						SDFData &d = data[p + n];
+						
+						if (!d.processed && ((!K && !d.inShape) || (K && d.inShape)))
+						{
+							fm::vec2i np = data[p].nearestPix - n;
+							
+							if (distFunc(np) <= maxDist)
+							{
+								d.processed  = true;
+								d.nearestPix = np;
+								sor.push(p+n);
+							}
+						}
+					}
+				}
+			}
+			
+			Image ret;
+			ret.create(data.size);
+			
+			Cv(data.size)
+			{
+				bool ins = data[p].inShape;
+				
+				fm::vec2i dp(std::max(std::min(p.x,data.size.w - maxDist - 1),maxDist),
+							 std::max(std::min(p.y,data.size.h - maxDist - 1),maxDist));
+				
+				Color imgc = img.getTexel(dp - fm::vec2i(maxDist));
+				
+				if (data[p].processed)
+				{
+					fm::vec2i np = data[p].nearestPix;
+					
+					float dist = distFunc(np);
+					
+					float v;
+					
+					if (ins)
+						v = dist/maxDist * .5 + .5;
+					else
+						v = (1 - dist/maxDist) * .5;
+					
+					ret.setTexel(p,Color(imgc.rgb(),std::max(std::min(v,1.f),0.f)*255));
+				}
+				else
+				{
+					ret.setTexel(p,Color(imgc.rgb(),ins ? 255 : 0));
+				}
+			}
+			
+			return ret;
+		}
+
+		Image imageToSDF_brute(const Image &img,fm::Size maxDist,fm::Delegate<bool,Color> inF)
+		{
+			SDFDataField data(img.getSize() + fm::vec2(maxDist*2));
+			
+			Cv(img.getSize())
+				data[p + fm::vec2(maxDist)].inShape = inF(img.getTexel(p));
+			
+			Cv(data.size)
+			{
+				if (data[p].inShape && data.isEdge(p))
+				{
+					Cxy(maxDist*2,maxDist*2)
+					{
+						fm::vec2 d(float(x) - float(maxDist),float(y) - float(maxDist));
+						
+						if (!data[p + d].processed || fm::vec2(data[p + d].nearestPix).length() > d.length())
+						{
+							data[p + d].nearestPix = d;
+							data[p + d].processed = true;
+						}
+					}
+				}
+			}
+			
+			Image ret;
+			ret.create(data.size);
+			
+			Cv(data.size)
+			{
+				bool ins = data[p].inShape;
+				
+				fm::vec2i dp(std::max(std::min(p.x,data.size.w - maxDist - 1),maxDist),
+							 std::max(std::min(p.y,data.size.h - maxDist - 1),maxDist));
+				
+				Color imgc = img.getTexel(dp - fm::vec2i(maxDist));
+				
+				if (data[p].processed)
+				{
+					float dist = fm::vec2(data[p].nearestPix).length();
+					
+					float v;
+					
+					if (ins)
+						v = dist/maxDist * .5 + .5;
+					else
+						v = (1 - dist/maxDist) * .5;
+					
+					ret.setTexel(p,Color(imgc.rgb(),std::max(std::min(v,1.f),0.f)*255));
+				}
+				else
+				{
+					ret.setTexel(p,Color(imgc.rgb(),ins ? 255 : 0));
+				}
+			}
+			
+			return ret;
+		}
+	}
+
+	/////////////////////////////////////////////////////////////
+	Image Image::convertToSDF(fm::Size radius,fm::Delegate<bool,Color> inFunc,int quality) const
+	{
+		if (quality > 50)
+			return imageToSDF_brute(*this,radius,inFunc);
+		else
+			return imageToSDF_manhattan(*this,radius,inFunc);
+	}
 
 	////////////////////////////////////////////////////////////
 	Image::reference Image::flipHorizontally()

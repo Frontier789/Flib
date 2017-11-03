@@ -5,264 +5,6 @@
 
 using namespace std;
 
-
-class SDFData
-{
-public:
-	fm::vec2i nearestPix;
-	bool processed;
-	bool inShape;
-	
-	SDFData() : processed(false),
-				inShape(false)
-	{
-		
-	}
-};
-
-class SDFDataField
-{
-public:
-	std::vector<SDFData> data;
-	fm::vec2s size;
-	SDFData dummy;
-	
-	SDFDataField(fm::vec2s s) : data(s.area(),SDFData()),
-								size(s)
-	{
-		dummy.processed = true;
-	}
-	
-	SDFData &at(fm::vec2i p)
-	{
-		if (p.x < 0 || p.y < 0 || p.x >= (int)size.w || p.y >= (int)size.h)
-			return dummy;
-		
-		return data[p.y * size.w + p.x];
-	}
-	
-	inline SDFData &operator[](fm::vec2i p)
-	{
-		return at(p);
-	}
-	
-	bool isEdge(fm::vec2i p)
-	{
-		fm::Size neighboursIn = 0;
-		neighboursIn += (int)at(p+vec2i(1,0)).inShape;
-		neighboursIn += (int)at(p+vec2i(0,1)).inShape;
-		neighboursIn += (int)at(p+vec2i(-1,0)).inShape;
-		neighboursIn += (int)at(p+vec2i(0,-1)).inShape;
-		
-		if (neighboursIn > 0 && neighboursIn < 4) return true;
-		
-		return (neighboursIn == 0 &&  at(p).inShape) || 
-			   (neighboursIn == 4 && !at(p).inShape);
-	}
-};
-
-#include <queue>
-Image imageToSDF_manhattan(const Image &img,int maxDist,Delegate<bool,Color> inF = [](Color c){return c.a > 127;}) 
-{
-	auto distFunc = [](vec2i v) -> float {
-		return abs(v.x) + abs(v.y);
-	};
-	
-	SDFDataField data(img.getSize() + vec2(maxDist*2));
-	
-	Cv(img.getSize())
-		data[p + vec2(maxDist)].inShape = inF(img.getTexel(p));
-	
-	std::queue<fm::vec2i> sorOut;
-	std::queue<fm::vec2i> sorIn;
-	
-	Cv(data.size)
-	{
-		if (data[p].inShape && data.isEdge(p))
-			sorOut.push(p);
-			
-		if (!data[p].inShape && data.isEdge(p))
-			sorIn.push(p);
-	}
-	
-	fm::vec2i ns[] = {fm::vec2i(1,0),fm::vec2i(0,1),fm::vec2i(-1,0),fm::vec2i(0,-1)};
-	
-	for (int K=0;K<2;++K)
-	{
-		std::queue<fm::vec2i> &sor = K ? sorIn : sorOut;
-			
-		while (!sor.empty())
-		{
-			fm::vec2i p = sor.front();
-			sor.pop();
-			
-			
-			for (auto n : ns)
-			{
-				SDFData &d = data[p + n];
-				
-				if (!d.processed && ((!K && !d.inShape) || (K && d.inShape)))
-				{
-					fm::vec2i np = data[p].nearestPix - n;
-					
-					if (distFunc(np) <= maxDist)
-					{
-						d.processed  = true;
-						d.nearestPix = np;
-						sor.push(p+n);
-					}
-				}
-			}
-		}
-	}
-	
-	Image ret;
-	ret.create(data.size);
-	
-	Cv(data.size)
-	{
-		bool ins = data[p].inShape;
-		
-		if (data[p].processed)
-		{
-			vec2i np = data[p].nearestPix;
-			
-			float dist = distFunc(np);
-			
-			float v;
-			
-			if (ins)
-				v = dist/maxDist * .5 + .5;
-			else
-				v = (1 - dist/maxDist) * .5;
-			
-			ret.setTexel(p,Color(255,max(min(v,1.f),0.f)*255));
-		}
-		else
-		{
-			ret.setTexel(p,Color(255,ins ? 255 : 0));
-		}
-	}
-	
-	return ret;
-}
-
-Image imageToSDF_brute(const Image &img,int maxDist,Delegate<bool,Color> inF = [](Color c){return c.a > 127;})
-{
-	SDFDataField data(img.getSize() + vec2(maxDist*2));
-	
-	Cv(img.getSize())
-		data[p + vec2(maxDist)].inShape = inF(img.getTexel(p));
-	
-	Cv(data.size)
-	{
-		if (data[p].inShape && data.isEdge(p))
-		{
-			Cxy(maxDist*2,maxDist*2)
-			{
-				vec2 d(float(x) - maxDist,float(y) - maxDist);
-				
-				if (!data[p + d].processed || vec2(data[p + d].nearestPix).length() > d.length())
-				{
-					data[p + d].nearestPix = d;
-					data[p + d].processed = true;
-				}
-			}
-		}
-	}
-	
-	Image ret;
-	ret.create(data.size);
-	
-	srand(time(0));
-	Cv(data.size)
-	{
-		bool ins = data[p].inShape;
-		
-		if (data[p].processed)
-		{
-			float dist = vec2(data[p].nearestPix).length();
-			
-			float v;
-			
-			if (ins)
-				v = dist/maxDist * .5 + .5;
-			else
-				v = (1 - dist/maxDist) * .5;
-			
-			ret.setTexel(p,Color(255,max(min(v,1.f),0.f)*255));
-		}
-		else
-		{
-			ret.setTexel(p,fg::Color(255,ins ? 255 : 0));
-		}
-	}
-	
-	return ret;
-}
-
-Image imageToSDF_kdTree(const Image &img,int maxDist,Delegate<bool,Color> inF = [](Color c){return c.a > 127;})
-{
-	SDFDataField data(img.getSize() + vec2(maxDist*2));
-	
-	Cv(img.getSize())
-		data[p + vec2(maxDist)].inShape = inF(img.getTexel(p));
-	
-	std::vector<vec2> pts;
-	
-	Cv(data.size)
-		if (data[p].inShape && data.isEdge(p))
-			pts.push_back(p);
-	
-	fm::KDTree2 kdTree(std::move(pts)); 
-	
-	Image ret;
-	ret.create(data.size);
-	
-	Cv(data.size)
-	{
-		bool ins = data[p].inShape;
-		float dist = (kdTree(p) - p).length();
-		
-		float v;
-		
-		if (ins)
-			v = dist/maxDist * .5 + .5;
-		else
-			v = (1 - dist/maxDist) * .5;
-		
-		ret.setTexel(p,Color(255,max(min(v,1.f),0.f)*255));
-	}
-	
-	return ret;
-}
-
-Image imageToSDF_gauss(const Image &img,int maxDist,Delegate<bool,Color> inF = [](Color c){return c.a > 127;})
-{
-	Image tmpImg(img.getSize() + vec2(maxDist*2),Color::Black);
-	
-	Cv(img.getSize())
-		tmpImg.setTexel(p + vec2(maxDist),inF(img.getTexel(p)) ? Color::White : Color::Black);
-	
-	Texture tex(tmpImg);
-	/*
-	{1/4,1/2,1/4}
-	{1/16.0,1/8.0,5/8.0,1/8.0,1/16.0}
-	*/
-	TextureConvolution conv({.1,1.,1.,1.,1.,1.,1.,1.,.1},nullptr,true);
-	
-	conv.applyTo(tex,maxDist);
-	
-	tex.copyToImage(tmpImg);
-	
-	tmpImg.forEach([](fm::vec2s,Color &c){
-		c.a = c.r;
-		c.rgb() = vec3(255);
-	});
-	
-	return tmpImg;
-}
-
 class TextTester : public GuiElement
 {
 	SpriteManager m_spriteMgr;
@@ -273,7 +15,7 @@ public:
 	{
 		m_sampletext = u8"árvíztűrő tükörfúrógép :)";
 		
-		buildSprites(Manhattan);
+		buildSprites();
 	}
 	
 	void setThickness(float v)
@@ -291,25 +33,7 @@ public:
 		m_spriteMgr.getShader().setUniform("u_dscale",v);
 	}
 	
-	enum SDFMethod {
-		Gauss     = 0,
-		KDTree    = 1,
-		Brute     = 2,
-		Manhattan = 3,
-		MethodCount
-	};
-	
-	string methodToString(SDFMethod method)
-	{
-		if (method == Gauss)  return "Gauss";
-		if (method == KDTree) return "KDTree";
-		if (method == Brute)  return "Brute";
-		if (method == Manhattan) return "Manhattan";
-		
-		return "";
-	}
-	
-	void buildSprites(SDFMethod method)
+	void buildSprites(bool fastSDF = true)
 	{
 		// setup shader
 		fm::Result res = m_spriteMgr.loadShader([](ShaderSource &source){
@@ -398,6 +122,7 @@ float samp(in vec2 uv,in float w)
 		if (!res) cout << res << endl;
 		
 		m_spriteMgr.getAtlas().reset();
+		m_sprites.clear();
 		
 		// render glyphs
 		Font font = getOwnerContext().getDefaultFont();
@@ -409,13 +134,7 @@ float samp(in vec2 uv,in float w)
 			renderImgs[i] = new fg::Image(std::move(img));
 		}
 		
-		fm::Delegate<Image,const Image &,int,Delegate<bool,Color> > imgToSDF;
-		std::string keyName = methodToString(method);
-		
-		if (method == Gauss     ) imgToSDF = imageToSDF_gauss    ;
-		if (method == KDTree    ) imgToSDF = imageToSDF_kdTree   ;
-		if (method == Brute     ) imgToSDF = imageToSDF_brute    ;
-		if (method == Manhattan ) imgToSDF = imageToSDF_manhattan;
+		std::string keyName = fastSDF ? "fast" : "nice";
 		
 		std::vector<fm::Time > times(m_sampletext.size());
 		
@@ -425,54 +144,17 @@ float samp(in vec2 uv,in float w)
 		std::vector<vec2> sdfSizes(m_sampletext.size());
 		cout << "rendering " << keyName << endl;
 		fm::Clock clkAll,clkOne;
-		int maxDist = 10;
+		
 		for (fm::Size i=0;i<m_sampletext.size();++i)
 		{
-			if (method != Gauss)
-			{
-				fg::Image img = imgToSDF(*renderImgs[i],10,[](Color c){return c.a > 127;});
-				maxH = max<float>(maxH,img.getSize().h*.1);
-				
-				sdfImgs[i] = new fg::Image(std::move(img));
-				*sdfImgs[i] = std::move(sdfImgs[i]->scale(sdfImgs[i]->getSize()*.1));
-				m_spriteMgr.addImage(*sdfImgs[i],fm::toString(i)+"_"+keyName);
-				sdfSizes[i] = sdfImgs[i]->getSize();
-			}
-			else
-			{
-				/*
-				Delegate<bool,Color> inF = [](Color c){return c.a > 127;};
-				
-				Image tmpImg(renderImgs[i]->getSize() + vec2(maxDist*2),Color(255,255,255,0));
-	
-				Cv(renderImgs[i]->getSize())
-					tmpImg.setTexel(p + vec2(maxDist),inF(renderImgs[i]->getTexel(p)) ? Color(255,255,255,255) : Color(255,255,255,0));
-				
-				Texture tex(tmpImg);
-				*/
-				
-				Texture tex;
-				tex.create(renderImgs[i]->getSize() + vec2(maxDist*2));
-				FrameBuffer fbo(tex);
-				fbo.bind();
-				fbo.setClearColor(vec4(1,1,1,0));
-				fbo.clear();
-				tex.update(*renderImgs[i],vec2(maxDist));
-				
-				/*
-				{1/4,1/2,1/4}
-				{1/16.0,1/8.0,5/8.0,1/8.0,1/16.0}
-				*/
-				TextureConvolution conv({1,1,1,1,1,1,1,1,1,1,1},nullptr,true);
-				
-				conv.applyTo(tex,maxDist);
-				
-				maxH = max<float>(maxH,tex.getSize().h*.1);
-				
-				m_spriteMgr.addImage(tex,fm::toString(i)+"_"+keyName);
-				sdfSizes[i] = tex.getSize()*.1;
-			}
+			fg::Image img = renderImgs[i]->convertToSDF(10,[](Color c){return c.a > 127;},fastSDF ? 0 : 100);
+			maxH = max<float>(maxH,img.getSize().h*.1);
 			
+			sdfImgs[i] = new fg::Image(std::move(img));
+			*sdfImgs[i] = std::move(sdfImgs[i]->scale(sdfImgs[i]->getSize()*.1));
+			m_spriteMgr.addImage(*sdfImgs[i],fm::toString(i)+"_"+keyName);
+			sdfSizes[i] = sdfImgs[i]->getSize();
+		
 			times[i] = clkOne.getTime();
 			clkOne.restart();
 		}
@@ -557,12 +239,12 @@ int main()
 	
 	win.getMainLayout().addChildElement(sb2);
 	
-	TextTester::SDFMethod method = TextTester::Manhattan;
+	bool fastSDF = true;
 	
-	pb = new PushButton(win,tester->methodToString(method),[&](){
-		method = TextTester::SDFMethod((((int)method)+1)%TextTester::MethodCount);
-		tester->buildSprites(method);
-		pb->setText(tester->methodToString(method));
+	pb = new PushButton(win,fastSDF ? "fastSDF" : "niceSDF",[&](){
+		fastSDF = !fastSDF;
+		tester->buildSprites(fastSDF);
+		pb->setText(fastSDF ? "fastSDF" : "niceSDF");
 		
 		tester->setThickness(sbP->getScrollState());
 		tester->setPov(sb->getScrollState());

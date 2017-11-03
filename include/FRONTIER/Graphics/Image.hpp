@@ -338,6 +338,22 @@ namespace fg
 		const Color *getTexelsPtr() const;
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Create a Signed distance field representation of the image
+		/// 
+		/// The distance will be encoded in the alpha channel, rgb channels are untouched
+		/// Quality: 0 for fastest algorithm
+		///          100 for nicest distance field
+		/// 
+		/// @param radius The radius of the field
+		/// @param inFunc Tester function for texels being in the shape or out
+		/// @param quality quality - speed tradeoff range 0 - 100
+		/// 
+		/// @return The sdf image
+		///
+		/////////////////////////////////////////////////////////////
+		Image convertToSDF(fm::Size radius,fm::Delegate<bool,Color> inFunc = [](Color c){return c.a > 127;},int quality = 100) const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Flip the image horizontally
 		///
 		/// @return reference to itself

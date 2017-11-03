@@ -20,7 +20,7 @@
 #include <FRONTIER/Window/WindowPredef.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
-#include <FRONTIER/System/vector4.hpp>
+#include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Result.hpp>
 #define FRONTIER_GLCONTEXT
