@@ -17,6 +17,7 @@
 #include <FRONTIER/Graphics/TextureAtlas.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Rect.hpp>
+#include <FRONTIER/OpenGL.hpp>
 
 namespace fg
 {
@@ -158,7 +159,9 @@ namespace fg
 		};
 		
 		/////////////////////////////////////////////////////////////
-		TextureAtlasImpl::TextureAtlasImpl() : m_root(new Node)
+		TextureAtlasImpl::TextureAtlasImpl() : m_shaderNeedsUpdate(true),
+											   m_fboNeedsUpdate(true),
+											   m_root(new Node)
 		{
 			
 		}
@@ -190,29 +193,95 @@ namespace fg
 			else
 				m_tex.create(newSize);
 			
+			m_fboNeedsUpdate = true;
+		}
+
+		/////////////////////////////////////////////////////////////
+		TextureAtlasImpl::Node *TextureAtlasImpl::recursiveInsert(const fm::vec2s &rectSize)
+		{
+			Node *inserted = nullptr;
+			
+			// resize texture until the image fits
+			while (!inserted)
+			{
+				fm::vec2s texSize = m_tex.getSize();
+				inserted = m_root->insert(rectSize,texSize);
+				if (!inserted)
+				{
+					resizeTex(texSize+rectSize*1.1);
+				}
+			}
+			
+			return inserted;
 		}
 		
 		/////////////////////////////////////////////////////////////
 		Glyph TextureAtlasImpl::upload(const fg::Image &img,const fm::vec2 &leftdown)
 		{
-			Node *inserted = nullptr;
-			fm::vec2s size = img.getSize();
-			
-			// resize texture until the image fits
-			while (true)
-			{
-				fm::vec2s texSize = m_tex.getSize();
-				inserted = m_root->insert(size,texSize);
-				if (inserted)
-					break;
-				
-				resizeTex(texSize+size*1.1);
-			}
-			
-			// upload image
+			Node *inserted = recursiveInsert(img.getSize());
 			m_tex.update(img,inserted->rct.pos);
 			
-			return Glyph(&m_tex,inserted->rct.pos,size,leftdown);
+			return Glyph(&m_tex,inserted->rct.pos,img.getSize(),leftdown);
+		}
+		
+		/////////////////////////////////////////////////////////////
+		Glyph TextureAtlasImpl::upload(const fg::Texture &tex,const fm::vec2 &leftdown)
+		{
+			Node *inserted = recursiveInsert(tex.getSize());
+				
+			if (m_fboNeedsUpdate)
+			{
+				m_fboNeedsUpdate = false;
+				m_updaterFbo.create(m_tex);
+			}
+			
+			if (m_shaderNeedsUpdate)
+			{
+				m_shaderNeedsUpdate = false;
+				m_updaterShader.loadFromMemory(R"(
+#version 130
+
+uniform vec2 u_relPos;
+uniform vec2 u_relSize;
+
+out vec2 va_p;
+
+void main()
+{
+	int i = gl_VertexID;
+	va_p = vec2(float(i==1 || i==2 || i==4),float(i==2 || i==4 || i==5));
+	
+	vec2 objP = u_relPos + u_relSize * va_p;
+	
+	gl_Position = vec4((objP * 2 - vec2(1,1)),0,1);
+})",R"(
+#version 130
+
+uniform sampler2D u_tex;
+
+in vec2 va_p;
+
+out vec4 out_color;
+
+void main()
+{
+	out_color = texture2D(u_tex,va_p);
+})");
+			}
+			
+			fm::rect2s viewport = fg::FrameBuffer::getViewport();
+			
+			m_updaterFbo.bind();
+			m_updaterShader.bind();
+			m_updaterShader.setUniform("u_tex",tex);
+			m_updaterShader.setUniform("u_relPos",fm::vec2(inserted->rct.pos) / m_tex.getSize());
+			m_updaterShader.setUniform("u_relSize",fm::vec2(tex.getSize()) / m_tex.getSize());
+			glDrawArrays(GL_TRIANGLES,0,6);
+			
+			FrameBuffer::bind(nullptr);
+			FrameBuffer::setViewport(viewport);
+			
+			return Glyph(&m_tex,inserted->rct.pos,tex.getSize(),leftdown);
 		}
 		
 		/////////////////////////////////////////////////////////////

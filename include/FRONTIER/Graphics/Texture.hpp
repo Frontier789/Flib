@@ -285,13 +285,13 @@ namespace fg
 		///
 		/// @a image will be blit at @a pos
 		///
-		/// @param image The image to blit
+		/// @param sourceImage The image to blit
 		/// @param pos The position where the image will be blit
 		///
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Image &image,fm::vec2s pos = fm::vec2s());
+		reference update(const Image &sourceImage,fm::vec2s pos = fm::vec2s());
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy the content of the texture to client-memory

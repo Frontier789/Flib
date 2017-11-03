@@ -20,6 +20,7 @@
 #include <FRONTIER/Window/WindowPredef.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/System/vector4.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Result.hpp>
 #define FRONTIER_GLCONTEXT
@@ -54,6 +55,8 @@ namespace fw
 	{
 		priv::GLContext *m_context;        ///< The undelying implementation
 		fg::DepthTestMode m_depthTestMode; ///< The current depth test mode
+		fm::vec4 m_clearColor; ///< The color used when clearing the framebuffer
+		float m_clearDepth;    ///< The depth value used when clearing the framebuffer
 	public:
 
 		typedef GLContext &reference;
@@ -171,6 +174,14 @@ namespace fw
 		fm::Result setActive(bool active = true);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Bind the default vbo of the context
+		///
+		/// @return The result of the call
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result bindDefaultFrameBuffer();
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Swap the back and front buffer
 		///
 		/// @return The result of the call
@@ -271,7 +282,7 @@ namespace fw
 		const fw::GLContext::Settings &getSettings() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the value of the clearing color used by the currently active context
+		/// @brief Set the value of the clearing color used by this context
 		///
 		/// @param color The new clear-color
 		///
@@ -279,7 +290,7 @@ namespace fw
 		void setClearColor(const fm::vec4 &color);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the clearing depth used by the currently active context
+		/// @brief Set the clearing depth used by this context
 		///
 		/// @param depth The new clearing depth
 		///

@@ -359,6 +359,16 @@ namespace fg
 		void addImage(const fg::Image &img,ImageID id,const fm::vec2 &frameSize = fm::vec2());
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Register an image with given id for use
+		/// 
+		/// @param tex The texture to register
+		/// @param id The id to associate with
+		/// @param frameSize The frame size for the image
+		/// 
+		/////////////////////////////////////////////////////////////
+		void addImage(const fg::Texture &tex,ImageID id,const fm::vec2 &frameSize = fm::vec2());
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Get the size of a registered image
 		/// 
 		/// @param id The id of the image to query

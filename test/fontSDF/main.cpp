@@ -1,4 +1,5 @@
 #include <Frontier.hpp>
+#include <FRONTIER/OpenGL.hpp>
 #include <iostream>
 #include <fstream>
 
@@ -262,30 +263,6 @@ Image imageToSDF_gauss(const Image &img,int maxDist,Delegate<bool,Color> inF = [
 	return tmpImg;
 }
 
-
-DrawData buildDrawData(vec2 A,vec2 B,vec2 S)
-{
-	DrawData ret;
-	
-	vec2 N = A - B;
-	vec2 R = N.sgn().perp() * S.w / S.h * N.length();
-	
-	vec2 tpt[] = {vec2(0,0),vec2(1,0),vec2(1,1),
-				  vec2(0,0),vec2(1,1),vec2(0,1)};
-	
-	vec2 pts[6];
-	vec2 uvs[6];
-	
-	C(6)
-		pts[i] = (tpt[i].x - .5) * R + tpt[i].y * N + B,
-		uvs[i] = vec2(1-tpt[i].x,tpt[i].y);
-	
-	ret.positions = pts;
-	ret.texPositions = uvs;
-	
-	return ret; 
-}
-
 class TextTester : public GuiElement
 {
 	SpriteManager m_spriteMgr;
@@ -294,6 +271,47 @@ class TextTester : public GuiElement
 public:
 	TextTester(GuiContext &owner) : GuiElement(owner,owner.getSize())
 	{
+		m_sampletext = u8"árvíztűrő tükörfúrógép :)";
+		
+		buildSprites(Manhattan);
+	}
+	
+	void setThickness(float v)
+	{
+		m_spriteMgr.getShader().setUniform("u_thickness",v);
+	}
+	
+	void setPov(float v)
+	{
+		m_spriteMgr.getShader().setUniform("u_pov",v);
+	}
+	
+	void setDscale(float v)
+	{
+		m_spriteMgr.getShader().setUniform("u_dscale",v);
+	}
+	
+	enum SDFMethod {
+		Gauss     = 0,
+		KDTree    = 1,
+		Brute     = 2,
+		Manhattan = 3,
+		MethodCount
+	};
+	
+	string methodToString(SDFMethod method)
+	{
+		if (method == Gauss)  return "Gauss";
+		if (method == KDTree) return "KDTree";
+		if (method == Brute)  return "Brute";
+		if (method == Manhattan) return "Manhattan";
+		
+		return "";
+	}
+	
+	void buildSprites(SDFMethod method)
+	{
+		// setup shader
 		fm::Result res = m_spriteMgr.loadShader([](ShaderSource &source){
 			
 			if (source.type == fg::VertexShader)
@@ -375,35 +393,15 @@ float samp(in vec2 uv,in float w)
 	out_color = vec4(vec3(0.0), alpha);
 									)";
 			}
-				cout << source << endl;
 			
 		});
 		if (!res) cout << res << endl;
 		
-		m_sampletext = u8"árvíztűrő tükörfúrógép :)";
-		buildSprites();
-	}
-	
-	void setThickness(float v)
-	{
-		m_spriteMgr.getShader().setUniform("u_thickness",v);
-	}
-	
-	void setPov(float v)
-	{
-		m_spriteMgr.getShader().setUniform("u_pov",v);
-	}
-	
-	void setDscale(float v)
-	{
-		m_spriteMgr.getShader().setUniform("u_dscale",v);
-	}
-	
-	void buildSprites()
-	{
+		m_spriteMgr.getAtlas().reset();
+		
 		// render glyphs
 		Font font = getOwnerContext().getDefaultFont();
-		font.setCharacterSize(500);
+		font.setCharacterSize(200);
 		std::vector<fg::Image *> renderImgs(m_sampletext.size());
 		for (fm::Size i=0;i<m_sampletext.size();++i)
 		{
@@ -411,19 +409,70 @@ float samp(in vec2 uv,in float w)
 			renderImgs[i] = new fg::Image(std::move(img));
 		}
 		
-		fm::Delegate<Image,const Image &,int,Delegate<bool,Color> > imgToSDF = imageToSDF_manhattan;
-		std::string keyName = "manhattan";
+		fm::Delegate<Image,const Image &,int,Delegate<bool,Color> > imgToSDF;
+		std::string keyName = methodToString(method);
+		
+		if (method == Gauss     ) imgToSDF = imageToSDF_gauss    ;
+		if (method == KDTree    ) imgToSDF = imageToSDF_kdTree   ;
+		if (method == Brute     ) imgToSDF = imageToSDF_brute    ;
+		if (method == Manhattan ) imgToSDF = imageToSDF_manhattan;
 		
 		std::vector<fm::Time > times(m_sampletext.size());
 		
 		// render sdfs
+		float maxH = 0;
 		std::vector<fg::Image *> sdfImgs(m_sampletext.size());
+		std::vector<vec2> sdfSizes(m_sampletext.size());
 		cout << "rendering " << keyName << endl;
 		fm::Clock clkAll,clkOne;
+		int maxDist = 10;
 		for (fm::Size i=0;i<m_sampletext.size();++i)
 		{
-			fg::Image img = imgToSDF(*renderImgs[i],25,[](Color c){return c.a > 127;});
-			sdfImgs[i] = new fg::Image(std::move(img));
+			if (method != Gauss)
+			{
+				fg::Image img = imgToSDF(*renderImgs[i],10,[](Color c){return c.a > 127;});
+				maxH = max<float>(maxH,img.getSize().h*.1);
+				
+				sdfImgs[i] = new fg::Image(std::move(img));
+				*sdfImgs[i] = std::move(sdfImgs[i]->scale(sdfImgs[i]->getSize()*.1));
+				m_spriteMgr.addImage(*sdfImgs[i],fm::toString(i)+"_"+keyName);
+				sdfSizes[i] = sdfImgs[i]->getSize();
+			}
+			else
+			{
+				/*
+				Delegate<bool,Color> inF = [](Color c){return c.a > 127;};
+				
+				Image tmpImg(renderImgs[i]->getSize() + vec2(maxDist*2),Color(255,255,255,0));
+	
+				Cv(renderImgs[i]->getSize())
+					tmpImg.setTexel(p + vec2(maxDist),inF(renderImgs[i]->getTexel(p)) ? Color(255,255,255,255) : Color(255,255,255,0));
+				
+				Texture tex(tmpImg);
+				*/
+				
+				Texture tex;
+				tex.create(renderImgs[i]->getSize() + vec2(maxDist*2));
+				FrameBuffer fbo(tex);
+				fbo.bind();
+				fbo.setClearColor(vec4(1,1,1,0));
+				fbo.clear();
+				tex.update(*renderImgs[i],vec2(maxDist));
+				
+				/*
+				{1/4,1/2,1/4}
+				{1/16.0,1/8.0,5/8.0,1/8.0,1/16.0}
+				*/
+				TextureConvolution conv({1,1,1,1,1,1,1,1,1,1,1},nullptr,true);
+				
+				conv.applyTo(tex,maxDist);
+				
+				maxH = max<float>(maxH,tex.getSize().h*.1);
+				
+				m_spriteMgr.addImage(tex,fm::toString(i)+"_"+keyName);
+				sdfSizes[i] = tex.getSize()*.1;
+			}
+			
 			times[i] = clkOne.getTime();
 			clkOne.restart();
 		}
@@ -433,34 +482,25 @@ float samp(in vec2 uv,in float w)
 		cout << "all: " << t.asSecs() << "s\n";
 		cout << endl;
 		
-		// upload sdfs
-		float maxH = 0;
-		for (fm::Size i=0;i<m_sampletext.size();++i)
-		{
-			*sdfImgs[i] = std::move(sdfImgs[i]->scale(sdfImgs[i]->getSize()*.1));
-			m_spriteMgr.addImage(*sdfImgs[i],fm::toString(i)+"_"+keyName);
-			maxH = max<float>(maxH,sdfImgs[i]->getSize().h);
-		}
-		
 		for (fm::Size i=0;i<m_sampletext.size();++i) delete sdfImgs[i];
 		for (fm::Size i=0;i<m_sampletext.size();++i) delete renderImgs[i];
 		
-		vec2 offset(0,maxH*2.5);
+		vec2 offset(0,200);
 		// generate sprites
 		float mul = .5;
-		font.setCharacterSize(500);
+		float scale = 2;
 		for (int sizes=0;sizes<20;++sizes)
 		{
 			for (fm::Size i=0;i<m_sampletext.size();++i)
 			{
 				m_sprites.emplace_back(m_spriteMgr,fm::toString(i)+"_"+keyName);
-				vec2 s = m_sprites.back().getSize() * mul;
+				vec2 s = sdfSizes[i] * mul * scale;
 				m_sprites.back().setSize(s);
-				m_sprites.back().setPosition(offset + font.getGlyph(m_sampletext[i]).leftdown * mul * .1);
+				m_sprites.back().setPosition(offset + font.getGlyph(m_sampletext[i]).leftdown * mul * .1 * scale);
 				offset.x += s.x+1;
 			}
 			offset.x = 0;
-			offset.y += maxH * mul;
+			offset.y += maxH * mul * scale;
 			mul *= .9;
 		}
 	}
@@ -483,6 +523,8 @@ int main()
 	Result r = img.loadFromFile("bunny.png");
 	if (!r) cout << r << endl;
 	
+	Texture bunnyTex(img);
+	
 	fw::MouseCursor cur(img,img.getSize()/2);
 	
 	PushButton *pb = new PushButton(win,"lol",[&](){
@@ -492,54 +534,14 @@ int main()
 	
 	win.getMainLayout().addChildElement(pb);
 	
-	Image Aimg;
-	{
-		ifstream in("a.png");
-		
-		if (!in || true)
-		{
-			win.getDefaultFont().setCharacterSize(500);
-			
-			fm::Clock clkR;
-			Aimg = win.getDefaultFont().renderGlyph(fm::String("$")[0]);
-			cout << "stdtt_t: "<< clkR.getSeconds() << endl;
-			
-			Aimg.saveToFile("a_ori.png");
-			fm::Clock clk;
-			Aimg = imageToSDF_kdTree(Aimg,25);
-			cout << clk.getSeconds() << endl;
-			Aimg.saveToFile("am.png");
-			Aimg = Aimg.scale(Aimg.getSize()*.1);
-			Aimg.saveToFile("a.png");
-		}
-		else
-		{
-			Aimg.loadFromFile("a.png");
-		}
-	}
 	
-	Texture Atex(Aimg);
-	Atex.setSmooth(true);
-	
-	DrawData dd = buildDrawData(win.getSize()*vec2(.5,0) + vec2(0,100),win.getSize()*vec2(.5,0),Aimg.getSize());
-	
-	ShaderManager shader;
-	fm::Result res = shader.loadFromFiles("shaders/font1.vert","shaders/font1.frag");
-	shader.regTexture("u_tex");
-	
-	if (!res)
-	{
-		cout << "Font Shader failed to load" << endl;
-		cout << res << endl;
-	}
-	
-	win.getMainLayout().addChildElement(new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
-		shader.setUniform("u_thickness",sb.getScrollState());
+	ScrollBar *sbP = new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
 		tester->setThickness(sb.getScrollState());
-	}));
+	});
+	
+	win.getMainLayout().addChildElement(sbP);
 	
 	ScrollBar *sb = new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
-		shader.setUniform("u_pov",sb.getScrollState());
 		tester->setPov(sb.getScrollState());
 	});
 	
@@ -555,7 +557,24 @@ int main()
 	
 	win.getMainLayout().addChildElement(sb2);
 	
-	bool inMoveState = false;
+	TextTester::SDFMethod method = TextTester::Manhattan;
+	
+	pb = new PushButton(win,tester->methodToString(method),[&](){
+		method = TextTester::SDFMethod((((int)method)+1)%TextTester::MethodCount);
+		tester->buildSprites(method);
+		pb->setText(tester->methodToString(method));
+		
+		tester->setThickness(sbP->getScrollState());
+		tester->setPov(sb->getScrollState());
+		tester->setDscale(sb2->getScrollState());
+	});
+	pb->setPosition(vec2(0,80));
+	
+	win.getMainLayout().addChildElement(pb);
+	
+	FrameBuffer fbo;
+	Texture tex;
+	
 	bool running = true;
 	for (;running;)
 	{
@@ -566,35 +585,10 @@ int main()
 			win.handleEvent(ev);
 			if (ev.type == Event::Closed) running = false;
 			if (ev.type == Event::FocusLost) running = false;
-			
-			if (ev.type == Event::ButtonPressed)
-			{
-				if (ev.mouse.button == Mouse::Right)
-				{
-					dd = buildDrawData(vec2(ev.mouse),win.getSize()*vec2(.5,0),Aimg.getSize());
-					inMoveState = true;
-				} 
-			}
-			if (ev.type == Event::ButtonReleased)
-			{
-				if (ev.mouse.button == Mouse::Right)
-					inMoveState = false;
-			}
-			if (ev.type == Event::MouseMoved)
-			{
-				if (inMoveState)
-					dd = buildDrawData(vec2(ev.motion),win.getSize()*vec2(.5,0),Aimg.getSize());
-			}
 		}
 		
 		win.clear();
 		
-		shader.getModelStack().top(win.getShader().getModelStack().top());
-		shader.getViewStack().top(win.getShader().getViewStack().top());
-		shader.getProjStack().top(win.getShader().getProjStack().top());
-		shader.bind();
-		shader.useTexture(Atex);
-		shader.draw(dd);
 		win.drawElements();
 		win.swapBuffers();
 			

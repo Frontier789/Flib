@@ -318,9 +318,9 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Texture::reference Texture::update(const Image &image,fm::vec2s pos)
+	Texture::reference Texture::update(const Image &sourceImage,fm::vec2s pos)
 	{
-		return update(image.getPtr(),pos,image.getSize());
+		return update(sourceImage.getPtr(),pos,sourceImage.getSize());
 	}
 
 	////////////////////////////////////////////////////////////

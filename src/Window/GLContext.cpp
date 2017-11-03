@@ -122,19 +122,24 @@ namespace fw
 
 	/////////////////////////////////////////////////////////////
 	GLContext::GLContext() : m_context(new priv::GLContext),
-							 m_depthTestMode(fg::Unused)
+							 m_depthTestMode(fg::Unused),
+							 m_clearDepth(0)
 	{
 
 	}
 
 	/////////////////////////////////////////////////////////////
-	GLContext::GLContext(priv::WindowHandle windowHandle,fw::GLContext::Settings settings) : m_context(new priv::GLContext)
+	GLContext::GLContext(priv::WindowHandle windowHandle,fw::GLContext::Settings settings) : m_context(new priv::GLContext),
+																							 m_depthTestMode(fg::Unused),
+																							 m_clearDepth(0)
 	{
 		create(windowHandle,settings);
 	}
 
 	/////////////////////////////////////////////////////////////
-	GLContext::GLContext(const fm::vec2s &size,fw::GLContext::Settings settings) : m_context(new priv::GLContext)
+	GLContext::GLContext(const fm::vec2s &size,fw::GLContext::Settings settings) : m_context(new priv::GLContext),
+																				   m_depthTestMode(fg::Unused),
+																				   m_clearDepth(0)
 	{
 		create(size,settings);
 	}
@@ -151,6 +156,22 @@ namespace fw
 		fm::Result res = m_context->setActive(active);
 		
 		if (res && active)
+		{
+			unsigned int w = 1,h = 1;
+			res += m_context->getSize(w,h);
+			
+			glViewport(0,0,w,h);
+		}
+		
+		return res;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result GLContext::bindDefaultFrameBuffer()
+	{
+		fm::Result res = glCheck(glBindFramebuffer(GL_FRAMEBUFFER,0));
+		
+		if (res)
 		{
 			unsigned int w = 1,h = 1;
 			res += m_context->getSize(w,h);
@@ -234,20 +255,26 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	void GLContext::setClearColor(const fm::vec4 &color)
 	{
-		glClearColor(color.r,color.g,color.b,color.a);
+		m_clearColor = color;
 	}
 
 	/////////////////////////////////////////////////////////////
 	void GLContext::setClearDepth(float depth)
 	{
-		glClearDepth(depth);
+		m_clearDepth = depth;
 	}
 
 	/////////////////////////////////////////////////////////////
 	void GLContext::clear(bool colorBuffer,bool depthBuffer,bool stencilBuffer)
 	{
+		glClearDepth(m_clearDepth);
+		glClearColor(m_clearColor.r,m_clearColor.g,m_clearColor.b,m_clearColor.a);
+		
 		if (colorBuffer || depthBuffer || stencilBuffer)
+		{
+			bindDefaultFrameBuffer();
 			glClear((colorBuffer ? GL_COLOR_BUFFER_BIT : 0)|(depthBuffer ? GL_DEPTH_BUFFER_BIT : 0)|(stencilBuffer ? GL_STENCIL_BUFFER_BIT : 0));
+		}
 	}
 
 	/////////////////////////////////////////////////////////////

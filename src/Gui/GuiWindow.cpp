@@ -92,6 +92,14 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
+	void GuiWindow::drawElements()
+	{
+		GLContext::bindDefaultFrameBuffer();
+		
+		GuiContext::drawElements();
+	}
+	
+	/////////////////////////////////////////////////////////////
 	void GuiWindow::handlePendingEvents()
 	{
 		fw::Event ev;

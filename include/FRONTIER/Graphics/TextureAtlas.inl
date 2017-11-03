@@ -16,7 +16,9 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_TEXTUREATLAS_INL_INCLUDED
 #define FRONTIER_TEXTUREATLAS_INL_INCLUDED
+#include <FRONTIER/Graphics/FrameBuffer.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
+#include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
 #include <algorithm>
 
@@ -62,11 +64,18 @@ namespace fg
 			class Node;
 
 		private:
+			FrameBuffer m_updaterFbo;
+			Shader m_updaterShader;
+			bool m_shaderNeedsUpdate;
+			bool m_fboNeedsUpdate;
 			Texture m_tex;
 			Node *m_root;
 
 			/////////////////////////////////////////////////////////////
 			void resizeTex(const fm::vec2s &newSize);
+
+			/////////////////////////////////////////////////////////////
+			Node *recursiveInsert(const fm::vec2s &rectSize);
 		public:
 
 			/////////////////////////////////////////////////////////////
@@ -80,6 +89,9 @@ namespace fg
 
 			/////////////////////////////////////////////////////////////
 			Glyph upload(const fg::Image &img,const fm::vec2 &leftdown);
+
+			/////////////////////////////////////////////////////////////
+			Glyph upload(const fg::Texture &tex,const fm::vec2 &leftdown);
 
 			/////////////////////////////////////////////////////////////
 			void reset();
@@ -133,6 +145,13 @@ namespace fg
 	inline Glyph TextureAtlas<MT,Cp>::upload(const fg::Image &img,const MT &point,const fm::vec2 &leftdown)
 	{
 		return m_glyphTable[point] = m_impl->upload(img,leftdown);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class MT,class Cp>
+	inline Glyph TextureAtlas<MT,Cp>::upload(const fg::Texture &tex,const MT &point,const fm::vec2 &leftdown)
+	{
+		return m_glyphTable[point] = m_impl->upload(tex,leftdown);
 	}
 
 	/////////////////////////////////////////////////////////////

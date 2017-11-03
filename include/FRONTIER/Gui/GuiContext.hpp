@@ -295,7 +295,7 @@ namespace fgui
 		/// @brief Call the draw function of the elements in the main layout
 		/// 
 		/////////////////////////////////////////////////////////////
-		void drawElements();
+		virtual void drawElements();
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Suspend the thread until fps is dropped to set limit

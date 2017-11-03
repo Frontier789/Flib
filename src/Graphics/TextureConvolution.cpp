@@ -120,7 +120,6 @@ namespace fg
 				"}\n";
 			
 			m_shaderResult = m_shader.loadFromMemory(sourceVert,sourceFrag);
-			
 		}
 		else
 		{
@@ -209,6 +208,8 @@ namespace fg
 				
 			m_shaderResult = m_shader.loadFromMemory(sourceVert,sourceFrag);
 		}
+		
+		m_shader.setBlendMode(fg::Overwrite);
 	}
 
 	void TextureConvolution::setupFBOs()
@@ -223,6 +224,7 @@ namespace fg
 			
 			m_fboFirst.create(m_texture);
 			m_drawData.positions = pts;
+			m_drawData.addDraw(0,6,fg::Triangles);
 			
 			m_shader.setUniform("u_texSize",s);
 		
@@ -271,18 +273,18 @@ namespace fg
 		if (!m_target)
 			return *this;
 		
+		fm::rect2s viewport = fg::FrameBuffer::getViewport();
+		
 		if (m_linear)
 		{
 			C(applyCount)
 			{
 				m_fboFirst.bind();
-				m_fboFirst.clear();
 				m_shader.setUniform("u_tex",*m_target);
 				m_shader.setUniform("u_vertical",true);
 				m_shader.draw(m_drawData);
 				
 				m_fboSecond.bind();
-				m_fboSecond.clear();
 				m_shader.setUniform("u_tex",m_texture);
 				m_shader.setUniform("u_vertical",false);
 				m_shader.draw(m_drawData);
@@ -296,14 +298,12 @@ namespace fg
 				if (i%2 == 0)
 				{
 					m_fboFirst.bind();
-					m_fboFirst.clear();
 					m_shader.setUniform("u_tex",*m_target);
 					m_shader.draw(m_drawData);
 				}
 				else
 				{
 					m_fboSecond.bind();
-					m_fboSecond.clear();
 					m_shader.setUniform("u_tex",m_texture);
 					m_shader.draw(m_drawData);
 				}
@@ -314,13 +314,13 @@ namespace fg
 				m_shader.setUniform("u_apply",false);
 				
 				m_fboSecond.bind();
-				m_fboSecond.clear();
 				m_shader.setUniform("u_tex",m_texture);
 				m_shader.draw(m_drawData);
 			}
 		}
 		
 		FrameBuffer::bind(nullptr);
+		FrameBuffer::setViewport(viewport);
 		
 		return *this;
 	}

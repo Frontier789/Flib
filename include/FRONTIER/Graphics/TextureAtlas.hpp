@@ -167,6 +167,19 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		Glyph upload(const fg::Image &img,const MappedType &point,const fm::vec2 &leftdown = fm::vec2());
 		
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Add a new Texture to the atlas
+		/// 
+		/// @param img The image of the new Texture
+		/// @param point The associated key
+		/// @param leftdown The associated offset
+		/// 
+		/// @return The properties of the uploaded Texture in a Glyph
+		/// 
+		/////////////////////////////////////////////////////////////
+		Glyph upload(const fg::Texture &tex,const MappedType &point,const fm::vec2 &leftdown = fm::vec2());
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Add new Textures to the atlas
 		/// 

@@ -113,6 +113,13 @@ namespace fg
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
+	inline void SpriteManagerBase<ImageID>::addImage(const fg::Texture &tex,ImageID id,const fm::vec2 &frameSize)
+	{
+		m_atlas.upload(tex,id,frameSize);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ImageID>
 	inline fm::vec2 SpriteManagerBase<ImageID>::getImageSize(ImageID id)
 	{
 		if (id == ImageID() && !m_atlas.isUploaded(id))

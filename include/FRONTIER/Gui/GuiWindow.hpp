@@ -132,6 +132,12 @@ namespace fgui
 		virtual void handleEvent(fw::Event &ev) override;
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Call the draw function of the elements in the main layout
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void drawElements() override;
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Handle all pending events
 		/// 
 		/// This function is to be implemented by derived classes

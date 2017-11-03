@@ -22,6 +22,7 @@
 #include <FRONTIER/Graphics/DepthTexture.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
+#include <FRONTIER/System/Vector4.hpp>
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
@@ -53,9 +54,11 @@ namespace fg
 	class FRONTIER_API FrameBuffer : public fm::NonCopyable, public GlObject
 	{
 		unsigned int m_depthBufID; ///< The id of the depth buffer
-		void init(); ///< Internal function used at setup
-		fm::Size m_width;  ///< The width of the FrameBuffer
-		fm::Size m_height; ///< The height of the FrameBuffer
+		void init();        ///< Internal function used at setup
+		fm::Size m_width;   ///< The width of the FrameBuffer
+		fm::Size m_height;  ///< The height of the FrameBuffer
+		float m_clearDepth; ///< The depth value used when clearing
+		fm::vec4 m_clearColor;         ///< The color thats used when clearing the framebuffer
 		DepthTestMode m_depthTestMode; ///< The current depth test mode
 	public:
 		typedef FrameBuffer &reference;
@@ -230,6 +233,22 @@ namespace fg
 		static fm::Result bind(const FrameBuffer &fbo);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of the clearing color
+		///
+		/// @param color The new clear-color
+		///
+		/////////////////////////////////////////////////////////////
+		void setClearColor(const fm::vec4 &color);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the clearing depth
+		///
+		/// @param depth The new clearing depth
+		///
+		/////////////////////////////////////////////////////////////
+		void setClearDepth(float depth);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Clears the specified buffers
 		/// 
 		/// The depth buffer gets cleared if the depth test mode is not set to Unused
@@ -284,13 +303,13 @@ namespace fg
 		static void setViewport(const fm::rect2s &viewport);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the viewport
+		/// @brief Get the current viewport
 		///
 		/// The viewport specifies the part of the render
 		/// target that is used for rendering (in pixels)
 		/// For more details see <a href="https://www.opengl.org/sdk/docs/man/html/glViewport.xhtml">this article</a>
 		///
-		/// @return The viewport
+		/// @return The current viewport
 		///
 		/////////////////////////////////////////////////////////////
 		static fm::rect2s getViewport();
@@ -306,7 +325,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the size of the FrameBuffer
 		///
-		/// The size of the framebuffer
+		/// @return The size of the framebuffer
 		///
 		/////////////////////////////////////////////////////////////
 		const fm::vec2s &getSize() const;

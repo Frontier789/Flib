@@ -96,6 +96,7 @@ namespace fg
 	FrameBuffer::FrameBuffer() : m_depthBufID(0),
 								 m_width(0),
 								 m_height(0),
+								 m_clearDepth(0),
 								 m_depthTestMode(Unused)
 	{
 
@@ -105,6 +106,7 @@ namespace fg
 	FrameBuffer::FrameBuffer(FrameBuffer &&move) : m_depthBufID(0),
 												   m_width(0),
 												   m_height(0),
+												   m_clearDepth(0),
 												   m_depthTestMode(Unused)
 	{
 		move.swap(*this);
@@ -132,6 +134,7 @@ namespace fg
 	FrameBuffer::FrameBuffer(const Texture **colorAttachments,fm::Size count,const DepthBuffer &depthBuf) : m_depthBufID(0),
 																											m_width(0),
 																										    m_height(0),
+																										    m_clearDepth(0),
 																											m_depthTestMode(Unused)
 	{
 		create(colorAttachments,count,depthBuf);
@@ -141,6 +144,7 @@ namespace fg
 	FrameBuffer::FrameBuffer(const Texture &colorAttachment,const DepthBuffer &depthBuf) : m_depthBufID(0),
 																						   m_width(0),
 																						   m_height(0),
+																						   m_clearDepth(0),
 																						   m_depthTestMode(Unused)
 	{
 		const Texture *ptr = &colorAttachment;
@@ -278,12 +282,30 @@ namespace fg
 	{
 		return bind(&fbo);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	void FrameBuffer::setClearColor(const fm::vec4 &color)
+	{
+		m_clearColor = color;
+	}
+
+	/////////////////////////////////////////////////////////////
+	void FrameBuffer::setClearDepth(float depth)
+	{
+		m_clearDepth = depth;
+	}
 
 	/////////////////////////////////////////////////////////////
 	void FrameBuffer::clear(bool colorBuffer,bool depthBuffer,bool stencilBuffer)
 	{
+		glClearDepth(m_clearDepth);
+		glClearColor(m_clearColor.r,m_clearColor.g,m_clearColor.b,m_clearColor.a);
+		
 		if (colorBuffer || depthBuffer || stencilBuffer)
+		{
+			bind();
 			glClear((colorBuffer ? GL_COLOR_BUFFER_BIT : 0)|(depthBuffer ? GL_DEPTH_BUFFER_BIT : 0)|(stencilBuffer ? GL_STENCIL_BUFFER_BIT : 0));
+		}
 	}
 
 	/////////////////////////////////////////////////////////////
