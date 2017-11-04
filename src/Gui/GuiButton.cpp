@@ -81,6 +81,14 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
+	void GuiButton::setCharacterSize(fm::Size characterSize)
+	{
+		m_text.setCharacterSize(characterSize);
+		
+		setSize(getSize());
+	}
+	
+	/////////////////////////////////////////////////////////////
 	void GuiButton::setText(const fm::String &text)
 	{
 		m_text.setText(text);

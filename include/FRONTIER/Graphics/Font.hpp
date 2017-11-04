@@ -50,7 +50,10 @@ namespace fg
 
 	//////////////////////////////////
 	/// @brief Reference counted font class that implements <a href="http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02#Creating_a_texture_atlas">Font atlas</a> technique
-	///
+	/// 
+	/// Fonts are not thread safe, to use one font in two threads you need
+	/// to create a copy with createHardCopy
+	/// 
 	/// @ingroup Graphics
 	///
 	//////////////////////////////////
@@ -65,13 +68,13 @@ namespace fg
 		{
 		public:
 			fm::Uint32 codePoint; ///< The codepoint of the character
-			unsigned int style;  ///< The style of the character (e.g. Underlined)
+			Glyph::Style style;  ///< The style of the character (e.g. Underlined)
 
 			/////////////////////////////////////////////////////////////
 			Identifier();
 
 			/////////////////////////////////////////////////////////////
-			Identifier(const fm::Uint32 &codePoint,unsigned int style = 0);
+			Identifier(const fm::Uint32 &codePoint,Glyph::Style style = Glyph::Regular);
 
 			/////////////////////////////////////////////////////////////
 			bool operator<(const Identifier &other) const;
@@ -81,11 +84,11 @@ namespace fg
 		};
 		
 	private:
-		mutable std::map<unsigned int,SpriteManagerBase<Identifier> > *m_spriteManagers; ///< Maps characer sizes to sprite managers
-		FontRenderer *m_renderer; ///< A pointer to a fg::Font::Renderer that does the rendering part
-		fm::Size *m_refCount; ///< The reference count
+		class SharedData; ///< Stores data shared between fonts
+		SharedData *m_sharedData; ///< Data shared between fonts
 		
-		TextureAtlas<Identifier> &getTexAtl(unsigned int charSize = 0) const; ///< Helper function that returns a texture atlas as needed
+		void loadSigDistFieldShader(); ///< Internal helper function
+		TextureAtlas<Identifier> &getTexAtl(unsigned int charSize = 0,Glyph::Style style = Glyph::Regular) const; ///< Helper function that returns a texture atlas as needed
 		
 	public:
 		typedef Font &reference;
@@ -228,21 +231,21 @@ namespace fg
 		/// find the glyph it creates the glyph.
 		///
 		/// @param codepoint The codepoint of the glyph
-		/// @param type The style of the glyph
+		/// @param style The style of the glyph
 		///
 		/// @return The glyph
 		///
 		/////////////////////////////////////////////////////////////
-		Glyph getGlyph(const fm::Uint32 &codepoint,unsigned int type = Glyph::Regular) const;
+		Glyph getGlyph(const fm::Uint32 &codepoint,Glyph::Style style = Glyph::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Precache characters
 		///
 		/// @param characters The characters to precache
-		/// @param type The style of the glyphs
+		/// @param style The style of the glyphs
 		///
 		/////////////////////////////////////////////////////////////
-		void preCache(const fm::String &characters,unsigned int type = Glyph::Regular) const;
+		void preCache(const fm::String &characters,Glyph::Style style = Glyph::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Render a glyph's image with the current size
@@ -256,7 +259,7 @@ namespace fg
 		/// @return The rendered image
 		///
 		/////////////////////////////////////////////////////////////
-		Image renderGlyph(const fm::Uint32 &codepoint,unsigned int style = Glyph::Regular,fm::vector2<float> *leftDown = nullptr) const;
+		Image renderGlyph(const fm::Uint32 &codepoint,Glyph::Style style = Glyph::Regular,fm::vector2<float> *leftDown = nullptr) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if a given glyph is present in the font
@@ -267,7 +270,7 @@ namespace fg
 		/// @return True iff the glyph is present
 		///
 		/////////////////////////////////////////////////////////////
-		bool hasGlyph(const fm::Uint32 &codepoint,unsigned int style = Glyph::Regular) const;
+		bool hasGlyph(const fm::Uint32 &codepoint,Glyph::Style style = Glyph::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get information about the font metrics
@@ -307,10 +310,10 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the underlying renderer
 		///
-		/// @return The renderer (can be null)
+		/// @return The renderer
 		///
 		/////////////////////////////////////////////////////////////
-		FontRenderer *getRenderer();
+		FontRenderer &getRenderer();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the currently used font atlas
@@ -321,20 +324,28 @@ namespace fg
 		const Texture &getTexture() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the currently used sprite manager
+		/// @brief Get the currently used sprite manager for a given style
+		/// 
+		/// Styles may share a single sprite manager
+		/// 
+		/// @param style The style to get the manager for
 		///
 		/// @return The sprite manager
 		///
 		/////////////////////////////////////////////////////////////
-		const SpriteManagerBase<Identifier> &getSpriteManager() const;
+		const SpriteManagerBase<Identifier> &getSpriteManager(Glyph::Style style = Glyph::Regular) const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the currently used sprite manager
+		/// @brief Get the currently used sprite manager for a given style
+		/// 
+		/// Styles may share a single sprite manager
+		/// 
+		/// @param style The style to get the manager for
 		///
 		/// @return The sprite manager
 		///
 		/////////////////////////////////////////////////////////////
-		SpriteManagerBase<Identifier> &getSpriteManager();
+		SpriteManagerBase<Identifier> &getSpriteManager(Glyph::Style style = Glyph::Regular);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a sprite for a code point
@@ -345,21 +356,21 @@ namespace fg
 		/// @return The sprite
 		///
 		/////////////////////////////////////////////////////////////
-		SpriteBase<Identifier> getSprite(fm::Uint32 letter,unsigned int style = 0);
+		SpriteBase<Identifier> getSprite(fm::Uint32 letter,Glyph::Style style = Glyph::Regular);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the image of a glyph manually
 		///
 		/// @param img The image of the glyph
 		/// @param letter The codepoint of the glyph
-		/// @param type The style of the glyph
+		/// @param style The style of the glyph
 		/// @param leftdown The offset of the glyph from the baseline
 		/// @param characterSize The target character size (0 means the currently set)
 		///
 		/// @return The glyph of the uploaded image
 		///
 		/////////////////////////////////////////////////////////////
-		Glyph upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type = Glyph::Regular,const fm::vec2i &leftdown = fm::vec2i(),unsigned int characterSize = 0);
+		Glyph upload(const fg::Image &img,const fm::Uint32 &letter,Glyph::Style style = Glyph::Regular,const fm::vec2i &leftdown = fm::vec2i(),unsigned int characterSize = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Swap the content of the two objects

@@ -131,6 +131,14 @@ namespace fgui
 		void setText(const fm::String &text);
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Set the displayed text"s character size on the button
+		/// 
+		/// @param characterSize The new character size
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setCharacterSize(fm::Size characterSize);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Call a function for every gui element in the hierarchy
 		/// 
 		/// @param func The func to call

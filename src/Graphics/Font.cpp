@@ -1,23 +1,25 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
-///                                                                    ///
-/// Flib is licensed under the terms of GNU GPL.                       ///
-/// Therefore you may freely use it in your project,                   ///
-/// modify it, redistribute it without any warranty on the             ///
-/// condition that this disclaimer is not modified/removed.            ///
-/// You may not misclaim the origin of this software.                  ///
-///                                                                    ///
-/// If you use this software in your program/project a                 ///
+/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)		   ///
+///																	///
+/// Flib is licensed under the terms of GNU GPL.					   ///
+/// Therefore you may freely use it in your project,				   ///
+/// modify it, redistribute it without any warranty on the			 ///
+/// condition that this disclaimer is not modified/removed.			///
+/// You may not misclaim the origin of this software.				  ///
+///																	///
+/// If you use this software in your program/project a				 ///
 /// note about it and an email for the author (fr0nt13r789@gmail.com)  ///
-/// is not required but highly appreciated.                            ///
-///                                                                    ///
-/// You should have received a copy of GNU GPL with this software      ///
-///                                                                    ///
+/// is not required but highly appreciated.							///
+///																	///
+/// You should have received a copy of GNU GPL with this software	  ///
+///																	///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/SpriteManager.hpp>
 #include <FRONTIER/Graphics/FontRenderer.hpp>
 #include <FRONTIER/Graphics/TextureAtlas.hpp>
+#include <FRONTIER/Graphics/ShaderSource.hpp>
 #include <FRONTIER/Graphics/Sprite.hpp>
+#include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/util/C.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
@@ -31,8 +33,8 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	Font::Identifier::Identifier(const fm::Uint32 &codePoint,unsigned int style) : codePoint(codePoint),
-																				   style    (style)
+	Font::Identifier::Identifier(const fm::Uint32 &codePoint,Glyph::Style style) : codePoint(codePoint),
+																				   style	(style)
 	{
 
 	}
@@ -43,163 +45,272 @@ namespace fg
 		// used for sorting
 		return (codePoint==other.codePoint ? style < other.style : codePoint < other.codePoint);
 	}
+	
+	////////////////////////////////////////////////////////////
+	class Font::SharedData
+	{
+	public:
+		SpriteManagerBase<Identifier> sigDistSpriteManager;
+		mutable std::map<unsigned int,SpriteManagerBase<Identifier> > spriteManagers;
+		FontRenderer renderer;
+		fm::Size refCount;
+		bool loaded;
+		
+		////////////////////////////////////////////////////////////
+		SharedData() : refCount(1),
+					   loaded(false)
+		{
+			
+		}
+		
+		////////////////////////////////////////////////////////////
+		void incRef() { ++refCount; }
+		
+		////////////////////////////////////////////////////////////
+		bool decRef() { return --refCount; }
+	};
 		
 	////////////////////////////////////////////////////////////
-	TextureAtlas<Font::Identifier> &Font::getTexAtl(unsigned int charSize) const
+	TextureAtlas<Font::Identifier> &Font::getTexAtl(unsigned int charSize,Glyph::Style style) const
 	{
-		if (!charSize)
-			charSize = m_renderer->getCharacterSize();
+		if (style & Glyph::SigDistField)
+			return m_sharedData->sigDistSpriteManager.getAtlas();
 		
-		return (*m_spriteManagers)[charSize].getAtlas();
+		if (!charSize)
+			charSize = m_sharedData->renderer.getCharacterSize();
+		
+		return m_sharedData->spriteManagers[charSize].getAtlas();
+	}
+	
+	////////////////////////////////////////////////////////////
+	Font::Font() : m_sharedData(new SharedData)
+	{
+
 	}
 
 	////////////////////////////////////////////////////////////
-    Font::Font() : m_spriteManagers(nullptr),
-                   m_renderer(nullptr),
-                   m_refCount(nullptr)
-    {
-
-    }
-
-	////////////////////////////////////////////////////////////
-    Font::Font(Font::const_reference copy) : m_spriteManagers(nullptr),
-											 m_renderer(nullptr),
-											 m_refCount(nullptr)
-    {
+	Font::Font(Font::const_reference copy) : m_sharedData(new SharedData)
+	{
 		(*this) = copy;
-    }
+	}
 
 	////////////////////////////////////////////////////////////
-	Font::Font(Font &&move) : m_spriteManagers(nullptr),
-							  m_renderer(nullptr),
-							  m_refCount(nullptr)
-    {
+	Font::Font(Font &&move) : m_sharedData(new SharedData)
+	{
 		move.swap(*this);
-    }
+	}
 
 	////////////////////////////////////////////////////////////
 	Font &Font::operator=(Font::const_reference copy)
-    {
+	{
 		cleanUp();
 		
-		if (copy.isLoaded())
-		{
-			m_renderer       = copy.m_renderer;
-			m_spriteManagers = copy.m_spriteManagers;
-			m_refCount       = copy.m_refCount;
-			
-			(*m_refCount)++;
-		}
+		m_sharedData = copy.m_sharedData;
+		m_sharedData->incRef();
 		
 		return *this;
-    }
+	}
 
 	////////////////////////////////////////////////////////////
 	Font &Font::operator=(Font &&move)
-    {
+	{
 		return this->swap(move);
-    }
+	}
 
 	////////////////////////////////////////////////////////////
-    Font::~Font()
-    {
-    	cleanUp();
-    }
+	Font::~Font()
+	{
+		cleanUp();
+	}
 
 	////////////////////////////////////////////////////////////
-    fm::Result Font::loadFromFile(const std::string &fileName,unsigned int characterSize)
-    {
-    	init();
-        return m_renderer->loadFromFile(fileName,characterSize);
-    }
+	fm::Result Font::loadFromFile(const std::string &fileName,unsigned int characterSize)
+	{
+		init();
+		fm::Result res = m_sharedData->renderer.loadFromFile(fileName,characterSize);
+		m_sharedData->loaded = res;
+		return res;
+	}
 
 	////////////////////////////////////////////////////////////
-    fm::Result Font::loadSysFont(const std::string &fileName,unsigned int characterSize)
-    {
-    	init();
-        return m_renderer->loadSysFont(fileName,characterSize);
-    }
+	fm::Result Font::loadSysFont(const std::string &fileName,unsigned int characterSize)
+	{
+		init();
+		fm::Result res = m_sharedData->renderer.loadSysFont(fileName,characterSize);
+		m_sharedData->loaded = res;
+		return res;
+	}
 
 	////////////////////////////////////////////////////////////
-    fm::Result Font::loadDefSysFont(unsigned int characterSize)
-    {
-    	init();
-        return m_renderer->loadDefSysFont(characterSize);
-    }
+	fm::Result Font::loadDefSysFont(unsigned int characterSize)
+	{
+		init();
+		fm::Result res = m_sharedData->renderer.loadDefSysFont(characterSize);
+		m_sharedData->loaded = res;
+		return res;
+	}
 
 	////////////////////////////////////////////////////////////
-    fm::Result Font::loadFromMemory(const fm::Uint8 *fileContent,fm::Size fileLength,unsigned int characterSize)
-    {
-        init();
-        return m_renderer->loadFromMemory(fileContent,fileLength,characterSize);
-    }
+	fm::Result Font::loadFromMemory(const fm::Uint8 *fileContent,fm::Size fileLength,unsigned int characterSize)
+	{
+		init();
+		fm::Result res = m_sharedData->renderer.loadFromMemory(fileContent,fileLength,characterSize);
+		m_sharedData->loaded = res;
+		return res;
+	}
 
 	////////////////////////////////////////////////////////////
-    fm::Result Font::copyFromMemory(const fm::Uint8 *fileContent,fm::Size fileLength,unsigned int size)
-    {
-        init();
-        return m_renderer->copyFromMemory(fileContent,fileLength,size);
-    }
-    
+	fm::Result Font::copyFromMemory(const fm::Uint8 *fileContent,fm::Size fileLength,unsigned int size)
+	{
+		init();
+		fm::Result res = m_sharedData->renderer.copyFromMemory(fileContent,fileLength,size);
+		m_sharedData->loaded = res;
+		return res;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void Font::loadSigDistFieldShader()
+	{
+		fm::Result res = m_sharedData->sigDistSpriteManager.loadShader([](ShaderSource &source) {
+			
+			if (source.type == fg::VertexShader)
+			{
+				source.outputs.push_back(fg::ShaderSource::OutputData{"vec2","va_texpEnv[4]"});
+				source.mainBody += R"(
+	va_texpEnv[0] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(1.0,0.0),0.0,1.0));
+	va_texpEnv[1] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(0.0,1.0),0.0,1.0));
+	va_texpEnv[2] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(-1.,0.0),0.0,1.0));
+	va_texpEnv[3] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(0.0,-1.),0.0,1.0));
+									 )";
+				
+			}
+			if (source.type == fg::FragmentShader)
+			{
+				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_thickness"});
+				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_pov"});
+				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_dscale"});
+				source.inputs.  push_back(fg::ShaderSource::OutputData {"vec2","va_texpEnv[4]"});
+				source.globals += R"(
+float contour(in float d,in float w) 
+{
+	return smoothstep(0.5 - w, 0.5 + w, d * u_thickness * 2.0);
+}
+
+float samp(in vec2 uv,in float w)
+{
+	return contour(texture2D(u_tex, uv).a, w);
+}
+									)";
+				source.mainBody =/* R"(
+				
+				
+				vec4 c = texture2D(u_tex,va_texp);
+	
+    float dist = c.a;
+
+	float width = pow(fwidth(dist),0.2 / u_pov);
+
+    float alpha = contour( dist, width );
+
+    float dscale = 0.354;
+    vec2 duv = vec2(dscale) * (dFdx(va_texp) + dFdy(va_texp));
+    vec4 box = vec4(va_texp-duv, va_texp+duv);
+
+    float asum = samp( box.xy, width )
+               + samp( box.zw, width )
+               + samp( box.xw, width )
+               + samp( box.zy, width );
+
+	alpha = (alpha + 0.4 * asum) / (1.0 + 0.4*4.0);
+
+	out_color = vec4(vec3(0.0), alpha);
+				
+				)";*/
+				
+				R"(
+	float dist = texture2D(u_tex,va_texp).a;
+	float distEnv[4] = float[4]( texture2D(u_tex,va_texpEnv[0]).a, 
+								 texture2D(u_tex,va_texpEnv[1]).a, 
+								 texture2D(u_tex,va_texpEnv[2]).a, 
+								 texture2D(u_tex,va_texpEnv[3]).a );
+
+	float width = pow( abs(distEnv[0] - dist) + abs(distEnv[1] - dist),0.4 / u_pov);
+
+	float alpha = contour( dist, width );
+
+	float dscale = u_dscale;
+	vec2 duv = vec2(dscale) * (abs(va_texpEnv[0] - va_texp) + abs(va_texpEnv[1] - va_texp));
+	vec4 box = vec4(va_texp-duv, va_texp+duv);
+
+	float asum = samp( box.xy, width )
+			   + samp( box.zw, width )
+			   + samp( box.xw, width )
+			   + samp( box.zy, width );
+
+	alpha = (alpha + 0.4 * asum) / (1.0 + 0.4*4.0);
+
+	out_color = vec4(vec3(0.0), alpha);
+									)";
+			}
+		});
+		
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_thickness",.7f);
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_pov",.578f);
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_dscale",.4f);
+		
+		(void)res;
+	}
+	
 	/////////////////////////////////////////////////////////////
 	Font Font::createHardCopy() const
 	{
 		Font ret;
 		
-		if (isLoaded())
-		{
-			ret.m_spriteManagers = new std::map<unsigned int,SpriteManagerBase<Identifier> >;
-			ret.m_renderer       = new FontRenderer();
-			ret.m_refCount       = new fm::Size(1);
-			
-			*ret.m_renderer  = m_renderer->createHardCopy(); 
-		}
+		ret.loadSigDistFieldShader();
+		ret.m_sharedData->renderer = std::move(m_sharedData->renderer.createHardCopy());
+		ret.m_sharedData->loaded   = m_sharedData->loaded;
 		
 		return ret;
 	}
 
 	////////////////////////////////////////////////////////////
-    Font::reference Font::setSmooth(bool smooth)
-    {
-		if (isLoaded())
-			for (auto it = m_spriteManagers->begin();it != m_spriteManagers->end();++it)
-				it->second.getAtlas().getTexture().setSmooth(smooth);
+	Font::reference Font::setSmooth(bool smooth)
+	{
+		for (auto &it : m_sharedData->spriteManagers)
+			it.second.getAtlas().getTexture().setSmooth(smooth);
 
 		return *this;
-    }
+	}
 
 
 	////////////////////////////////////////////////////////////
-    void Font::setCharacterSize(unsigned int characterSize) const
-    {
-        if (isLoaded())
-            m_renderer->setCharacterSize(characterSize);
-    }
+	void Font::setCharacterSize(unsigned int characterSize) const
+	{
+		m_sharedData->renderer.setCharacterSize(characterSize);
+	}
 
 	/////////////////////////////////////////////////////////////
 	unsigned int Font::getCharacterSize() const
 	{
-		if (!isLoaded())
-			return 0;
-
-		return m_renderer->getCharacterSize();
+		return m_sharedData->renderer.getCharacterSize();
 	}
 
 	/////////////////////////////////////////////////////////////
-	FontRenderer *Font::getRenderer()
+	FontRenderer &Font::getRenderer()
 	{
-		return m_renderer;
+		return m_sharedData->renderer;
 	}
 
-
 	////////////////////////////////////////////////////////////
-    Glyph Font::getGlyph(const fm::Uint32 &letter,unsigned int style) const
-    {
-    	if (!isLoaded())
+	Glyph Font::getGlyph(const fm::Uint32 &letter,Glyph::Style style) const
+	{
+		if (!isLoaded())
 			return Glyph();
-
+		
+		auto &texAtlas = getTexAtl(getCharacterSize(),style);
+		
 		// try finding it in the dictionary
-		Glyph glyph = getTexAtl().fetch(Identifier(letter,style));
+		Glyph glyph = texAtlas.fetch(Identifier(letter,style));
 		
 		if (glyph != Glyph())
 			return glyph;
@@ -208,34 +319,34 @@ namespace fg
 		fm::vec2 leftdown;
 		fg::Image img = renderGlyph(letter,style,&leftdown);
 		
-		return getTexAtl().upload(img,Identifier(letter,style),leftdown);
-    }
-    
+		return texAtlas.upload(img,Identifier(letter,style),leftdown);
+	}
+	
 	/////////////////////////////////////////////////////////////
-	void Font::preCache(const fm::String &characters,unsigned int type) const
+	void Font::preCache(const fm::String &characters,Glyph::Style style) const
 	{
 		if (!isLoaded())
 			return;
 
-		TextureAtlas<Identifier> &texAtl = getTexAtl();
+		auto &texAtlas = getTexAtl();
 		
 		std::vector<TextureAtlas<Identifier>::MapPoint> mapPts;
 		
 		C(characters.size())
 		{
 			fm::Uint32 c = characters[i];
-			Glyph g = texAtl.fetch(Identifier(c,type));
+			Glyph g = texAtlas.fetch(Identifier(c,style));
 			
 			if (g == Glyph())
 			{
 				fm::vec2 leftdown;
-				fg::Image *img = new fg::Image(renderGlyph(c,type,&leftdown));
+				fg::Image *img = new fg::Image(std::move(renderGlyph(c,style,&leftdown)));
 				
-				mapPts.push_back(TextureAtlas<Identifier>::MapPoint(img,Identifier(c,type),leftdown));
+				mapPts.push_back(TextureAtlas<Identifier>::MapPoint(img,Identifier(c,style),leftdown));
 			}
 		}
 		
-		texAtl.upload(&mapPts[0],mapPts.size());
+		texAtlas.upload(&mapPts[0],mapPts.size());
 		
 		C(mapPts.size())
 		{
@@ -245,16 +356,29 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-    Image Font::renderGlyph(const fm::Uint32 &letter,unsigned int style,fm::vec2 *leftDown) const
-    {
-        if (!isLoaded())
-            return Image();
-
-        return m_renderer->renderGlyph(letter,style,leftDown);
-    }
-    
+	Image Font::renderGlyph(const fm::Uint32 &letter,Glyph::Style style,fm::vec2 *leftDown) const
+	{
+		if (style & Glyph::SigDistField)
+		{
+			auto charSize = getCharacterSize();
+			
+			setCharacterSize(200);
+			Image renderImg = m_sharedData->renderer.renderGlyph(letter,style,leftDown);
+			Image sdfImg = std::move(renderImg.convertToSDF(10,[](Color c){return c.a > 127;},0));
+			Image scaledSDFImg = std::move(sdfImg.scale(sdfImg.getSize()*.3));
+			
+			setCharacterSize(charSize);
+			
+			return scaledSDFImg;
+		}
+		else
+		{
+			return m_sharedData->renderer.renderGlyph(letter,style,leftDown);
+		}
+	}
+	
 	/////////////////////////////////////////////////////////////
-	bool Font::hasGlyph(const fm::Uint32 &letter,unsigned int style) const
+	bool Font::hasGlyph(const fm::Uint32 &letter,Glyph::Style style) const
 	{
 		if (!isLoaded())
 			return false;
@@ -262,100 +386,92 @@ namespace fg
 		if (getTexAtl().isUploaded(Identifier(letter,style)))
 			return true;
 		
-		return m_renderer->hasGlyph(letter);
+		return m_sharedData->renderer.hasGlyph(letter);
 	}
 
 	////////////////////////////////////////////////////////////
 	void Font::cleanUp()
 	{
-		if (m_refCount)
-		{
-			(*m_refCount)--;
-			
-			if (*m_refCount == 0)
-			{
-				delete m_spriteManagers;
-				delete m_renderer;
-				delete m_refCount;
-			}
-		}
+		if (!m_sharedData->decRef())
+			delete m_sharedData;
 		
-		m_spriteManagers = nullptr;
-		m_renderer       = nullptr;
-		m_refCount       = nullptr;
+		m_sharedData = nullptr;
 	}
 
 
 	////////////////////////////////////////////////////////////
 	void Font::init()
 	{
-		// first clean up
-        cleanUp();
-		m_spriteManagers = new std::map<unsigned int,SpriteManagerBase<Identifier> >;
-		m_renderer       = new FontRenderer;
-		m_refCount       = new fm::Size(1);
+		cleanUp();
+		m_sharedData = new SharedData;
+		loadSigDistFieldShader();
 	}
 
 
 	////////////////////////////////////////////////////////////
-    Metrics Font::getMetrics() const
-    {
-        if (!isLoaded())
-            return Metrics();
-        
-        return m_renderer->getMetrics();
-    }
-    
+	Metrics Font::getMetrics() const
+	{
+		return m_sharedData->renderer.getMetrics();
+	}
+	
 	/////////////////////////////////////////////////////////////
 	int Font::getKerning(const fm::Uint32 &leftCodePoint,const fm::Uint32 &rightCodePoint) const
 	{
-		if (!isLoaded())
-			return 0;
-
-		return m_renderer->getKerning(leftCodePoint,rightCodePoint);
+		return m_sharedData->renderer.getKerning(leftCodePoint,rightCodePoint);
 	}
 
 	////////////////////////////////////////////////////////////
 	const Texture &Font::getTexture() const
 	{
-	    return getTexAtl().getTexture();
+		return getTexAtl().getTexture();
 	}
 	
 	/////////////////////////////////////////////////////////////
-	const SpriteManagerBase<Font::Identifier> &Font::getSpriteManager() const
+	const SpriteManagerBase<Font::Identifier> &Font::getSpriteManager(Glyph::Style style) const
 	{
-		return (*m_spriteManagers)[m_renderer->getCharacterSize()];
+		if (style & Glyph::SigDistField)
+			return m_sharedData->sigDistSpriteManager;
+		
+		return m_sharedData->spriteManagers[getCharacterSize()];
 	}
 
 	/////////////////////////////////////////////////////////////
-	SpriteManagerBase<Font::Identifier> &Font::getSpriteManager()
+	SpriteManagerBase<Font::Identifier> &Font::getSpriteManager(Glyph::Style style)
 	{
-		return (*m_spriteManagers)[m_renderer->getCharacterSize()];
+		if (style & Glyph::SigDistField)
+			return m_sharedData->sigDistSpriteManager;
+		
+		return m_sharedData->spriteManagers[getCharacterSize()];
 	}
 	
 	/////////////////////////////////////////////////////////////
-	SpriteBase<Font::Identifier> Font::getSprite(fm::Uint32 letter,unsigned int style)
+	Font::Sprite Font::getSprite(fm::Uint32 letter,Glyph::Style style)
 	{
-		if (!getTexAtl().isUploaded(Identifier(letter,style)))
+		if (!hasGlyph(letter,style))
 			getGlyph(letter,style);
 		
-		return getSpriteManager().getSprite(Font::Identifier(letter,style));
+		Font::Sprite sprite = getSpriteManager().getSprite(Font::Identifier(letter,style));
+		
+		if (style & Glyph::SigDistField)
+		{
+			fm::vec2 size = m_sharedData->renderer.getGlyphRect(letter,style).size;
+			
+			sprite.setSize(size);
+		}
+		
+		return sprite;
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Glyph Font::upload(const fg::Image &img,const fm::Uint32 &letter,unsigned int type,const fm::vec2i &leftdown,unsigned int characterSize)
+	Glyph Font::upload(const fg::Image &img,const fm::Uint32 &letter,Glyph::Style style,const fm::vec2i &leftdown,unsigned int characterSize)
 	{
-		if (!isLoaded()) return Glyph();
-		
-		return getTexAtl(characterSize).upload(img,Identifier(letter,type),leftdown);
+		return getTexAtl(characterSize,style).upload(img,Identifier(letter,style),leftdown);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	Font::reference Font::swap(Font &font)
 	{
-		std::swap(m_spriteManagers,font.m_spriteManagers);
-		std::swap(m_renderer      ,font.m_renderer  );
-		std::swap(m_refCount      ,font.m_refCount  );
+		std::swap(m_sharedData,font.m_sharedData);
 		
 		return *this;
 	}
@@ -363,7 +479,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	bool Font::isLoaded() const
 	{
-		return m_renderer;
+		return m_sharedData->loaded;
 	}
 	
 	/////////////////////////////////////////////////////////////

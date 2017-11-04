@@ -308,9 +308,23 @@ namespace fg
 			
 		return fm::Result();
 	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::rect2i FontRenderer::getGlyphRect(const fm::Uint32 &letter,Glyph::Style /* style */) const
+	{
+		float scale = stbtt_ScaleForMappingEmToPixels((stbtt_fontinfo*)m_stbFontInfo, m_currentSize);
+			
+		int ix0,ix1,iy0,iy1;
+		stbtt_GetCodepointBitmapBox((stbtt_fontinfo*)m_stbFontInfo, letter, scale, scale, &ix0, &iy0, &ix1, &iy1);
+		
+		int leftSideBearing, advanceWidth;
+		stbtt_GetCodepointHMetrics((stbtt_fontinfo*)m_stbFontInfo, letter, &advanceWidth, &leftSideBearing);
+		
+		return fm::rect2i(fm::vec2i(leftSideBearing*scale,iy0),fm::vec2i(ix1-ix0,iy1-iy0));
+	}	
 
 	/////////////////////////////////////////////////////////////
-	fg::Image FontRenderer::renderGlyph(const fm::Uint32 &letter,unsigned int style,fm::vec2 *leftDown) const
+	fg::Image FontRenderer::renderGlyph(const fm::Uint32 &letter,Glyph::Style style,fm::vec2 *leftDown) const
 	{
 		if (!m_fileContent) 
 			return fg::Image();

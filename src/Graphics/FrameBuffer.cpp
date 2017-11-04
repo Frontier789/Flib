@@ -18,6 +18,7 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
+#include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/util/C.hpp>
 #include <FRONTIER/System/Rect.hpp>

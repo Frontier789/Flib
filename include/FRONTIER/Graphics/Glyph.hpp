@@ -42,14 +42,15 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		enum Style {
-			Regular     = 0x00, ///< Indicates that the text is regular
-			Underlined  = 0x01, ///< Indicates that the text is underlined
-			Crossed     = 0x02, ///< Indicates that the text is striked through
-			Outline     = 0x04, ///< Indicates that the text is an outline
-			Bold        = 0x08, ///< Indicates that the text is emboldened
-			Italic      = 0x10, ///< Indicates that the text is itlicized
-			Superscript = 0x20, ///< Indicates that the text is saller and is stituated above th baseline
-			Subscript   = 0x40  ///< Indicates that the text is saller and is stituated below the baseline
+			Regular      = 0x00, ///< Indicates that the text is regular
+			Underlined   = 0x01, ///< Indicates that the text is underlined
+			Crossed      = 0x02, ///< Indicates that the text is striked through
+			Outline      = 0x04, ///< Indicates that the text is an outline
+			Bold         = 0x08, ///< Indicates that the text is emboldened
+			Italic       = 0x10, ///< Indicates that the text is itlicized
+			Superscript  = 0x20, ///< Indicates that the text is saller and is stituated above th baseline
+			Subscript    = 0x40, ///< Indicates that the text is saller and is stituated below the baseline
+			SigDistField = 0x80  ///< Indicates that the text is rendered using signed distance fields
 		};
 
 	public:

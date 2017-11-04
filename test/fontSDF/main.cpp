@@ -145,13 +145,15 @@ float samp(in vec2 uv,in float w)
 		cout << "rendering " << keyName << endl;
 		fm::Clock clkAll,clkOne;
 		
+		float downScale = .3;
+		
 		for (fm::Size i=0;i<m_sampletext.size();++i)
 		{
 			fg::Image img = renderImgs[i]->convertToSDF(10,[](Color c){return c.a > 127;},fastSDF ? 0 : 100);
-			maxH = max<float>(maxH,img.getSize().h*.1);
+			maxH = max<float>(maxH,img.getSize().h*downScale);
 			
 			sdfImgs[i] = new fg::Image(std::move(img));
-			*sdfImgs[i] = std::move(sdfImgs[i]->scale(sdfImgs[i]->getSize()*.1));
+			*sdfImgs[i] = std::move(sdfImgs[i]->scale(sdfImgs[i]->getSize()*downScale));
 			m_spriteMgr.addImage(*sdfImgs[i],fm::toString(i)+"_"+keyName);
 			sdfSizes[i] = sdfImgs[i]->getSize();
 		
@@ -170,7 +172,7 @@ float samp(in vec2 uv,in float w)
 		vec2 offset(0,200);
 		// generate sprites
 		float mul = .5;
-		float scale = 2;
+		float scale = .2 / downScale;
 		for (int sizes=0;sizes<20;++sizes)
 		{
 			for (fm::Size i=0;i<m_sampletext.size();++i)
@@ -178,7 +180,7 @@ float samp(in vec2 uv,in float w)
 				m_sprites.emplace_back(m_spriteMgr,fm::toString(i)+"_"+keyName);
 				vec2 s = sdfSizes[i] * mul * scale;
 				m_sprites.back().setSize(s);
-				m_sprites.back().setPosition(offset + font.getGlyph(m_sampletext[i]).leftdown * mul * .1 * scale);
+				m_sprites.back().setPosition(offset + font.getGlyph(m_sampletext[i]).leftdown * mul * downScale * scale);
 				offset.x += s.x+1;
 			}
 			offset.x = 0;
@@ -197,7 +199,9 @@ int main()
 {
 	GuiWindow win(vec2(640,480),"sdf");
 	win.setClearColor(vec4::White);
-
+	
+	win.getDefaultFont().renderGlyph('A',Glyph::SigDistField).saveToFile("lol.png");
+	
 	TextTester *tester = new TextTester(win);
 	win.getMainLayout().addChildElement(tester);
 	
@@ -213,6 +217,7 @@ int main()
 		Mouse::setCursor(cur);
 	});
 	pb->setPosition(vec2(0,54));
+	pb->setCharacterSize(10);
 	
 	win.getMainLayout().addChildElement(pb);
 	
@@ -267,6 +272,16 @@ int main()
 			win.handleEvent(ev);
 			if (ev.type == Event::Closed) running = false;
 			if (ev.type == Event::FocusLost) running = false;
+			if (ev.type == Event::KeyPressed)
+			{
+				if (ev.key.code == Keyboard::D)
+				{
+					cout << "thickness = " << sbP->getScrollState() << endl;
+					cout << "pov       = " << sb->getScrollState() << endl;
+					cout << "dscale    = " << sb2->getScrollState() << endl;
+					endl(cout);
+				}
+			}
 		}
 		
 		win.clear();

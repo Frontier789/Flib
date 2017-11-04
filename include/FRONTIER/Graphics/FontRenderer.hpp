@@ -195,7 +195,18 @@ namespace fg
 		/// @return The rendered image
 		///
 		/////////////////////////////////////////////////////////////
-		fg::Image renderGlyph(const fm::Uint32 &letter,unsigned int style = Glyph::Regular,fm::vec2 *leftDown = nullptr) const;
+		fg::Image renderGlyph(const fm::Uint32 &letter,Glyph::Style style = Glyph::Regular,fm::vec2 *leftDown = nullptr) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get a glyph's bounding rectangle without rendering
+		///
+		/// @param letter The codepoint of the glyph
+		/// @param style The style of the glyph (defaults to Regular)
+		///
+		/// @return The bounding rectangle
+		///
+		/////////////////////////////////////////////////////////////
+		fm::rect2i getGlyphRect(const fm::Uint32 &letter,Glyph::Style style = Glyph::Regular) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if a given glyph is present in the font
