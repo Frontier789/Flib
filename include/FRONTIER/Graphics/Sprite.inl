@@ -37,7 +37,8 @@ namespace fg
 								   imgID,
 								   fm::vec3(),
 								   getManager()->getImageSize(imgID),
-								   fm::vec2(0,1));
+								   fm::vec2(0,1),
+								   fm::vec4::White);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -48,7 +49,8 @@ namespace fg
 									sprite.getImageID(),
 									sprite.getPosition(),
 									sprite.getSize(),
-									sprite.getDirection());
+									sprite.getDirection(),
+									sprite.getColor());
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -87,7 +89,8 @@ namespace fg
 									sprite.getImageID(),
 									sprite.getPosition(),
 									sprite.getSize(),
-									sprite.getDirection());
+									sprite.getDirection(),
+									sprite.getColor());
 		
 		return *this;
 	}
@@ -144,6 +147,22 @@ namespace fg
 	fm::vec3 SpriteBase<ImageID>::getPosition() const
 	{
 		return getManager()->fetchPos(getId());
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ImageID>
+	SpriteBase<ImageID> &SpriteBase<ImageID>::setColor(const fm::vec4 &clr)
+	{
+		getManager()->handleColorChange(getId(),clr);
+		
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ImageID>
+	fm::vec4 SpriteBase<ImageID>::getColor() const
+	{
+		return getManager()->fetchColor(getId());
 	}
 
 	/////////////////////////////////////////////////////////////

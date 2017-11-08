@@ -56,9 +56,11 @@ namespace fg
 			FloatAttributeUpdater m_uvpProp; ///< Property for texture position
 			FloatAttributeUpdater m_uvsProp; ///< Property for texture size
 			FloatAttributeUpdater m_frmProp; ///< Property for frame size
+			FloatAttributeUpdater m_clrProp; ///< Property for color
 			
 			FloatAttributeUpdater m_vertPtsProp; ///< Property for vertex poses
 			FloatAttributeUpdater m_vertUVsProp; ///< Property for vertex texture poses
+			FloatAttributeUpdater m_vertClrProp; ///< Property for vertex colors
 			
 			fg::ShaderManager m_shader; ///< The shader used when drawing
 			fm::Size m_spriteCount;     ///< Number of sprites managed
@@ -79,17 +81,21 @@ namespace fg
 			/// 
 			/// @param pts The points returned
 			/// @param uvs The texture positions returned
+			/// @param clr The colors returned
 			/// @param size The size of the quad
 			/// @param shape The glyph for the sprite
 			/// @param dir The direction of the sprite
+			/// @param color The color of the sprite
 			/// 
 			/////////////////////////////////////////////////////////////
 			void buildVertices(fm::vec3 **pts,
 							   fm::vec2 **uvs,
+							   fm::vec4 **clr,
 							   fm::vec3 pos,
 							   fm::vec2 size,
 							   const fg::Glyph &shape,
-							   fm::vec2 dir);
+							   fm::vec2 dir,
+							   fm::vec4 color);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Helper function for extracting edge points from sprite mesh
@@ -108,9 +114,10 @@ namespace fg
 			/// @param pos The position of the new sprite
 			/// @param size The size of the new sprite
 			/// @param dir The direction of the new sprite
+			/// @param clr The color of the new sprite
 			/// 
 			/////////////////////////////////////////////////////////////
-			void handleCreate(fm::Size spriteIndex,const fg::Glyph &shape,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir);
+			void handleCreate(fm::Size spriteIndex,const fg::Glyph &shape,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Handle moving a sorites' data
@@ -199,6 +206,15 @@ namespace fg
 			void handleSizeChange(fm::Size spriteIndex,const fm::vec2 &size);
 			
 			/////////////////////////////////////////////////////////////
+			/// @brief Handle changing the color of a sprite
+			/// 
+			/// @param spriteIndex The index of a valid sprite 
+			/// @param color The new color of the sprite
+			/// 
+			/////////////////////////////////////////////////////////////
+			void handleColorChange(fm::Size spriteIndex,const fm::vec4 &color);
+			
+			/////////////////////////////////////////////////////////////
 			/// @brief Get the current position of a sprite
 			/// 
 			/// @param spriteIndex The index of a valid sprite 
@@ -227,6 +243,16 @@ namespace fg
 			/// 
 			/////////////////////////////////////////////////////////////
 			fm::vec2 fetchSize(fm::Size spriteIndex) const;
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Get the current color of a sprite
+			/// 
+			/// @param spriteIndex The index of a valid sprite 
+			/// 
+			/// @return The current color of the sprite
+			/// 
+			/////////////////////////////////////////////////////////////
+			fm::vec4 fetchColor(fm::Size spriteIndex) const;
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Check if frames are used
@@ -258,13 +284,25 @@ namespace fg
 			void onUpdate(const fm::Time & /* dt */ ) override {};
 			
 			/////////////////////////////////////////////////////////////
-			/// @brief Draw the sprites of the manager
+			/// @brief Draw the sprites of the manager given the texture
+			/// 
+			/// Internally used function
 			/// 
 			/// @param shader The shader to draw with
 			/// @param tex The texture from the atlas
 			/// 
 			/////////////////////////////////////////////////////////////
 			void onDrawTex(fg::ShaderManager &shader,fg::Texture &tex);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Get the number of sprites having memory allocated for
+			/// 
+			/// There may be less sprites than memory is allocated for
+			/// 
+			/// @return The capacity
+			/// 
+			/////////////////////////////////////////////////////////////
+			fm::Size getCapacity() const;
 			
 			template<class ImageID>
 			friend class SpriteBase;
@@ -295,9 +333,10 @@ namespace fg
 		/// @param pos The position of the new sprite
 		/// @param size The size of the new sprite
 		/// @param dir The direction of the new sprite
+		/// @param clr The color of the new sprite
 		/// 
 		/////////////////////////////////////////////////////////////
-		void handleCreate(SpriteBase<ImageID> &sprite,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir);
+		void handleCreate(SpriteBase<ImageID> &sprite,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Handle destroying a sprite

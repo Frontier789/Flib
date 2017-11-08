@@ -15,46 +15,25 @@ public:
 	{
 		m_sampletext = u8"árvíztűrő tükörfúrógép :)";
 		
-		buildSprites();
+		buildSprites(); 
 	}
 	
-	void setThickness(float v)
+	void setProp(string propName,float v)
 	{
-		m_spriteMgr.getShader().setUniform("u_thickness",v);
-	}
-	
-	void setPov(float v)
-	{
-		m_spriteMgr.getShader().setUniform("u_pov",v);
-	}
-	
-	void setDscale(float v)
-	{
-		m_spriteMgr.getShader().setUniform("u_dscale",v);
+		m_spriteMgr.getShader().setUniform(propName,v);
 	}
 	
 	void buildSprites(bool fastSDF = true)
 	{
 		// setup shader
-		fm::Result res = m_spriteMgr.loadShader([](ShaderSource &source){
+		fm::Result res = m_spriteMgr.loadShader([&](ShaderSource &source){
 			
-			if (source.type == fg::VertexShader)
-			{
-				source.outputs.push_back(fg::ShaderSource::OutputData{"vec2","va_texpEnv[4]"});
-				source.mainBody += R"(
-	va_texpEnv[0] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(1.0,0.0),0.0,1.0));
-	va_texpEnv[1] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(0.0,1.0),0.0,1.0));
-	va_texpEnv[2] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(-1.,0.0),0.0,1.0));
-	va_texpEnv[3] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(0.0,-1.),0.0,1.0));
-									 )";
-				
-			}
 			if (source.type == fg::FragmentShader)
 			{
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_thickness"});
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_pov"});
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_dscale"});
-				source.inputs.  push_back(fg::ShaderSource::OutputData {"vec2","va_texpEnv[4]"});
+				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_coef"});
 				source.globals += R"(
 float contour(in float d,in float w) 
 {
@@ -64,21 +43,17 @@ float contour(in float d,in float w)
 float samp(in vec2 uv,in float w)
 {
 	return contour(texture2D(u_tex, uv).a, w);
-}
-									)";
-				source.mainBody =/* R"(
-				
-				
-				vec4 c = texture2D(u_tex,va_texp);
+})";
+				source.mainBody = R"(
+	vec4 c = texture2D(u_tex,va_texp);
 	
     float dist = c.a;
 
 	float width = pow(fwidth(dist),0.2 / u_pov);
-
+	
     float alpha = contour( dist, width );
 
-    float dscale = 0.354;
-    vec2 duv = vec2(dscale) * (dFdx(va_texp) + dFdy(va_texp));
+    vec2 duv = vec2(u_dscale) * (dFdx(va_texp) + dFdy(va_texp));
     vec4 box = vec4(va_texp-duv, va_texp+duv);
 
     float asum = samp( box.xy, width )
@@ -86,37 +61,12 @@ float samp(in vec2 uv,in float w)
                + samp( box.xw, width )
                + samp( box.zy, width );
 
-	alpha = (alpha + 0.4 * asum) / (1.0 + 0.4*4.0);
+	alpha = (6 * u_coef * alpha + 0.4 * asum) / (6 * u_coef + 0.4*4.0);
 
-	out_color = vec4(vec3(0.0), alpha);
-				
-				)";*/
-				
-				R"(
-	float dist = texture2D(u_tex,va_texp).a;
-	float distEnv[4] = float[4]( texture2D(u_tex,va_texpEnv[0]).a, 
-								 texture2D(u_tex,va_texpEnv[1]).a, 
-								 texture2D(u_tex,va_texpEnv[2]).a, 
-								 texture2D(u_tex,va_texpEnv[3]).a );
-
-	float width = pow( abs(distEnv[0] - dist) + abs(distEnv[1] - dist),0.4 / u_pov);
-
-	float alpha = contour( dist, width );
-
-	float dscale = u_dscale;
-	vec2 duv = vec2(dscale) * (abs(va_texpEnv[0] - va_texp) + abs(va_texpEnv[1] - va_texp));
-	vec4 box = vec4(va_texp-duv, va_texp+duv);
-
-	float asum = samp( box.xy, width )
-			   + samp( box.zw, width )
-			   + samp( box.xw, width )
-			   + samp( box.zy, width );
-
-	alpha = (alpha + 0.4 * asum) / (1.0 + 0.4*4.0);
-
-	out_color = vec4(vec3(0.0), alpha);
-									)";
+	out_color = vec4(vec3(0.0), alpha);)";
 			}
+			
+			cout << source << endl;
 			
 		});
 		if (!res) cout << res << endl;
@@ -180,7 +130,7 @@ float samp(in vec2 uv,in float w)
 				m_sprites.emplace_back(m_spriteMgr,fm::toString(i)+"_"+keyName);
 				vec2 s = sdfSizes[i] * mul * scale;
 				m_sprites.back().setSize(s);
-				m_sprites.back().setPosition(offset + font.getGlyph(m_sampletext[i]).leftdown * mul * downScale * scale);
+				m_sprites.back().setPosition(offset + font.getGlyphRect(m_sampletext[i]).pos * mul * downScale * scale);
 				offset.x += s.x+1;
 			}
 			offset.x = 0;
@@ -200,8 +150,6 @@ int main()
 	GuiWindow win(vec2(640,480),"sdf");
 	win.setClearColor(vec4::White);
 	
-	win.getDefaultFont().renderGlyph('A',Glyph::SigDistField).saveToFile("lol.png");
-	
 	TextTester *tester = new TextTester(win);
 	win.getMainLayout().addChildElement(tester);
 	
@@ -216,20 +164,20 @@ int main()
 	PushButton *pb = new PushButton(win,"lol",[&](){
 		Mouse::setCursor(cur);
 	});
-	pb->setPosition(vec2(0,54));
+	pb->setPosition(vec2(0,76));
 	pb->setCharacterSize(10);
 	
 	win.getMainLayout().addChildElement(pb);
 	
 	
 	ScrollBar *sbP = new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
-		tester->setThickness(sb.getScrollState());
+		tester->setProp("u_thickness",sb.getScrollState());
 	});
 	
 	win.getMainLayout().addChildElement(sbP);
 	
 	ScrollBar *sb = new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
-		tester->setPov(sb.getScrollState());
+		tester->setProp("u_pov",sb.getScrollState());
 	});
 	
 	sb->setPosition(vec2(0,18)); 
@@ -237,13 +185,26 @@ int main()
 	win.getMainLayout().addChildElement(sb);
 	
 	ScrollBar *sb2 = new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
-		tester->setDscale(sb.getScrollState());
+		tester->setProp("u_dscale",sb.getScrollState());
 	});
 	
 	sb2->setPosition(vec2(0,36)); 
 	
 	win.getMainLayout().addChildElement(sb2);
 	
+	ScrollBar *sb3 = new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
+		tester->setProp("u_coef",sb.getScrollState());
+	});
+	
+	sb3->setPosition(vec2(0,54)); 
+	
+	win.getMainLayout().addChildElement(sb3);
+	
+	sbP->setScrollState(.4555551);
+	sb ->setScrollState(.255556);
+	sb2->setScrollState(.2666667);
+	sb3->setScrollState(.1333333);
+
 	bool fastSDF = true;
 	
 	pb = new PushButton(win,fastSDF ? "fastSDF" : "niceSDF",[&](){
@@ -251,16 +212,24 @@ int main()
 		tester->buildSprites(fastSDF);
 		pb->setText(fastSDF ? "fastSDF" : "niceSDF");
 		
-		tester->setThickness(sbP->getScrollState());
-		tester->setPov(sb->getScrollState());
-		tester->setDscale(sb2->getScrollState());
+		tester->setProp("u_thickness",sbP->getScrollState());
+		tester->setProp("u_pov",sb->getScrollState());
+		tester->setProp("u_dscale",sb2->getScrollState());
+		tester->setProp("u_coef",sb3->getScrollState());
 	});
-	pb->setPosition(vec2(0,80));
+	pb->setPosition(vec2(0,102));
 	
 	win.getMainLayout().addChildElement(pb);
 	
 	FrameBuffer fbo;
 	Texture tex;
+	
+	win.getDefaultFont().setCharacterSize(40);
+	
+	FontSprite spr = win.getDefaultFont().getSprite(fm::String("Ł")[0],Glyph::SigDistField);
+	auto &sprMgr   = win.getDefaultFont().getSpriteManager(Glyph::SigDistField);
+	
+	spr.setPosition(vec2(150,150));
 	
 	bool running = true;
 	for (;running;)
@@ -274,11 +243,20 @@ int main()
 			if (ev.type == Event::FocusLost) running = false;
 			if (ev.type == Event::KeyPressed)
 			{
+				if (ev.key.code == Keyboard::Plus)
+				{
+					spr.setSize(spr.getSize()*1.1);
+				}
+				if (ev.key.code == Keyboard::Minus)
+				{
+					spr.setSize(spr.getSize()/1.1);
+				}
 				if (ev.key.code == Keyboard::D)
 				{
 					cout << "thickness = " << sbP->getScrollState() << endl;
 					cout << "pov       = " << sb->getScrollState() << endl;
 					cout << "dscale    = " << sb2->getScrollState() << endl;
+					cout << "coef      = " << sb3->getScrollState() << endl;
 					endl(cout);
 				}
 			}
@@ -287,6 +265,7 @@ int main()
 		win.clear();
 		
 		win.drawElements();
+		win.draw(sprMgr);
 		win.swapBuffers();
 			
 		win.applyFpsLimit();

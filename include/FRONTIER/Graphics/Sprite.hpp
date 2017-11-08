@@ -18,6 +18,7 @@
 #define FRONTIER_SPRITE_HPP_INCLUDED
 
 #include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <string>
@@ -139,6 +140,24 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		fm::vec3 getPosition() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the color of the sprite
+		/// 
+		/// @param clr The color on the screen
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		SpriteBase<ImageID> &setColor(const fm::vec4 &clr);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the color of the sprite
+		/// 
+		/// @return The color
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::vec4 getColor() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the direction the sprite is facing

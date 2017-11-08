@@ -406,8 +406,11 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiText::setText(const fm::String &str)
 	{
-		m_string = str;
-		updateDrawData();
+		if (m_string != str)
+		{
+			m_string = str;
+			updateDrawData();
+		}
 	}
 	
 	/////////////////////////////////////////////////////////////

@@ -108,7 +108,7 @@ public:
 		randSizePos(s,p);
 		
 		m_sprites.emplace_back(*m_manager,fm::toString(rand()%6).str());
-		m_sprites.back().setPosition(p).setSize(s).setDirection((m_winSize/2 - p).sgn());
+		m_sprites.back().setPosition(p).setSize(s).setDirection((m_winSize/2 - p).sgn()).setColor(vec4::Red);
 	}
 	
 	/////////////////////////////////////////////////////////////

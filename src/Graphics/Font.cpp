@@ -77,7 +77,7 @@ namespace fg
 			return m_sharedData->sigDistSpriteManager.getAtlas();
 		
 		if (!charSize)
-			charSize = m_sharedData->renderer.getCharacterSize();
+			charSize = getCharacterSize();
 		
 		return m_sharedData->spriteManagers[charSize].getAtlas();
 	}
@@ -169,27 +169,17 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void Font::loadSigDistFieldShader()
+	void Font::loadSigDistFieldShader(fm::Delegate<void,fg::ShaderSource &> sourceTransformer)
 	{
-		fm::Result res = m_sharedData->sigDistSpriteManager.loadShader([](ShaderSource &source) {
+		// setup shader
+		fm::Result res = m_sharedData->sigDistSpriteManager.loadShader([&](ShaderSource &source){
 			
-			if (source.type == fg::VertexShader)
-			{
-				source.outputs.push_back(fg::ShaderSource::OutputData{"vec2","va_texpEnv[4]"});
-				source.mainBody += R"(
-	va_texpEnv[0] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(1.0,0.0),0.0,1.0));
-	va_texpEnv[1] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(0.0,1.0),0.0,1.0));
-	va_texpEnv[2] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(-1.,0.0),0.0,1.0));
-	va_texpEnv[3] = vec2(u_texMat * vec4(in_uvp + in_tpt * in_uvs + vec2(0.0,-1.),0.0,1.0));
-									 )";
-				
-			}
 			if (source.type == fg::FragmentShader)
 			{
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_thickness"});
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_pov"});
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_dscale"});
-				source.inputs.  push_back(fg::ShaderSource::OutputData {"vec2","va_texpEnv[4]"});
+				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_coef"});
 				source.globals += R"(
 float contour(in float d,in float w) 
 {
@@ -199,21 +189,17 @@ float contour(in float d,in float w)
 float samp(in vec2 uv,in float w)
 {
 	return contour(texture2D(u_tex, uv).a, w);
-}
-									)";
-				source.mainBody =/* R"(
-				
-				
-				vec4 c = texture2D(u_tex,va_texp);
+})";
+				source.mainBody = R"(
+	vec4 c = texture2D(u_tex,va_texp);
 	
     float dist = c.a;
 
 	float width = pow(fwidth(dist),0.2 / u_pov);
-
+	
     float alpha = contour( dist, width );
 
-    float dscale = 0.354;
-    vec2 duv = vec2(dscale) * (dFdx(va_texp) + dFdy(va_texp));
+    vec2 duv = vec2(u_dscale) * (dFdx(va_texp) + dFdy(va_texp));
     vec4 box = vec4(va_texp-duv, va_texp+duv);
 
     float asum = samp( box.xy, width )
@@ -221,42 +207,20 @@ float samp(in vec2 uv,in float w)
                + samp( box.xw, width )
                + samp( box.zy, width );
 
-	alpha = (alpha + 0.4 * asum) / (1.0 + 0.4*4.0);
-
-	out_color = vec4(vec3(0.0), alpha);
-				
-				)";*/
-				
-				R"(
-	float dist = texture2D(u_tex,va_texp).a;
-	float distEnv[4] = float[4]( texture2D(u_tex,va_texpEnv[0]).a, 
-								 texture2D(u_tex,va_texpEnv[1]).a, 
-								 texture2D(u_tex,va_texpEnv[2]).a, 
-								 texture2D(u_tex,va_texpEnv[3]).a );
-
-	float width = pow( abs(distEnv[0] - dist) + abs(distEnv[1] - dist),0.4 / u_pov);
-
-	float alpha = contour( dist, width );
-
-	float dscale = u_dscale;
-	vec2 duv = vec2(dscale) * (abs(va_texpEnv[0] - va_texp) + abs(va_texpEnv[1] - va_texp));
-	vec4 box = vec4(va_texp-duv, va_texp+duv);
-
-	float asum = samp( box.xy, width )
-			   + samp( box.zw, width )
-			   + samp( box.xw, width )
-			   + samp( box.zy, width );
-
-	alpha = (alpha + 0.4 * asum) / (1.0 + 0.4*4.0);
-
-	out_color = vec4(vec3(0.0), alpha);
-									)";
+	alpha = (6 * u_coef * alpha + 0.4 * asum) / (6 * u_coef + 0.4*4.0);
+	
+	alpha = clamp(alpha,0,1);
+	
+	out_color = vec4(va_clr.xyz, va_clr.w * alpha);)";
 			}
+			
+			sourceTransformer(source);
 		});
 		
-		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_thickness",.7f);
-		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_pov",.578f);
-		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_dscale",.4f);
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_thickness",.4555551f);
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_pov",.255556f);
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_dscale",.2666667f);
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_coef",.1333333f);
 		
 		(void)res;
 	}
@@ -378,12 +342,33 @@ float samp(in vec2 uv,in float w)
 	}
 	
 	/////////////////////////////////////////////////////////////
+	fm::rect2i Font::getGlyphRect(const fm::Uint32 &letter,Glyph::Style style) const
+	{
+		if (style & Glyph::SigDistField)
+		{
+			auto charSize = getCharacterSize();
+			
+			setCharacterSize(200);
+			fm::rect2i ret = m_sharedData->renderer.getGlyphRect(letter,style);
+			
+			setCharacterSize(charSize);
+			
+			return ret;
+		}
+		else
+		{
+			return m_sharedData->renderer.getGlyphRect(letter,style);
+		}
+	}
+	
+	
+	/////////////////////////////////////////////////////////////
 	bool Font::hasGlyph(const fm::Uint32 &letter,Glyph::Style style) const
 	{
 		if (!isLoaded())
 			return false;
 			
-		if (getTexAtl().isUploaded(Identifier(letter,style)))
+		if (getTexAtl(getCharacterSize(),style).isUploaded(Identifier(letter,style)))
 			return true;
 		
 		return m_sharedData->renderer.hasGlyph(letter);
@@ -421,9 +406,9 @@ float samp(in vec2 uv,in float w)
 	}
 
 	////////////////////////////////////////////////////////////
-	const Texture &Font::getTexture() const
+	const Texture &Font::getTexture(Glyph::Style style) const
 	{
-		return getTexAtl().getTexture();
+		return getTexAtl(getCharacterSize(),style).getTexture();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -433,6 +418,20 @@ float samp(in vec2 uv,in float w)
 			return m_sharedData->sigDistSpriteManager;
 		
 		return m_sharedData->spriteManagers[getCharacterSize()];
+	}
+
+	/////////////////////////////////////////////////////////////
+	Font::reference Font::forEachSpriteManager(fm::Delegate<void,SpriteManagerBase<Identifier> &,unsigned int,Glyph::Style> func)
+	{
+		if (m_sharedData->loaded)
+		{
+			func(m_sharedData->sigDistSpriteManager,0,Glyph::SigDistField);
+			
+			for (auto &it : m_sharedData->spriteManagers)
+				func(it.second,it.first,Glyph::Regular);
+		}
+		
+		return *this;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -447,10 +446,9 @@ float samp(in vec2 uv,in float w)
 	/////////////////////////////////////////////////////////////
 	Font::Sprite Font::getSprite(fm::Uint32 letter,Glyph::Style style)
 	{
-		if (!hasGlyph(letter,style))
-			getGlyph(letter,style);
+		getGlyph(letter,style);
 		
-		Font::Sprite sprite = getSpriteManager().getSprite(Font::Identifier(letter,style));
+		Font::Sprite sprite = getSpriteManager(style).getSprite(Font::Identifier(letter,style));
 		
 		if (style & Glyph::SigDistField)
 		{

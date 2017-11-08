@@ -87,7 +87,6 @@ namespace fg
 		class SharedData; ///< Stores data shared between fonts
 		SharedData *m_sharedData; ///< Data shared between fonts
 		
-		void loadSigDistFieldShader(); ///< Internal helper function
 		TextureAtlas<Identifier> &getTexAtl(unsigned int charSize = 0,Glyph::Style style = Glyph::Regular) const; ///< Helper function that returns a texture atlas as needed
 		
 	public:
@@ -95,6 +94,7 @@ namespace fg
 		typedef const Font &const_reference;
 		
 		typedef SpriteBase<Identifier> Sprite;
+		typedef SpriteManagerBase<Identifier> SpriteManager;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
@@ -262,6 +262,17 @@ namespace fg
 		Image renderGlyph(const fm::Uint32 &codepoint,Glyph::Style style = Glyph::Regular,fm::vector2<float> *leftDown = nullptr) const;
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get a glyph's bounding rectangle without rendering
+		///
+		/// @param letter The codepoint of the glyph
+		/// @param style The style of the glyph (defaults to Regular)
+		///
+		/// @return The bounding rectangle
+		///
+		/////////////////////////////////////////////////////////////
+		fm::rect2i getGlyphRect(const fm::Uint32 &letter,Glyph::Style style = Glyph::Regular) const;
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Find out if a given glyph is present in the font
 		///
 		/// @param codepoint The codepoint of the glyph
@@ -317,11 +328,13 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the currently used font atlas
-		///
+		/// 
+		/// @param style The style to get the texture for (styles may share texture)
+		/// 
 		/// @return The font atlas
 		///
 		/////////////////////////////////////////////////////////////
-		const Texture &getTexture() const;
+		const Texture &getTexture(Glyph::Style style = Glyph::Regular) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the currently used sprite manager for a given style
@@ -346,6 +359,18 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		SpriteManagerBase<Identifier> &getSpriteManager(Glyph::Style style = Glyph::Regular);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Call a function for each sprite manager
+		/// 
+		/// Each sprite manager is passed only once
+		/// 
+		/// @param func The function
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference forEachSpriteManager(fm::Delegate<void,SpriteManagerBase<Identifier> &,unsigned int,Glyph::Style> func);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a sprite for a code point
@@ -383,6 +408,16 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		reference swap(Font &font);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the signed distance field generator shader
+		///
+		/// This function is inteded to be called internally (public for debgging purposes)
+		///
+		/// @param sourceTransformer The function to call on th source
+		///
+		/////////////////////////////////////////////////////////////
+		void loadSigDistFieldShader(fm::Delegate<void,fg::ShaderSource &> sourceTransformer = [](fg::ShaderSource &){});
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Check if the font is loaded
@@ -423,6 +458,7 @@ namespace fg
 	};
 	
 	typedef Font::Sprite FontSprite;
+	typedef Font::SpriteManager FontSpriteManager;
 }
 
 #endif // FRONTIER_FONT_HPP_INCLUDED

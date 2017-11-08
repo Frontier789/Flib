@@ -17,6 +17,12 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
+	fm::Size FloatAttributeUpdater::getCapacity() const
+	{
+		return m_capacity;
+	}
+	
+	/////////////////////////////////////////////////////////////
 	FloatAttributeUpdater::FloatAttributeUpdater(fg::Attribute &attrib,
 												 fm::Size floatPerVec,
 												 fm::Size vecsPerItem) : m_attrib(attrib),

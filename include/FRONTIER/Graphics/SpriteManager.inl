@@ -47,7 +47,7 @@ namespace fg
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
-	inline void SpriteManagerBase<ImageID>::handleCreate(SpriteBase<ImageID> &sprite,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir)
+	inline void SpriteManagerBase<ImageID>::handleCreate(SpriteBase<ImageID> &sprite,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr)
 	{
 		sprite.setId(getSpriteCount());
 		sprite.setManager(this);
@@ -55,7 +55,7 @@ namespace fg
 		m_spriteDatas.push_back(SpriteData{&sprite,imgID});
 		fg::Glyph shape = m_atlas.fetch(imgID);
 		
-		priv::SpriteManagerBaseNonTemplate::handleCreate(sprite.getId(),shape,pos,size,dir);
+		priv::SpriteManagerBaseNonTemplate::handleCreate(sprite.getId(),shape,pos,size,dir,clr);
 	}
 	
 	/////////////////////////////////////////////////////////////
