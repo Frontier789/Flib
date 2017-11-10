@@ -45,12 +45,13 @@ namespace fg
 	template<class ImageID>
 	inline SpriteBase<ImageID>::SpriteBase(const SpriteBase<ImageID> &sprite) : m_manager(sprite.getManager())
 	{
-		getManager()->handleCreate(*this,
-									sprite.getImageID(),
-									sprite.getPosition(),
-									sprite.getSize(),
-									sprite.getDirection(),
-									sprite.getColor());
+		if (getManager())
+			getManager()->handleCreate(*this,
+										sprite.getImageID(),
+										sprite.getPosition(),
+										sprite.getSize(),
+										sprite.getDirection(),
+										sprite.getColor());
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -111,7 +112,7 @@ namespace fg
 	template<class ImageID>
 	inline SpriteBase<ImageID> &SpriteBase<ImageID>::swap(SpriteBase<ImageID> &sprite)
 	{
-		if (getManager() == sprite.getManager())
+		if (getManager() == sprite.getManager() && getManager())
 		{
 			fm::Size tmpId = getId();
 			setId(sprite.getId());
@@ -230,6 +231,21 @@ namespace fg
 	void SpriteBase<ImageID>::setManager(SpriteManagerBase<ImageID> *manager)
 	{
 		m_manager = manager;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ImageID>
+	SpriteBase<ImageID> SpriteBase<ImageID>::getUnboundSprite()
+	{
+		return SpriteBase<ImageID>();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ImageID>
+	SpriteBase<ImageID>::SpriteBase() : m_manager(nullptr),
+										m_id(0)
+	{
+		
 	}
 }
 

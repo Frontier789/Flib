@@ -19,14 +19,14 @@ class Particle : fg::Drawable
 public:
 	static Glyph::Style particleStyle;
 	
-	Particle(Uint32 type,vec2 pos,vec2 vel,vec2 acc,Anglef angVel,Anglef angAcc,Time lifeTime,Font f,vec3 baseColor) : 
+	Particle(vec2 pos,vec2 vel,vec2 acc,Anglef angVel,Anglef angAcc,Time lifeTime,FontSprite &&spr,vec3 baseColor) : 
 			 m_vel(vel),
 			 m_acc(acc),
 			 m_angVel(angVel),
 			 m_angAcc(angAcc),
 			 m_lifeTime(lifeTime),
 			 m_originalLife(lifeTime),
-			 m_sprite(new FontSprite(std::move(f.getSprite(type,particleStyle)))),
+			 m_sprite(new FontSprite(std::move(spr))),
 			 m_baseColor(baseColor)
 	{
 		m_sprite->setPosition(pos - m_sprite->getSize() / 2);
@@ -37,6 +37,16 @@ public:
 	
 	/////////////////////////////////////////////////////////////
 	void onDraw(ShaderManager &/* shader */) override {}
+	
+	/////////////////////////////////////////////////////////////
+	void applyGravity(vec2 o,float w,const fm::Time &dt)
+	{
+		if (!m_sprite) return;
+		
+		vec2 p = m_sprite->getPosition() + m_sprite->getSize()/2;
+		
+		m_vel += (o-p).sgn() * w * dt.asSecs();
+	}
 	
 	/////////////////////////////////////////////////////////////
 	void onUpdate(const fm::Time &dt) override 
@@ -59,7 +69,7 @@ public:
 		m_sprite->setDirection(-m_vel.sgn());
 		
 		float r = m_lifeTime / m_originalLife;
-		m_sprite->setColor(vec4(m_baseColor - vec3(sin(r*3.14159265358979),0,0),r));
+		m_sprite->setColor(vec4(m_baseColor - vec3(sin(r*3.14159265358979)*.3,0,0),sin(3.14159265358979*sqrt(1-r))));
 		
 		if (m_lifeTime.asSecs() < 0)
 		{
@@ -69,7 +79,7 @@ public:
 	}
 };
 
-Glyph::Style Particle::particleStyle = Glyph::Regular;
+Glyph::Style Particle::particleStyle = Glyph::SigDistField;
 
 int main()
 {
@@ -99,6 +109,8 @@ int main()
 	GuiText *capText = new GuiText(win,"cap: \ncount:");
 	win.getMainLayout().addChildElement(capText);
 	
+	vec2 lastMouseP;
+	bool gravity = false;
 	bool running = true;
 	for (;running;)
 	{
@@ -109,6 +121,25 @@ int main()
 			win.handleEvent(ev);
 			if (ev.type == Event::Closed) running = false;
 			if (ev.type == Event::FocusLost) running = false;
+			if (ev.type == Event::KeyPressed)
+			{
+				if (ev.key.code == Keyboard::D)
+				{
+					gravity = true;
+					lastMouseP = Mouse::getPosition();
+				}
+			}
+			if (ev.type == Event::MouseMoved)
+			{
+				lastMouseP = vec2(ev.motion) + win.getPosition();
+			}
+			if (ev.type == Event::KeyReleased)
+			{
+				if (ev.key.code == Keyboard::D)
+				{
+					gravity = false;
+				}
+			}
 			if (ev.type == Event::ButtonPressed)
 			{
 				if (ev.mouse.button == Mouse::Left) 
@@ -117,33 +148,50 @@ int main()
 					if (Keyboard::isKeyHeld(Keyboard::LShift))
 						db *= 100;
 					
+					f.setCharacterSize(13);
+					
+					String s = u8"ABCDEFGHIJKLMNOPQRSTUVWXYZ_FFFFFFFF";
+					
+					String letters(db,' ');
+					
+					for (auto &c : letters)
+						c = s[rand()%s.size()];
+					
+					std::vector<FontSprite> sprs = f.getSprites(letters,Particle::particleStyle,db);
+					
 					C(db)
 					{
-						f.setCharacterSize(13);
-						particles.push_back(new Particle('A' + rand()%20,
-														 ev.mouse,
+						particles.push_back(new Particle(vec2(ev.mouse) + win.getPosition(),
 														 pol2(rand()%300+200,deg(i/float(db)*360)),
 														 vec2(rand()%11-5,rand()%21-10),
 														 deg(5 + rand()%180),
 														 deg(rand()%50),
 														 seconds((rand()%500)/100.0+2),
-														 f,
+														 std::move(sprs[i]),
 														 vec3(1)));
 					}
 				}
 			}
 		}
 		
-		capText->setText("cap: " + fm::toString(sprMgr.getCapacity()) + "\ncount: " + fm::toString(sprMgr.getSpriteCount()));
+		if (gravity)
+		{
+			for (Particle *particle : particles)
+				particle->applyGravity(lastMouseP,500,win.getUpdateInterval() * (min<int>(sprMgr.getSpriteCount(),2100) / 1000.0 + 0.1));
+		}
+		
+		capText->setText("cap: " + fm::toString(sprMgr.getCapacity()) + "\ncount: " + fm::toString(sprMgr.getSpriteCount()) + "\nparticles: " + fm::toString(particles.size()));
 		
 		for (auto *ptr : particles)
-			ptr->onUpdate(win.getUpdateInterval());
+			ptr->onUpdate(win.getUpdateInterval() * (min<int>(sprMgr.getSpriteCount(),2100) / 1000.0 + 0.1));
 		
 		win.clear();
 		
+		win.getShader().getModelStack().push().mul(MATRIX::translation(-vec2(win.getPosition())));
 		f.forEachSpriteManager([&](FontSpriteManager &mgr){
 			win.draw(mgr);
 		});
+		win.getShader().getModelStack().pop();
 		
 		win.drawElements();
 		win.swapBuffers();

@@ -120,6 +120,20 @@ namespace fg
 			void handleCreate(fm::Size spriteIndex,const fg::Glyph &shape,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr);
 			
 			/////////////////////////////////////////////////////////////
+			/// @brief Handle creating s sprite
+			/// 
+			/// @param spriteIndexBeg The first invalid sprite index
+			/// @param spriteIndexEnd The last+1 invalid sprite index
+			/// @param shape The glyph to use
+			/// @param pos The position of the new sprite
+			/// @param size The size of the new sprite
+			/// @param dir The direction of the new sprite
+			/// @param clr The color of the new sprite
+			/// 
+			/////////////////////////////////////////////////////////////
+			void handleCreate(fm::Size spriteIndexBeg,fm::Size spriteIndexEnd,const fg::Glyph &shape,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr);
+			
+			/////////////////////////////////////////////////////////////
 			/// @brief Handle moving a sorites' data
 			/// 
 			/// @param index The index to move to
@@ -338,6 +352,21 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		void handleCreate(SpriteBase<ImageID> &sprite,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr);
 		
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Handle creating s sprite
+		/// 
+		/// @param sprites Invalid sprites
+		/// @param spriteCount Number of new sprites
+		/// @param imgID The imageId to use
+		/// @param pos The position of the new sprite
+		/// @param size The size of the new sprite
+		/// @param dir The direction of the new sprite
+		/// @param clr The color of the new sprite
+		/// 
+		/////////////////////////////////////////////////////////////
+		void handleCreate(SpriteBase<ImageID> *sprites,fm::Size spriteCount,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr);
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Handle destroying a sprite
 		/// 
@@ -442,6 +471,17 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		SpriteBase<ImageID> getSprite(ImageID id);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Create many sprites with given image id
+		/// 
+		/// @param id The id to use
+		/// @param amount Number of sprites to alloc
+		/// 
+		/// @return The sprites
+		/// 
+		/////////////////////////////////////////////////////////////
+		std::vector<SpriteBase<ImageID>> getSprites(ImageID id,fm::Size amount);
 			
 		/////////////////////////////////////////////////////////////
 		/// @brief Fetch an existing sprite with given id

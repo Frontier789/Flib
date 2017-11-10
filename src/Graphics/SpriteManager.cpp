@@ -89,7 +89,20 @@ namespace fg
 		}
 		
 		/////////////////////////////////////////////////////////////
-		void SpriteManagerBaseNonTemplate::handleCreate(fm::Size /* spriteIndex */,
+		void SpriteManagerBaseNonTemplate::handleCreate(fm::Size spriteIndex,
+														const fg::Glyph &shape,
+														const fm::vec3 &pos,
+														const fm::vec2 &size,
+														const fm::vec2 &dir,
+														const fm::vec4 &clr)
+		{
+			handleCreate(spriteIndex,spriteIndex+1,
+						 shape,pos,size,dir,clr);
+		}
+		
+		/////////////////////////////////////////////////////////////
+		void SpriteManagerBaseNonTemplate::handleCreate(fm::Size spriteIndexBeg,
+														fm::Size spriteIndexEnd,
 														const fg::Glyph &shape,
 														const fm::vec3 &pos,
 														const fm::vec2 &size,
@@ -106,15 +119,17 @@ namespace fg
 			fm::vec2 uvsSiz = shape.size;
 			fm::vec2 frameS = shape.leftdown;
 			
+			fm::Size amount = spriteIndexEnd - spriteIndexBeg;
+			
 			if (useInstancing())
 			{
-				m_posProp.push(&pos.x);
-				m_dirProp.push(&dir.x);
-				m_sizProp.push(&size.x);
-				m_uvpProp.push(&uvsPos.x);
-				m_uvsProp.push(&uvsSiz.x);
-				m_frmProp.push(&frameS.x);
-				m_clrProp.push(&clr.x);
+				m_posProp.push(&pos.x,amount);
+				m_dirProp.push(&dir.x,amount);
+				m_sizProp.push(&size.x,amount);
+				m_uvpProp.push(&uvsPos.x,amount);
+				m_uvsProp.push(&uvsSiz.x,amount);
+				m_frmProp.push(&frameS.x,amount);
+				m_clrProp.push(&clr.x,amount);
 			}
 			else
 			{
@@ -124,16 +139,16 @@ namespace fg
 				
 				buildVertices(&pts,&uvs,&clrP,pos,size,shape,dir,clr);
 				
-				m_vertPtsProp.push(&pts[0].x);
-				m_vertUVsProp.push(&uvs[0].x);
-				m_vertClrProp.push(&clrP[0].x);
+				m_vertPtsProp.push(&pts[0].x,amount);
+				m_vertUVsProp.push(&uvs[0].x,amount);
+				m_vertClrProp.push(&clrP[0].x,amount);
 				
 				delete[] pts;
 				delete[] uvs;
 				delete[] clrP;
 			}
 			
-			++m_spriteCount;
+			m_spriteCount += amount;
 			
 			updateDrawCall();
 		}

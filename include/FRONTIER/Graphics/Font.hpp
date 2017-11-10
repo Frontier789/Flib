@@ -384,6 +384,18 @@ namespace fg
 		SpriteBase<Identifier> getSprite(fm::Uint32 letter,Glyph::Style style = Glyph::Regular);
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Get many sprites for a code point
+		/// 
+		/// @param letter The codepoint
+		/// @param style The style to use
+		/// @param amount The number of sprites
+		/// 
+		/// @return The sprite
+		///
+		/////////////////////////////////////////////////////////////
+		std::vector<SpriteBase<Identifier>> getSprites(fm::String letters,Glyph::Style style,fm::Size amount);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Set the image of a glyph manually
 		///
 		/// @param img The image of the glyph

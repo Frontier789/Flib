@@ -217,7 +217,7 @@ float samp(in vec2 uv,in float w)
 			sourceTransformer(source);
 		});
 		
-		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_thickness",.4555551f);
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_thickness",.7222222f);
 		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_pov",.255556f);
 		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_dscale",.2666667f);
 		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_coef",.1333333f);
@@ -458,6 +458,31 @@ float samp(in vec2 uv,in float w)
 		}
 		
 		return sprite;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	std::vector<Font::Sprite> Font::getSprites(fm::String letters,Glyph::Style style,fm::Size amount)
+	{
+		for (auto c : letters)
+			getGlyph(c,style);
+		
+		if (letters.size() < amount)
+			letters += fm::String(amount,' ');
+		
+		std::vector<Font::Sprite> sprites = getSpriteManager(style).getSprites(Font::Identifier(letters[0],style),amount);
+		
+		if (style & Glyph::SigDistField)
+		{
+			C(amount)
+			{
+				fm::vec2 size = m_sharedData->renderer.getGlyphRect(letters[i],style).size;
+				
+				sprites[i].setImageID(Font::Identifier(letters[i],style));
+				sprites[i].setSize(size);
+			}
+		}
+		
+		return sprites;
 	}
 	
 	/////////////////////////////////////////////////////////////

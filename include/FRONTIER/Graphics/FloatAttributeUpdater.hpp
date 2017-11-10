@@ -92,6 +92,16 @@ namespace fg
 		void update(fm::Size index,const float *value);
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Register an update
+		/// 
+		/// @param index The index of the updated item
+		/// @param value The new value of the updated item
+		/// @param amount The number of items t update
+		/// 
+		/////////////////////////////////////////////////////////////
+		void update(fm::Size index,const float *value,fm::Size amount);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Register an update from an index
 		/// 
 		/// @param index The index of the updated item
@@ -124,6 +134,15 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		void push(const float *value);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Push a new value multiple times by increasing the allocated data size
+		/// 
+		/// @param value The value new item
+		/// @param amount The number of times to push
+		/// 
+		/////////////////////////////////////////////////////////////
+		void push(const float *value,fm::Size amount);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Pop the last item

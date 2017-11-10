@@ -49,13 +49,28 @@ namespace fg
 	template<class ImageID>
 	inline void SpriteManagerBase<ImageID>::handleCreate(SpriteBase<ImageID> &sprite,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr)
 	{
-		sprite.setId(getSpriteCount());
-		sprite.setManager(this);
+		handleCreate(&sprite,1,imgID,pos,size,dir,clr);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ImageID>
+	inline void SpriteManagerBase<ImageID>::handleCreate(SpriteBase<ImageID> *sprites,fm::Size spriteCount,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr)
+	{
+		fm::Size siz = m_spriteDatas.size();
+		fm::Size id = siz;
+		m_spriteDatas.resize(siz + spriteCount);
 		
-		m_spriteDatas.push_back(SpriteData{&sprite,imgID});
+		for (auto ptr = sprites;ptr != sprites+spriteCount;++ptr)
+		{
+			ptr->setId(id);
+			ptr->setManager(this);
+			m_spriteDatas[id] = SpriteData{ptr,imgID};
+			++id;
+		}
+		
 		fg::Glyph shape = m_atlas.fetch(imgID);
 		
-		priv::SpriteManagerBaseNonTemplate::handleCreate(sprite.getId(),shape,pos,size,dir,clr);
+		priv::SpriteManagerBaseNonTemplate::handleCreate(siz,siz + spriteCount,shape,pos,size,dir,clr);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -149,7 +164,30 @@ namespace fg
 	template<class ImageID>
 	inline SpriteBase<ImageID> SpriteManagerBase<ImageID>::getSprite(ImageID id)
 	{
-		return SpriteBase<ImageID>(*this,id);
+		SpriteBase<ImageID> spr;
+		
+		handleCreate(spr,id,
+					 fm::vec3(),
+					 getImageSize(id),
+					 fm::vec2(0,1),
+					 fm::vec4::White);
+		
+		return spr;
+	}
+		
+	/////////////////////////////////////////////////////////////
+	template<class ImageID>
+	inline std::vector<SpriteBase<ImageID>> SpriteManagerBase<ImageID>::getSprites(ImageID id,fm::Size amount)
+	{
+		std::vector<SpriteBase<ImageID>> ret(amount,SpriteBase<ImageID>());
+		
+		handleCreate(&ret[0],ret.size(),id,
+					 fm::vec3(),
+					 getImageSize(id),
+					 fm::vec2(0,1),
+					 fm::vec4::White);
+		
+		return ret;
 	}
 		
 	/////////////////////////////////////////////////////////////

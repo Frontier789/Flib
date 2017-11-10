@@ -40,18 +40,26 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	void FloatAttributeUpdater::update(fm::Size index,const float *value)
 	{
-		std::memcpy(&m_data[index*getFloatsPerItem()],value,getBytesPerItem());
-		m_uploads++;
+		update(index,value,1);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void FloatAttributeUpdater::update(fm::Size index,const float *value,fm::Size amount)
+	{
+		for (fm::Size i=0;i<amount;++i)
+			std::memcpy(&m_data[(index+i)*getFloatsPerItem()],value,getBytesPerItem());
 		
-		if (m_uploads == 1)
+		m_uploads+=amount;
+		
+		if (m_uploads == amount)
 		{
 			m_firstUpdated = index;
-			m_lastUpdated  = index;
+			m_lastUpdated  = index+amount-1;
 		}
 		else
 		{
 			m_firstUpdated = std::min(m_firstUpdated,index);
-			m_lastUpdated  = std::max(m_lastUpdated ,index);
+			m_lastUpdated  = std::max(m_lastUpdated ,index+amount-1);
 		}
 	}
 	
@@ -90,16 +98,27 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	void FloatAttributeUpdater::push(const float *value)
 	{
-		m_data.resize(m_data.size() + getFloatsPerItem());
+		push(value,1);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void FloatAttributeUpdater::push(const float *value,fm::Size amount)
+	{
+		m_data.resize(m_data.size() + getFloatsPerItem()*amount);
 		
 		if (m_data.size() > m_capacity * getFloatsPerItem())
 		{
-			std::memcpy(&m_data[m_data.size() - getFloatsPerItem()],value,getBytesPerItem());
+			for (fm::Size i=0;i<amount;++i)
+				std::memcpy(&m_data[m_data.size() - getFloatsPerItem()*(amount-i)],value,getBytesPerItem());
 			
-			setCapacity(std::max<fm::Size>(m_capacity*2,5));
+			fm::Size newCapactiy = 5;
+			newCapactiy = std::max<fm::Size>(m_capacity*2,newCapactiy);
+			newCapactiy = std::max<fm::Size>(m_capacity+amount,newCapactiy);
+			
+			setCapacity(newCapactiy);
 		}
 		else
-			update(m_data.size() / getFloatsPerItem() - 1,value);
+			update(m_data.size() / getFloatsPerItem() - amount,value,amount);
 	}
 	
 	/////////////////////////////////////////////////////////////

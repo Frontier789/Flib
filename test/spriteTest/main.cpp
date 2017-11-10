@@ -8,7 +8,6 @@ using namespace std;
 
 /*
  - disable/enable only incorrectly set vertex attrib array settings
- 
  */	
 
 class SpriteTester : public Drawable
