@@ -131,7 +131,7 @@ int main()
 			}
 			if (ev.type == Event::MouseMoved)
 			{
-				lastMouseP = vec2(ev.motion) + win.getPosition();
+				lastMouseP = vec2(ev.motion);
 			}
 			if (ev.type == Event::KeyReleased)
 			{
@@ -157,11 +157,11 @@ int main()
 					for (auto &c : letters)
 						c = s[rand()%s.size()];
 					
-					std::vector<FontSprite> sprs = f.getSprites(letters,Particle::particleStyle,db);
+					std::vector<FontSprite> sprs = f.getSprites(letters,Particle::particleStyle);
 					
 					C(db)
 					{
-						particles.push_back(new Particle(vec2(ev.mouse) + win.getPosition(),
+						particles.push_back(new Particle(vec2(ev.mouse),
 														 pol2(rand()%300+200,deg(i/float(db)*360)),
 														 vec2(rand()%11-5,rand()%21-10),
 														 deg(5 + rand()%180),
@@ -187,11 +187,9 @@ int main()
 		
 		win.clear();
 		
-		win.getShader().getModelStack().push().mul(MATRIX::translation(-vec2(win.getPosition())));
 		f.forEachSpriteManager([&](FontSpriteManager &mgr){
 			win.draw(mgr);
 		});
-		win.getShader().getModelStack().pop();
 		
 		win.drawElements();
 		win.swapBuffers();

@@ -60,7 +60,7 @@ int main()
 					t.setViewOffset(t.getViewOffset() + p - lastr);
 					
 					lastr = p;
-				}
+				} 
 				
 				float dist = vec2i(ev.motion).length();
 				float sn1 = sin(deg(dist))*0.5+0.5;
@@ -81,6 +81,7 @@ int main()
 		}
 		
 		win.clear();
+		win.drawElements();
 		win.draw(sizer);
 		win.swapBuffers();
 	}

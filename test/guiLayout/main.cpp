@@ -133,13 +133,12 @@ int main()
 		showBtn->GuiButton::traverseHierarchy([&](GuiElement &e) {
 			drawRedRect(e.getPosition(),e.getSize(),win.getShader());
 		});
+		win.getDefaultFont().forEachSpriteManager([&](FontSpriteManager &mgr){
+			win.draw(mgr);
+		});
 		
 		win.swapBuffers();
 			
 		win.applyFpsLimit();
 	}
 }
-
-
-
-
