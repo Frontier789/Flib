@@ -55,7 +55,7 @@ namespace fgui
 		return fg::Font();
 	}
 	
-	class DrawDataFromText
+	class SpritesFromText
 	{
 	public:
 		const fm::String &str;
@@ -68,6 +68,7 @@ namespace fgui
 		bool monospacing;
 		fm::vec4 color;
 		fm::vec2 maxView;
+		fm::vec2 pos;
 		
 		std::vector<fm::Size> wordBegs,wordEnds;
 		std::vector<float> wordPixDifBegs,wordPixDifEnds;
@@ -75,14 +76,24 @@ namespace fgui
 		std::vector<fm::Size> lineWidths;
 		fm::Size maxLineWidth;
 		
-		DrawDataFromText(const fm::String &str,
-						 fg::Font font,
-						 fm::Size charSize,
-						 TextAlign align,
-						 TextWrap wrap,
-						 fm::vec2 &viewSize,
-						 fm::vec2 viewOffset,
-						 fm::vec4 color) : str(str), font(font), charSize(charSize), align(align), wrap(wrap), viewSize(viewSize), viewOffset(viewOffset), color(color)
+		SpritesFromText(const fm::String &str,
+						fg::Font font,
+						fm::Size charSize,
+						TextAlign align,
+						TextWrap wrap,
+						fm::vec2 &viewSize,
+						fm::vec2 viewOffset,
+						fm::vec4 color,
+						fm::vec2 pos) : 
+						 str(str), 
+						 font(font), 
+						 charSize(charSize), 
+						 align(align), 
+						 wrap(wrap), 
+						 viewSize(viewSize), 
+						 viewOffset(viewOffset), 
+						 color(color),
+						 pos(pos)
 		{
 			monospacing = false;
 		}
@@ -152,7 +163,9 @@ namespace fgui
 		fg::Metrics metrics;
 		fm::Size newLineId;
 		fm::vec2 curPos;
-		fg::Mesh mesh;
+		std::vector<fm::vec2> spritePoses;
+		std::vector<fg::FontSprite> sprites;
+		fm::String renderedText;
 		
 		void begNewLine(bool render)
 		{
@@ -211,10 +224,13 @@ namespace fgui
 			}
 		}
 		
-		void renderCharacters(bool render = true)
+		void renderCharacterRects(bool pass2 = true)
 		{
-			if (render && !lineWidths.size())
-				renderCharacters(false);
+			if (pass2 && !lineWidths.size())
+				renderCharacterRects(false);
+			
+			spritePoses.clear();
+			renderedText = "";
 			
 			maxLineWidth = 0;
 			for (auto w : lineWidths) maxLineWidth = std::max(maxLineWidth,w);
@@ -241,7 +257,7 @@ namespace fgui
 					if ((i && newLinePos < wordBegs[i] && newLinePos >= wordEnds[i-1]) ||
 					   (!i && newLinePos < wordBegs[i]))
 					{
-						begNewLine(render);
+						begNewLine(pass2);
 						whiteSpacesDiscarded = true;
 						
 						newLineId++;
@@ -252,7 +268,7 @@ namespace fgui
 				{
 					if (curPos.x + transfViewOffset + wordPixDifBegs[i] + wordPixDifEnds[i] >= viewSize.w)
 					{
-						begNewLine(render);
+						begNewLine(pass2);
 						whiteSpacesDiscarded = true;
 					}
 				}
@@ -273,10 +289,10 @@ namespace fgui
 							curPos.x -= woff;
 						}
 						
-						begNewLine(render);
+						begNewLine(pass2);
 					}
 					
-					if (render)
+					if (pass2)
 					{
 						bool goodUp    = (lineWidthId+1) * metrics.lineGap + viewOffset.y > 0;
 						bool goodDown  = lineWidthId * metrics.lineGap + viewOffset.y - viewSize.h < 0;
@@ -288,38 +304,46 @@ namespace fgui
 							fm::vec2  leftAlignPos = curPos + g.leftdown + fm::vec2(0,metrics.maxH);
 							fm::vec2i rectCorner   = transformToAlign(leftAlignPos) + viewOffset;
 							
-							for (auto coef : {fm::vec2(0,0),fm::vec2(1,0),fm::vec2(0,1),fm::vec2(1,0),fm::vec2(0,1),fm::vec2(1,1)})
+							if (viewSize.area())
 							{
-								fm::vec2 rectPos =  rectCorner + coef * g.size;
-								
-								if (viewSize.area())
-								{
-									rectPos.x = std::min<float>(std::max<float>(rectPos.x,0),viewSize.w);
-									rectPos.y = std::min<float>(std::max<float>(rectPos.y,0),viewSize.h);
-								}
-								
-								maxView.x = std::max<int>(rectPos.x,maxView.x);
-								maxView.y = std::max<int>(rectPos.y,maxView.y);
-								
-								mesh.pts.push_back(fm::vec2i(rectPos));
-								mesh.uvs.push_back(fm::vec2i(rectPos - rectCorner) + g.pos);
-								mesh.clr.push_back(color);
-							}							
+								rectCorner.x = std::min<float>(std::max<float>(rectCorner.x,0),viewSize.w);
+								rectCorner.y = std::min<float>(std::max<float>(rectCorner.y,0),viewSize.h);
+							}
+							
+							maxView.x = std::max<int>(rectCorner.x + g.size.w,maxView.x);
+							maxView.y = std::max<int>(rectCorner.y + g.size.h,maxView.y);
+							
+							spritePoses.push_back(rectCorner);
+							renderedText+=cp;			
 						}
 					}
 					
 					curPos.x += getWidthCp(0,cp,font,monospacing);
 				}
 			}
-			begNewLine(render);
+			begNewLine(pass2);
 						
 			if (!viewSize.area())
 				viewSize = maxView;
 		}
 		
-		fg::DrawData getDrawData()
+		void renderCharacters()
 		{
-			if (!font) return fg::DrawData();
+			renderCharacterRects();
+			
+			sprites = std::move(font.getSprites(renderedText,fg::Glyph::Regular));
+			
+			for (fm::Size i=0;i<sprites.size();++i)
+			{
+				fg::FontSprite &sprite = sprites[i];
+				sprite.setPosition(spritePoses[i] + pos);
+				sprite.setColor(color);	
+			}
+		}
+		
+		std::vector<fg::FontSprite> getSprites()
+		{
+			if (!font) return std::vector<fg::FontSprite>();
 			
 			font.setCharacterSize(charSize);
 			metrics = font.getMetrics();
@@ -327,27 +351,24 @@ namespace fgui
 			findWordBoundaries();
 			renderCharacters();
 			
-			return mesh;
+			return std::move(sprites);
 		}
 	};
 	
-	void GuiText::updateDrawData()
+	void GuiText::updateSprites()
 	{
 		if (getFont())
 		{
 			fm::vec2 viewSize = m_viewSize;
 			
-			m_drawdata = DrawDataFromText(m_string,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr).getDrawData();
+			m_sprites = std::move(SpritesFromText(m_string,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr,getPosition()).getSprites());
 			
-			GuiElement::setSize(viewSize);
-			
-			m_tex = &getFont().getTexture();			
+			GuiElement::setSize(viewSize);		
 		}
 	}
 	
 	/////////////////////////////////////////////////////////////
 	GuiText::GuiText(GuiContext &owner) : GuiElement(owner),
-										  m_tex(nullptr),
 										  m_wrapMode(TextWrapWord),
 										  m_charSize(14),
 										  m_align(TextAlignLeft),
@@ -359,7 +380,6 @@ namespace fgui
 	
 	/////////////////////////////////////////////////////////////
 	GuiText::GuiText(GuiContext &owner,fm::vec2 size) : GuiElement(owner,size),
-													    m_tex(nullptr),
 													    m_viewSize(size),
 														m_wrapMode(TextWrapWord),
 													    m_charSize(14),
@@ -372,7 +392,6 @@ namespace fgui
 	
 	/////////////////////////////////////////////////////////////
 	GuiText::GuiText(GuiContext &owner,fm::String text) : GuiElement(owner),
-													      m_tex(nullptr),
 														  m_wrapMode(TextWrapWord),
 													      m_charSize(14),
 														  m_string(text),
@@ -380,12 +399,11 @@ namespace fgui
 													      m_clr(fm::vec4::Black),
 													      m_font(owner.getDefaultFont())
 	{
-		updateDrawData();
+		updateSprites();
 	}
 	
 	/////////////////////////////////////////////////////////////
 	GuiText::GuiText(GuiContext &owner,fm::vec2 size,fm::String text) : GuiElement(owner,size),
-																		m_tex(nullptr),
 																		m_wrapMode(TextWrapWord),
 																		m_charSize(14),
 																		m_string(text),
@@ -393,14 +411,14 @@ namespace fgui
 																		m_clr(fm::vec4::Black),
 																		m_font(owner.getDefaultFont())
 	{
-		updateDrawData();
+		updateSprites();
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void GuiText::setSize(fm::vec2s size)
 	{
 		m_viewSize = size;
-		updateDrawData();
+		updateSprites();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -409,7 +427,7 @@ namespace fgui
 		if (m_string != str)
 		{
 			m_string = str;
-			updateDrawData();
+			updateSprites();
 		}
 	}
 	
@@ -422,21 +440,14 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiText::onDraw(fg::ShaderManager &shader)
 	{
-		if (!getFont() || !m_tex) return;
-		
-		shader.getModelStack().push().mul(fm::MATRIX::translation(getPosition()));
-		shader.getTexUVStack().push().mul(m_tex->getPixToUnitMatrix());
-		shader.useTexture(m_tex);
-		shader.draw(m_drawdata);
-		shader.getTexUVStack().pop();
-		shader.getModelStack().pop();
+		(void)shader;
 	}
 		
 	/////////////////////////////////////////////////////////////
 	void GuiText::setFont(GuiFont font)
 	{
 		m_font = font;
-		updateDrawData();
+		updateSprites();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -455,7 +466,7 @@ namespace fgui
 	void GuiText::setCharacterSize(fm::Size charSize)
 	{
 		m_charSize = charSize;
-		updateDrawData();
+		updateSprites();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -468,7 +479,7 @@ namespace fgui
 	void GuiText::setWrap(TextWrap mode)
 	{
 		m_wrapMode = mode;
-		updateDrawData();
+		updateSprites();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -481,14 +492,27 @@ namespace fgui
 	void GuiText::setAlign(TextAlign mode)
 	{
 		m_align = mode;
-		updateDrawData();
+		updateSprites();
 	}
 
 	/////////////////////////////////////////////////////////////
 	void GuiText::setColor(fm::vec4 color)
 	{
 		m_clr = color;
-		updateDrawData();
+		
+		for (auto &sprite : m_sprites)
+			sprite.setColor(m_clr);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiText::setPosition(fm::vec2i pos)
+	{
+		fm::vec2i diff = pos - getPosition();
+		
+		for (auto &sprite : m_sprites)
+			sprite.setPosition(sprite.getPosition() + diff);
+		
+		GuiElement::setPosition(pos);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -507,12 +531,24 @@ namespace fgui
 	void GuiText::setViewOffset(fm::vec2 viewOffset)
 	{
 		m_viewOffset = viewOffset;
-		updateDrawData();
+		updateSprites();
 	}
 	
 	/////////////////////////////////////////////////////////////
 	fm::vec2 GuiText::getViewOffset() const
 	{
 		return m_viewOffset;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fg::FontSprite &GuiText::getCharSprite(fm::Size index)
+	{
+		return m_sprites[index];
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Size GuiText::getCharSpriteCount() const
+	{
+		return m_sprites.size();
 	}
 }

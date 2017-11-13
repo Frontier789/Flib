@@ -289,6 +289,9 @@ namespace fgui
 	{
 		this->draw(getSpriteManager());
 		this->draw(getMainLayout());
+		
+		for (auto &it : m_fonts)
+			it.second.onDrawSprites(getShader());
 	}
 	
 	/////////////////////////////////////////////////////////////

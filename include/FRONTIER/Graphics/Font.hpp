@@ -388,12 +388,11 @@ namespace fg
 		/// 
 		/// @param letter The codepoint
 		/// @param style The style to use
-		/// @param amount The number of sprites
 		/// 
 		/// @return The sprite
 		///
 		/////////////////////////////////////////////////////////////
-		std::vector<SpriteBase<Identifier>> getSprites(fm::String letters,Glyph::Style style,fm::Size amount);
+		std::vector<SpriteBase<Identifier>> getSprites(fm::String letters,Glyph::Style style);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the image of a glyph manually
@@ -454,6 +453,14 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		bool operator!() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Draw the sprites allocated using this font
+		///
+		/// @param shader The shader to use
+		///
+		/////////////////////////////////////////////////////////////
+		void onDrawSprites(ShaderManager &shader);
 
 	private:
 		/////////////////////////////////////////////////////////////

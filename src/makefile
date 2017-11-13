@@ -94,6 +94,6 @@ $(F_O_FILES_DIR)/libf.a: $(F_STATIC_O_FILES) | $(F_O_FILES_DIR)
 $(F_O_FILES_DIR)/$(F_SO_PREFIX)f-shared$(F_SO_EXTENSION): $(F_DYNAMIC_O_FILES) | $(F_O_FILES_DIR)
 	$(CXX) -shared -o $@ $^ -L$(F_O_FILES_DIR) $(F_DYNLINK_TO_ALL) $(call F_SO_IMPLIB,$(F_O_FILES_DIR),)
 	
-	
+
 del_f:
 	$(call F_DELETE,$(F_O_FILES_DIR))

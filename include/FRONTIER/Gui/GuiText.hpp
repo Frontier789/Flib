@@ -1,4 +1,4 @@
- FRONTIER_API////////////////////////////////////////////////////////////////////////// <!--
+////////////////////////////////////////////////////////////////////////// <!--
 /// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
@@ -19,6 +19,7 @@
 
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
+#include <FRONTIER/Graphics/Sprite.hpp>
 #include <FRONTIER/Gui/GuiElement.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Vector2.hpp>
@@ -102,8 +103,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API GuiText : public GuiElement
 	{
-		const fg::Texture *m_tex; ///< The texture the font uses
-		fg::DrawData m_drawdata;  ///< Data used when drawing
+		std::vector<fg::FontSprite> m_sprites; ///< The sprites that build up the text
 		fm::vec2 m_viewOffset; ///< The offset of the view rectangle
 		fm::vec2 m_viewSize;   ///< The size of the view rectangle 
 		TextWrap m_wrapMode;   ///< The way the text gets wrapped
@@ -111,9 +111,9 @@ namespace fgui
 		fm::String m_string;   ///< The string being displayed
 		TextAlign m_align;     ///< The align of the text
 		fm::vec4 m_clr; ///< The color of the text
-		GuiFont m_font; ///< The fint used at displaying
+		GuiFont m_font; ///< The font used at displaying
 		
-		void updateDrawData(); ///< Internal function
+		void updateSprites(); ///< Internal function
 		
 	public:
 		/////////////////////////////////////////////////////////////
@@ -159,6 +159,14 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		void setSize(fm::vec2s size) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the position of the gui text
+		/// 
+		/// @param pos The new position
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setPosition(fm::vec2i pos) override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the text of the gui text
@@ -279,6 +287,22 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		fm::vec2 getViewOffset() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Access one of the sprites of the gui text
+		/// 
+		/// @return Reference to the sprite
+		/// 
+		/////////////////////////////////////////////////////////////
+		fg::FontSprite &getCharSprite(fm::Size index);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the number of sprites composing the gui text
+		/// 
+		/// @return The  number of sprites
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Size getCharSpriteCount() const; 
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Draw the gui text

@@ -461,25 +461,19 @@ float samp(in vec2 uv,in float w)
 	}
 	
 	/////////////////////////////////////////////////////////////
-	std::vector<Font::Sprite> Font::getSprites(fm::String letters,Glyph::Style style,fm::Size amount)
+	std::vector<Font::Sprite> Font::getSprites(fm::String letters,Glyph::Style style)
 	{
 		for (auto c : letters)
 			getGlyph(c,style);
 		
-		if (letters.size() < amount)
-			letters += fm::String(amount,' ');
+		std::vector<Font::Sprite> sprites = getSpriteManager(style).getSprites(Font::Identifier(letters[0],style),letters.size());
 		
-		std::vector<Font::Sprite> sprites = getSpriteManager(style).getSprites(Font::Identifier(letters[0],style),amount);
-		
-		if (style & Glyph::SigDistField)
+		C(letters.size())
 		{
-			C(amount)
-			{
-				fm::vec2 size = m_sharedData->renderer.getGlyphRect(letters[i],style).size;
-				
-				sprites[i].setImageID(Font::Identifier(letters[i],style));
-				sprites[i].setSize(size);
-			}
+			fm::vec2 size = m_sharedData->renderer.getGlyphRect(letters[i],style).size;
+			
+			sprites[i].setImageID(Font::Identifier(letters[i],style));
+			sprites[i].setSize(size);
 		}
 		
 		return sprites;
@@ -515,5 +509,14 @@ float samp(in vec2 uv,in float w)
 	bool Font::operator!() const
 	{
 		return !isLoaded();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void Font::onDrawSprites(ShaderManager &shader)
+	{
+		m_sharedData->sigDistSpriteManager.onDraw(shader);
+		
+		for (auto &it : m_sharedData->spriteManagers)
+			it.second.onDraw(shader);
 	}
 }
