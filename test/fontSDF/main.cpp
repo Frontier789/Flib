@@ -218,7 +218,7 @@ int main()
 		tester->setProp("u_coef",sb3->getScrollState());
 	});
 	pb->setPosition(vec2(0,102));
-	
+	 
 	win.getMainLayout().addChildElement(pb);
 	
 	FrameBuffer fbo;
@@ -240,7 +240,7 @@ int main()
 		{
 			win.handleEvent(ev);
 			if (ev.type == Event::Closed) running = false;
-			if (ev.type == Event::FocusLost) running = false;
+			// if (ev.type == Event::FocusLost) running = false;
 			if (ev.type == Event::KeyPressed)
 			{
 				if (ev.key.code == Keyboard::Plus)
@@ -261,6 +261,8 @@ int main()
 				}
 			}
 		}
+		
+		win.updateElements();
 		
 		win.clear();
 		

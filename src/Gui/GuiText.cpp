@@ -59,6 +59,7 @@ namespace fgui
 	{
 	public:
 		const fm::String &str;
+		fg::Glyph::Style style;
 		fg::Font font;
 		fm::Size charSize;
 		TextAlign align;
@@ -69,6 +70,7 @@ namespace fgui
 		fm::vec4 color;
 		fm::vec2 maxView;
 		fm::vec2 pos;
+		int tabwidth;
 		
 		std::vector<fm::Size> wordBegs,wordEnds;
 		std::vector<float> wordPixDifBegs,wordPixDifEnds;
@@ -77,6 +79,7 @@ namespace fgui
 		fm::Size maxLineWidth;
 		
 		SpritesFromText(const fm::String &str,
+						fg::Glyph::Style style,
 						fg::Font font,
 						fm::Size charSize,
 						TextAlign align,
@@ -85,7 +88,8 @@ namespace fgui
 						fm::vec2 viewOffset,
 						fm::vec4 color,
 						fm::vec2 pos) : 
-						 str(str), 
+						 str(str),
+						 style(style),
 						 font(font), 
 						 charSize(charSize), 
 						 align(align), 
@@ -93,7 +97,8 @@ namespace fgui
 						 viewSize(viewSize), 
 						 viewOffset(viewOffset), 
 						 color(color),
-						 pos(pos)
+						 pos(pos),
+						 tabwidth(4)
 		{
 			monospacing = false;
 		}
@@ -117,16 +122,16 @@ namespace fgui
 			return fm::String("\t \r\n").find(cp) != fm::String::npos;
 		}
 		
-		static float getWidthCp(fm::Uint32 prevcp,fm::Uint32 cp,fg::Font font,bool monospace)
+		float getWidthCp(fm::Uint32 prevcp,fm::Uint32 cp)
 		{
-			if (cp == ' ' ) return getWidthCp(0,'m',font,monospace);
-			if (cp == '\t') return getWidthCp(0,'m',font,monospace)*4;
+			if (cp == ' ' ) return getWidthCp(0,'m');
+			if (cp == '\t') return getWidthCp(0,'m')*tabwidth;
 			
-			fg::Glyph g = font.getGlyph(monospace ? 'm' : cp);
-			float width = g.size.w + g.leftdown.x;
+			fm::rect2i grect = font.getGlyphRect(monospacing ? 'm' : cp,style);
+			float width = grect.size.w + grect.pos.x;
 			
 			if (prevcp)
-				width += font.getKerning(prevcp,cp);
+				width += font.getKerning(prevcp,cp) * 0;
 			
 			return width;
 		}
@@ -144,7 +149,7 @@ namespace fgui
 					x = 0;
 				}
 				
-				x += getWidthCp((!i ? 0 : str[i-1]),str[i],font,monospacing);
+				x += getWidthCp((!i ? 0 : str[i-1]),str[i]);
 				
 				if (!isWhiteSpaceCp(str[i]) && (i+1 == str.size() || isWhiteSpaceCp(str[i+1])))
 				{
@@ -280,9 +285,9 @@ namespace fgui
 				for (fm::Size l = wordBegs[i];l != wordEnds[i];++l)
 				{
 					fm::Uint32 cp = str[l];
-					fg::Glyph g = font.getGlyph(cp);
+					fm::rect2i grect = font.getGlyphRect(cp,style);
 					
-					if (viewSize.w != 0 && curPos.x + transfViewOffset + g.size.w >= viewSize.w && wrap != TextWrapOff)
+					if (viewSize.w != 0 && curPos.x + transfViewOffset + grect.size.w >= viewSize.w && wrap != TextWrapOff)
 					{
 						if (l == wordBegs[i])
 						{
@@ -296,12 +301,12 @@ namespace fgui
 					{
 						bool goodUp    = (lineWidthId+1) * metrics.lineGap + viewOffset.y > 0;
 						bool goodDown  = lineWidthId * metrics.lineGap + viewOffset.y - viewSize.h < 0;
-						bool goodLeft  = transformToAlign(curPos).x + g.size.w + viewOffset.x > 0;
+						bool goodLeft  = transformToAlign(curPos).x + grect.size.w + viewOffset.x > 0;
 						bool goodRight = transformToAlign(curPos).x + viewOffset.x - viewSize.w < 0;
 						
 						if ((goodLeft && goodUp) && ((goodDown && goodRight) || viewSize.area() == 0))
 						{
-							fm::vec2  leftAlignPos = curPos + g.leftdown + fm::vec2(0,metrics.maxH);
+							fm::vec2  leftAlignPos = curPos + grect.pos + fm::vec2(0,metrics.maxH);
 							fm::vec2i rectCorner   = transformToAlign(leftAlignPos) + viewOffset;
 							
 							if (viewSize.area())
@@ -310,15 +315,15 @@ namespace fgui
 								rectCorner.y = std::min<float>(std::max<float>(rectCorner.y,0),viewSize.h);
 							}
 							
-							maxView.x = std::max<int>(rectCorner.x + g.size.w,maxView.x);
-							maxView.y = std::max<int>(rectCorner.y + g.size.h,maxView.y);
+							maxView.x = std::max<int>(rectCorner.x + grect.size.w,maxView.x);
+							maxView.y = std::max<int>(rectCorner.y + grect.size.h,maxView.y);
 							
 							spritePoses.push_back(rectCorner);
 							renderedText+=cp;			
 						}
 					}
 					
-					curPos.x += getWidthCp(0,cp,font,monospacing);
+					curPos.x += getWidthCp(0,cp);
 				}
 			}
 			begNewLine(pass2);
@@ -331,7 +336,7 @@ namespace fgui
 		{
 			renderCharacterRects();
 			
-			sprites = std::move(font.getSprites(renderedText,fg::Glyph::Regular));
+			sprites = std::move(font.getSprites(renderedText,style));
 			
 			for (fm::Size i=0;i<sprites.size();++i)
 			{
@@ -361,7 +366,7 @@ namespace fgui
 		{
 			fm::vec2 viewSize = m_viewSize;
 			
-			m_sprites = std::move(SpritesFromText(m_string,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr,getPosition()).getSprites());
+			m_sprites = std::move(SpritesFromText(m_string,m_style,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr,getPosition()).getSprites());
 			
 			GuiElement::setSize(viewSize);		
 		}
@@ -369,6 +374,7 @@ namespace fgui
 	
 	/////////////////////////////////////////////////////////////
 	GuiText::GuiText(GuiContext &owner) : GuiElement(owner),
+										  m_style(fg::Glyph::Regular),
 										  m_wrapMode(TextWrapWord),
 										  m_charSize(14),
 										  m_align(TextAlignLeft),
@@ -380,6 +386,7 @@ namespace fgui
 	
 	/////////////////////////////////////////////////////////////
 	GuiText::GuiText(GuiContext &owner,fm::vec2 size) : GuiElement(owner,size),
+													    m_style(fg::Glyph::Regular),
 													    m_viewSize(size),
 														m_wrapMode(TextWrapWord),
 													    m_charSize(14),
@@ -392,6 +399,7 @@ namespace fgui
 	
 	/////////////////////////////////////////////////////////////
 	GuiText::GuiText(GuiContext &owner,fm::String text) : GuiElement(owner),
+														  m_style(fg::Glyph::Regular),
 														  m_wrapMode(TextWrapWord),
 													      m_charSize(14),
 														  m_string(text),
@@ -404,6 +412,7 @@ namespace fgui
 	
 	/////////////////////////////////////////////////////////////
 	GuiText::GuiText(GuiContext &owner,fm::vec2 size,fm::String text) : GuiElement(owner,size),
+																		m_style(fg::Glyph::Regular),
 																		m_wrapMode(TextWrapWord),
 																		m_charSize(14),
 																		m_string(text),
@@ -429,6 +438,22 @@ namespace fgui
 			m_string = str;
 			updateSprites();
 		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiText::setStyle(const fg::Glyph::Style &style)
+	{
+		if (m_style != style)
+		{
+			m_style = style;
+			updateSprites();
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fg::Glyph::Style GuiText::getStyle() const
+	{
+		return m_style;
 	}
 	
 	/////////////////////////////////////////////////////////////

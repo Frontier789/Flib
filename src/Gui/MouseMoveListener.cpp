@@ -19,7 +19,8 @@
 
 namespace fgui
 {
-	MouseMoveListener::MouseMoveListener() : m_mouseIn(false)
+	MouseMoveListener::MouseMoveListener() : m_recheckRecursion(false),
+											 m_mouseIn(false)
 	{
 		addEventHandler([&](fw::Event &ev) -> bool {
 			
@@ -31,7 +32,6 @@ namespace fgui
 				if (m_mouseIn)
 				{
 					onMouseMoved(p,m_prevPos);
-					m_prevPos = p;
 					
 					if (!in)
 						onMouseLeave(p);
@@ -42,6 +42,7 @@ namespace fgui
 						onMouseEnter(p);
 				}
 				
+				m_prevPos = p;
 				m_mouseIn = in;
 			}
 			
@@ -89,6 +90,40 @@ namespace fgui
 	fm::vec2 MouseMoveListener::getLastMousePos() const
 	{
 		return m_prevPos;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void MouseMoveListener::recheckMouseInside()
+	{
+		bool in = contains(m_prevPos);
+		
+		if (m_mouseIn && !in)
+		{
+			m_mouseIn = in;
+			
+			if (!m_recheckRecursion)
+			{
+				m_recheckRecursion = true;
+				
+				onMouseLeave(m_prevPos);
+				
+				m_recheckRecursion = false;
+			}
+		}
+		
+		if (!m_mouseIn && in)
+		{
+			m_mouseIn = in;
+			
+			if (!m_recheckRecursion)
+			{
+				m_recheckRecursion = true;
+				
+				onMouseEnter(m_prevPos);
+				
+				m_recheckRecursion = false;
+			}
+		}
 	}
 }
 

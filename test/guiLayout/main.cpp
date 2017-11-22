@@ -64,6 +64,8 @@ int main()
 	
 	win.getMainLayout().addChildElement(l);
 	
+	cout << win.getDefaultFont().getGlyphRect('t',Glyph::SigDistField) << endl;
+	
 	C(10)
 	{
 		PushButton *pb = new PushButton(win,"push me");	
@@ -71,6 +73,10 @@ int main()
 		
 		pb->setCallback([&](GuiButton &b) {
 			b.setText("yayy pushed " + fm::toString(++push_count) + " times");
+			
+			if (push_count%3 == 0)
+				b.getGuiText().setStyle(Glyph::SigDistField);
+			
 			b.setSize(b.getGuiText().getSize() + vec2(16,10));
 			win.setClearColor(vec4::White);
 		});
@@ -112,6 +118,23 @@ int main()
 	
 	win.getMainLayout().addChildElement(showBtn);
 	
+	Clock floatingClk;
+	bool longFloating = true;
+	PushButton *floatingBtn = new PushButton(win,"Please click to reduce size",[&](GuiButton &pb){
+		
+		longFloating = !longFloating;
+		if (!longFloating)
+		{
+			pb.setText("Click");
+		}
+		else
+		{
+			pb.setText("Please click to reduce size");
+		}
+	});
+	
+	win.getMainLayout().addChildElement(floatingBtn);
+	
 	bool running = true;
 	while (running)
 	{
@@ -122,6 +145,10 @@ int main()
 			win.handleEvent(ev);
 			if (ev.type == Event::Closed) running = false;
 		}
+		
+		floatingBtn->setPosition(vec2(sin(floatingClk.getSeconds()/2)*50 + 320,400));
+		
+		win.updateElements();
 		
 		win.clear();
 		win.drawElements();

@@ -120,7 +120,7 @@ namespace fgui
 		/// @return The size
 		/// 
 		/////////////////////////////////////////////////////////////
-		fm::vec2s getSize() const;
+		virtual fm::vec2s getSize() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the size of the gui element

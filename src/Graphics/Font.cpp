@@ -217,7 +217,7 @@ float samp(in vec2 uv,in float w)
 			sourceTransformer(source);
 		});
 		
-		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_thickness",.7222222f);
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_thickness",.5222222f);
 		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_pov",.255556f);
 		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_dscale",.2666667f);
 		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_coef",.1333333f);
@@ -344,21 +344,7 @@ float samp(in vec2 uv,in float w)
 	/////////////////////////////////////////////////////////////
 	fm::rect2i Font::getGlyphRect(const fm::Uint32 &letter,Glyph::Style style) const
 	{
-		if (style & Glyph::SigDistField)
-		{
-			auto charSize = getCharacterSize();
-			
-			setCharacterSize(200);
-			fm::rect2i ret = m_sharedData->renderer.getGlyphRect(letter,style);
-			
-			setCharacterSize(charSize);
-			
-			return ret;
-		}
-		else
-		{
-			return m_sharedData->renderer.getGlyphRect(letter,style);
-		}
+		return m_sharedData->renderer.getGlyphRect(letter,style);
 	}
 	
 	

@@ -22,6 +22,7 @@
 #include <FRONTIER/Gui/ClickListener.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/util/API.h>
+#include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Angle.hpp>
 
 #define FRONTIER_TRANSFORMLISTENER
@@ -215,6 +216,22 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool inZoomMode() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the transformation matrix defined by the listener
+		/// 
+		/// @return The matrix
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::mat4 getTransformMatrix() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the inverse transformation matrix defined by the listener
+		/// 
+		/// @return The matrix
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::mat4 getInvTransformMatrix() const;
 	};
 	
 }

@@ -41,6 +41,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API GuiButton : public GuiElement, public ClickListener, public CallbackUser<GuiButton>
 	{
+		fm::vec2s m_prevTextSize; ///< Last size of the gui text
 		GuiText m_text; ///< The gui elem for text display on the button
 		
 	protected:
@@ -89,6 +90,22 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual void onDraw(fg::ShaderManager &shader) override;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief update the button
+		/// 
+		/// @param dt The elapsed time since last update
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void onUpdate(const fm::Time &dt) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the size of the button
+		/// 
+		/// @return The size
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual fm::vec2s getSize() const override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the size of the button
@@ -126,9 +143,10 @@ namespace fgui
 		/// @brief Set the displayed text on the button
 		/// 
 		/// @param text The new text
+		/// @param adaptSize Specifies whether the size of the button should shring to fit if needed
 		/// 
 		/////////////////////////////////////////////////////////////
-		void setText(const fm::String &text);
+		void setText(const fm::String &text,bool adaptSize = true);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the displayed text"s character size on the button

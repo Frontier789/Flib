@@ -87,16 +87,20 @@ namespace fm
 	namespace priv
 	{
 		template<class LeftList,class RightList>
-		class ListBeginsWith
+		class TListBeginsWith
 		{
 		public:
 			enum {
-				value = (LeftList::size != 0 && std::is_same<typename LeftList::Head,typename RightList::Head>::value && ListBeginsWith<typename LeftList::Tail,typename RightList::Tail>::value)
+				value = (LeftList::size != 0 && 
+						 std::is_convertible<typename LeftList::Head,
+											 typename RightList::Head>::value && 
+						TListBeginsWith<typename LeftList::Tail,
+										typename RightList::Tail>::value)
 			};
 		};
 
 		template<class LeftList>
-		class ListBeginsWith<LeftList,ArgumentList<>>
+		class TListBeginsWith<LeftList,ArgumentList<>>
 		{
 		public:
 			enum {
@@ -105,7 +109,7 @@ namespace fm
 		};
 
 		template<class AltR,class FuncArgList,class R,class... CallArgs>
-		using BaseDelegateIfCompatible = std::enable_if<ListBeginsWith<ArgumentList<CallArgs...>,FuncArgList>::value && (std::is_same<AltR,R>::value || std::is_same<void,R>::value),BaseDelegate<R,CallArgs...> >;
+		using BaseDelegateIfCompatible = std::enable_if<TListBeginsWith<ArgumentList<CallArgs...>,FuncArgList>::value && (std::is_same<AltR,R>::value || std::is_same<void,R>::value),BaseDelegate<R,CallArgs...> >;
 	}
 }
 

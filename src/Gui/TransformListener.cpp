@@ -187,4 +187,20 @@ namespace fgui
 	{
 		return false;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::mat4 TransformListener::getTransformMatrix() const
+	{
+		return fm::MATRIX::translation(getOffset()) * 
+			   fm::MATRIX::scaling(fm::vec2(getZoom())) *
+			   fm::MATRIX::rotation(getRotation());
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::mat4 TransformListener::getInvTransformMatrix() const
+	{
+		return fm::MATRIX::rotation(-getRotation()) * 
+			   fm::MATRIX::scaling(fm::vec2(1.f/getZoom())) *
+			   fm::MATRIX::translation(-getOffset());
+	}
 }

@@ -46,7 +46,33 @@ namespace fgui
 	{
 		m_text.onDraw(shader);
 	}
+
+	/////////////////////////////////////////////////////////////
+	void GuiButton::onUpdate(const fm::Time &/* dt */)
+	{
+		fm::vec2s textSize = m_text.getSize();
 		
+		if (m_prevTextSize != textSize)
+		{
+			m_prevTextSize = textSize;
+			
+			setSize(getSize());
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::vec2s GuiButton::getSize() const
+	{
+		fm::vec2s size = GuiElement::getSize();
+		
+		fm::vec2 s = m_text.getSize();
+		
+		if (size.w < s.w) size.w = s.w;
+		if (size.h < s.h) size.h = s.h;
+		
+		return size;
+	}
+	
 	/////////////////////////////////////////////////////////////
 	void GuiButton::setSize(fm::vec2s size)
 	{
@@ -58,6 +84,8 @@ namespace fgui
 		m_text.setPosition(getPosition() + size / 2 - m_text.getSize() / 2);
 		
 		GuiElement::setSize(size);
+		
+		recheckMouseInside();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -66,6 +94,8 @@ namespace fgui
 		m_text.setPosition(pos + getSize() / 2 - m_text.getSize() / 2);
 		
 		GuiElement::setPosition(pos);
+		
+		recheckMouseInside();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -89,11 +119,18 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void GuiButton::setText(const fm::String &text)
+	void GuiButton::setText(const fm::String &text,bool adaptSizeToText)
 	{
 		m_text.setText(text);
 		
-		setSize(getSize());
+		if (!adaptSizeToText)
+		{
+			setSize(getSize());
+		}
+		else
+		{
+			setSize(fm::vec2s(1,1));
+		}
 	}
 	
 	/////////////////////////////////////////////////////////////

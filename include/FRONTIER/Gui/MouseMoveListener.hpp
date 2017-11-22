@@ -35,6 +35,7 @@ namespace fgui
 	class FRONTIER_API MouseMoveListener : public virtual GuiCallback
 	{
 	protected:
+		bool m_recheckRecursion; ///< Avoid recursion in recheckSize
 		fm::vec2 m_prevPos; ///< The last position of the mouse inside the gui element
 		bool m_mouseIn; ///< Indicates the mouse being inside the gui element
 		
@@ -85,6 +86,15 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		fm::vec2 getLastMousePos() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Adapt to the current size of the gui element
+		/// 
+		/// This function should be called when
+		/// The size of the gui element changes
+		/// 
+		/////////////////////////////////////////////////////////////
+		void recheckMouseInside();
 	};
 }
 

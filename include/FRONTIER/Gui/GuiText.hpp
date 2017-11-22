@@ -23,6 +23,7 @@
 #include <FRONTIER/Gui/GuiElement.hpp>
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/Graphics/Glyph.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/Graphics/Font.hpp>
 
@@ -104,6 +105,7 @@ namespace fgui
 	class FRONTIER_API GuiText : public GuiElement
 	{
 		std::vector<fg::FontSprite> m_sprites; ///< The sprites that build up the text
+		fg::Glyph::Style m_style;  ///< The style of the text
 		fm::vec2 m_viewOffset; ///< The offset of the view rectangle
 		fm::vec2 m_viewSize;   ///< The size of the view rectangle 
 		TextWrap m_wrapMode;   ///< The way the text gets wrapped
@@ -175,6 +177,22 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		void setText(const fm::String &str);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the style of the gui text
+		/// 
+		/// @param style The new style
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setStyle(const fg::Glyph::Style &style);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the style of the gui text
+		/// 
+		/// @return The style
+		/// 
+		/////////////////////////////////////////////////////////////
+		fg::Glyph::Style getStyle() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the text of the gui text
