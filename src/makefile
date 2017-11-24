@@ -5,9 +5,18 @@ F_PATH_TO_INCLUDE=$(F_PATH_TO_ROOT)/include
 # include common definitions
 include $(F_PATH_TO_INCLUDE)/FRONTIER/Makefiles/common.mk
 
-# target library TODO: check operating system
+# target library
 F_LIB_TARGET=$(F_LIB_DIR_NAME)
 F_O_FILES_DIR=$(F_PATH_TO_ROOT)/$(F_LIB_TARGET)
+
+ifeq ($(F_PLATFORM),Linux)
+RET := $(shell scripts/testReqs.sh $(CXX) > /dev/null; echo $$?)
+
+ifneq ($(RET),0)
+err:
+	$(shell scripts/testReqs.sh $(CXX) >&2)
+endif
+endif
 
 # all the .a targets
 all: make_lib_files make_lib_f
