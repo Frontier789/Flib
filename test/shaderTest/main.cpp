@@ -10,10 +10,10 @@ using namespace std;
  *  Glob. Ill.
  *  -save approximation when camera is still
  *  -keep track of pos on texture when recursing
-.*  Sprite -> Text
+ *    Sprite -> Text -OMG
  *  Fourier test
- *    tree upgrade
-.*  SDF font/text
+ *    kd-tree upgrade
+ *    SDF font/text
  *    custom pic cursor
  *  bring unique sprite back
  *  rework old tests
@@ -23,9 +23,11 @@ using namespace std;
  *    convolution applier
  *    fm::toString(float)
  *  pump up Transition<T>
-.*  image to SDF converter
+ *    image to SDF converter
  *    fproject: use $FPATH
  *  make install target
+ *  -linux too
+ *  deliver drop event to linux
  */
 
 class Frame : public fg::Drawable
