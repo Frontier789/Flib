@@ -336,7 +336,7 @@ namespace fgui
 		{
 			renderCharacterRects();
 			
-			sprites = std::move(font.getSprites(renderedText,style));
+			sprites = font.getSprites(renderedText,style);
 			
 			for (fm::Size i=0;i<sprites.size();++i)
 			{
@@ -366,7 +366,7 @@ namespace fgui
 		{
 			fm::vec2 viewSize = m_viewSize;
 			
-			m_sprites = std::move(SpritesFromText(m_string,m_style,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr,getPosition()).getSprites());
+			m_sprites = SpritesFromText(m_string,m_style,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr,getPosition()).getSprites();
 			
 			GuiElement::setSize(viewSize);		
 		}
