@@ -10,8 +10,28 @@ Template classes (Vectors, Matrices, Polar vectors, Delegates)
 <p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Compilation</h2>
 
-cd to /src
-call make
+The library requires OpenGL development library to compile
+On Linux systems this means you need glx development library (e.g. from `mesa-common-dev`)
+A `makefile` is loacted in `src/`
+Open a terminal in `src/` and call make
+
+<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
+<h2>Troubleshooting</h2>
+
+When compiling on Linux systems the following errors may arise
+| Symptom | Cause | Solution | Command |
+| ------- |:-----:|:--------:| -------:|
+| GL/glx.h not found | glx not installed | Install glx | `sudo apt-get install mesa-common-dev` |
+| libGL.so not found | OpenGL not updated | Install/Update OpenGL | `sudo apt-get install mesa-common-dev` or/then `ldconfig` |
+
+Please note that the actual command may differ on your system,
+refer to your distribution's forum how to install the required
+development libraries
+
+<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
+<h2>Automatic testing</h2>
+Testing done via AutoTester (https://github.com/Frontier789/AutoTester)
+<p align="center"><img src="https://raw.githubusercontent.com/Frontier789/AutoTester/master/result.png"/></p>
 
 <p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Citation</h2>
