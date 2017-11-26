@@ -19,6 +19,7 @@ Open a terminal in `src/` and call make
 <h2>Troubleshooting</h2>
 
 When compiling on Linux systems the following errors may arise
+
 | Symptom | Cause | Solution | Command |
 | ------- |:-----:|:--------:| -------:|
 | GL/glx.h not found | glx not installed | Install glx | `sudo apt-get install mesa-common-dev` |
