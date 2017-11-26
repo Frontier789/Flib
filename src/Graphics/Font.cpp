@@ -231,7 +231,7 @@ float samp(in vec2 uv,in float w)
 		Font ret;
 		
 		ret.loadSigDistFieldShader();
-		ret.m_sharedData->renderer = std::move(m_sharedData->renderer.createHardCopy());
+		ret.m_sharedData->renderer = m_sharedData->renderer.createHardCopy();
 		ret.m_sharedData->loaded   = m_sharedData->loaded;
 		
 		return ret;
@@ -304,7 +304,7 @@ float samp(in vec2 uv,in float w)
 			if (g == Glyph())
 			{
 				fm::vec2 leftdown;
-				fg::Image *img = new fg::Image(std::move(renderGlyph(c,style,&leftdown)));
+				fg::Image *img = new fg::Image(renderGlyph(c,style,&leftdown));
 				
 				mapPts.push_back(TextureAtlas<Identifier>::MapPoint(img,Identifier(c,style),leftdown));
 			}
@@ -328,8 +328,8 @@ float samp(in vec2 uv,in float w)
 			
 			setCharacterSize(200);
 			Image renderImg = m_sharedData->renderer.renderGlyph(letter,style,leftDown);
-			Image sdfImg = std::move(renderImg.convertToSDF(10,[](Color c){return c.a > 127;},0));
-			Image scaledSDFImg = std::move(sdfImg.scale(sdfImg.getSize()*.3));
+			Image sdfImg = renderImg.convertToSDF(10,[](Color c){return c.a > 127;},0);
+			Image scaledSDFImg = sdfImg.scale(sdfImg.getSize()*.3);
 			
 			setCharacterSize(charSize);
 			
