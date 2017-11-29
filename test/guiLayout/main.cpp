@@ -64,8 +64,6 @@ int main()
 	
 	win.getMainLayout().addChildElement(l);
 	
-	cout << win.getDefaultFont().getGlyphRect('t',Glyph::SigDistField) << endl;
-	
 	C(10)
 	{
 		PushButton *pb = new PushButton(win,"push me");	
@@ -74,9 +72,12 @@ int main()
 		pb->setCallback([&](GuiButton &b) {
 			b.setText("yayy pushed " + fm::toString(++push_count) + " times");
 			
-			if (push_count%3 == 0)
+			if (push_count%8 == 0)
 				b.getGuiText().setStyle(Glyph::SigDistField);
+			else
+				b.getGuiText().setStyle(Glyph::Regular);
 			
+			b.setCharacterSize(12);
 			b.setSize(b.getGuiText().getSize() + vec2(16,10));
 			win.setClearColor(vec4::White);
 		});

@@ -34,6 +34,7 @@ public:
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_pov"});
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_dscale"});
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_coef"});
+				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_powAlpha"});
 				source.globals += R"(
 float contour(in float d,in float w) 
 {
@@ -63,7 +64,7 @@ float samp(in vec2 uv,in float w)
 
 	alpha = (6 * u_coef * alpha + 0.4 * asum) / (6 * u_coef + 0.4*4.0);
 
-	out_color = vec4(vec3(0.0), alpha);)";
+	out_color = vec4(vec3(0.0), pow(alpha,u_powAlpha));)";
 			}
 			
 			cout << source << endl;
@@ -155,7 +156,11 @@ int main()
 	
 	Image img;
 	Result r = img.loadFromFile("bunny.png");
-	if (!r) cout << r << endl;
+	if (!r)
+	{
+		cout << r << endl;
+		img.create(vec2(32,32));
+	}
 	
 	Texture bunnyTex(img);
 	
@@ -168,7 +173,6 @@ int main()
 	pb->setCharacterSize(10);
 	
 	win.getMainLayout().addChildElement(pb);
-	
 	
 	ScrollBar *sbP = new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
 		tester->setProp("u_thickness",sb.getScrollState());
@@ -200,10 +204,19 @@ int main()
 	
 	win.getMainLayout().addChildElement(sb3);
 	
+	ScrollBar *sb4 = new ScrollBar(win,vec2(100,18),[&](GuiScrollBar &sb){
+		tester->setProp("u_powAlpha",sb.getScrollState()*4.0);
+	});
+	
+	sb4->setPosition(vec2(0,72)); 
+	
+	win.getMainLayout().addChildElement(sb4);
+	
 	sbP->setScrollState(.4555551);
 	sb ->setScrollState(.255556);
 	sb2->setScrollState(.2666667);
 	sb3->setScrollState(.1333333);
+	sb4->setScrollState(.5);
 
 	bool fastSDF = true;
 	
@@ -211,6 +224,10 @@ int main()
 		fastSDF = !fastSDF;
 		tester->buildSprites(fastSDF);
 		pb->setText(fastSDF ? "fastSDF" : "niceSDF");
+		pb->getGuiText().setStyle(Glyph::SigDistField);
+		cout << pb->getGuiText().getCharacterSize()-1 << endl;
+		pb->getGuiText().setCharacterSize(pb->getGuiText().getCharacterSize()-1);
+		
 		
 		tester->setProp("u_thickness",sbP->getScrollState());
 		tester->setProp("u_pov",sb->getScrollState());
@@ -218,6 +235,7 @@ int main()
 		tester->setProp("u_coef",sb3->getScrollState());
 	});
 	pb->setPosition(vec2(0,102));
+	pb->getGuiText().setStyle(Glyph::SigDistField);
 	 
 	win.getMainLayout().addChildElement(pb);
 	

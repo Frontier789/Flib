@@ -181,7 +181,7 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the minimum height of a row
 		/// 
-		/// @param colIndex The index of the row
+		/// @param rowIndex The index of the row
 		/// @param height The min height of the row
 		/// 
 		/////////////////////////////////////////////////////////////
@@ -226,9 +226,9 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the minimum size of a cell
 		/// 
-		/// @param element The new element
+		/// @param index The index 2d of the cell
 		/// 
-		/// @return The number of children the layout has
+		/// @return minimal size of the cell
 		/// 
 		/////////////////////////////////////////////////////////////
 		fm::vec2 getCellSize(fm::vec2s index) const;
@@ -254,7 +254,7 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the minimal height of a row
 		/// 
-		/// @param colIndex The index of the row
+		/// @param rowIndex The index of the row
 		/// 
 		/// @return The minimal height of the row
 		/// 

@@ -180,6 +180,7 @@ namespace fg
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_pov"});
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_dscale"});
 				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_coef"});
+				source.uniforms.push_back(fg::ShaderSource::UniformData{"float","u_powAlpha"});
 				source.globals += R"(
 float contour(in float d,in float w) 
 {
@@ -211,16 +212,17 @@ float samp(in vec2 uv,in float w)
 	
 	alpha = clamp(alpha,0,1);
 	
-	out_color = vec4(va_clr.xyz, va_clr.w * alpha);)";
+	out_color = vec4(va_clr.xyz, va_clr.w * pow(alpha,u_powAlpha));)";
 			}
 			
 			sourceTransformer(source);
 		});
 		
-		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_thickness",.5222222f);
-		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_pov",.255556f);
-		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_dscale",.2666667f);
-		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_coef",.1333333f);
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_thickness",.8011111f); // .5222222f
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_pov",      .5777778f); // .255556f 
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_dscale",   .1555556f); // .2666667f
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_coef",     .0333333f); // .1333333f
+		m_sharedData->sigDistSpriteManager.getShader().setUniform("u_powAlpha", 2.4f); // .1333333f
 		
 		(void)res;
 	}

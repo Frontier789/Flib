@@ -25,10 +25,11 @@
 namespace fgui
 {
 	/////////////////////////////////////////////////////////////
-	namespace priv
+	namespace
 	{
 		using namespace fg;
 		using namespace fm;
+		
 		Image getUglyButton(vec2 size,Color sarok,Color oldal,Color belsarok,Color beloldal,Color interpBeg,Color interpEnd)
 		{
 			Image img(size);
@@ -68,19 +69,100 @@ namespace fgui
 
 		Image getDefButtonImgNorm()
 		{
-			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(124,124,124),Color(32,32,32),Color(240,240,240),Color(193,193,193),Color(243,243,243));
+			return getUglyButton(vec2(128,128),Color(0,0),Color(124),Color(180),Color(240),Color(193),Color(243));
 		}
 
 		Image getDefButtonImgHover()
 		{
-			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(124,124,124),Color(32,32,32),Color(240,240,240),Color(223,223,223),Color(248,248,248));
+			return getUglyButton(vec2(128,128),Color(0,0),Color(124),Color(180),Color(240),Color(223),Color(248));
 		}
 
 		Image getDefButtonImgPress()
 		{
-			return getUglyButton(vec2(128,128),Color(0,0,0,0),Color(124,124,124),Color(32,32,32),Color(240,240,240),Color(180,180,180),Color(248,248,248));
+			return getUglyButton(vec2(128,128),Color(0,0),Color(124),Color(180),Color(240),Color(180),Color(248));
+		}
+		/*
+		template<class T>
+		T mix(T a,T b,float r)
+		{
+			r = std::max<float>(std::min<float>(r,1),0);
+			
+			return a * (1 - r) + b * r;
+		}
+		
+		Image getSqrBtn(vec2 size,vec4 upperCorner,
+								  vec4 lowerCorner,
+								  vec4 upperSide,
+								  vec4 lowerSide,
+								  vec4 upperRow,
+								  vec4 lowerRow,
+								  vec4 upperBody,
+								  vec4 lowerBody)
+		{
+			Image img(size);
+			
+			img.forEach([&](vec2s p,Color &c,Image &img) {
+				vec2s s = img.getSize();
+				
+				if (p.x < 1 || p.x >= s.w-1)
+				{
+						 if (p.y < 1)
+						c = upperCorner;
+					else if (p.y >= s.h-1)
+						c = lowerCorner;
+					else
+						c = mix(upperSide,lowerSide,float(p.y-1)/(s.h-2));
+				}
+				else
+				{
+						 if (p.y < 1)
+						c = upperRow;
+					else if (p.y >= s.h-1)
+						c = lowerRow;
+					else
+						c = mix(upperBody,lowerBody,float(p.y-1)/(s.h-2));
+				}
+			});
+			
+			return img;
+		}
+		
+		Image getDefButtonImgNorm2()
+		{
+			return getSqrBtn(vec2(128,128),vec4(200,255),
+										   vec4(183,255),
+										   vec4(164,255),
+										   vec4(148,255),
+										   vec4(165,255),
+										   vec4(147,255),
+										   vec4(245,255),
+										   vec4(222,255));
 		}
 
+		Image getDefButtonImgHover2()
+		{
+			return getSqrBtn(vec2(128,128),vec4(141,255),
+										   vec4(126,255),
+										   vec4(123,255),
+										   vec4(111,255),
+										   vec4( 88,255),
+										   vec4( 75,255),
+										   vec4(237,255),
+										   vec4(213,255));
+		}
+
+		Image getDefButtonImgPress2()
+		{
+			return getSqrBtn(vec2(128,128),vec4(184,255),
+										   vec4(200,255),
+										   vec4(149,255),
+										   vec4(165,255),
+										   vec4(148,255),
+										   vec4(165,255),
+										   vec4(223,255),
+										   vec4(247,255));
+		}
+*/
 		void loadDefButtonImg(GuiContext &cont)
 		{
 			cont.addSprite("Button_Bckg_Norm" ,getDefButtonImgNorm (),vec2(4,4));
@@ -111,7 +193,7 @@ namespace fgui
 	{
 		setupShader();
 		setMaxFps(60);
-		priv::loadDefButtonImg(*this);
+		loadDefButtonImg(*this);
 	}
 
 	/////////////////////////////////////////////////////////////

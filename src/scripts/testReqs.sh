@@ -26,7 +26,7 @@ echo "Testing required includes"
 test $DIR/testInclude.sh GL/glx.h $1 "${RED}Error: GL/glx.h not found${NC}\nPlease install opengl development library suitable for your system\nexample:\n  ${GRAY}sudo apt-get install mesa-common-dev${NC}\n"
 
 echo "Testing required libraries"
-test $DIR/testLib.sh GL $1 "${RED}Error: libGL.so not found${NC}\nPlease install opengl runtime library suitable for your system\nexample:\n  ${GRAY}sudo apt-get install mesa-common-dev${NC}\n"
+test $DIR/testLib.sh GL $1 "${RED}Error: libGL.so not found${NC}\nPlease install opengl runtime library suitable for your system\nexample:\n  ${GRAY}sudo apt-get install libgl1-mesa-dev && ldconfig${NC}\n"
 
 if [[ $FINE -eq 0 ]]; then
 	echo "All requirements found"

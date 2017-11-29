@@ -171,7 +171,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Add a new Texture to the atlas
 		/// 
-		/// @param img The image of the new Texture
+		/// @param tex The image of the new Texture
 		/// @param point The associated key
 		/// @param leftdown The associated offset
 		/// 

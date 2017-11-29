@@ -550,6 +550,13 @@ namespace fw
 			    		if (msg[i] == '\r') continue;
 			    		if (msg[i] == '\n')
 			    		{
+							string fileStr2 = "file://localhost";
+							string fileStr1 = "file://";
+							if (file.find(fileStr2) == 0)
+								file = file.substr(fileStr2.size());
+							else if (file.find(fileStr1) == 0)
+								file = file.substr(fileStr1.size());
+							
 			    			ev.drop.files.push_back(file);
 			    			file = std::string();
 			    			continue;

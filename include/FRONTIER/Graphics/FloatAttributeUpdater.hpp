@@ -114,7 +114,7 @@ namespace fg
 		/// @brief Fetch value at index
 		/// 
 		/// @param index The index of th item to fetch
-		/// @param The value returned
+		/// @param ret The value returned
 		/// 
 		/////////////////////////////////////////////////////////////
 		void fetch(fm::Size index,float *ret) const;

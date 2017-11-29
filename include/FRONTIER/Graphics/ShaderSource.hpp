@@ -33,7 +33,7 @@ namespace fg
 	{
 	public:
 		typedef std::string StringT; ///< Alias for the string type used
-		struct DefineData   {StringT name; StringT value;}; ///< Data used in /#define name value/ form 
+		struct DefineData   {StringT name; StringT value;}; ///< Data used in /\#define name value/ form 
 		struct VariableData {StringT type; StringT name;};  ///< Generic variable data
 		typedef VariableData UniformData; ///< Data used in /uniform type name;/ form
 		typedef VariableData OutputData;  ///< Data used in /in type name;/ form

@@ -386,7 +386,7 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Get many sprites for a code point
 		/// 
-		/// @param letter The codepoint
+		/// @param letters The codepoints
 		/// @param style The style to use
 		/// 
 		/// @return The sprite

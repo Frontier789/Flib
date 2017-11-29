@@ -87,6 +87,7 @@ namespace fgui
 		/// 
 		/// @param cont The owning context
 		/// @param size The size of the scrollbar
+		/// @param callback The callback to use
 		/// 
 		/////////////////////////////////////////////////////////////
 		ScrollBar(GuiContext &cont,fm::vec2s size,fm::Delegate<void,GuiScrollBar &> callback = nullptr);

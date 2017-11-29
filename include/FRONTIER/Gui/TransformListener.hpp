@@ -41,6 +41,7 @@ namespace fgui
 		float m_rotMinDist;  ///< Minimal distance the mouse needs to travel before rotation kicks is
 		fm::vec2 m_offset;   ///< The transformation offset
 		float m_dragSens; ///< Stores the sensitivity of the offset
+		float m_zoomSens; ///< Stores the sensitivity of zoom
 		fm::Anglef m_rot; ///< The rotation
 		float m_zoom;     ///< The zoom
 		
@@ -150,24 +151,40 @@ namespace fgui
 		fm::Anglef getRotation() const;
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the current sensitivity
+		/// @brief Set the current drag sensitivity
 		/// 
 		/// When the gui element detects a drag by the mouse
 		/// The offset changes by r*sens where r is the cursor
 		/// Position's delta
 		/// 
-		/// @param sens The new sensitivity
+		/// @param sens The new drag sensitivity
 		/// 
 		/////////////////////////////////////////////////////////////
 		void setDragSensitivity(float sens);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the current sensitivity
+		/// @brief Get the current drag sensitivity
 		/// 
-		/// @return The current sensitivity
+		/// @return The current drag sensitivity
 		/// 
 		/////////////////////////////////////////////////////////////
 		float getDragSensitivity() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the current zoom sensitivity
+		/// 
+		/// @param sens The new zoom sensitivity
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setZoomSensitivity(float sens);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the current zoom sensitivity
+		/// 
+		/// @return The current zoom sensitivity
+		/// 
+		/////////////////////////////////////////////////////////////
+		float getZoomSensitivity() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the minimal distance the mouse needs to travel before rotation starts

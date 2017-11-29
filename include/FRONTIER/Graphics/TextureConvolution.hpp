@@ -145,9 +145,13 @@ namespace fg
 		TextureConvolution(std::initializer_list<std::initializer_list<T>> coefs,fm::Ref<Texture> target = nullptr,bool normalize = false);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the target texture of the convolution
+		/// @brief Set up a 1D or 2D convolution
 		/// 
-		/// @param target The new target
+		/// @param ptr Pointer to the kernel data
+		/// @param kernelSize The size of the 2d kernel
+		/// @param target The target texture (can be null)
+		/// @param normalize If set to true, the kernel gets normalized before usage
+		/// @param linear Decides whether the convolution is linear or not
 		/// 
 		/// @return reference to itself
 		/// 
@@ -174,7 +178,7 @@ namespace fg
 		Texture *getTarget() const;
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct a linear convolution
+		/// @brief Apply the convolution to a texture possibly many times
 		/// 
 		/// sets @a newTarget as target
 		/// 
@@ -187,11 +191,10 @@ namespace fg
 		reference applyTo(Texture &newTarget,fm::Size applyCount = 1);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct a linear convolution
+		/// @brief Apply the convolution to the specified target texture possibly many times
 		/// 
-		/// sets @a texture as target
+		/// uses the set target (does nothing if not set)
 		/// 
-		/// @param texture The texture to apply to
 		/// @param applyCount The number of times to apply
 		/// 
 		/// @return reference to itself

@@ -79,6 +79,7 @@ namespace fgui
 		/// 
 		/// @param cont The owner context
 		/// @param text The text to use
+		/// @param callback The callback to use
 		/// 
 		/////////////////////////////////////////////////////////////
 		GuiButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback = nullptr);

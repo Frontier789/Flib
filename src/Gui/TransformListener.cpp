@@ -23,6 +23,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	TransformListener::TransformListener() : m_rotMinDist(5),
 											 m_dragSens(1),
+											 m_zoomSens(2),
 											 m_zoom(1)
 	{
 		
@@ -31,7 +32,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void TransformListener::onScroll(float amount)
 	{
-		float zoomMul = std::pow(2,amount);
+		float zoomMul = std::pow(m_zoomSens,amount);
 		m_zoom *= zoomMul;
 		onZoomChanged(m_zoom);
 		
@@ -150,6 +151,21 @@ namespace fgui
 	float TransformListener::getDragSensitivity() const
 	{
 		return m_dragSens;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void TransformListener::setZoomSensitivity(float sens)
+	{
+		m_zoomSens = sens;
+		
+		if (m_zoomSens < 0)
+			m_zoomSens *= -1;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	float TransformListener::getZoomSensitivity() const
+	{
+		return m_zoomSens;
 	}
 		
 	/////////////////////////////////////////////////////////////

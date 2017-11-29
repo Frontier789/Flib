@@ -58,6 +58,7 @@ namespace fgui
 		/// 
 		/// @param cont The owner context
 		/// @param text The text
+		/// @param callback The callback to use
 		/// 
 		/////////////////////////////////////////////////////////////
 		PushButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback = nullptr);
