@@ -515,7 +515,7 @@ namespace fw
 					reply.xclient.message_type = m_xdndAtoms.XdndStatus;
 					reply.xclient.format = 32;
 					reply.xclient.data.l[0] = m_win;
-					reply.xclient.data.l[1] = (true ? 0x1UL : 0); // false to decline
+					reply.xclient.data.l[1] = (m_dropEnabled ? 0x1UL : 0); // accept or decline
 					reply.xclient.data.l[2] = 0;
 					reply.xclient.data.l[3] = 0;
         			reply.xclient.data.l[4] = m_xdndAtoms.XdndActionCopy;
@@ -611,6 +611,7 @@ namespace fw
 						   m_delAtom(0),
 						   m_stateAtom(0),
 						   m_resizeable(true),
+						   m_dropEnabled(false),
 						   m_prevW(0),
 						   m_prevH(0),
 						   m_stateHiddenAtom(0),
@@ -1192,6 +1193,18 @@ namespace fw
 		void Window::postEvent(const Event &ev)
 		{
 			m_eventQueue.resize(m_eventQueue.size()+1,ev);
+		}
+		
+		/////////////////////////////////////////////////////////////
+		void Window::enableDrop(bool enable)
+		{
+			m_dropEnabled = enable;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		bool Window::isDropEnabled() const
+		{
+			return m_dropEnabled;
 		}
 
 		/////////////////////////////////////////////////////////////

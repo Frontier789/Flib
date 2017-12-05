@@ -165,9 +165,9 @@ namespace fgui
 */
 		void loadDefButtonImg(GuiContext &cont)
 		{
-			cont.addSprite("Button_Bckg_Norm" ,getDefButtonImgNorm (),vec2(4,4));
-			cont.addSprite("Button_Bckg_Hover",getDefButtonImgHover(),vec2(4,4));
-			cont.addSprite("Button_Bckg_Press",getDefButtonImgPress(),vec2(4,4));
+			cont.addSprite("Button_Bckg_Norm" ,getDefButtonImgNorm (),vec2(4,3));
+			cont.addSprite("Button_Bckg_Hover",getDefButtonImgHover(),vec2(4,3));
+			cont.addSprite("Button_Bckg_Press",getDefButtonImgPress(),vec2(4,3));
 		}
 	}
 	

@@ -41,31 +41,18 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API GuiButton : public GuiElement, public ClickListener, public CallbackUser<GuiButton>
 	{
-		fm::vec2s m_prevTextSize; ///< Last size of the gui text
-		GuiText m_text; ///< The gui elem for text display on the button
-		
-	protected:
+	public:
 		/////////////////////////////////////////////////////////////
 		/// @brief States of a button
 		/// 
 		/////////////////////////////////////////////////////////////
-		enum InnerState {
-			Normal, ///< The mouse is not over the button
-			Hover,  ///< The mouse is on the button
-			Press   ///< The button is pressed
+		enum Action {
+			Press,   ///< Used when the button is pressed
+			Drag,    ///< Used when the button is being pressed and the mouse gets dragged
+			Release, ///< Used when the button is released
+			Click    ///< Used when the button is clicked
 		};
 		
-		/////////////////////////////////////////////////////////////
-		/// @brief Apply a state to the button
-		/// 
-		/// To be implemented by derived classes
-		/// 
-		/// @param state The state to apply
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual void applyState(InnerState state);
-		
-	public:
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		/// 
@@ -141,6 +128,14 @@ namespace fgui
 		const GuiText &getGuiText() const;
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Set the action callback
+		/// 
+		/// @param callback The new callback
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setActionCallback(fm::Delegate<void,GuiButton &,Action> callback);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Set the displayed text on the button
 		/// 
 		/// @param text The new text
@@ -207,6 +202,41 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual void onClick(fw::Mouse::Button button,fm::vec2 p) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Called when the mouse moves inside the gui element
+		/// 
+		/// @param p The position of the mouse after moving
+		/// @param prevP The position of the mouse before moving
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void onMouseMoved(fm::vec2 p,fm::vec2 prevP) override;
+		
+	protected:
+		/////////////////////////////////////////////////////////////
+		/// @brief States of a button
+		/// 
+		/////////////////////////////////////////////////////////////
+		enum InnerState {
+			Normal,  ///< The mouse is not over the button
+			Hovered, ///< The mouse is on the button
+			Pressed  ///< The button is pressed
+		};
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Apply a state to the button
+		/// 
+		/// To be implemented by derived classes
+		/// 
+		/// @param state The state to apply
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void applyState(InnerState state);
+		
+	private:
+		fm::Delegate<void,GuiButton &,Action> m_actionCb; ///< Callback for actions
+		fm::vec2s m_prevTextSize; ///< Last size of the gui text
+		GuiText m_text; ///< The gui elem for text display on the button
 	};
 }
 

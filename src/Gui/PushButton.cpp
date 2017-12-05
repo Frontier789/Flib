@@ -24,10 +24,10 @@ namespace fgui
 		if (state == Normal)
 			m_bckgSprite.setImageID("Button_Bckg_Norm");
 			
-		if (state == Hover)
+		if (state == Hovered)
 			m_bckgSprite.setImageID("Button_Bckg_Hover");
 			
-		if (state == Press)
+		if (state == Pressed)
 			m_bckgSprite.setImageID("Button_Bckg_Press");
 		
 		setSize(getSize());

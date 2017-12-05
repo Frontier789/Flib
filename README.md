@@ -11,7 +11,7 @@ Template classes (Vectors, Matrices, Polar vectors, Delegates)
 <h2>Compilation</h2>
 
 The library requires OpenGL development library to compile
-On Linux systems this means you need glx development library (e.g. from `mesa-common-dev`)
+On Linux systems this means you need glx development library (e.g. from `mesa-common-dev`)<br>
 A `makefile` is loacted in `src/`
 Open a terminal in `src/` and call make
 
@@ -23,7 +23,7 @@ When compiling on Linux systems the following errors may arise
 | Symptom | Cause | Solution | Command |
 | ------- |:-----:|:--------:| -------:|
 | GL/glx.h not found | glx not installed | Install glx | `sudo apt-get install mesa-common-dev` |
-| libGL.so not found | OpenGL not updated | Install/Update OpenGL | `sudo apt-get install mesa-common-dev` or/then `ldconfig` |
+| libGL.so not found | OpenGL not updated | Install/Update OpenGL | `sudo apt-get install libgl1-mesa-dev` or/then `ldconfig` |
 
 Please note that the actual command may differ on your system,
 refer to your distribution's forum how to install the required

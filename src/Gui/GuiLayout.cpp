@@ -159,6 +159,9 @@ namespace fgui
 		if (m_elements[index])
 			m_elements[index]->setLayout(this);
 		
+		if (element)
+			element->setLayout(nullptr);
+		
 		return element;
 	}
 	

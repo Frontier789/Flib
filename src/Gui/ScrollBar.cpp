@@ -45,38 +45,29 @@ namespace fgui
 		
 		if (getScrollDirection() == ScrollHorizontal)
 		{
-			m_handleSprite.setPosition(p + fm::vec2i((s.w-sprS.w)*scrollState,0));
-			m_handleSprite.setSize(fm::vec2i(sprS.w,s.h));
+			m_handle.setPosition(p + fm::vec2i((s.w-sprS.w)*scrollState,0));
+			m_handle.setSize(fm::vec2i(sprS.w,s.h));
 			
 			C(6)
-				pts[i+0] = fm::vec2(mixF(p.x + sprS.w/2,m_handleSprite.getPosition().x,tpt[i].x,false),
+				pts[i+0] = fm::vec2(mixF(p.x + sprS.w/2,m_handle.getPosition().x,tpt[i].x,false),
 									p.y + s.h/2 - 2 + 4 * tpt[i].y);
 			
 			C(6)
-				pts[i+6] = fm::vec2(mixF(m_handleSprite.getPosition().x + m_handleSprite.getSize().w, p.x + s.w - sprS.w/2, tpt[i].x,true),
+				pts[i+6] = fm::vec2(mixF(m_handle.getPosition().x + m_handle.getSize().w, p.x + s.w - sprS.w/2, tpt[i].x,true),
 									p.y + s.h/2 - 2 + 4 * tpt[i].y);
 		}
 		else
 		{
-			C(6) 
-				pts[i+0] = p + s*fm::vec2(.5,0) - fm::vec2(2,0) + 
-						   fm::vec2(0,sprS.h/2) + tpt[i] * fm::vec2(4,std::max(0.f,(s.h-sprS.h)*(1 - scrollState) - sprS.h/2));
-			
-			C(6) 
-				pts[i+6] = p + s*fm::vec2(.5,0) - fm::vec2(2,0) + 
-						   fm::vec2(0,(s.h-sprS.h)*(1.f - scrollState) + sprS.h - 1) + 
-						   tpt[i] * fm::vec2(4,std::max(0.f,s.h - sprS.h*3/2 - (s.h-sprS.h)*(1 - scrollState)));
-			
-			m_handleSprite.setPosition(p + fm::vec2i(0,(s.h-sprS.h)*(1 - scrollState)));
-			m_handleSprite.setSize(fm::vec2(s.w,sprS.h));
+			m_handle.setPosition(p + fm::vec2i(0,(s.h-sprS.h)*(1 - scrollState)));
+			m_handle.setSize(fm::vec2(s.w,sprS.h));
 			
 			C(6)
 				pts[i+0] = fm::vec2(p.x + s.w/2 - 2 + 4 * tpt[i].x,
-									mixF(p.y + sprS.h/2,m_handleSprite.getPosition().y,tpt[i].y,false));
+									mixF(p.y + sprS.h/2,m_handle.getPosition().y,tpt[i].y,false));
 			
 			C(6)
 				pts[i+6] = fm::vec2(p.x + s.w/2 - 2 + 4 * tpt[i].x,
-									mixF(m_handleSprite.getPosition().y + m_handleSprite.getSize().h, p.y + s.h - sprS.h/2, tpt[i].y,true));
+									mixF(m_handle.getPosition().y + m_handle.getSize().h, p.y + s.h - sprS.h/2, tpt[i].y,true));
 		}
 		
 		m_railDraw.positions = pts;
@@ -85,24 +76,13 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	bool ScrollBar::inDragArea(const fm::vec2 &p) const
 	{
-		fm::vec2 s  = getSize();
-		fm::vec2 pt  = getPosition();
-		fm::vec2 sprS = s * getScrollSize();
-		
-		if (getScrollDirection() == ScrollHorizontal)
-		{
-			return fm::rect2f(pt + fm::vec2((s.w-sprS.w)*getScrollState(),0),fm::vec2(sprS.w,s.h)).contains(p);
-		}
-		else
-		{
-			return fm::rect2f(pt + fm::vec2(0,(s.h-sprS.h)*(1 - getScrollState())),fm::vec2(s.w,sprS.h)).contains(p);
-		}
+		return m_handle.contains(p);
 	}
 
 	/////////////////////////////////////////////////////////////
 	ScrollBar::ScrollBar(GuiContext &cont) : GuiScrollBar(cont),
 											 m_direction(ScrollDefault),
-											 m_handleSprite(cont.getSpriteManager(),"Button_Bckg_Norm"),
+											 m_handle(cont),
 											 m_grabbed(false)
 	{
 		fm::vec4 clr[12];
@@ -139,11 +119,19 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
+	bool ScrollBar::onEvent(fw::Event &ev)
+	{
+		bool res = GuiScrollBar::onEvent(ev);
+		
+		m_handle.handleEvent(ev);
+		
+		return res;
+	}
+	
+	/////////////////////////////////////////////////////////////
 	void ScrollBar::onScroll(float amount)
 	{
 		GuiScrollBar::onScroll(amount);
-		
-		onMouseMoved(m_lastHoverp,m_lastHoverp);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -183,12 +171,6 @@ namespace fgui
 			setScrollState(state);
 			setupDraws();
 		}
-		else
-		{
-			m_handleSprite.setImageID(inDragArea(p) ? "Button_Bckg_Hover" : "Button_Bckg_Norm");
-		}
-		
-		m_lastHoverp = p;
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -220,8 +202,6 @@ namespace fgui
 			m_grabState = getScrollState();
 			m_grabbed = true;
 			m_grabp = p;
-			
-			m_handleSprite.setImageID("Button_Bckg_Press");	
 		}
 	}
 	
@@ -231,8 +211,6 @@ namespace fgui
 		if (button == fw::Mouse::Left)
 		{
 			m_grabbed = false;
-			
-			m_handleSprite.setImageID("Button_Bckg_Norm");
 		}
 	}
 	

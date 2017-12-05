@@ -22,6 +22,7 @@
 #include <FRONTIER/Gui/ClickListener.hpp>
 #include <FRONTIER/Gui/GuiScrollBar.hpp>
 #include <FRONTIER/Graphics/Sprite.hpp>
+#include <FRONTIER/Gui/PushButton.hpp>
 #include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_SCROLLBAR
@@ -50,9 +51,8 @@ namespace fgui
 	{
 	public:
 		ScrollDirection m_direction; ///< The direction
-		fg::Sprite m_handleSprite;   ///< Sprite for handle
 		fg::DrawData m_railDraw;     ///< DrawData for the rail
-		fm::vec2 m_lastHoverp;       ///< Last hover position
+		PushButton m_handle;   		 ///< PushButton for handle
 		float m_grabState; ///< The state the scrollbar was in when it was grabbed
 		fm::vec2 m_grabp;  ///< The point where the scroller was grabbed
 		bool m_grabbed;    ///< True iff the scrolles is grabbed
@@ -107,6 +107,16 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual void setScrollState(float state) override;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Internally handle an event
+		/// 
+		/// @param ev The event
+		/// 
+		/// @return True iff the event got handled
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual bool onEvent(fw::Event &ev) override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Called when the element is scrolled

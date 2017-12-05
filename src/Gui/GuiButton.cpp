@@ -35,7 +35,7 @@ namespace fgui
 	
 	/////////////////////////////////////////////////////////////
 	GuiButton::GuiButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback) : GuiElement(cont),
-																											 m_text(cont,text)
+																											m_text(cont,text)
 	{
 		setSize(m_text.getSize());
 		setCallback(callback);
@@ -144,9 +144,9 @@ namespace fgui
 	void GuiButton::onMouseEnter(fm::vec2)
 	{
 		if (!isPressed(fw::Mouse::Left))
-			applyState(Hover);
+			applyState(Hovered);
 		else
-			applyState(Press);
+			applyState(Pressed);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -159,7 +159,11 @@ namespace fgui
 	void GuiButton::onPress(fw::Mouse::Button button,fm::vec2)
 	{
 		if (button == fw::Mouse::Left)
-			applyState(Press);
+		{
+			applyState(Pressed);
+			
+			m_actionCb(*this,GuiButton::Press);
+		}
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -168,9 +172,11 @@ namespace fgui
 		if (button == fw::Mouse::Left)
 		{
 			if (mouseInside())
-				applyState(Hover);
+				applyState(Hovered);
 			else
-				applyState(Normal);			
+				applyState(Normal);	
+			
+			m_actionCb(*this,GuiButton::Release);		
 		}
 	}
 	
@@ -178,6 +184,16 @@ namespace fgui
 	void GuiButton::onClick(fw::Mouse::Button button,fm::vec2)
 	{
 		if (button == fw::Mouse::Left)
+		{
+			m_actionCb(*this,GuiButton::Click);
+			
 			callCallback();
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiButton::onMouseMoved(fm::vec2,fm::vec2)
+	{
+		m_actionCb(*this,GuiButton::Drag);
 	}
 }

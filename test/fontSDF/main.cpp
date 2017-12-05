@@ -162,8 +162,6 @@ int main()
 		img.create(vec2(32,32));
 	}
 	
-	Texture bunnyTex(img);
-	
 	fw::MouseCursor cur(img,img.getSize()/2);
 	
 	PushButton *pb = new PushButton(win,"lol",[&](){

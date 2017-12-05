@@ -248,6 +248,18 @@ namespace fw
 	{
 		m_window->postEvent(ev);
 	}
+			
+	/////////////////////////////////////////////////////////////
+	void Window::enableDrop(bool enable)
+	{
+		m_window->enableDrop(enable);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Window::isDropEnabled() const
+	{
+		return m_window->isDropEnabled();
+	}
 
 	/////////////////////////////////////////////////////////////
 	void Window::enableKeyRepeat(bool enable)

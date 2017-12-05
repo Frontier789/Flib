@@ -99,6 +99,7 @@ namespace fw
 			Atom m_delAtom;      ///< The id of the window deletion message
 			Atom m_stateAtom;    ///< The id of the window state
 			bool m_resizeable;   ///< Indicates whether the window can be resized on the borders
+			bool m_dropEnabled;  ///< Indicates whether the window accepts dropped files
 			unsigned int m_prevW;       ///< The width after the last resize
 			unsigned int m_prevH;       ///< The height after the last resize
 			Atom m_stateHiddenAtom;     ///< The id of the hidden state
@@ -401,6 +402,20 @@ namespace fw
 			///
 			/////////////////////////////////////////////////////////////
 			void postEvent(const Event &ev);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Enables/disables files to be dropped in the window
+			///
+			/////////////////////////////////////////////////////////////
+			void enableDrop(bool enable = true);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Find out if dropping files into the window is enabled
+			/// 
+			/// @return True iff dropping is enabled
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool isDropEnabled() const;
 
 			/////////////////////////////////////////////////////////////
 			/// @brief Enables or disables keyrepeat
