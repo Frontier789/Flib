@@ -417,7 +417,7 @@ typedef struct
 } stbi_io_callbacks;
 
 STBIDEF stbi_uc *stbi_load               (char              const *filename,           int *x, int *y, int *comp, int req_comp);
-STBIDEF stbi_uc *stbi_load_from_memory   (stbi_uc           const *buffer, int len   , int *x, int *y, int *comp, int req_comp);
+STBIDEF stbi_uc *stbi_load_from_memory   (stbi_uc           const *buffer, int len   , int *x, int *y, int *comp, int req_comp,int *result = NULL);
 STBIDEF stbi_uc *stbi_load_from_callbacks(stbi_io_callbacks const *clbk  , void *user, int *x, int *y, int *comp, int req_comp);
 
 #ifndef STBI_NO_STDIO
@@ -837,12 +837,6 @@ STBIDEF const char *stbi_failure_reason(void)
    return stbi__g_failure_reason;
 }
 
-static int stbi__err(const char *str)
-{
-   stbi__g_failure_reason = str;
-   return 0;
-}
-
 static void *stbi__malloc(size_t size)
 {
     return STBI_MALLOC(size);
@@ -856,8 +850,20 @@ static void *stbi__malloc(size_t size)
    #define stbi__err(x,y)  0
 #elif defined(STBI_FAILURE_USERMSG)
    #define stbi__err(x,y)  stbi__err(y)
+
+    static int stbi__err(const char *str)
+    {
+    stbi__g_failure_reason = str;
+    return 0;
+    }
 #else
    #define stbi__err(x,y)  stbi__err(x)
+
+    static int stbi__err(const char *str)
+    {
+    stbi__g_failure_reason = str;
+    return 0;
+    }
 #endif
 
 #define stbi__errpf(x,y)   ((float *) (stbi__err(x,y)?NULL:NULL))
@@ -876,8 +882,10 @@ static float   *stbi__ldr_to_hdr(stbi_uc *data, int x, int y, int comp);
 static stbi_uc *stbi__hdr_to_ldr(float   *data, int x, int y, int comp);
 #endif
 
-static unsigned char *stbi_load_main(stbi__context *s, int *x, int *y, int *comp, int req_comp)
+static unsigned char *stbi_load_main(stbi__context *s, int *x, int *y, int *comp, int req_comp,int *result = NULL)
 {
+   if (result) *result = 0;
+    
    #ifndef STBI_NO_JPEG
    if (stbi__jpeg_test(s)) return stbi__jpeg_load(s,x,y,comp,req_comp);
    #endif
@@ -912,6 +920,8 @@ static unsigned char *stbi_load_main(stbi__context *s, int *x, int *y, int *comp
    if (stbi__tga_test(s))
       return stbi__tga_load(s,x,y,comp,req_comp);
    #endif
+
+   if (result) *result = 2;
 
    return stbi__errpuc("unknown image type", "Image not of any known type, or corrupt");
 }
@@ -955,11 +965,11 @@ STBIDEF stbi_uc *stbi_load_from_file(FILE *f, int *x, int *y, int *comp, int req
 }
 #endif //!STBI_NO_STDIO
 
-STBIDEF stbi_uc *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp)
+STBIDEF stbi_uc *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp,int *result)
 {
    stbi__context s;
    stbi__start_mem(&s,buffer,len);
-   return stbi_load_main(&s,x,y,comp,req_comp);
+   return stbi_load_main(&s,x,y,comp,req_comp,result);
 }
 
 STBIDEF stbi_uc *stbi_load_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)

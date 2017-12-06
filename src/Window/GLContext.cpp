@@ -123,7 +123,7 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	GLContext::GLContext() : m_context(new priv::GLContext),
 							 m_depthTestMode(fg::Unused),
-							 m_clearDepth(0)
+							 m_clearDepth(1)
 	{
 
 	}
@@ -131,7 +131,7 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	GLContext::GLContext(priv::WindowHandle windowHandle,fw::GLContext::Settings settings) : m_context(new priv::GLContext),
 																							 m_depthTestMode(fg::Unused),
-																							 m_clearDepth(0)
+																							 m_clearDepth(1)
 	{
 		create(windowHandle,settings);
 	}
@@ -139,7 +139,7 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	GLContext::GLContext(const fm::vec2s &size,fw::GLContext::Settings settings) : m_context(new priv::GLContext),
 																				   m_depthTestMode(fg::Unused),
-																				   m_clearDepth(0)
+																				   m_clearDepth(1)
 	{
 		create(size,settings);
 	}

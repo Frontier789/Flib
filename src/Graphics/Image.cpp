@@ -31,6 +31,7 @@
 #define STBI_NO_SIMD
 #include "stb_image/stb_image_write.h"
 
+#define STBI_NO_FAILURE_STRINGS
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image/stb_image.h"
 
@@ -148,43 +149,48 @@ namespace fg
 		{
 			// get extension
 			std::string extension = getExtension(filename);
+			std::string realfile = filename; 
+			
+			if (extension != "bmp" &&
+				extension != "tga" && 
+				extension != "jpg" &&
+				extension != "jpeg" && 
+				extension != "png")
+			{
+				realfile += ".png";
+				extension = "png";
+			}
 
 			int error = 0;
 
 			if (extension == "bmp")
 			{
 				// BMP format
-				if (!stbi_write_bmp(filename.c_str(), m_size.w, m_size.h, 4, m_texels))
+				if (!stbi_write_bmp(realfile.c_str(), m_size.w, m_size.h, 4, m_texels))
 					error = 1;
 			}
 			else if (extension == "tga")
 			{
 				// TGA format
-				if (!stbi_write_tga(filename.c_str(), m_size.w, m_size.h, 4, m_texels))
+				if (!stbi_write_tga(realfile.c_str(), m_size.w, m_size.h, 4, m_texels))
 					error = 1;
 			}
 			else if (extension == "jpg" || extension == "jpeg") // its a bit more messy
 			{
-				if (!jpge::compress_image_to_jpeg_file(filename.c_str(), m_size.w, m_size.h, 4, (unsigned char *)m_texels))
+				if (!jpge::compress_image_to_jpeg_file(realfile.c_str(), m_size.w, m_size.h, 4, (unsigned char *)m_texels))
 					error = 2;
 			}
-			else
+			else if (extension == "png")
 			{
-				std::string pngfilename = filename;
-
-				if (extension != "png") // unkown extension
-					pngfilename += ".png";
-
 				// PNG format
-				if (!stbi_write_png(pngfilename.c_str(), m_size.w, m_size.h, 4, m_texels,0))
-					error = 1;
+				error = stbi_write_png(realfile.c_str(), m_size.w, m_size.h, 4, m_texels,0);
 			}
 			
 			if (error == 0)
 				return fm::Result();
 
 			if (error == 1)
-				return fm::Result("STBIError",fm::Result::OPFailed,"stbi_failure","saveToFile",__FILE__,__LINE__,filename,std::string(stbi_failure_reason()));
+				return fm::Result("STBIError",fm::Result::OPFailed,"stbi_failure","saveToFile",__FILE__,__LINE__,filename);
 
 			if (error == 2)
 				return fm::Result("IOError",fm::Result::OPFailed,"FileNotWritable","saveToFile",__FILE__,__LINE__,filename);
@@ -327,7 +333,8 @@ namespace fg
 	{
 		// ask stbi to load the file
 		int width, height, channels;
-		unsigned char *ptr = stbi_load_from_memory((const unsigned char*)buffer, byteCount, &width, &height, &channels, STBI_rgb_alpha);
+		int result;
+		unsigned char *ptr = stbi_load_from_memory((const unsigned char*)buffer, byteCount, &width, &height, &channels, STBI_rgb_alpha, &result);
 
 		// if he succeeded
 		if (ptr && width && height)
@@ -346,7 +353,11 @@ namespace fg
 
 			return fm::Result();
 		}
-		return fm::Result("STBIError",fm::Result::OPFailed,"stbi_failure","loadFromMemory",__FILE__,__LINE__,std::string(stbi_failure_reason()));
+
+		if (result == 2)
+			return fm::Result("IOError",fm::Result::OPFailed,"FileNotReadable","loadFromMemory",__FILE__,__LINE__);
+
+		return fm::Result("STBIError",fm::Result::OPFailed,"stbi_failure","loadFromMemory",__FILE__,__LINE__,"Unknown stbi error");
 	}
 	
 	/////////////////////////////////////////////////////////////

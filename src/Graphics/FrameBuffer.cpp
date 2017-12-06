@@ -97,7 +97,7 @@ namespace fg
 	FrameBuffer::FrameBuffer() : m_depthBufID(0),
 								 m_width(0),
 								 m_height(0),
-								 m_clearDepth(0),
+								 m_clearDepth(1),
 								 m_depthTestMode(Unused)
 	{
 
@@ -107,7 +107,7 @@ namespace fg
 	FrameBuffer::FrameBuffer(FrameBuffer &&move) : m_depthBufID(0),
 												   m_width(0),
 												   m_height(0),
-												   m_clearDepth(0),
+												   m_clearDepth(1),
 												   m_depthTestMode(Unused)
 	{
 		move.swap(*this);
@@ -135,7 +135,7 @@ namespace fg
 	FrameBuffer::FrameBuffer(const Texture **colorAttachments,fm::Size count,const DepthBuffer &depthBuf) : m_depthBufID(0),
 																											m_width(0),
 																										    m_height(0),
-																										    m_clearDepth(0),
+																										    m_clearDepth(1),
 																											m_depthTestMode(Unused)
 	{
 		create(colorAttachments,count,depthBuf);
@@ -145,7 +145,7 @@ namespace fg
 	FrameBuffer::FrameBuffer(const Texture &colorAttachment,const DepthBuffer &depthBuf) : m_depthBufID(0),
 																						   m_width(0),
 																						   m_height(0),
-																						   m_clearDepth(0),
+																						   m_clearDepth(1),
 																						   m_depthTestMode(Unused)
 	{
 		const Texture *ptr = &colorAttachment;
