@@ -104,7 +104,7 @@ float samp(in vec2 uv,in float w)
 			maxH = max<float>(maxH,img.getSize().h*downScale);
 			
 			sdfImgs[i] = new fg::Image(std::move(img));
-			*sdfImgs[i] = std::move(sdfImgs[i]->scale(sdfImgs[i]->getSize()*downScale));
+			*sdfImgs[i] = sdfImgs[i]->scale(sdfImgs[i]->getSize()*downScale);
 			m_spriteMgr.addImage(*sdfImgs[i],fm::toString(i)+"_"+keyName);
 			sdfSizes[i] = sdfImgs[i]->getSize();
 		
