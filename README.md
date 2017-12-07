@@ -23,7 +23,7 @@ When compiling on Linux systems the following errors may arise
 | Symptom | Cause | Solution | Command |
 | ------- |:-----:|:--------:| -------:|
 | GL/glx.h not found | glx not installed | Install glx | `sudo apt-get install mesa-common-dev` |
-| libGL.so not found | OpenGL not updated | Install/Update OpenGL | `sudo apt-get install libgl1-mesa-dev` or/then `ldconfig` |
+| libGL.so not found | OpenGL not updated | Install/Update OpenGL | `sudo apt-get install libgl1-mesa-dev` or/then `sudo ldconfig` |
 
 Please note that the actual command may differ on your system,
 refer to your distribution's forum how to install the required
