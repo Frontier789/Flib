@@ -1,0 +1,2 @@
+all:
+	$(TEST_CMD)

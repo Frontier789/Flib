@@ -10,6 +10,7 @@ ifeq ($(OS),Windows_NT)
  F_EXEC_EXT=.exe
  F_RM=cmd /C del /Q /F
  F_RRM=cmd /C rmdir /Q /S
+ F_NULL=NUL
  define F_MKDIR
   mkdir $(1)
  endef
@@ -30,6 +31,7 @@ else
   F_EXEC_EXT=
   F_RM = rm -f
   F_RRM = rm -f -r
+  F_NULL=/dev/null
   define F_MKDIR
    mkdir -p $(1)
   endef
@@ -48,6 +50,7 @@ else
   F_EXEC_EXT=
   F_RM = rm -f
   F_RRM = rm -f -r
+  F_NULL=/dev/null
   define F_MKDIR
    mkdir -p $(1)
   endef

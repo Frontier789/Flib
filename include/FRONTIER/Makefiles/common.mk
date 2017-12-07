@@ -1,12 +1,34 @@
-include $(dir $(lastword $(MAKEFILE_LIST)))/detect_os.mk
+WD=$(dir $(lastword $(MAKEFILE_LIST)))
+
+include $(WD)/detect_os.mk
+
+test_cmd = $(strip $(shell make -f $(WD)/testCmd.mk TEST_CMD=$(1) >$(F_NULL) 2>&1 && echo 1 || echo 0))
+
+HAS_GCC := $(call test_cmd,"g++ -v")
+HAS_CLANG := $(call test_cmd,"clang++ -v")
 
 # default compilation tools and settings
 CXX ?= g++
-CXXFLAGS ?= -std=gnu++11 -pedantic -Werror -Wextra -Wall -DFRONTIER_DEBUG 
+CXXFLAGS ?= -std=gnu++11 -pedantic -Werror -Wextra -Wall -DFRONTIER_DEBUG
 CXX_WNO_FLAGS ?= -DFRONTIER_MISSING_IMPL_NO_WARNING
 
-ifneq ($(F_DEBUG),)
- CXXFLAGS+=-g
+ifeq ($(CXX),g++)
+ ifeq ($(HAS_GCC),0)
+  override CXX:=clang++
+ endif
+endif
+
+ifeq ($(CXX),clang++)
+ ifeq ($(HAS_CLANG),0)
+  override CXX:=g++
+ endif
+endif
+
+ifeq ($(CXX),g++)
+ ifeq ($(HAS_GCC),0)
+error:
+	$(error no compiler specified and g++ and clang++ not available)
+ endif
 endif
 
 # common tools
