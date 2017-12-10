@@ -17,6 +17,7 @@
 #ifndef FRONTIER_VECTOR4_HPP_INCLUDED
 #define FRONTIER_VECTOR4_HPP_INCLUDED
 #include <FRONTIER/System/util/RequireCpp11.hpp>
+#include <FRONTIER/System/util/RETTYPE.hpp>
 #define FRONTIER_VECTOR4
 
 namespace fm
@@ -441,7 +442,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator+(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x+right.x)>;
+	auto operator+(const vector4<T> &left,const vector4<T2> &right) -> vector4<RETTYPE(T,T2,+)>;
 	
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -454,7 +455,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator+(const vector4<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x+right.x)>;
+	auto operator+(const vector4<T> &left,const vector3<T2> &right) -> vector3<RETTYPE(T,T2,+)>;
 
 
 	/////////////////////////////////////////////////////////////
@@ -468,7 +469,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator-(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x-right.x)>;
+	auto operator-(const vector4<T> &left,const vector4<T2> &right) -> vector4<RETTYPE(T,T2,-)>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -481,7 +482,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator-(const vector4<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x-right.x)>;
+	auto operator-(const vector4<T> &left,const vector3<T2> &right) -> vector3<RETTYPE(T,T2,-)>;
 
 
 	/////////////////////////////////////////////////////////////
@@ -495,7 +496,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator*(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x*right.x)>;
+	auto operator*(const vector4<T> &left,const vector4<T2> &right) -> vector4<RETTYPE(T,T2,*)>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -508,7 +509,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator*(const vector4<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x*right.x)>;
+	auto operator*(const vector4<T> &left,const vector3<T2> &right) -> vector3<RETTYPE(T,T2,*)>;
 
 
 	/////////////////////////////////////////////////////////////
@@ -522,7 +523,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator/(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x/right.x)>;
+	auto operator/(const vector4<T> &left,const vector4<T2> &right) -> vector4<RETTYPE(T,T2,/)>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -535,7 +536,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator/(const vector4<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x/right.x)>;
+	auto operator/(const vector4<T> &left,const vector3<T2> &right) -> vector3<RETTYPE(T,T2,/)>;
 
 
 	/////////////////////////////////////////////////////////////
@@ -549,7 +550,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator%(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x+right.x)>;
+	auto operator%(const vector4<T> &left,const vector4<T2> &right) -> vector4<RETTYPE(T,T2,+)>;
 	
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -562,7 +563,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator%(const vector4<T> &left,const vector3<T2> &right) -> vector4<decltype(left.x+right.x)>;
+	auto operator%(const vector4<T> &left,const vector3<T2> &right) -> vector4<RETTYPE(T,T2,+)>;
 	
 	
 	

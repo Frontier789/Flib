@@ -14,17 +14,11 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 //////////////////////////////////////////////////////////////////////////
-#ifndef FRONTIER_C_HPP_INCLUDED
-#define FRONTIER_C_HPP_INCLUDED
-#include <cstdint>
-#define FRONTIER_C
+#ifndef FRONTIER_RETTYPE_HPP_INCLUDED
+#define FRONTIER_RETTYPE_HPP_INCLUDED
+#include <utility>
+#define FRONTIER_RETTYPE
 
-	#define C(nnn)  for (std::size_t i=0,FRONTIER_C_N=(nnn);i<FRONTIER_C_N;++i)
-	#define Cx(nnn) for (std::size_t x=0,FRONTIER_CX_N=(nnn);x<FRONTIER_CX_N;++x)
-	#define Cy(nnn) for (std::size_t y=0,FRONTIER_CY_N=(nnn);y<FRONTIER_CY_N;++y)
-	#define Cz(nnn) for (std::size_t z=0,FRONTIER_CZ_N=(nnn);z<FRONTIER_CZ_N;++z)
-	#define Cf(nnn,ii) for (std::size_t ii=0,FRONTIER_CF_N_ ## ii=(nnn);ii<FRONTIER_CF_N_ ## ii;++ii)
-	#define Cv(Vnnn) for (fm::vec2s p,FRONTIER_CV_WH=(Vnnn);p.x<FRONTIER_CV_WH.w;++p.x) for (p.y=0;p.y<FRONTIER_CV_WH.h;++p.y)
-	#define Cxy(Xnnn,Ynnn) Cx(Xnnn) Cy(Ynnn)
+	#define RETTYPE(T1,T2,op) decltype(std::declval<T1>() op std::declval<T2>())
 
 #endif // FRONTIER_C_HPP_INCLUDED

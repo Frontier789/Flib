@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_VECTOR4_INL_INCLUDED
 #define FRONTIER_VECTOR4_INL_INCLUDED
+#include <FRONTIER/System/util/RETTYPE.hpp>
 #include <cmath>
 
 namespace fm
@@ -296,9 +297,9 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator+(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x+right.x)>
+	inline auto operator+(const vector4<T> &left,const vector4<T2> &right) -> vector4<RETTYPE(T,T2,+)>
 	{
-		return vector4<decltype(left.x+right.x)>(left.x+right.x,
+		return vector4<RETTYPE(T,T2,+)>(left.x+right.x,
 												 left.y+right.y,
 												 left.z+right.z,
 												 left.w+right.w);
@@ -306,9 +307,9 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator+(const vector4<T> &left,const vector3<T2> &right) -> vector4<decltype(left.x+right.x)>
+	inline auto operator+(const vector4<T> &left,const vector3<T2> &right) -> vector4<RETTYPE(T,T2,+)>
 	{
-		return vector4<decltype(left.x+right.x)>(left.x+right.x,
+		return vector4<RETTYPE(T,T2,+)>(left.x+right.x,
 												 left.y+right.y,
 												 left.z+right.z,
 												 left.w);
@@ -317,9 +318,9 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator-(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x-right.x)>
+	inline auto operator-(const vector4<T> &left,const vector4<T2> &right) -> vector4<RETTYPE(T,T2,-)>
 	{
-		return vector4<decltype(left.x-right.x)>(left.x-right.x,
+		return vector4<RETTYPE(T,T2,-)>(left.x-right.x,
 												 left.y-right.y,
 												 left.z-right.z,
 												 left.w-right.w);
@@ -327,9 +328,9 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator-(const vector4<T> &left,const vector3<T2> &right) -> vector4<decltype(left.x-right.x)>
+	inline auto operator-(const vector4<T> &left,const vector3<T2> &right) -> vector4<RETTYPE(T,T2,-)>
 	{
-		return vector4<decltype(left.x-right.x)>(left.x-right.x,
+		return vector4<RETTYPE(T,T2,-)>(left.x-right.x,
 												 left.y-right.y,
 												 left.z-right.z,
 												 left.w);
@@ -338,9 +339,9 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator*(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x*right.x)>
+	inline auto operator*(const vector4<T> &left,const vector4<T2> &right) -> vector4<RETTYPE(T,T2,*)>
 	{
-		return vector4<decltype(left.x*right.x)>(left.x*right.x,
+		return vector4<RETTYPE(T,T2,*)>(left.x*right.x,
 												 left.y*right.y,
 												 left.z*right.z,
 												 left.w*right.w);
@@ -348,9 +349,9 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator*(const vector4<T> &left,const vector3<T2> &right) -> vector4<decltype(left.x*right.x)>
+	inline auto operator*(const vector4<T> &left,const vector3<T2> &right) -> vector4<RETTYPE(T,T2,*)>
 	{
-		return vector4<decltype(left.x*right.x)>(left.x*right.x,
+		return vector4<RETTYPE(T,T2,*)>(left.x*right.x,
 												 left.y*right.y,
 												 left.z*right.z,
 												 left.w);
@@ -359,9 +360,9 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator/(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x/right.x)>
+	inline auto operator/(const vector4<T> &left,const vector4<T2> &right) -> vector4<RETTYPE(T,T2,/)>
 	{
-		return vector4<decltype(left.x/right.x)>(left.x/right.x,
+		return vector4<RETTYPE(T,T2,/)>(left.x/right.x,
 												 left.y/right.y,
 												 left.z/right.z,
 												 left.w/right.w);
@@ -369,9 +370,9 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator/(const vector4<T> &left,const vector3<T2> &right) -> vector4<decltype(left.x/right.x)>
+	inline auto operator/(const vector4<T> &left,const vector3<T2> &right) -> vector4<RETTYPE(T,T2,/)>
 	{
-		return vector4<decltype(left.x/right.x)>(left.x/right.x,
+		return vector4<RETTYPE(T,T2,/)>(left.x/right.x,
 												 left.y/right.y,
 												 left.z/right.z,
 												 left.w);
@@ -380,9 +381,9 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator%(const vector4<T> &left,const vector4<T2> &right) -> vector4<decltype(left.x+right.x)>
+	inline auto operator%(const vector4<T> &left,const vector4<T2> &right) -> vector4<RETTYPE(T,T2,+)>
 	{
-		return vector4<decltype(left.x+right.x)>(std::fmod(left.x,right.x),
+		return vector4<RETTYPE(T,T2,+)>(std::fmod(left.x,right.x),
 												 std::fmod(left.y,right.y),
 												 std::fmod(left.z,right.z),
 												 std::fmod(left.w,right.w));
@@ -390,9 +391,9 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator%(const vector4<T> &left,const vector3<T2> &right) -> vector4<decltype(left.x+right.x)>
+	inline auto operator%(const vector4<T> &left,const vector3<T2> &right) -> vector4<RETTYPE(T,T2,+)>
 	{
-		return vector4<decltype(left.x+right.x)>(std::fmod(left.x,right.x),
+		return vector4<RETTYPE(T,T2,+)>(std::fmod(left.x,right.x),
 												 std::fmod(left.y,right.y),
 												 std::fmod(left.z,right.z),
 												 left.w);

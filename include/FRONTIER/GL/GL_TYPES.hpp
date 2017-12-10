@@ -36,8 +36,8 @@ typedef fm::Uint32  GLuint;
 typedef fm::Uint32  GLenum;
 typedef fm::Uint32  GLbitfield;
                     
-typedef float GLfloat;
-typedef float GLclampf;
+typedef float  GLfloat;
+typedef float  GLclampf;
 typedef double GLdouble;
 typedef double GLclampd;
 
@@ -51,7 +51,7 @@ typedef fm::Uint16  GLhalf;
 typedef GLhalf      GLhalfARB;
 typedef GLint       GLfixed;
 typedef ptrdiff_t   GLintptr;
-typedef fm::Size    GLsizeiptr;
+typedef ptrdiff_t   GLsizeiptr;
 typedef fm::Int64   GLint64;
 typedef fm::Uint64  GLuint64;
 typedef GLintptr    GLintptrARB;

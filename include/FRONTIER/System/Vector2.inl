@@ -213,85 +213,85 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator+(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x+right.x)>
+	inline auto operator+(const vector2<T> &left,const vector2<T2> &right) -> vector2<RETTYPE(T,T2,+)>
 	{
-		return vector2<decltype(left.x+right.x)>(left.x+right.x,
+		return vector2<RETTYPE(T,T2,+)>(left.x+right.x,
 												 left.y+right.y);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator+(const vector2<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x+right.x)>
+	inline auto operator+(const vector2<T> &left,const vector3<T2> &right) -> vector3<RETTYPE(T,T2,+)>
 	{
-		return vector3<decltype(left.x+right.x)>(left.x+right.x,
+		return vector3<RETTYPE(T,T2,+)>(left.x+right.x,
 												 left.y+right.y,
 												 right.z);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator-(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x-right.x)>
+	inline auto operator-(const vector2<T> &left,const vector2<T2> &right) -> vector2<RETTYPE(T,T2,-)>
 	{
-		return vector2<decltype(left.x-right.x)>(left.x-right.x,
+		return vector2<RETTYPE(T,T2,-)>(left.x-right.x,
 												 left.y-right.y);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator-(const vector2<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x-right.x)>
+	inline auto operator-(const vector2<T> &left,const vector3<T2> &right) -> vector3<RETTYPE(T,T2,-)>
 	{
-		return vector3<decltype(left.x-right.x)>(left.x-right.x,
+		return vector3<RETTYPE(T,T2,-)>(left.x-right.x,
 												 left.y-right.y,
 												 right.z);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator*(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x*right.x)>
+	inline auto operator*(const vector2<T> &left,const vector2<T2> &right) -> vector2<RETTYPE(T,T2,*)>
 	{
-		return vector2<decltype(left.x*right.x)>(left.x*right.x,
+		return vector2<RETTYPE(T,T2,*)>(left.x*right.x,
 												 left.y*right.y);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator*(const vector2<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x*right.x)>
+	inline auto operator*(const vector2<T> &left,const vector3<T2> &right) -> vector3<RETTYPE(T,T2,*)>
 	{
-		return vector3<decltype(left.x*right.x)>(left.x*right.x,
+		return vector3<RETTYPE(T,T2,*)>(left.x*right.x,
 												 left.y*right.y,
 												 right.z);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator/(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x/right.x)>
+	inline auto operator/(const vector2<T> &left,const vector2<T2> &right) -> vector2<RETTYPE(T,T2,/)>
 	{
-		return vector2<decltype(left.x/right.x)>(left.x/right.x,
+		return vector2<RETTYPE(T,T2,/)>(left.x/right.x,
 												 left.y/right.y);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator/(const vector2<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x/right.x)>
+	inline auto operator/(const vector2<T> &left,const vector3<T2> &right) -> vector3<RETTYPE(T,T2,/)>
 	{
-		return vector3<decltype(left.x/right.x)>(left.x/right.x,
+		return vector3<RETTYPE(T,T2,/)>(left.x/right.x,
 												 left.y/right.y,
 												 right.z);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator%(const vector2<T> &left,const vector2<T2> &right) -> vector2<decltype(left.x+right.x)>
+	inline auto operator%(const vector2<T> &left,const vector2<T2> &right) -> vector2<RETTYPE(T,T2,+)>
 	{
-		return vector2<decltype(left.x+right.x)>(std::fmod(left.x,right.x),
+		return vector2<RETTYPE(T,T2,+)>(std::fmod(left.x,right.x),
 												 std::fmod(left.y,right.y));
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	inline auto operator%(const vector2<T> &left,const vector3<T2> &right) -> vector3<decltype(left.x+right.x)>
+	inline auto operator%(const vector2<T> &left,const vector3<T2> &right) -> vector3<RETTYPE(T,T2,+)>
 	{
-		return vector3<decltype(left.x+right.x)>(std::fmod(left.x,right.x),
+		return vector3<RETTYPE(T,T2,+)>(std::fmod(left.x,right.x),
 												 std::fmod(left.y,right.y),
 												 right.z);
 	}

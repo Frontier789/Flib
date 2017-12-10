@@ -532,7 +532,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiText::setPosition(fm::vec2i pos)
 	{
-		fm::vec2i diff = pos - getPosition();
+		fm::vec2 diff = pos - getPosition();
 		
 		for (auto &sprite : m_sprites)
 			sprite.setPosition(sprite.getPosition() + diff);

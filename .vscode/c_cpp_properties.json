@@ -5,7 +5,8 @@
             "includePath": [
                 "/usr/include",
                 "/usr/local/include",
-                "${workspaceRoot}"
+                "${workspaceRoot}",
+                "${workspaceRoot}/include"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
@@ -13,7 +14,8 @@
                 "path": [
                     "/usr/include",
                     "/usr/local/include",
-                    "${workspaceRoot}"
+                    "${workspaceRoot}",
+                    "${workspaceRoot}/include"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
@@ -57,18 +59,27 @@
         {
             "name": "Win32",
             "includePath": [
-                "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include",
-                "${workspaceRoot}"
+                "${workspaceRoot}",
+                "${workspaceRoot}/include",
+                "${workspaceRoot}/../../CodeBlocks/MinGW/include",
+                "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include",
+                "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include/c++",
+                "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include/c++/mingw32"
             ],
             "defines": [
                 "_DEBUG",
-                "UNICODE"
+                "UNICODE",
+                "__SIZE_TYPE__=long long "
             ],
-            "intelliSenseMode": "msvc-x64",
+            "intelliSenseMode": "clang-x64",
             "browse": {
                 "path": [
-                    "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include/*",
-                    "${workspaceRoot}"
+                    "${workspaceRoot}",
+                    "${workspaceRoot}/include",
+                    "${workspaceRoot}/../../CodeBlocks/MinGW/include",
+                    "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include",
+                    "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include/c++",
+                    "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include/c++/mingw32"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""

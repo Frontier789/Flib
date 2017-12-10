@@ -52,6 +52,7 @@ namespace fg
 #include <FRONTIER/Graphics/VertexState.hpp>
 #include <FRONTIER/Graphics/IndexHolder.hpp>
 #include <FRONTIER/Graphics/AssocPoint.hpp>
+#include <FRONTIER/Graphics/TimeQuery.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/Primitive.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>

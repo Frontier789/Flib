@@ -106,7 +106,7 @@ void buildDrawData(int depth,DrawData &dd,DrawData &ddWf,DrawData &ddGw)
 	m.clr.swap(glowColors);
 	
 	ddGw = m;
-	
+
 	C(m.clr.size()) m.clr[i] = vec4::Black;
 	
 	ddWf = m;
@@ -120,6 +120,7 @@ void printUsage()
 		 << "\tScroll to zoom\n"
 		 << "\tG: Toggle glow" << endl;
 }
+
 
 int main()
 {
@@ -164,13 +165,16 @@ int main()
 	
 	bool renderBlur = TextureConvolution::isAvailable();
 	
+	string title;
+
 	for (int loop=0;running;++loop)
 	{
 		if (loopClk.getSeconds() > 1)
 		{
 			loopClk.restart();
 			
-			win.setTitle("Rotx  " + fm::toString(loop/1) + "fps");
+			title = "Rotx  " + fm::toString(loop/1) + "fps";
+			win.setTitle(title);
 			
 			loop = 0;
 		}
@@ -292,11 +296,12 @@ int main()
 			shader->draw(ddWf);
 			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		}
-		
+
 		win.swapBuffers();
 		
 		win.applyFpsLimit();
 	}
+	
 	
 	delete shader;
 }
