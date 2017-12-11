@@ -90,6 +90,28 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
+	void GridLayout::expandToInclude(fm::vec2s index)
+	{
+		fm::vec2s cellnum = getCellCount();
+		
+		index.x = std::max(cellnum.x, index.x+1);
+		index.y = std::max(cellnum.y, index.y+1);
+		
+		if (cellnum != index)
+		{
+			setCellCount(index);
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool GridLayout::isIndexValid(fm::vec2s index) const
+	{
+		fm::vec2s cellnum = getCellCount();
+		
+		return cellnum.x > index.x && cellnum.y > index.y;
+	}
+	
+	/////////////////////////////////////////////////////////////
 	fm::Size GridLayout::indexToOffset(fm::vec2s index) const
 	{
 		return index.y * m_columnCount + index.x;
@@ -112,7 +134,7 @@ namespace fgui
 	
 	/////////////////////////////////////////////////////////////
 	GridLayout::GridLayout(GuiContext &owner) : GuiLayout(owner),
-												m_columnCount(0)
+												m_columnCount(1)
 	{
 		
 	}
@@ -120,6 +142,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GridLayout::setCellSize(fm::vec2s index,fm::vec2 size)
 	{
+		expandToInclude(index);
+		
 		m_cellData[indexToOffset(index)].minSize = size;
 		updateCellPositions();
 	}
@@ -127,24 +151,32 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	fm::vec2 GridLayout::getCellSize(fm::vec2s index) const
 	{
+		if (!isIndexValid(index)) return fm::vec2();
+		
 		return m_cellData[indexToOffset(index)].minSize;
 	}
 
 	/////////////////////////////////////////////////////////////
 	GuiElement *GridLayout::setChildElement2D(fm::vec2s index,GuiElement *element)
 	{
+		expandToInclude(index);
+		
 		return GuiLayout::setChildElement(indexToOffset(index),element);
 	}
 
 	/////////////////////////////////////////////////////////////
 	GuiElement *GridLayout::getChildElement2D(fm::vec2s index) const
 	{
+		if (!isIndexValid(index)) return nullptr;
+		
 		return GuiLayout::getChildElement(indexToOffset(index));
 	}
 
 	/////////////////////////////////////////////////////////////
 	GuiElement *GridLayout::removeChild(fm::vec2s index,bool del)
 	{
+		if (!isIndexValid(index)) return nullptr;
+		
 		return GuiLayout::removeChild(indexToOffset(index),del);
 	}
 
@@ -157,6 +189,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GridLayout::setCellCount(fm::vec2s cellCount,bool del)
 	{
+		if (cellCount.w == 0) cellCount.w = 1;
+		
 		std::vector<GuiElement*> elements_cpy(cellCount.area(),nullptr);
 		std::vector<CellData> cellData_cpy(cellCount.area());
 		
@@ -198,15 +232,12 @@ namespace fgui
 	fm::vec2s GridLayout::getCellCount() const
 	{
 		fm::Size chl = getChildCount();
-		return fm::vec2s(m_columnCount,m_columnCount ? (chl + m_columnCount - 1) / m_columnCount : 0);
+		return fm::vec2s(m_columnCount,(chl + m_columnCount - 1) / m_columnCount);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void GridLayout::setChildCount(fm::Size childCount)
 	{
-		if (!m_columnCount)
-			m_columnCount = 1;
-		
 		setCellCount(fm::vec2s(m_columnCount,(childCount + m_columnCount - 1) / m_columnCount));
 	}
 		
@@ -226,6 +257,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GridLayout::setColumnWidth(fm::Size colIndex,float width)
 	{
+		expandToInclude(fm::vec2s(colIndex,0));
+		
 		m_colWidths[colIndex] = width;
 		updateCellPositions();
 	}
@@ -239,6 +272,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GridLayout::setRowHeight(fm::Size rowIndex,float height)
 	{
+		expandToInclude(fm::vec2s(0,rowIndex));
+		
 		m_rowHeights[rowIndex] = height;
 		updateCellPositions();
 	}
@@ -252,6 +287,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GridLayout::setPadding(fm::vec2s index,fm::vec2 padding)
 	{
+		expandToInclude(index);
+		
 		m_cellData[indexToOffset(index)].padding = padding;
 		updateCellPositions();
 	}
@@ -278,11 +315,14 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GridLayout::setAlignPoint(fm::vec2s index,fm::vec2 alignPoint)
 	{
+		expandToInclude(index);
+		
 		m_cellData[indexToOffset(index)].alignPoint = alignPoint;
+		updateCellPositions();
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fm::vec2 GridLayout::setAlignPoint(fm::vec2s index) const
+	fm::vec2 GridLayout::getAlignPoint(fm::vec2s index) const
 	{
 		return m_cellData[indexToOffset(index)].alignPoint;
 	}

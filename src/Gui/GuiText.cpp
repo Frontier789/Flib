@@ -360,6 +360,7 @@ namespace fgui
 		}
 	};
 	
+	/////////////////////////////////////////////////////////////
 	void GuiText::updateSprites()
 	{
 		if (getFont())
@@ -490,6 +491,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiText::setCharacterSize(fm::Size charSize)
 	{
+		if (charSize == m_charSize) return;
+
 		m_charSize = charSize;
 		updateSprites();
 	}
@@ -523,6 +526,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiText::setColor(fm::vec4 color)
 	{
+		if (color == m_clr) return;
+		
 		m_clr = color;
 		
 		for (auto &sprite : m_sprites)
@@ -532,6 +537,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiText::setPosition(fm::vec2i pos)
 	{
+		if (pos == getPosition()) return;
+
 		fm::vec2 diff = pos - getPosition();
 		
 		for (auto &sprite : m_sprites)

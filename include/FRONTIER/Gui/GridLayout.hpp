@@ -53,6 +53,24 @@ namespace fgui
 		void updateCellPositions();
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Expand the size of the layout (if needed)
+		/// 
+		/// @param index The index to include
+		/// 
+		/////////////////////////////////////////////////////////////
+		void expandToInclude(fm::vec2s index);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Check if an index lies within the grid 
+		/// 
+		/// @param index The index to check
+		/// 
+		/// @return True iff valid
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool isIndexValid(fm::vec2s index) const;
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Internal data structure used to keep track of cell properties
 		///
 		/////////////////////////////////////////////////////////////
@@ -209,6 +227,11 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the align point for a cell
 		/// 
+		/// The align point describes where the cell content is snapped: 
+		///    (0,0) is the upper left corner
+		///    (.5,.5) means center (this is the default)
+		///    (1,0) id the upper right corner ...
+		/// 
 		/// @param index The 2d index
 		/// @param alignPoint The new align point
 		/// 
@@ -282,12 +305,17 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the align point for a cell
 		/// 
+		/// The align point describes where the cell content is snapped: 
+		///    (0,0) is the upper left corner
+		///    (.5,.5) means center (this is the default)
+		///    (1,0) id the upper right corner ...
+		/// 
 		/// @param index The 2d index
 		/// 
 		/// @return The align point
 		/// 
 		/////////////////////////////////////////////////////////////
-		fm::vec2 setAlignPoint(fm::vec2s index) const;
+		fm::vec2 getAlignPoint(fm::vec2s index) const;
 	};
 }
 
