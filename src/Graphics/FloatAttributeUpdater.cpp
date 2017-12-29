@@ -32,7 +32,8 @@ namespace fg
 																		 m_vecsPerItem(vecsPerItem),
 																		 m_capacity(0),
 																		 m_uploads(0),
-																		 m_mappedPtr(nullptr)
+																		 m_mappedPtr(nullptr),
+																		 m_autoShrink(true)
 	{
 		
 	}
@@ -126,7 +127,7 @@ namespace fg
 	{
 		m_data.resize(m_data.size() - getFloatsPerItem());
 		
-		if (m_data.size() < m_capacity/4 * getFloatsPerItem())
+		if (m_data.size() < m_capacity/4 * getFloatsPerItem() && m_autoShrink)
 			setCapacity(m_capacity/2);
 	}
 	
@@ -151,13 +152,33 @@ namespace fg
 			m_lastUpdated  = std::min(m_lastUpdated ,m_data.size() / getFloatsPerItem() - 1);
 			
 			fm::Size elemCount = m_lastUpdated - m_firstUpdated + 1;
-			
-			m_attrib.buf->updateData((void*)&m_data[m_firstUpdated*getFloatsPerItem()],
-									 getBytesPerItem() * elemCount,
-									 getBytesPerItem() * m_firstUpdated);
+/*
+			float ratio = elemCount / float(m_data.size() / getFloatsPerItem());
+			if (ratio > 0.3)
+			{
+				m_attrib.buf->setData(nullptr,m_data.size() * sizeof(m_data[0]));
+				m_attrib.buf->updateData((void*)&m_data[0],m_data.size() * sizeof(m_data[0]));
+			}
+			else*/
+			{
+				m_attrib.buf->updateData((void*)&m_data[m_firstUpdated*getFloatsPerItem()],
+										getBytesPerItem() * elemCount,
+										getBytesPerItem() * m_firstUpdated);
+			}
+			m_uploads = 0;
 		}
-		
-		m_uploads = 0;
+	}
+
+	/////////////////////////////////////////////////////////////
+	void FloatAttributeUpdater::setAutoShrink(bool automatic)
+	{
+		m_autoShrink = automatic;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool FloatAttributeUpdater::getAutoShrink() const
+	{
+		return m_autoShrink;
 	}
 }
 

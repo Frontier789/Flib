@@ -69,8 +69,11 @@ namespace fgui
 		fm::Clock  m_fpsClk; ///< Clock for measuring fps
 		fm::vec2s  m_size;   ///< The size of the context
 		fm::Time   m_spf;    ///< Second per frame (0 on inf fps)
+		bool m_guiLoop;      ///< Indicates whether the gui loop is running 
 		
 		void setupShader(); ///< Initialises the shader
+
+		virtual void drawElementsGuiLoop(); ///< Draw the elements inside gui loop
 		
 	public:
 		/////////////////////////////////////////////////////////////
@@ -330,6 +333,20 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		fm::Time getUpdateInterval() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Run the gui loop of the context
+		/// 
+		/// @return The exit code
+		/// 
+		/////////////////////////////////////////////////////////////
+		int runGuiLoop();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the loop condition in the gui loop to false
+		/// 
+		/////////////////////////////////////////////////////////////
+		void stopGuiLoop();
 	};
 }
 

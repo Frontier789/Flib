@@ -189,7 +189,9 @@ namespace fg
         {
             delete[] m_data;
             m_data = new fm::Uint8[bytesToCopy];
-            std::memcpy(m_data,data,bytesToCopy);
+
+			if (data)
+            	std::memcpy(m_data,data,bytesToCopy);
         }
 
         m_size = bytesToCopy;

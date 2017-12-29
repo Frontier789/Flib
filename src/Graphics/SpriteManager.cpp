@@ -717,6 +717,40 @@ namespace fg
 		{
 			return m_posProp.getCapacity();
 		}
+
+		/////////////////////////////////////////////////////////////
+		void SpriteManagerBaseNonTemplate::setAutoShrink(bool automatic)
+		{
+			if (useInstancing())
+			{
+				m_posProp.setAutoShrink(automatic);
+				m_dirProp.setAutoShrink(automatic);
+				m_sizProp.setAutoShrink(automatic);
+				m_uvpProp.setAutoShrink(automatic);
+				m_uvsProp.setAutoShrink(automatic);
+				m_frmProp.setAutoShrink(automatic);
+				m_clrProp.setAutoShrink(automatic);
+			}
+			else
+			{
+				m_vertPtsProp.setAutoShrink(automatic);
+				m_vertUVsProp.setAutoShrink(automatic);
+				m_vertClrProp.setAutoShrink(automatic);
+			}
+		}
+		
+		/////////////////////////////////////////////////////////////
+		bool SpriteManagerBaseNonTemplate::getAutoShrink() const
+		{
+			if (useInstancing())
+			{
+				return m_posProp.getAutoShrink();
+			}
+			else
+			{
+				return m_vertPtsProp.getAutoShrink();
+			}
+		}
 	}
 }
 

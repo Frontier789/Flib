@@ -147,7 +147,7 @@ int main()
 			if (ev.type == Event::Closed) running = false;
 		}
 		
-		floatingBtn->setPosition(vec2(sin(floatingClk.getSeconds()/2)*50 + 320,400));
+		floatingBtn->setPosition(vec2(sin<float>(floatingClk.getSeconds()/2)*50 + 320,400));
 		
 		win.updateElements();
 		

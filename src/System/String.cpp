@@ -781,16 +781,27 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	String toString(long double num,fm::Size precision)
 	{
-		bool mns = num < (long double)0.0;
+		bool mns = num < (long double)0.0; // true <-> num < 0
+		long double powPrec = priv::power(fm::Uint64(10),precision); // 10^precision
 		
-		if (mns) num = -num;
-		
+		if (mns) num = -num; // take abs of num
+		if ((num*powPrec - (fm::Uint64)(num*powPrec)) >= 0.5) 
+			num += 1.0 / powPrec; // round n-th digit
+
 		fm::Uint64 wholePart = num;
-		fm::Uint64 approx = (num - fm::Uint64(num)) * priv::power(fm::Uint64(10),precision);
+		long double fract =  (num - wholePart);
+		fract *= powPrec;
+
+		fm::Uint64 approx = fract;
+
+		fm::String fractPart;
 		
-		fm::String fractPart = fm::toString(approx);
-		fractPart = fm::String(precision - fractPart.size(),'0') + fractPart;
+		if (fract > 0.5)
+		{
+			fractPart = fm::toString(approx);
+			fractPart = "." + fm::String(precision - fractPart.size(),'0') + fractPart;
+		}
 		
-		return (mns ? "-" : "") + fm::toString(wholePart) + "." + fractPart;
+		return (mns ? "-" : "") + fm::toString(wholePart) + fractPart;
 	}
 }

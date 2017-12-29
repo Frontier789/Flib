@@ -30,7 +30,7 @@ namespace fgui
 		using namespace fg;
 		using namespace fm;
 		
-		Image getUglyButton(vec2 size,Color sarok,Color oldal,Color belsarok,Color beloldal,Color interpBeg,Color interpEnd)
+		Image getStdButtonImage(vec2 size,Color sarok,Color oldal,Color belsarok,Color beloldal,Color interpBeg,Color interpEnd)
 		{
 			Image img(size);
 			
@@ -69,17 +69,17 @@ namespace fgui
 
 		Image getDefButtonImgNorm()
 		{
-			return getUglyButton(vec2(128,128),Color(0,0),Color(124),Color(180),Color(240),Color(193),Color(243));
+			return getStdButtonImage(vec2(128,128),Color(0,0),Color(124),Color(180),Color(240),Color(193),Color(243));
 		}
 
 		Image getDefButtonImgHover()
 		{
-			return getUglyButton(vec2(128,128),Color(0,0),Color(124),Color(180),Color(240),Color(223),Color(248));
+			return getStdButtonImage(vec2(128,128),Color(0,0),Color(124),Color(180),Color(240),Color(223),Color(248));
 		}
 
 		Image getDefButtonImgPress()
 		{
-			return getUglyButton(vec2(128,128),Color(0,0),Color(124),Color(180),Color(240),Color(180),Color(248));
+			return getStdButtonImage(vec2(128,128),Color(0,0),Color(124),Color(180),Color(240),Color(180),Color(248));
 		}
 		/*
 		template<class T>
@@ -180,6 +180,12 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
+	void GuiContext::drawElementsGuiLoop()
+	{
+		drawElements();
+	}
+
+	/////////////////////////////////////////////////////////////
 	GuiContext::GuiContext() : GuiContext(fm::vec2s())
 	{
 		
@@ -189,7 +195,8 @@ namespace fgui
 	GuiContext::GuiContext(fm::vec2s size) : m_spriteManager(true),
 											 m_shader(fg::ShaderManager::getDefaultShader()),
 											 m_layout(new GuiLayout(*this)),
-											 m_size(size)
+											 m_size(size),
+											 m_guiLoop(false)
 	{
 		setupShader();
 		setMaxFps(60);
@@ -351,7 +358,15 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiContext::handleEvent(fw::Event &ev)
 	{
-		m_layout->handleEvent(ev);
+		if (!m_layout->handleEvent(ev))
+		{
+			if (m_guiLoop)
+			{
+				if (ev.type == fw::Event::Closed) m_guiLoop = false;
+				if (ev.type == fw::Event::KeyPressed)
+					if (ev.key.code == fw::Keyboard::F4 && ev.key.alt) m_guiLoop = false;
+			}
+		}
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -428,6 +443,29 @@ namespace fgui
 	fm::Time GuiContext::getUpdateInterval() const
 	{
 		return m_spf;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	int GuiContext::runGuiLoop()
+	{
+		for (m_guiLoop = true;m_guiLoop;)
+		{
+			handlePendingEvents();
+
+			updateElements();
+			
+			drawElementsGuiLoop();
+			
+			applyFpsLimit();
+		}
+
+		return 0;
+	}
+
+	/////////////////////////////////////////////////////////////
+	void GuiContext::stopGuiLoop()
+	{
+		m_guiLoop = false;
 	}
 }
 

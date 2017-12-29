@@ -45,9 +45,9 @@ namespace fg
 		fm::Size m_capacity;       ///< The number of allocated items
 		fm::Size m_uploads;        ///< The number of uploads done
 		float *m_mappedPtr;        ///< The pointer to the mapped data
+		bool m_autoShrink;         ///< Indiates whether automatic shrinking is used
 		
 	public:
-		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the number of floats per item
 		/// 
@@ -161,6 +161,20 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		void prepareDraw();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Change whether automatic shrinking is employed
+		/// 
+		/// @param automatic True indicates automatic shrinking is used
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setAutoShrink(bool automatic);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Check whether automatic shrinking is employed
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool getAutoShrink() const;
 	};
 }
 

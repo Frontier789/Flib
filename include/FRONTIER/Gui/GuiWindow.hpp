@@ -39,6 +39,9 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API GuiWindow : public fw::Window, public GuiContext
 	{
+	protected:
+		void drawElementsGuiLoop() override; ///< Draw the elements inside gui loop
+
 	public:
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor

@@ -37,8 +37,6 @@ namespace fgui
 		onZoomChanged(m_zoom);
 		
 		m_offset = m_offset * zoomMul + getLastMousePos() * (1 - zoomMul);
-		
-		// todo: toggleable zoom sensitivity?
 	}
 	
 	/////////////////////////////////////////////////////////////

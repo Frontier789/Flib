@@ -108,4 +108,14 @@ namespace fgui
 			handleEvent(ev);
 		}
 	}
+
+	/////////////////////////////////////////////////////////////
+	void GuiWindow::drawElementsGuiLoop()
+	{
+		clear();
+
+		drawElements();
+
+		swapBuffers();
+	}
 }
