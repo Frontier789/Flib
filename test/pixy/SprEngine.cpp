@@ -50,4 +50,11 @@ void SprEngine::setField(vec2s p,FieldData data)
 	getData(p) = data;
 
 	getSprite(p).setColor(data.color);
+	getSprite(p).setImageID(data.imgName);
+}
+	
+/////////////////////////////////////////////////////////////
+void SprEngine::addImage(Image &img,string name)
+{
+	m_sprmgr.addImage(img,name);
 }

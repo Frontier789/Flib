@@ -10,6 +10,7 @@ class FieldData
 {
 public:
 	vec4 color;
+	string imgName;
 };
 
 class PixyEngine : public GuiElement
@@ -18,6 +19,7 @@ class PixyEngine : public GuiElement
 	std::vector<FieldData> m_data;
 	fm::Delegate<void,fw::Event &> m_evListener;
 	fm::Delegate<void> m_tickListener;
+	TextureAtlas<string> m_atlas;
 	
 	/////////////////////////////////////////////////////////////
 	virtual void onScreenSize();
@@ -40,6 +42,9 @@ public:
 	
 	/////////////////////////////////////////////////////////////
 	bool onEvent(fw::Event &ev) override;
+	
+	/////////////////////////////////////////////////////////////
+	virtual void addImage(Image &img,string name);
 	
 	/////////////////////////////////////////////////////////////
 	virtual void onUpdate(const fm::Time &dt) override;

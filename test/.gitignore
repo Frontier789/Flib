@@ -6,4 +6,5 @@
 !*/*.glsl
 !*/makefile
 !*/
+!pixy/*.png
 lib*

@@ -46,6 +46,12 @@ bool PixyEngine::onEvent(fw::Event &ev)
 }
 	
 /////////////////////////////////////////////////////////////
+void PixyEngine::addImage(Image &img,string name)
+{
+	m_atlas.upload(img,name);
+}
+	
+/////////////////////////////////////////////////////////////
 void PixyEngine::onUpdate(const fm::Time &dt)
 {
 	m_tickListener();

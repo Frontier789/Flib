@@ -114,3 +114,44 @@ vec2s PixyGame::getMapSize() const
 {
 	return m_engine->getLayoutSize();
 }
+
+/////////////////////////////////////////////////////////////
+fm::Result PixyGame::loadImage(string fileName,string imgName)
+{
+	if (imgName == "") imgName = fileName;
+
+	Image img;
+	fm::Result r = img.loadFromFile(fileName);
+	if (!r) return r;
+
+	m_engine->addImage(img,imgName);
+
+	return r;
+}
+
+/////////////////////////////////////////////////////////////
+void PixyGame::setMapImage(vec2i p,string imgName)
+{
+	if (validPoint(p))
+	{
+		auto data = m_engine->getData(p);
+		data.imgName = imgName;
+
+		m_engine->setField(p,data);
+	}
+}
+
+/////////////////////////////////////////////////////////////
+string PixyGame::getMapImage(vec2i p) const
+{
+	if (validPoint(p))
+		return m_engine->getData(p).imgName;
+
+	return "";
+}
+
+/////////////////////////////////////////////////////////////
+void PixyGame::setTitle(fm::String title)
+{
+	m_win.setTitle(title);
+}
