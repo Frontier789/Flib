@@ -37,13 +37,13 @@ clean: del_f
 ####  ####  ####  #####  ####  ####  ####
 
 $(F_O_FILES_DIR):
-	$(CD) $(F_PATH_TO_ROOT) && $(MKDIR) $(F_LIB_TARGET)
+	$(call F_MKDIR,$(F_PATH_TO_ROOT)/$(F_LIB_TARGET))
 
-$(F_O_FILES_DIR)/static: | $(F_O_FILES_DIR)
-	$(CD) $(F_O_FILES_DIR) && $(MKDIR) static
+$(F_O_FILES_DIR)/static:
+	$(call F_MKDIR,$(F_O_FILES_DIR)/static)
 
-$(F_O_FILES_DIR)/dynamic: | $(F_O_FILES_DIR)
-	$(CD) $(F_O_FILES_DIR) && $(MKDIR) dynamic
+$(F_O_FILES_DIR)/dynamic:
+	$(call F_MKDIR,$(F_O_FILES_DIR)/dynamic)
 
 include module_defs.mk
 
@@ -68,10 +68,10 @@ $(foreach MODULE,$(F_MODULES), \
  \
  $(eval $(MODULE): $(F_$(F_CUR_MODULE)_MODULE_SO)) \
  \
- $(eval $(F_O_FILES_DIR)/static/$(MODULE): | $(F_O_FILES_DIR)/static ; \
-	$(CD) $(F_O_FILES_DIR) && $(CD) static && $(MKDIR) $(MODULE)) \
- $(eval $(F_O_FILES_DIR)/dynamic/$(MODULE): | $(F_O_FILES_DIR)/dynamic ; \
-	$(CD) $(F_O_FILES_DIR) && $(CD) dynamic && $(MKDIR) $(MODULE)) \
+ $(eval $(F_O_FILES_DIR)/static/$(MODULE): ; \
+	$(call F_MKDIR,$(F_O_FILES_DIR)/static/$(MODULE))) \
+ $(eval $(F_O_FILES_DIR)/dynamic/$(MODULE): ; \
+	$(call F_MKDIR,$(F_O_FILES_DIR)/dynamic/$(MODULE))) \
  \
  $(eval $(F_$(F_CUR_MODULE)_MODULE_A): $(F_$(F_CUR_MODULE)_STATIC_O_FILES) ; \
 	$(AR) $$@ $$^ ) \

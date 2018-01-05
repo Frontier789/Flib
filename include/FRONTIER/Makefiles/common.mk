@@ -2,7 +2,7 @@ WD=$(dir $(lastword $(MAKEFILE_LIST)))
 
 include $(WD)/detect_os.mk
 
-test_cmd = $(strip $(shell make -f $(WD)/testCmd.mk TEST_CMD=$(1) > /dev/null 2>&1 && echo 1 || echo 0))
+test_cmd = $(lastword $(strip $(shell make -f $(WD)/testCmd.mk TEST_CMD=$(1) 2>&1 && echo " 1" || echo " 0")))
 
 HAS_GCC := $(call test_cmd,"g++ -v")
 HAS_CLANG := $(call test_cmd,"clang++ -v")

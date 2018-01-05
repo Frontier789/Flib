@@ -76,7 +76,9 @@ namespace fm
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Test if a point is in the rectangle
-		///
+		/// 
+		/// Points on the edge considered as contained
+		/// 
 		/// @param p The point to test against
 		///
 		/// @return True if @a p is in the rectangle, false if not
@@ -103,6 +105,17 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		bool operator!=(const rect<T> &other) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Expand the ractangle to contain p
+		///
+		/// expansion is done by either decreasing pos (and expanding size the same amount)
+		/// or by increasing size
+		///
+		/// @param p The point to include
+		///
+		/////////////////////////////////////////////////////////////
+		reference expand(const vector2<T> &p);
 
     };
 

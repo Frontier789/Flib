@@ -65,6 +65,18 @@ namespace fm
 	{
 		return pos!=other.pos || size!=other.size;
 	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline rect<T> &rect<T>::expand(const vector2<T> &p)
+	{
+		if (pos.x > p.x) size.w += pos.x - p.x, pos.x = p.x;
+		if (pos.y > p.y) size.h += pos.y - p.y, pos.y = p.y;
+		if (pos.x + size.w < p.x) size.w += p.x - pos.x;
+		if (pos.y + size.h < p.y) size.h += p.y - pos.y;
+
+		return *this;
+	}
 }
 
 #include <iosfwd>

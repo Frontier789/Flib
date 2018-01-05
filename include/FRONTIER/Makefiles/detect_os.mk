@@ -12,7 +12,7 @@ ifeq ($(OS),Windows_NT)
  F_RRM=cmd /C rmdir /Q /S
  F_NULL=NUL
  define F_MKDIR
-  mkdir $(1)
+  cmd /E:ON /C mkdir $(subst /,\,$(1))
  endef
  define F_DELETE
   $(F_RRM) $(subst /,\,$(1))
