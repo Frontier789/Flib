@@ -117,6 +117,15 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		reference expand(const vector2<T> &p);
 
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the middle point of the rectangle
+		///
+		/// Equals to pos + size/2
+		///
+		/// @return The middle point
+		///
+		/////////////////////////////////////////////////////////////
+		vector2<T> mid() const;
     };
 
     typedef rect<float> 		 rect2f;

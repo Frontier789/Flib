@@ -27,7 +27,7 @@ public:
 	{
 		if (tick % 10 == 0) moveForward();
 
-		if (tick % 100 == 0) randomFood();
+		if (tick % 100 == 101) randomFood();
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -59,6 +59,38 @@ public:
 			for (int db=0;bodyPoints.size() > bodyLength && db<2;++db)
 			{
 				remTail();
+			}
+		}
+	}
+
+	/////////////////////////////////////////////////////////////
+	void onHover(vec2s p,bool on) override
+	{
+		if (on)
+		{
+			if (getMapColor(p) == vec4::Black)
+			{
+				if (isButtonPressed(Mouse::Left))
+				{
+					putFood(p);
+					setCursor(Mouse::Arrow);
+				}
+				else
+					setCursor(Mouse::Click);
+			}
+			else setCursor(Mouse::Arrow);
+		}
+	}
+
+	/////////////////////////////////////////////////////////////
+	void onClick(vec2s p,Mouse::Button btn) override
+	{
+		if (btn == Mouse::Left)
+		{
+			if (getMapColor(p) == vec4::Black)
+			{
+				putFood(p);
+				setCursor(Mouse::Arrow);
 			}
 		}
 	}

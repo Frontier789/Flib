@@ -1,4 +1,4 @@
-include $(dir $(lastword $(MAKEFILE_LIST)))/common.mk
+include $(dir $(lastword $(MAKEFILE_LIST)))common.mk
 
 # platform dependent libs
 ifeq ($(F_PLATFORM),Windows)
@@ -46,6 +46,7 @@ EXEC?=exec
 
 # path to flib root
 ifeq ($(wildcard $(FPATH)),)
+ $(info FPATH automatically set to ..)
  FPATH=..
 endif
 

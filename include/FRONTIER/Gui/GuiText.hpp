@@ -61,7 +61,7 @@ namespace fgui
 	{
 	public:
 		fm::String fontName; ///< The name of the font
-		fg::Font font; ///< Direct pointer to the font
+		mutable fg::Font font; ///< Direct pointer to the font
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief constructor
@@ -93,7 +93,7 @@ namespace fgui
 		/// @return The font
 		/// 
 		/////////////////////////////////////////////////////////////
-		fg::Font getFont(fm::Ref<GuiContext> owner);
+		fg::Font getFont(fm::Ref<const GuiContext> owner) const;
 	};
 	
 	/////////////////////////////////////////////////////////////
@@ -216,7 +216,7 @@ namespace fgui
 		/// @return The font
 		/// 
 		/////////////////////////////////////////////////////////////
-		fg::Font getFont();
+		fg::Font getFont() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the name of the font the gui text uses

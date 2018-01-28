@@ -72,10 +72,17 @@ namespace fm
 	{
 		if (pos.x > p.x) size.w += pos.x - p.x, pos.x = p.x;
 		if (pos.y > p.y) size.h += pos.y - p.y, pos.y = p.y;
-		if (pos.x + size.w < p.x) size.w += p.x - pos.x;
-		if (pos.y + size.h < p.y) size.h += p.y - pos.y;
+		if (pos.x + size.w < p.x) size.w = p.x - pos.x;
+		if (pos.y + size.h < p.y) size.h = p.y - pos.y;
 
 		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline vector2<T> rect<T>::mid() const
+	{
+		return pos + size / T(2);
 	}
 }
 

@@ -35,15 +35,23 @@ void PixyGame::onEvent(fw::Event &ev)
 		{
 			if (validPoint(m_lastHover))
 			{
-				onHover(m_lastHover,m_engine->getData(m_lastHover),false);
+				onHover(m_lastHover,false);
 			}
 
 			if (validPoint(curHover))
 			{
-				onHover(curHover,m_engine->getData(curHover),true);
+				onHover(curHover,true);
 			}
 
 			m_lastHover = curHover;
+		}
+	}
+
+	if (ev.type == Event::ButtonPressed)
+	{
+		if (validPoint(m_lastHover))
+		{
+			onClick(m_lastHover,ev.mouse.button);
 		}
 	}
 
@@ -66,7 +74,13 @@ void PixyGame::run()
 }
 
 /////////////////////////////////////////////////////////////
-void PixyGame::onHover(vec2s,FieldData &,bool)
+void PixyGame::onClick(vec2s,Mouse::Button)
+{
+
+}
+
+/////////////////////////////////////////////////////////////
+void PixyGame::onHover(vec2s,bool)
 {
 
 }
@@ -154,4 +168,16 @@ string PixyGame::getMapImage(vec2i p) const
 void PixyGame::setTitle(fm::String title)
 {
 	m_win.setTitle(title);
+}
+
+/////////////////////////////////////////////////////////////
+void PixyGame::setCursor(Mouse::Cursor cur)
+{
+	Mouse::setCursor(cur);
+}
+
+/////////////////////////////////////////////////////////////
+bool PixyGame::isButtonPressed(Mouse::Button btn)
+{
+	return Mouse::isButtonHeld(btn);
 }

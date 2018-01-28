@@ -194,6 +194,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	GuiContext::GuiContext(fm::vec2s size) : m_spriteManager(true),
 											 m_shader(fg::ShaderManager::getDefaultShader()),
+											 m_defCharSize(13),
 											 m_layout(new GuiLayout(*this)),
 											 m_size(size),
 											 m_guiLoop(false)
@@ -275,7 +276,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fm::Result GuiContext::loadFont(const fm::String &fontName)
+	fm::Result GuiContext::loadFont(const fm::String &fontName) const
 	{
 		fg::Font font;
 		fm::Result res = font.loadSysFont(fontName.str());
@@ -286,7 +287,7 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	fm::Result GuiContext::loadFont(const fm::String &fontName,fg::Font font)
+	fm::Result GuiContext::loadFont(const fm::String &fontName,fg::Font font) const
 	{
 		if (font)
 			m_fonts[fontName] = font;
@@ -297,7 +298,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fg::Font GuiContext::getFont(const fm::String &fontName)
+	fg::Font GuiContext::getFont(const fm::String &fontName) const
 	{
 		if (!m_fonts.count(fontName))
 			loadFont(fontName);
@@ -466,6 +467,18 @@ namespace fgui
 	void GuiContext::stopGuiLoop()
 	{
 		m_guiLoop = false;
+	}
+
+	/////////////////////////////////////////////////////////////
+	void GuiContext::setDefCharSize(fm::Size defSize)
+	{
+		m_defCharSize = defSize;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Size GuiContext::getDefCharSize() const
+	{
+		return m_defCharSize;
 	}
 }
 

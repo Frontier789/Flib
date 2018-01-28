@@ -231,28 +231,39 @@ namespace fg
 	Image Image::getSubImage(fm::vec2s pos,fm::vec2s size) const
 	{
 		Image ret;
+
+		fm::vec2s s = getSize();
 		
-		if (pos.x >= getSize().w || pos.y >= getSize().h)
+		if (pos.x >= s.w || pos.y >= s.h)
 			return ret;
 		
-		size.w = std::min(size.w,getSize().w - pos.x);
-		size.h = std::min(size.h,getSize().h - pos.y);
+		if (size.w == 0) size.w = s.w;
+		if (size.h == 0) size.h = s.h;
+
+		size.w = std::min(size.w,s.w - pos.x);
+		size.h = std::min(size.h,s.h - pos.y);
 		
 		ret.create(size);
 		
-		if (size.w == getSize().w)
+		if (size.w == s.w)
 		{
-			std::memcpy(ret.getTexelsPtr(),getTexelsPtr() + getSize().w * pos.y,sizeof(Color)*getSize().area());
+			std::memcpy(ret.getTexelsPtr(),getTexelsPtr() + s.w * pos.y,sizeof(Color)*s.area());
 		}
 		else
 		{
 			C(size.h)
 			{
-				std::memcpy(ret.getTexelsPtr() + size.w * i,getTexelsPtr() + getSize().w * (pos.y + i) + pos.x,sizeof(Color)*size.w);
+				std::memcpy(ret.getTexelsPtr() + size.w * i,getTexelsPtr() + s.w * (pos.y + i) + pos.x,sizeof(Color)*size.w);
 			}
 		}
 		
 		return ret;
+	}
+
+	/////////////////////////////////////////////////////////////
+	Image Image::createCopy() const
+	{
+		return getSubImage(fm::vec2s(),getSize());
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -305,8 +316,12 @@ namespace fg
 	fm::Result Image::loadFromFile(const std::string &filename)
 	{
 		// ask stbi to load the file
+		FILE *f = fopen(filename.c_str(), "rb");
+		if (!f) return fm::Result("IOError",fm::Result::OPFailed,"FileNotFound","loadFromFile",__FILE__,__LINE__,filename);
+
 		int width, height, channels;
-		unsigned char *ptr = stbi_load(filename.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+		unsigned char *ptr = stbi_load_from_file(f, &width, &height, &channels, STBI_rgb_alpha);
+		fclose(f);
 
 		// if it succeeded
 		if (ptr && width && height)
@@ -325,7 +340,10 @@ namespace fg
 
 			return fm::Result();
 		}
-		return fm::Result("IOError",fm::Result::OPFailed,"FileNotFound","loadFromFile",__FILE__,__LINE__,filename);
+		else
+		{
+			return fm::Result("IOError",fm::Result::OPFailed,"IncorrectEncoding","loadFromFile",__FILE__,__LINE__,filename);
+		}
 	}
 
 	/////////////////////////////////////////////////////////////

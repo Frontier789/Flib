@@ -9,7 +9,7 @@ uniform float FRONTIER_SECONDS u_secs;
 in vec2 va_pos;
 
 float pi = 3.14159265358979;
-float zoom_time = 4.0;
+float zoom_time = 8.0;
 float real_time = u_secs /* 0.0 + 8.0*/;
 float time_ratio = sin(real_time / zoom_time * pi / 2.0 - pi / 2.0)*.5+.5;
 float discrete_time = float(int(real_time / 4.0 / zoom_time));

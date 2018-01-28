@@ -43,7 +43,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fg::Font GuiFont::getFont(fm::Ref<GuiContext> owner)
+	fg::Font GuiFont::getFont(fm::Ref<const GuiContext> owner) const
 	{
 		if (font) return font;
 		
@@ -55,6 +55,7 @@ namespace fgui
 		return fg::Font();
 	}
 	
+	/////////////////////////////////////////////////////////////
 	class SpritesFromText
 	{
 	public:
@@ -72,13 +73,15 @@ namespace fgui
 		fm::vec2 pos;
 		int tabwidth;
 		
+		std::vector<fg::FontSprite> &sprites;
 		std::vector<fm::Size> wordBegs,wordEnds;
 		std::vector<float> wordPixDifBegs,wordPixDifEnds;
 		std::vector<fm::Size> newLinePoses;
 		std::vector<fm::Size> lineWidths;
 		fm::Size maxLineWidth;
 		
-		SpritesFromText(const fm::String &str,
+		SpritesFromText(std::vector<fg::FontSprite> &sprites,
+						const fm::String &str,
 						fg::Glyph::Style style,
 						fg::Font font,
 						fm::Size charSize,
@@ -98,7 +101,8 @@ namespace fgui
 						 viewOffset(viewOffset), 
 						 color(color),
 						 pos(pos),
-						 tabwidth(4)
+						 tabwidth(4),
+						 sprites(sprites)
 		{
 			monospacing = false;
 		}
@@ -158,7 +162,7 @@ namespace fgui
 					x = 0;
 				}
 				
-				if (str[i] == '\n' || (str[i] == '\r' && (i+1 == str.size() || str[i+1] != '\n')))
+				if ((str[i] == '\n' && (i == 0 || str[i-1] != '\r')) || (str[i] == '\r' && (i+1 == str.size() || str[i+1] != '\n')))
 					newLinePoses.push_back(i);
 			}
 		}
@@ -169,7 +173,6 @@ namespace fgui
 		fm::Size newLineId;
 		fm::vec2 curPos;
 		std::vector<fm::vec2> spritePoses;
-		std::vector<fg::FontSprite> sprites;
 		fm::String renderedText;
 		
 		void begNewLine(bool render)
@@ -255,7 +258,7 @@ namespace fgui
 					whiteSpacesDiscarded = true;
 				}
 				
-				if (newLineId < newLinePoses.size())
+				while (newLineId < newLinePoses.size())
 				{
 					fm::Size newLinePos = newLinePoses[newLineId];
 					
@@ -267,6 +270,7 @@ namespace fgui
 						
 						newLineId++;
 					}
+					else break;
 				}
 				
 				if (!whiteSpacesDiscarded && wrap == TextWrapWord && viewSize.w != 0)
@@ -335,7 +339,7 @@ namespace fgui
 		void renderCharacters()
 		{
 			renderCharacterRects();
-			
+
 			sprites = font.getSprites(renderedText,style);
 			
 			for (fm::Size i=0;i<sprites.size();++i)
@@ -346,17 +350,19 @@ namespace fgui
 			}
 		}
 		
-		std::vector<fg::FontSprite> getSprites()
+		void updateSprites()
 		{
-			if (!font) return std::vector<fg::FontSprite>();
+			if (!font)
+			{
+				sprites = std::vector<fg::FontSprite>();
+				return;
+			}
 			
 			font.setCharacterSize(charSize);
 			metrics = font.getMetrics();
 			
 			findWordBoundaries();
 			renderCharacters();
-			
-			return std::move(sprites);
 		}
 	};
 	
@@ -367,7 +373,7 @@ namespace fgui
 		{
 			fm::vec2 viewSize = m_viewSize;
 			
-			m_sprites = SpritesFromText(m_string,m_style,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr,getPosition()).getSprites();
+			SpritesFromText(m_sprites,m_string,m_style,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr,getPosition()).updateSprites();
 			
 			GuiElement::setSize(viewSize);		
 		}
@@ -377,7 +383,7 @@ namespace fgui
 	GuiText::GuiText(GuiContext &owner) : GuiElement(owner),
 										  m_style(fg::Glyph::Regular),
 										  m_wrapMode(TextWrapWord),
-										  m_charSize(14),
+										  m_charSize(owner.getDefCharSize()),
 										  m_align(TextAlignLeft),
 										  m_font(owner.getDefaultFont())
 										  
@@ -390,7 +396,7 @@ namespace fgui
 													    m_style(fg::Glyph::Regular),
 													    m_viewSize(size),
 														m_wrapMode(TextWrapWord),
-													    m_charSize(14),
+													    m_charSize(owner.getDefCharSize()),
 													    m_align(TextAlignLeft),
 													    m_clr(fm::vec4::Black),
 													    m_font(owner.getDefaultFont())
@@ -402,7 +408,7 @@ namespace fgui
 	GuiText::GuiText(GuiContext &owner,fm::String text) : GuiElement(owner),
 														  m_style(fg::Glyph::Regular),
 														  m_wrapMode(TextWrapWord),
-													      m_charSize(14),
+													      m_charSize(owner.getDefCharSize()),
 														  m_string(text),
 													      m_align(TextAlignLeft),
 													      m_clr(fm::vec4::Black),
@@ -415,7 +421,7 @@ namespace fgui
 	GuiText::GuiText(GuiContext &owner,fm::vec2 size,fm::String text) : GuiElement(owner,size),
 																		m_style(fg::Glyph::Regular),
 																		m_wrapMode(TextWrapWord),
-																		m_charSize(14),
+																		m_charSize(owner.getDefCharSize()),
 																		m_string(text),
 																		m_align(TextAlignLeft),
 																		m_clr(fm::vec4::Black),
@@ -477,7 +483,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fg::Font GuiText::getFont()
+	fg::Font GuiText::getFont() const
 	{
 		return m_font.getFont(getOwnerContext());
 	}
@@ -506,6 +512,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiText::setWrap(TextWrap mode)
 	{
+		if (m_wrapMode == mode) return;
+
 		m_wrapMode = mode;
 		updateSprites();
 	}
@@ -519,6 +527,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiText::setAlign(TextAlign mode)
 	{
+		if (m_align == mode) return;
+
 		m_align = mode;
 		updateSprites();
 	}

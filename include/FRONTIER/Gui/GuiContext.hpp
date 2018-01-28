@@ -62,9 +62,10 @@ namespace fgui
 	class FRONTIER_API GuiContext
 	{
 	protected:
-		std::map<fm::String,fg::Font> m_fonts; ///< The loaded fonts
+		mutable std::map<fm::String,fg::Font> m_fonts; ///< The loaded fonts
 		fg::SpriteManager  m_spriteManager;    ///< The texture atlas for sprites
-		fg::ShaderManager *m_shader;           ///< The shader used when drawing
+		fg::ShaderManager *m_shader; ///< The shader used when drawing
+		fm::Size   m_defCharSize;    ///< Default character size
 		GuiLayout *m_layout; ///< The main layout of the context
 		fm::Clock  m_fpsClk; ///< Clock for measuring fps
 		fm::vec2s  m_size;   ///< The size of the context
@@ -140,7 +141,7 @@ namespace fgui
 		/// @return The result of the operation
 		/// 
 		/////////////////////////////////////////////////////////////
-		fm::Result loadFont(const fm::String &fontName);
+		fm::Result loadFont(const fm::String &fontName) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Load a font from memory
@@ -151,7 +152,7 @@ namespace fgui
 		/// @return The result of the operation
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual fm::Result loadFont(const fm::String &fontName,fg::Font font);
+		virtual fm::Result loadFont(const fm::String &fontName,fg::Font font) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a font based on its name
@@ -161,7 +162,7 @@ namespace fgui
 		/// @return The font
 		/// 
 		/////////////////////////////////////////////////////////////
-		fg::Font getFont(const fm::String &fontName);
+		fg::Font getFont(const fm::String &fontName) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the default font
@@ -347,6 +348,24 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		void stopGuiLoop();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the defult character size
+		/// 
+		/// Initial value is 13
+		/// 
+		/// @param defSize The new default size 
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setDefCharSize(fm::Size defSize);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the defult character size
+		/// 
+		/// @return The default size 
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Size getDefCharSize() const;
 	};
 }
 

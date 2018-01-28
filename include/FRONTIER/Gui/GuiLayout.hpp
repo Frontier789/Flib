@@ -64,6 +64,17 @@ namespace fgui
 		virtual GuiElement *getChildElement(fm::Size index) const;
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the child at given index with a given type
+		/// 
+		/// @param index The index of the child to get
+		/// 
+		/// @return Pointer to the child (pointer casted to requested type)
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class GuiClass>
+		GuiClass *getChildElement(fm::Size index) const;
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Set the child at given index 
 		/// 
 		/// @param index The index of the child to get
@@ -214,3 +225,7 @@ namespace fgui
 }
 
 #endif // FRONTIER_GUILAYOUTBASE_HPP_INCLUDED
+
+#ifndef FRONTIER_DONT_INCLUDE_INL
+	#include <FRONTIER/Gui/GuiLayout.inl>
+#endif
