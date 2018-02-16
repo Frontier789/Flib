@@ -59,7 +59,7 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	fm::Int32  Texture::getInternalFormat() const {return /*GL_RGBA8*/GL_RGBA;}
+	fm::Int32  Texture::getInternalFormat() const {return GL_RGBA8;}
 	fm::Uint32 Texture::getTexRebinding() const {return GL_TEXTURE_2D;}
 	fm::Uint32 Texture::getAttachement() const {return GL_COLOR_ATTACHMENT0;}
 	fm::Uint32 Texture::getTexBinding() const {return GL_TEXTURE_BINDING_2D;}

@@ -15,6 +15,8 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/FloatTexture.hpp>
+#include <FRONTIER/Graphics/FrameBuffer.hpp>
+#include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
 namespace fg
@@ -64,5 +66,41 @@ namespace fg
 	FloatTexture::FloatTexture(const Image &img) : Texture::Texture(img)
 	{
 
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::Result FloatTexture::copyToArray(float *ptr,fm::rect2s region)
+	{
+		if (!getGlId() || !getSize().area())
+			return fm::Result();
+
+		if (!fm::rect2s(fm::vec2(),getSize() - fm::vec2s(1,1)).contains(region.pos))
+			return fm::Result();
+		
+		if (region.size.w == 0) region.size.w = getSize().w - region.pos.x;
+		if (region.size.h == 0) region.size.h = getSize().h - region.pos.y;
+
+		if (fg::FrameBuffer::isAvailable())
+		{
+			fm::Result res;
+			
+			// retrieve bound framebuffer
+			GLint framebuffer;
+			glGetIntegerv(GL_FRAMEBUFFER_BINDING,&framebuffer);
+			
+			// build a new framebuffer
+			GLuint fb_id;
+			res += glCheck(glGenFramebuffers(1,&fb_id));
+			res += glCheck(glBindFramebuffer(GL_FRAMEBUFFER,fb_id));
+			res += glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER,getAttachement(),getTexTarget(),getGlId(),0));
+
+			// read back texture
+			res += glCheck(glReadPixels(region.pos.x,region.pos.y,region.size.w,region.size.h,getFormat(),GL_FLOAT,ptr));
+			glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
+			glDeleteFramebuffers(1,&fb_id);
+			return res;
+		}
+
+		return fm::Result("GLError",fm::Result::OPFailed,"FrameBufferUnavailable","copyToArray",__FILE__,__LINE__);
 	}
 }

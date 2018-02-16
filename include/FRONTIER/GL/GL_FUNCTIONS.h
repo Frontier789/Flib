@@ -44,7 +44,6 @@
 	extern "C"
 	{
 	#endif //__cplusplus
-
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glAccum)(GLenum op,GLfloat value);
 	#define glAccum _ptr_to_glAccum
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glActiveShaderProgram)(GLuint pipeline,GLuint program);
@@ -361,6 +360,10 @@
 	#define glDisableVertexAttribArrayARB _ptr_to_glDisableVertexAttribArrayARB
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glDisablei)(GLenum target,GLuint index);
 	#define glDisablei _ptr_to_glDisablei
+	FRONTIER_API extern void (API_ENTRY *_ptr_to_glDispatchCompute)(GLuint num_groups_x,GLuint num_groups_y,GLuint num_groups_z);
+	#define glDispatchCompute _ptr_to_glDispatchCompute
+	FRONTIER_API extern void (API_ENTRY *_ptr_to_glDispatchComputeIndirect)(GLintptr indirect);
+	#define glDispatchComputeIndirect _ptr_to_glDispatchComputeIndirect
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glDrawArrays)(GLenum mode,GLint first,GLsizei count);
 	#define glDrawArrays _ptr_to_glDrawArrays
 	FRONTIER_API extern void (API_ENTRY *_ptr_to_glDrawArraysIndirect)(GLenum mode,const GLvoid* indirect);

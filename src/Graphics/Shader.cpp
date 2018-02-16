@@ -230,15 +230,14 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	void Shader::clearData()
 	{
-		m_texCounter = 0;
 		m_textures.clear();
+		m_images.clear();
 		m_uniforms.clear();
 	    m_attributes.clear();
 	}
 
 	/// constructor /////////////////////////////////////////////////////////
-	Shader::Shader() : m_texCounter(0),
-					   m_blendMode(fg::Alpha)
+	Shader::Shader() : m_blendMode(fg::Alpha)
 	{
 
 	}
@@ -284,9 +283,9 @@ namespace fg
 		m_subShaders.swap(shader.m_subShaders);
 		m_uniforms.swap(shader.m_uniforms);
 		m_textures.swap(shader.m_textures);
+		m_images.swap(shader.m_images);
 		m_attributes.swap(shader.m_attributes);
 		
-		std::swap(m_texCounter,shader.m_texCounter);
 		std::swap(m_defVao,shader.m_defVao);
 		
 		std::swap(getGlId(),shader.getGlId());
@@ -319,7 +318,7 @@ namespace fg
 		
 		std::vector<std::string> data(count,"");
 		
-		for (size_t i=0;i<count;++i)
+		C(count)
 		{
 			std::ifstream in(files[i].c_str(), std::ios::in | std::ios::binary);
 			if (in)
@@ -664,22 +663,21 @@ namespace fg
 	
 	fm::Result Shader::setUniform(const std::string &name,const fg::Color &c)
 	{
-		return setUniform(name,c.rgba()/255);
+		return setUniform(name,c.rgba()/255.f);
 	}
 	
 	FRONTIER_CREATE_SET_UNIFORM(const fm::mat2 &m,GL_FLOAT_MAT2,false,glUniformMatrix2fv(dat.location, 1, GL_FALSE, &(m.transpose())[0][0]))
 	FRONTIER_CREATE_SET_UNIFORM(const fm::mat3 &m,GL_FLOAT_MAT3,false,glUniformMatrix3fv(dat.location, 1, GL_FALSE, &(m.transpose())[0][0]))
 	FRONTIER_CREATE_SET_UNIFORM(const fm::mat4 &m,GL_FLOAT_MAT4,false,glUniformMatrix4fv(dat.location, 1, GL_FALSE, &(m.transpose())[0][0]))
 
+	////////////////////////////////////////////////////////////
+	fm::Result Shader::setUniform(const std::string &name,const Texture &tex,bool sampler)
+	{
+		return setUniform(name,&tex,sampler);
+	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result Shader::setUniform(const std::string &name,const Texture &tex)
-	{
-		return setUniform(name,&tex);
-	}
-	
-	////////////////////////////////////////////////////////////
-	fm::Result Shader::setUniform(const std::string &name,const Texture *tex)
+	fm::Result Shader::setUniform(const std::string &name,const Texture *tex,bool sampler)
 	{
 		fm::Result res;
 		
@@ -689,13 +687,18 @@ namespace fg
 			res += glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
 			res += glCheck(glUseProgram(getGlId()));
 
+			auto &texDict = (sampler ? m_textures : m_images);
+
 			// check if the uniform is in the dictionary
-			std::map<std::string, TexUniformData >::iterator it = m_textures.find(name);
-			if (it != m_textures.end())
+			auto it = texDict.find(name);
+			if (it != texDict.end())
 			{
 				// activate slot
-				res += glCheck(glActiveTexture(GL_TEXTURE0+it->second.slot));
+				res += glCheck(glActiveTexture(GL_TEXTURE0 + it->second.slot));
 				res += glCheck(glBindTexture(GL_TEXTURE_2D,tex ? tex->getGlId() : 0));
+				if (!sampler && tex && tex->getGlId())
+					res += glCheck(glBindImageTexture(0, tex->getGlId(), 0, GL_FALSE, 0, GL_READ_WRITE, tex->getInternalFormat()));
+				
 				it->second.act_id = tex ? tex->getGlId() : 0;
 			}
 			else
@@ -705,16 +708,20 @@ namespace fg
 
 				if (location != -1)
 				{
+					fm::Size texCount = texDict.size();
+
 					// add to dictionary
-					m_textures.insert(std::make_pair(name, TexUniformData(location,m_texCounter,tex ? tex->getGlId() : 0)));
+					texDict.insert(std::make_pair(name, TexUniformData(location,texCount,tex ? tex->getGlId() : 0)));
 
 					// assign id to texture slot
-					res += glCheck(glUniform1i(location, m_texCounter));
+					res += glCheck(glUniform1i(location, texCount));
 
 					// activate slot
-					res += glCheck(glActiveTexture(GL_TEXTURE0+m_texCounter));
+					res += glCheck(glActiveTexture(GL_TEXTURE0 + texCount));
 					res += glCheck(glBindTexture(GL_TEXTURE_2D,tex ? tex->getGlId() : 0));
-					m_texCounter++;
+
+					if (!sampler && tex && tex->getGlId())
+						res += glCheck(glBindImageTexture(0, tex->getGlId(), 0, GL_FALSE, 0, GL_READ_WRITE, tex->getInternalFormat()));
 				}
 				else
 					res += fm::Result("GLSLError",fm::Result::OPFailed,"UniformNotFound","setUniform",__FILE__,__LINE__,name);
@@ -760,16 +767,17 @@ namespace fg
 
 				if (location != -1)
 				{
+					fm::Size texCount = m_textures.size();
+
 					// add to dictionary
-					m_textures.insert(std::make_pair(name, TexUniformData(location,m_texCounter,tex ? tex->getGlId() : 0)));
+					m_textures.insert(std::make_pair(name, TexUniformData(location,texCount,tex ? tex->getGlId() : 0)));
 
 					// assign id to texture slot
-					res += glCheck(glUniform1i(location, m_texCounter));
+					res += glCheck(glUniform1i(location, texCount));
 
 					// activate slot
-					res += glCheck(glActiveTexture(GL_TEXTURE0+m_texCounter));
+					res += glCheck(glActiveTexture(GL_TEXTURE0 + texCount));
 					res += glCheck(glBindTexture(GL_TEXTURE_CUBE_MAP,tex ? tex->getGlId() : 0));
-					m_texCounter++;
 				}
 				else
 					res += fm::Result("GLSLError",fm::Result::OPFailed,"UniformNotFound","setUniform",__FILE__,__LINE__,name);
@@ -834,14 +842,14 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void Shader::forAllUniforms(fm::Delegate<void,std::string,UniformData> func) const
+	void Shader::forEachUniform(fm::Delegate<void,std::string,UniformData> func) const
 	{
 		for (auto &pr : m_uniforms)
 			func(pr.first,pr.second);
 	}
 
 	/////////////////////////////////////////////////////////////
-	void Shader::forAllAttribs(fm::Delegate<void,std::string,AttribData> func) const
+	void Shader::forEachAttrib(fm::Delegate<void,std::string,AttribData> func) const
 	{
 		for (auto &pr : m_attributes)
 			func(pr.first,pr.second);

@@ -44,6 +44,7 @@
 		"utility": "cpp",
 		"random": "cpp",
 		"vector": "cpp",
-		"map": "cpp"
+		"map": "cpp",
+		"string": "cpp"
 	}
 }

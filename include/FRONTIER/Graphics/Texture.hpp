@@ -61,13 +61,13 @@ namespace fg
 		bool m_isSmooth;	  ///< If true then linear interpolation is used on magnifying
 
 	public:
-		virtual fm::Int32  getInternalFormat() const; ///< Internal function
-		virtual fm::Uint32 getTexRebinding() const;   ///< Internal function
-		virtual fm::Uint32 getAttachement() const;    ///< Internal function
-		virtual fm::Uint32 getTexBinding() const;     ///< Internal function
-		virtual fm::Uint32 getTexTarget() const;      ///< Internal function
-		virtual fm::Uint32 getFormat() const; ///< Internal function
-		virtual fm::Uint32 getType() const;   ///< Internal function
+		virtual fm::Int32  getInternalFormat() const; ///< Internal format of the texture
+		virtual fm::Uint32 getTexRebinding() const;   ///< The rebinding point of the texture
+		virtual fm::Uint32 getAttachement() const;    ///< Attachement point of the texture
+		virtual fm::Uint32 getTexBinding() const;     ///< Binding point of the texture
+		virtual fm::Uint32 getTexTarget() const;      ///< Texture target associated with the object
+		virtual fm::Uint32 getFormat() const; ///< Pixelformat
+		virtual fm::Uint32 getType() const;   ///< Type of the texture
 
 	public:
 		typedef Texture &reference;

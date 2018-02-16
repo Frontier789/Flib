@@ -66,6 +66,7 @@
 	#define GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTER_INDICES        0x92c6
 	#define GL_ATOMIC_COUNTER_BUFFER_BINDING                              0x92c1
 	#define GL_ATOMIC_COUNTER_BUFFER_DATA_SIZE                            0x92c4
+	#define GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER         0x90ed
 	#define GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_FRAGMENT_SHADER        0x92cb
 	#define GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_GEOMETRY_SHADER        0x92ca
 	#define GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_CONTROL_SHADER    0x92c8
@@ -237,6 +238,9 @@
 	#define GL_COMPRESSED_SRGB                                            0x8c48
 	#define GL_COMPRESSED_SRGB_ALPHA                                      0x8c49
 	#define GL_COMPRESSED_TEXTURE_FORMATS                                 0x86a3
+	#define GL_COMPUTE_SHADER                                             0x91b9
+	#define GL_COMPUTE_SHADER_BIT                                         0x20
+	#define GL_COMPUTE_WORK_GROUP_SIZE                                    0x8267
 	#define GL_CONDITION_SATISFIED                                        0x911c
 	#define GL_CONSTANT                                                   0x8576
 	#define GL_CONSTANT_ATTENUATION                                       0x1207
@@ -303,6 +307,8 @@
 	#define GL_DEPTH_TEXTURE_MODE                                         0x884b
 	#define GL_DEPTH_WRITEMASK                                            0xb72
 	#define GL_DIFFUSE                                                    0x1201
+	#define GL_DISPATCH_INDIRECT_BUFFER                                   0x90ee
+	#define GL_DISPATCH_INDIRECT_BUFFER_BINDING                           0x90ef
 	#define GL_DITHER                                                     0xbd0
 	#define GL_DOMAIN                                                     0xa02
 	#define GL_DONT_CARE                                                  0x1100
@@ -730,6 +736,7 @@
 	#define GL_MAX_COLOR_TEXTURE_SAMPLES                                  0x910e
 	#define GL_MAX_COMBINED_ATOMIC_COUNTERS                               0x92d7
 	#define GL_MAX_COMBINED_ATOMIC_COUNTER_BUFFERS                        0x92d1
+	#define GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS                    0x8266
 	#define GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS                   0x8a33
 	#define GL_MAX_COMBINED_IMAGE_UNIFORMS                                0x90cf
 	#define GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS              0x8f39
@@ -739,6 +746,16 @@
 	#define GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB                       0x8b4d
 	#define GL_MAX_COMBINED_UNIFORM_BLOCKS                                0x8a2e
 	#define GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS                     0x8a31
+	#define GL_MAX_COMPUTE_ATOMIC_COUNTERS                                0x8265
+	#define GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS                         0x8264
+	#define GL_MAX_COMPUTE_IMAGE_UNIFORMS                                 0x91bd
+	#define GL_MAX_COMPUTE_SHARED_MEMORY_SIZE                             0x8262
+	#define GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS                            0x91bc
+	#define GL_MAX_COMPUTE_UNIFORM_BLOCKS                                 0x91bb
+	#define GL_MAX_COMPUTE_UNIFORM_COMPONENTS                             0x8263
+	#define GL_MAX_COMPUTE_WORK_GROUP_COUNT                               0x91be
+	#define GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS                         0x90eb
+	#define GL_MAX_COMPUTE_WORK_GROUP_SIZE                                0x91bf
 	#define GL_MAX_CUBE_MAP_TEXTURE_SIZE                                  0x851c
 	#define GL_MAX_DEPTH_TEXTURE_SAMPLES                                  0x910f
 	#define GL_MAX_DRAW_BUFFERS                                           0x8824
@@ -1530,6 +1547,7 @@
 	#define GL_UNIFORM_BLOCK_DATA_SIZE                                    0x8a40
 	#define GL_UNIFORM_BLOCK_INDEX                                        0x8a3a
 	#define GL_UNIFORM_BLOCK_NAME_LENGTH                                  0x8a41
+	#define GL_UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER                 0x90ec
 	#define GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER                0x8a46
 	#define GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_CONTROL_SHADER            0x84f0
 	#define GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_EVALUATION_SHADER         0x84f1

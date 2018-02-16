@@ -89,8 +89,8 @@ namespace fg
 		VertexShader         = 0x8b31, ///< Vertex shader
 		TessControlShader    = 0x8e88, ///< Tesselation control shader
 		TessEvaluationShader = 0x8e87, ///< Tesselation evaluation shader
-		GeometryShader = 0x8dd9, ///< Geometry shader
-		FragmentShader = 0x8b30  ///< Fragment shader
+		GeometryShader       = 0x8dd9, ///< Geometry shader
+		FragmentShader       = 0x8b30  ///< Fragment shader
 	};
 	
 	/////////////////////////////////////////////////////////////
@@ -174,11 +174,11 @@ namespace fg
 			TexUniformData(int location=0,int slot=0,int act_id=0);
 	    };
 		
-		std::map<std::string, TexUniformData > m_textures; ///< The state and name of the texture uniforms
+		std::map<std::string, TexUniformData > m_textures; ///< The state and name of the sampler uniforms
+		std::map<std::string, TexUniformData > m_images; ///< The state and name of the image uniforms
 		std::map<std::string, AttribData> m_attributes;    ///< The data of the uniforms
 		std::map<std::string, UniformData> m_uniforms;     ///< The data of the uniforms
 		std::vector<unsigned int> m_subShaders; ///< The id of the shaders that builds up the shader program
-		fm::Size m_texCounter; ///< The counter used when activating texture slots
 		fm::Uint32 m_defVao;   ///< Default vao for core profiles
 		BlendMode m_blendMode; ///< The used blending
 		bool m_hasInstancing;  ///< Stores whether the shader can use instancing
@@ -315,9 +315,6 @@ namespace fg
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the shader program for usage
-		///
-		/// Please note that an invalid shader
-		/// program shouldn't be bound
 		///
 		/////////////////////////////////////////////////////////////
         void bind() const;
@@ -619,13 +616,16 @@ namespace fg
 		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
 		///
+		/// Binding as an image is useful when using imageLoad / imageStore
+		///
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform
-		///
+		/// @param sampler Decides whether the texture shall be bound as a sampler or as an image
+		/// 
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setUniform(const std::string &name,const Texture &tex);
+		fm::Result setUniform(const std::string &name,const Texture &tex,bool sampler = true);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a sampler2D uniform
@@ -633,13 +633,16 @@ namespace fg
 		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
 		///
+		/// Binding as an image is useful when using imageLoad / imageStore
+		///
 		/// @param name The name of the uniform
 		/// @param tex The value of the uniform
-		///
+		/// @param sampler Decides whether the texture shall be bound as a sampler or as an image
+		/// 
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setUniform(const std::string &name,const Texture *tex);
+		fm::Result setUniform(const std::string &name,const Texture *tex,bool sampler = true);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a samplerCube uniform
@@ -774,7 +777,7 @@ namespace fg
 		/// @param func The function to call
 		/// 
 		/////////////////////////////////////////////////////////////
-		void forAllUniforms(fm::Delegate<void,std::string,UniformData> func) const;
+		void forEachUniform(fm::Delegate<void,std::string,UniformData> func) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Run a function on all attributes
@@ -782,10 +785,12 @@ namespace fg
 		/// @param func The function to call
 		/// 
 		/////////////////////////////////////////////////////////////
-		void forAllAttribs(fm::Delegate<void,std::string,AttribData> func) const;
+		void forEachAttrib(fm::Delegate<void,std::string,AttribData> func) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Check if the shader is successfully loaded 
+		/// 
+		/// @return True iff the shader is ready to use
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool isLoaded() const;

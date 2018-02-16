@@ -18,6 +18,7 @@
 #define FRONTIER_FLOATTEXTURE_HPP_INCLUDED
 #include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
+#include <FRONTIER/System/Rect.hpp>
 #define FRONTIER_FLOATTEXTURE
 
 namespace fg
@@ -31,7 +32,9 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API FloatTexture : public Texture
 	{
-		fm::Int32 getInternalFormat() const; ///< Internal function
+	public:
+		fm::Int32 getInternalFormat() const; ///< Internal format of the texture
+	
 	public:
 		typedef FloatTexture &reference;
 		typedef const FloatTexture &const_reference;
@@ -100,6 +103,18 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		explicit FloatTexture(const Image &img);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the data back to cpu from the texture
+		///
+		/// This function retrieves the server-side data (the texture)
+		/// from OpenGL
+		///
+		/// @param ptr Pointer to the array where the data is to be stored
+		/// @param region The subrectangle to retrieve data from (0 size means maximal size)
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Result copyToArray(float *ptr,fm::rect2s region = fm::rect2s());
 	};
 }
 #endif

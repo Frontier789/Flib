@@ -108,7 +108,7 @@ void Frame::buildLayout(GridLayout *layout)
 {
 	std::vector<std::string> uniforms;
 	
-	m_shader.forAllUniforms([&](std::string name,Shader::UniformData){
+	m_shader.forEachUniform([&](std::string name,Shader::UniformData){
 		if (name.find("_userdef") != string::npos)
 		{
 			uniforms.push_back(name);

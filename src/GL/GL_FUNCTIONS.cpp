@@ -235,7 +235,6 @@ static retType API_ENTRY _choose_##funcName argList                             
 	return TRetType();                                                               \
 }                                                                                    \
 FRONTIER_API retType (API_ENTRY *_ptr_to_##funcName) argList = _choose_##funcName
-
 GL_FUNC_IMPL(void,glAccum,(GLenum op,GLfloat value),(GLenum,GLfloat),(op,value));
 GL_FUNC_IMPL(void,glActiveShaderProgram,(GLuint pipeline,GLuint program),(GLuint,GLuint),(pipeline,program));
 GL_FUNC_IMPL(void,glActiveTexture,(GLenum texture),(GLenum),(texture));
@@ -394,6 +393,8 @@ GL_FUNC_IMPL(void,glDisableClientState,(GLenum ren_array),(GLenum),(ren_array));
 GL_FUNC_IMPL(void,glDisableVertexAttribArray,(GLuint index),(GLuint),(index));
 GL_FUNC_IMPL(void,glDisableVertexAttribArrayARB,(GLuint index),(GLuint),(index));
 GL_FUNC_IMPL(void,glDisablei,(GLenum target,GLuint index),(GLenum,GLuint),(target,index));
+GL_FUNC_IMPL(void,glDispatchCompute,(GLuint num_groups_x,GLuint num_groups_y,GLuint num_groups_z),(GLuint,GLuint,GLuint),(num_groups_x,num_groups_y,num_groups_z));
+GL_FUNC_IMPL(void,glDispatchComputeIndirect,(GLintptr indirect),(GLintptr),(indirect));
 GL_FUNC_IMPL(void,glDrawArrays,(GLenum mode,GLint first,GLsizei count),(GLenum,GLint,GLsizei),(mode,first,count));
 GL_FUNC_IMPL(void,glDrawArraysIndirect,(GLenum mode,const GLvoid* indirect),(GLenum,const GLvoid*),(mode,indirect));
 GL_FUNC_IMPL(void,glDrawArraysInstanced,(GLenum mode,GLint first,GLsizei count,GLsizei instancecount),(GLenum,GLint,GLsizei,GLsizei),(mode,first,count,instancecount));
