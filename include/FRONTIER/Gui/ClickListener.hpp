@@ -43,7 +43,6 @@ namespace fgui
 		fm::vec2 m_pressPoses[fw::Mouse::ButtonCount]; ///< The position where the button was pressed
 		bool m_btnPressed[fw::Mouse::ButtonCount];     ///< Mouse button states
 		fm::Time m_dblClickLength; ///< The maximal time between two clicks to count as double click
-		float m_maxClickDist;      ///< The radius of the circle in which
 	public:
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
@@ -68,20 +67,14 @@ namespace fgui
 		fm::Time getDoubleClickTime() const;
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the maximal time between two clicks to count as double click
+		/// @brief Get the distance the mouse is from the position where it was pressed
 		/// 
-		/// @param dist The new maximal distance
+		/// @param btn The button to query
 		/// 
-		/////////////////////////////////////////////////////////////
-		void setMaxClickDistance(float dist);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the maximal time between two clicks to count as double click
-		/// 
-		/// @return The maximal time
+		/// @return The distance from the point where the button begun being held
 		/// 
 		/////////////////////////////////////////////////////////////
-		float getMaxClickDistance() const;
+		float getClickDistance(fw::Mouse::Button btn) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Called when a mouse button is pressed while inside the gui element

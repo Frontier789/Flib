@@ -35,14 +35,14 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	void GuiLayout::forAll(fm::Delegate<void,GuiElement*,fm::Size,GuiLayout&> func)
+	void GuiLayout::forEach(fm::Delegate<void,GuiElement*,fm::Size,GuiLayout&> func)
 	{
 		C(getChildCount())
 			func(getChildElement(i),i,*this);
 	}
 
 	/////////////////////////////////////////////////////////////
-	void GuiLayout::forAll(fm::Delegate<void,GuiElement*,fm::Size,const GuiLayout&> func) const
+	void GuiLayout::forEach(fm::Delegate<void,GuiElement*,fm::Size,const GuiLayout&> func) const
 	{
 		C(getChildCount())
 			func(getChildElement(i),i,*this);
@@ -60,6 +60,16 @@ namespace fgui
 		}
 		
 		return element;
+	}
+
+	/////////////////////////////////////////////////////////////
+	void GuiLayout::clearChildElements(bool del)
+	{
+		if (!del)
+			C(getChildCount())
+				setChildElement(i,nullptr);
+
+		setChildCount(0);
 	}
 
 	/////////////////////////////////////////////////////////////

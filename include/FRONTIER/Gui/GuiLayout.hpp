@@ -107,7 +107,7 @@ namespace fgui
 		/// @param func The function
 		/// 
 		/////////////////////////////////////////////////////////////
-		void forAll(fm::Delegate<void,GuiElement*,fm::Size,GuiLayout&> func);
+		void forEach(fm::Delegate<void,GuiElement*,fm::Size,GuiLayout&> func);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Apply a function to all the chlidren
@@ -115,10 +115,10 @@ namespace fgui
 		/// @param func The function
 		/// 
 		/////////////////////////////////////////////////////////////
-		void forAll(fm::Delegate<void,GuiElement*,fm::Size,const GuiLayout&> func) const;
+		void forEach(fm::Delegate<void,GuiElement*,fm::Size,const GuiLayout&> func) const;
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Remove a child from the layout
+		/// @brief Remove a child from the layout but keep the size
 		/// 
 		/// @param index The index of the child
 		/// @param del Whether to call delete on the child
@@ -129,7 +129,17 @@ namespace fgui
 		GuiElement *removeChild(fm::Size index,bool del = false);
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Remove all children from the layout and resize to have 0 children
+		/// 
+		/// @param del Whether to call delete on the child
+		/// 
+		/////////////////////////////////////////////////////////////
+		void clearChildElements(bool del = true);
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Get the child at given index 
+		/// 
+		/// Returns nullptr on out of bounds
 		/// 
 		/// @param index The index of the child to get
 		/// 

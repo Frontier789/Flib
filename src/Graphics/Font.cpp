@@ -492,6 +492,12 @@ float samp(in vec2 uv,in float w)
 	{
 		return isLoaded();
 	}
+
+	/////////////////////////////////////////////////////////////
+	bool Font::operator==(const Font &font) const
+	{
+		return m_sharedData == font.m_sharedData;
+	}
 	
 	/////////////////////////////////////////////////////////////
 	bool Font::operator!() const

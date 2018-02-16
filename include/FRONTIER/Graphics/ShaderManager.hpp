@@ -236,7 +236,7 @@ namespace fg
 		virtual fm::Result update();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Draw a drawdata
+		/// @brief Draw all the indexsets of a drawdata
 		/// 
 		/// @param data The drawdata to use
 		/// 

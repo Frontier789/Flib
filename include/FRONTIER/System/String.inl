@@ -17,6 +17,8 @@
 #ifndef FRONTIER_STRING_INL_INCLUDED
 #define FRONTIER_STRING_INL_INCLUDED
 
+#include <FRONTIER/System/Result.hpp>
+
 namespace fm
 {
 	namespace priv
@@ -84,7 +86,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template <typename InputIterator8bit>
+	template <class InputIterator8bit>
 	inline String String::fromUtf8(InputIterator8bit first, InputIterator8bit last,fm::Uint32 invalidSign)
 	{
 		String ret;
@@ -136,7 +138,7 @@ namespace fm
 	}
 	
 	/////////////////////////////////////////////////////////////
-	template <typename InputIterator8bit>
+	template <class InputIterator8bit>
 	inline String String::fromUtf16(InputIterator8bit first, InputIterator8bit last,fm::Uint32 invalidSign)
 	{
 		String ret;
@@ -161,7 +163,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template <typename InputIterator8bit>
+	template <class InputIterator8bit>
 	inline String String::fromUtf32(InputIterator8bit first, InputIterator8bit last,fm::Uint32 invalidSign)
 	{
 		(void)invalidSign;
@@ -178,6 +180,19 @@ namespace fm
 
 		return ret;
 	}
+
+	/////////////////////////////////////////////////////////////
+	template<>
+	class StringDecoder<fm::String> : public std::true_type
+	{
+	public:
+		/////////////////////////////////////////////////////////////
+		inline static fm::Result decode(const fm::String &input,fm::String &output)
+		{
+			output = input;
+			return fm::Result();
+		}
+	};
 }
 
 #endif // FRONTIER_STRING_INL_INCLUDED

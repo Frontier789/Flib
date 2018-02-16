@@ -36,7 +36,7 @@ Complex step(Complex xn,Complex c)
 /////////////////////////////////////////////////////////////
 float distFromOrigo(Complex c)
 {
-	return sqrt(c.x*c.x + c.y*c.y);
+	return max(abs(c.x),abs(c.y));//sqrt(c.x*c.x + c.y*c.y);
 }
 
 /////////////////////////////////////////////////////////////

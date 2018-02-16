@@ -478,6 +478,8 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiText::setFont(GuiFont font)
 	{
+		if (m_font.getFont(getOwnerContext()) == font.getFont(getOwnerContext())) return;
+
 		m_font = font;
 		updateSprites();
 	}

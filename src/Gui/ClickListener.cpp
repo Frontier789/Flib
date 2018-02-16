@@ -38,10 +38,7 @@ namespace fgui
 					onPress(btn,p);
 					if (m_clickClks[btn].getTime() <= m_dblClickLength)
 					{
-						if ((m_pressPoses[btn] - p).LENGTH() < m_maxClickDist*m_maxClickDist)
-						{
-							onDblClick(btn,p);
-						}
+						onDblClick(btn,p);
 					}
 					
 					setActive();
@@ -61,17 +58,10 @@ namespace fgui
 				for (fm::Size i=0;i<fw::Mouse::ButtonCount;++i)
 				{
 					if (m_btnPressed[i])
-					{
 						mouseGrab = true;
-						
-						if ((m_pressPoses[i] - p).LENGTH() < m_maxClickDist*m_maxClickDist)
-						{
-							m_pressPoses[i] = fm::vec2(-500000,-500000);
-						}
-					}
 				}
 				
-				if (!mouseInside() && mouseGrab)
+				if (mouseGrab)
 				{
 					onMouseMoved(p,m_prevPos);
 					m_prevPos = p;
@@ -90,10 +80,9 @@ namespace fgui
 					m_btnPressed[btn] = false;
 					
 					onRelease(btn,p);
+					
 					if (mouseInside())
-					{
 						onClick(btn,p);
-					}
 					
 					setActive(false);
 				}
@@ -114,17 +103,11 @@ namespace fgui
 	{
 		return m_dblClickLength;
 	}
-	
+
 	/////////////////////////////////////////////////////////////
-	void ClickListener::setMaxClickDistance(float dist)
+	float ClickListener::getClickDistance(fw::Mouse::Button btn) const
 	{
-		m_maxClickDist = dist;
-	}
-	 
-	/////////////////////////////////////////////////////////////
-	float ClickListener::getMaxClickDistance() const
-	{
-		return m_maxClickDist;
+		return (m_pressPoses[btn] - getLastMousePos()).length();
 	}
 	
 	/////////////////////////////////////////////////////////////

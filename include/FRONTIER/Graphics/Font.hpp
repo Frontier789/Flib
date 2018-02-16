@@ -447,6 +447,17 @@ namespace fg
 		operator bool() const;
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Check if two fonts point to the same object 
+		/// 
+		/// Reports false when the same file is loaded twice
+		/// To two different fg::Font-s and compared
+		/// 
+		/// @return True iff the two font are the same reference counted object
+		///
+		/////////////////////////////////////////////////////////////
+		bool operator==(const Font &font) const;
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Check if the font is not loaded
 		///
 		/// @return True iff the font is not loaded

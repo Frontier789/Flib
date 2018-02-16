@@ -19,6 +19,7 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/util/API.h>
 #define FRONTIER_STRING
+#include <type_traits>
 #include <locale>
 #include <string>
 
@@ -628,6 +629,9 @@ namespace fm
 	String toString(float num,      fm::Size precision = 4);
 	String toString(double num,     fm::Size precision = 4);
 	String toString(long double num,fm::Size precision = 4);
+
+	template<class>
+	class StringDecoder : public std::false_type {};
 }
 
 #endif // FRONTIER_STRING_HPP_INCLUDED
