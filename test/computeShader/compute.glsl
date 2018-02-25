@@ -2,6 +2,7 @@
 
 uniform float roll;
 uniform image2D destTex;
+layout(rgba32f) uniform image2D addTex;
 
 layout (local_size_x = 16, local_size_y = 16) in;
 
@@ -14,6 +15,8 @@ void main()
 	float localCoef = length(localV/8.0);
 
 	float globalCoef = sin(length(gl_WorkGroupID.xy)*0.5 + roll)*1.3;
-
-	imageStore(destTex, iPos, vec4(1.0-globalCoef*localCoef, 0.0, 0.0, 1.0));
+	
+	vec4 added = imageLoad(addTex, iPos);
+	
+	imageStore(destTex, iPos, vec4(1.0-globalCoef*localCoef, 0.0, 0.0, 1.0) + added);
 }

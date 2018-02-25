@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+/// Copyright (C) 2014-2018 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -174,8 +174,9 @@ namespace fg
 			TexUniformData(int location=0,int slot=0,int act_id=0);
 	    };
 		
+    public:
 		std::map<std::string, TexUniformData > m_textures; ///< The state and name of the sampler uniforms
-		std::map<std::string, TexUniformData > m_images; ///< The state and name of the image uniforms
+		std::map<std::string, TexUniformData > m_images;   ///< The state and name of the image uniforms
 		std::map<std::string, AttribData> m_attributes;    ///< The data of the uniforms
 		std::map<std::string, UniformData> m_uniforms;     ///< The data of the uniforms
 		std::vector<unsigned int> m_subShaders; ///< The id of the shaders that builds up the shader program
@@ -184,6 +185,8 @@ namespace fg
 		bool m_hasInstancing;  ///< Stores whether the shader can use instancing
 		fm::Result link();     ///< Internal function used to link the compiled shaders to the shader program
 		void init();           ///< Internal function used at setup
+		virtual fm::Result createDefVao(); ///< create default vao if needed
+		bool m_ownVao; ///< Indicates whether own vao should be created with the shader
 		fm::Result freeSubShaders(); ///< Internal function used at clean-up
 		virtual void clearData();    ///< clear uniforms, attributes, textures etc
 		virtual fm::Result postProcess(const std::string *data,const unsigned int *types,unsigned int count); ///< Process source of the successfully loaded shader
@@ -794,6 +797,14 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool isLoaded() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set whether the shader should use own vao 
+		/// 
+		/// @param ownVao True iff the shader should own vao
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setOwnVao(bool ownVao);
 	};
 
 }

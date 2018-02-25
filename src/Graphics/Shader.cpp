@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+/// Copyright (C) 2014-2018 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -152,6 +152,32 @@ namespace fg
 	}
 	
     ////////////////////////////////////////////////////////////
+	fm::Result Shader::createDefVao()
+	{
+		fm::Result res;
+		
+		if (!m_ownVao) return res;
+		
+    	// generate default vao if available
+		if (::priv::so_loader.getProcAddr("glGenVertexArrays"))
+		{
+			if (glIsVertexArray(m_defVao))
+				glDeleteVertexArrays(1,&m_defVao);
+			
+			GLint program;
+			res += glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
+			res += glCheck(glUseProgram(getGlId()));
+
+			res += glCheck(glGenVertexArrays(1, &m_defVao));
+    		res += glCheck(glBindVertexArray(m_defVao));
+			
+			res += glCheck(glUseProgram(program));
+		}
+		
+		return res;
+	}
+	
+    ////////////////////////////////////////////////////////////
 	fm::Result Shader::link()
 	{
 		// init GlId
@@ -198,22 +224,8 @@ namespace fg
 			delete[] logData;
 			return res;
 		}
-    	
-    	// generate default vao if available
-		if (::priv::so_loader.getProcAddr("glGenVertexArrays"))
-		{
-			if (glIsVertexArray(m_defVao))
-				glDeleteVertexArrays(1,&m_defVao);
-			
-			GLint program;
-			res += glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
-			res += glCheck(glUseProgram(getGlId()));
-
-			res += glCheck(glGenVertexArrays(1, &m_defVao));
-    		res += glCheck(glBindVertexArray(m_defVao));
-			
-			res += glCheck(glUseProgram(program));
-		}
+		
+		res += createDefVao();
 
 		return res;
 	}
@@ -237,7 +249,8 @@ namespace fg
 	}
 
 	/// constructor /////////////////////////////////////////////////////////
-	Shader::Shader() : m_blendMode(fg::Alpha)
+	Shader::Shader() : m_blendMode(fg::Alpha),
+					   m_ownVao(true)
 	{
 
 	}
@@ -287,6 +300,7 @@ namespace fg
 		m_attributes.swap(shader.m_attributes);
 		
 		std::swap(m_defVao,shader.m_defVao);
+		std::swap(m_ownVao,shader.m_ownVao);
 		
 		std::swap(getGlId(),shader.getGlId());
 		
@@ -859,5 +873,11 @@ namespace fg
 	bool Shader::isLoaded() const
 	{
 		return getGlId();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void Shader::setOwnVao(bool ownVao)
+	{
+		m_ownVao = ownVao;
 	}
 }

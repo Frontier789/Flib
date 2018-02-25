@@ -27,9 +27,12 @@ int main()
 		cout << res << endl;
 		return 1;
 	}
-
-	Texture tex;
-	tex.create(vec2(512,512));
+	
+	FloatTexture tex;
+	tex.create(vec2(512,512),vec4::Red);
+	
+	FloatTexture addTex;
+	addTex.create(vec2(512,512),vec4::Green);
 
 	ComputeShader cshader;
 	res = cshader.loadFromFile("compute.glsl");
@@ -41,7 +44,13 @@ int main()
 	}
 
 	cshader.bind();
-	cshader.setUniform("destTex",tex);
+	res += cshader.setUniform("destTex",tex);
+	res += cshader.setUniform("addTex",addTex);
+
+	if (!res)
+	{
+		cout << res << endl;
+	}
 
 	for (int i = 0; i < 1024; ++i) 
 	{
@@ -49,6 +58,8 @@ int main()
 
 		cshader.setUniform("roll",i*0.1f);
 		auto res = cshader.dispatch(vec3(512/16,512/16,1)); // 512^2 threads in blocks of 16^2
+		
+		glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
 		if (!res) cout << res << endl;
 	}

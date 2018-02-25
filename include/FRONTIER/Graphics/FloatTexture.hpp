@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+/// Copyright (C) 2014-2018 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -115,6 +115,34 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		fm::Result copyToArray(float *ptr,fm::rect2s region = fm::rect2s());
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Create a floating point OpenGL texture from cpu memory data
+		///
+		/// This function sends the client-side data (the array)
+		/// to OpenGL
+		///
+		/// @param ptr Pointer to the data
+		/// @param size The size of the texture to create
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result loadFromArray(const float *ptr,fm::vec2s size);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Change the content of the texture
+		///
+		/// If @a data is NULL or the texture is invalid then the texture is not modified
+		///
+		/// @param data Pointer to the new data
+		/// @param pos coordinate in the texture where the pixels will be put
+		/// @param size Size of the target rectangle
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		reference update(const float *data,fm::vec2s pos,fm::vec2s size);
 	};
 }
 #endif

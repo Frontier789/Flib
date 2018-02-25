@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+/// Copyright (C) 2014-2018 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -30,7 +30,7 @@
 
 namespace fg
 {
-	namespace priv
+	namespace
 	{
 		//////////////////////////////////
 		/// TextureSaver
@@ -178,7 +178,7 @@ namespace fg
 		}
 
 		// bind the texture for uplading
-		priv::TextureSaver save(getTexBinding(),getTexRebinding());
+		TextureSaver save(getTexBinding(),getTexRebinding());
 
 		bind();
 
@@ -224,7 +224,7 @@ namespace fg
 		else
 		{
 			// upload data
-			priv::TextureSaver save(getTexBinding(),getTexRebinding());
+			TextureSaver save(getTexBinding(),getTexRebinding());
 			bind();
 
 			res += glCheck(glTexSubImage2D(getTexTarget(),0,0,0,img.getSize().w,img.getSize().h,getFormat(),getType(), img.getPtr()));
@@ -255,7 +255,7 @@ namespace fg
 
 			if (getGlId())
 			{
-				priv::TextureSaver save(getTexBinding(),getTexRebinding());
+				TextureSaver save(getTexBinding(),getTexRebinding());
 
 				bind();
 
@@ -281,7 +281,7 @@ namespace fg
 
 			if (getGlId())
 			{
-				priv::TextureSaver save(getTexBinding(),getTexRebinding());
+				TextureSaver save(getTexBinding(),getTexRebinding());
 
 				bind();
 				glTexParameteri(getTexTarget(),GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST);
@@ -308,7 +308,7 @@ namespace fg
 	{
 		if (pixels && getGlId())
 		{
-			priv::TextureSaver save(getTexBinding(),getTexRebinding());
+			TextureSaver save(getTexBinding(),getTexRebinding());
 
 			bind();
 			glCheck(glTexSubImage2D(getTexTarget(), 0, pos.x, pos.y, size.w, size.h, getFormat(), getType(), pixels));
@@ -376,7 +376,7 @@ namespace fg
 		}
 
 		// prepare image
-		priv::TextureSaver save(getTexBinding(),getTexRebinding());
+		TextureSaver save(getTexBinding(),getTexRebinding());
 
 		// if npot textures are present or m_size is pot
 		if (m_size == m_realSize)

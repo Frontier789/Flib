@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+/// Copyright (C) 2014-2018 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_COMPUTESHADER_HPP_INCLUDED
 #define FRONTIER_COMPUTESHADER_HPP_INCLUDED
+#include <FRONTIER/Graphics/FloatTexture.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
 #define FRONTIER_COMPUTESHADER
@@ -24,7 +25,9 @@ namespace fg
 {
 	class ComputeShader : public GlObject
 	{
+	public:
 		Shader m_shader; ///< Internal shader
+		
 	public:
         typedef ComputeShader &reference;
         typedef const ComputeShader &const_reference;
@@ -154,7 +157,7 @@ namespace fg
 		fm::Result setUniform(const std::string &name,const T &x);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the value of a sampler2D uniform
+		/// @brief Set the value of an image2D uniform
 		///
 		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
@@ -171,7 +174,7 @@ namespace fg
 		fm::Result setUniform(const std::string &name,const Texture &tex,bool sampler = false);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the value of a sampler2D uniform
+		/// @brief Set the value of an image2D uniform
 		///
 		/// If the shader program is invalid no error will be returnes
 		/// and the shader program will not be modified
@@ -186,6 +189,40 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Result setUniform(const std::string &name,const Texture *tex,bool sampler = false);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of an image2D uniform
+		///
+		/// If the shader program is invalid no error will be returnes
+		/// and the shader program will not be modified
+		///
+		/// Binding as an image is useful when using imageLoad / imageStore
+		///
+		/// @param name The name of the uniform
+		/// @param tex The value of the uniform
+		/// @param sampler Decides whether the texture shall be bound as a sampler or as an image
+		/// 
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setUniform(const std::string &name,const FloatTexture &tex,bool sampler = false);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of an image2D uniform
+		///
+		/// If the shader program is invalid no error will be returnes
+		/// and the shader program will not be modified
+		///
+		/// Binding as an image is useful when using imageLoad / imageStore
+		///
+		/// @param name The name of the uniform
+		/// @param tex The value of the uniform
+		/// @param sampler Decides whether the texture shall be bound as a sampler or as an image
+		/// 
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setUniform(const std::string &name,const FloatTexture *tex,bool sampler = false);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an array of uniforms

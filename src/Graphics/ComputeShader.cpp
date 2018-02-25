@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////// <!--
-/// Copyright (C) 2014-2016 Frontier (fr0nt13r789@gmail.com)           ///
+/// Copyright (C) 2014-2018 Frontier (fr0nt13r789@gmail.com)           ///
 ///                                                                    ///
 /// Flib is licensed under the terms of GNU GPL.                       ///
 /// Therefore you may freely use it in your project,                   ///
@@ -25,12 +25,13 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	ComputeShader::ComputeShader()
 	{
-
+		m_shader.setOwnVao(false);
 	}
 
 	/////////////////////////////////////////////////////////////
 	ComputeShader::ComputeShader(ComputeShader &&shader)
 	{
+		m_shader.setOwnVao(false);
 		shader.swap(*this);
 	}
 
@@ -44,6 +45,7 @@ namespace fg
 	ComputeShader &ComputeShader::swap(ComputeShader &shader)
 	{
 		m_shader.swap(shader.m_shader);
+		std::swap(getGlId(),shader.getGlId());
 		return *this;
 	}
 
@@ -58,7 +60,11 @@ namespace fg
 	{
 		unsigned int type = GL_COMPUTE_SHADER;
 
-		return m_shader.loadFromFiles(&file,&type,1);
+		fm::Result res = m_shader.loadFromFiles(&file,&type,1);
+		
+		getGlId() = m_shader.getGlId();
+		
+		return res;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -66,21 +72,31 @@ namespace fg
 	{
 		unsigned int type = GL_COMPUTE_SHADER;
 
-		return m_shader.loadFromMemory(&data,&type,1);
+		fm::Result res = m_shader.loadFromMemory(&data,&type,1);
+		
+		getGlId() = m_shader.getGlId();
+		
+		return res;
 	}
 	
 	/////////////////////////////////////////////////////////////
 	fm::Result ComputeShader::loadFromMemory(const fg::ShaderSource &data)
 	{
+		fm::Result res;
+		
 		if (data.type == GL_COMPUTE_SHADER)
-			return m_shader.loadFromMemory(&data,1);
+			res = m_shader.loadFromMemory(&data,1);
 		else
 		{
 			fg::ShaderSource cpy = data;
 			cpy.type = GL_COMPUTE_SHADER;
 
-			return m_shader.loadFromMemory(&cpy,1);
+			res = m_shader.loadFromMemory(&cpy,1);
 		}
+		
+		getGlId() = m_shader.getGlId();
+		
+		return res;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -120,6 +136,18 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
+	fm::Result ComputeShader::setUniform(const std::string &name,const FloatTexture &tex,bool sampler)
+	{
+		return m_shader.setUniform(name,tex,sampler);
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::Result ComputeShader::setUniform(const std::string &name,const FloatTexture *tex,bool sampler)
+	{
+		return m_shader.setUniform(name,tex,sampler);
+	}
+
+	/////////////////////////////////////////////////////////////
 	void ComputeShader::bind(fm::Ref<const ComputeShader> program)
 	{
 		Shader::bind(program ? &program->m_shader : nullptr);
@@ -152,6 +180,8 @@ namespace fg
 		if (workGroupDims.x == 0) workGroupDims.x = 1;
 		if (workGroupDims.y == 0) workGroupDims.y = 1;
 		if (workGroupDims.z == 0) workGroupDims.z = 1;
+		
+		bind();
 
 		return glCheck(glDispatchCompute(workGroupDims.x, workGroupDims.y, workGroupDims.z));
 	}
