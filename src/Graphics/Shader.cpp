@@ -39,7 +39,7 @@ namespace fg
 			if (type == GL_VERTEX_SHADER)          return "VertexShader";
 			if (type == GL_GEOMETRY_SHADER)        return "GeometryShader";
 			if (type == GL_FRAGMENT_SHADER)        return "FragmentShader";
-			// if (type == GL_COMPUTE_SHADER)         return "ComputeShader";
+			if (type == GL_COMPUTE_SHADER)         return "ComputeShader";
 			if (type == GL_TESS_CONTROL_SHADER)    return "TessControlShader";
 			if (type == GL_TESS_EVALUATION_SHADER) return "TessEvalShader";
 			
@@ -109,7 +109,7 @@ namespace fg
 			// retrieve error log
 			res += glCheck(glGetShaderInfoLog(s, logSize, NULL, &logData[0]));
 			
-			res += fm::Result("GLSLError",fm::Result::OPFailed,"CompileFailed","compileSubShader",__FILE__,__LINE__,fm::toString(type).str(),logData);
+			res += fm::Result("GLSLError",fm::Result::OPFailed,"CompileFailed","compileSubShader",__FILE__,__LINE__,priv::getShaderTypeName(type),logData);
 			ret = 0;
 			
 			// free allocated memory
@@ -537,7 +537,7 @@ namespace fg
 		
 		if (enable)
 		{
-			m_attributes[name].flags &= FRONTIER_SHADER_ATTRIB_POINTER_ENABLED_BIT;
+			m_attributes[name].flags |= FRONTIER_SHADER_ATTRIB_POINTER_ENABLED_BIT;
 			return glCheck(glEnableVertexAttribArray(location));			
 		}
 		else
@@ -711,7 +711,7 @@ namespace fg
 				res += glCheck(glActiveTexture(GL_TEXTURE0 + it->second.slot));
 				res += glCheck(glBindTexture(GL_TEXTURE_2D,tex ? tex->getGlId() : 0));
 				if (!sampler && tex && tex->getGlId())
-					res += glCheck(glBindImageTexture(0, tex->getGlId(), 0, GL_FALSE, 0, GL_READ_WRITE, tex->getInternalFormat()));
+					res += glCheck(glBindImageTexture(it->second.slot, tex->getGlId(), 0, GL_FALSE, 0, GL_READ_WRITE, tex->getInternalFormat()));
 				
 				it->second.act_id = tex ? tex->getGlId() : 0;
 			}
@@ -735,7 +735,7 @@ namespace fg
 					res += glCheck(glBindTexture(GL_TEXTURE_2D,tex ? tex->getGlId() : 0));
 
 					if (!sampler && tex && tex->getGlId())
-						res += glCheck(glBindImageTexture(0, tex->getGlId(), 0, GL_FALSE, 0, GL_READ_WRITE, tex->getInternalFormat()));
+						res += glCheck(glBindImageTexture(texCount, tex->getGlId(), 0, GL_FALSE, 0, GL_READ_WRITE, tex->getInternalFormat()));
 				}
 				else
 					res += fm::Result("GLSLError",fm::Result::OPFailed,"UniformNotFound","setUniform",__FILE__,__LINE__,name);

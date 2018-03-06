@@ -25,7 +25,6 @@ namespace fg
 {
 	class ComputeShader : public GlObject
 	{
-	public:
 		Shader m_shader; ///< Internal shader
 		
 	public:

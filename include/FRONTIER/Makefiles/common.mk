@@ -1,11 +1,12 @@
 WD=$(dir $(lastword $(MAKEFILE_LIST)))
+WD_PER=$(subst \,/,$(WD))
 
 print-%: ; @echo "$*=$($*)"
 
 include $(WD)/detect_os.mk
 
 # test compiler availablity
-test_cmd = $(lastword $(strip $(shell make -f $(WD)/testCmd.mk TEST_CMD=$(1) 2>&1 && echo " 1" || echo " 0")))
+test_cmd = $(lastword $(strip $(shell make -f $(WD_PER)/testCmd.mk TEST_CMD=$(1) 2>&1 && echo " 1" || echo " 0")))
 
 HAS_GCC := $(call test_cmd,"g++ -v")
 HAS_CLANG := $(call test_cmd,"clang++ -v")

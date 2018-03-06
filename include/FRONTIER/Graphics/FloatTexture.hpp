@@ -32,8 +32,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API FloatTexture : public Texture
 	{
-	public:
-		fm::Int32 getInternalFormat() const; ///< Internal format of the texture
+		fm::Int32 getInternalFormat() const override; ///< Internal format of the texture
 	
 	public:
 		typedef FloatTexture &reference;

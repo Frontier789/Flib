@@ -1,6 +1,9 @@
 {
     "git.ignoreLegacyWarning": true,
-    "search.useIgnoreFilesByDefault": true,
+	"search.useIgnoreFiles": true,
+	"files.exclude": {
+	  "**/*.o": true
+	},
     "files.autoSave": "onFocusChange",
     "editor.insertSpaces": false,
     "C_Cpp.intelliSenseEngineFallback": "Enabled",

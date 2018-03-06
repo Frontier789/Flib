@@ -31,9 +31,9 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	enum BufferType {
 		ArrayBuffer = 0x8892, ///< Means that the buffer is generic (may hold position color etc)
-		IndexBuffer = 0x8893  ///< Means that the buffer holds indices
+		IndexBuffer = 0x8893, ///< Means that the buffer holds indices
+		ShaderStorageBuffer = 0x90D2 ///< Indicates a buffer for plain shader input output 
 	};
-
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Class used to handle <a href="http://www.opengl.org/wiki/Buffer_Object">OpenGL buffer objects</a>

@@ -61,10 +61,10 @@
             "includePath": [
                 "${workspaceRoot}",
                 "${workspaceRoot}/include",
-                "${workspaceRoot}/../../CodeBlocks/MinGW/include",
-                "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include",
-                "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include/c++",
-                "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include/c++/mingw32"
+                "c:/Programs/MinGW/include",
+                "c:/Programs/MinGW/lib/gcc/mingw32/5.3.0/include",
+                "c:/Programs/MinGW/lib/gcc/mingw32/5.3.0/include/c++",
+                "c:/Programs/MinGW/lib/gcc/mingw32/5.3.0/include/c++/mingw32"
             ],
             "defines": [
                 "_DEBUG",
@@ -76,10 +76,10 @@
                 "path": [
                     "${workspaceRoot}",
                     "${workspaceRoot}/include",
-                    "${workspaceRoot}/../../CodeBlocks/MinGW/include",
-                    "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include",
-                    "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include/c++",
-                    "${workspaceRoot}/../../CodeBlocks/MinGW/lib/gcc/mingw32/5.3.0/include/c++/mingw32"
+                    "c:/Programs/MinGW/include",
+                    "c:/Programs/MinGW/lib/gcc/mingw32/5.3.0/include",
+                    "c:/Programs/MinGW/lib/gcc/mingw32/5.3.0/include/c++",
+                    "c:/Programs/MinGW/lib/gcc/mingw32/5.3.0/include/c++/mingw32"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""

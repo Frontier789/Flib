@@ -2,76 +2,54 @@
 #include <FRONTIER/OpenGL.hpp>
 #include <FRONTIER/GL/GL_CHECK.hpp>
 #include <iostream>
+#include <cstdlib>
+#include <cmath>
 
 using namespace std;
 
-float fix_float(float f)
+/*
+https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_shader_storage_buffer_object.txt
+*/
+
+void check(fm::Result res)
 {
-	if (f < 0) return 1-fix_float(abs(f));
-
-	f = fmod(f,2);
-	if (f > 1) f = 2-f;
-
-	return f;
+	if (!res)
+	{
+		cout << res << endl;
+		std::exit(1);
+	}
 }
 
 int main()
 {
 	GLContext cont;
+	fm::Result res;
 	
-	fm::Result res = cont.create(vec2(100,100));
-	if (res)   res = cont.setActive();
-
-	if (!res)
-	{
-		cout << res << endl;
-		return 1;
-	}
+	res += cont.create();
+	res += cont.setActive();
+	check(res);
 	
-	FloatTexture tex;
-	tex.create(vec2(512,512),vec4::Red);
+	Texture inTex,outTex;
+	res += inTex.loadFromFile("rose.png");
+	res += outTex.create(inTex.getSize());
+	check(res);
 	
-	FloatTexture addTex;
-	addTex.create(vec2(512,512),vec4::Green);
-
 	ComputeShader cshader;
-	res = cshader.loadFromFile("compute.glsl");
-
-	if (!res)
-	{
-		cout << res << endl;
-		return 1;
-	}
+	res += cshader.loadFromFile("compute.glsl");
+	check(res);
 
 	cshader.bind();
-	res += cshader.setUniform("destTex",tex);
-	res += cshader.setUniform("addTex",addTex);
-
-	if (!res)
-	{
-		cout << res << endl;
-	}
-
-	for (int i = 0; i < 1024; ++i) 
-	{
-		cshader.bind();
-
-		cshader.setUniform("roll",i*0.1f);
-		auto res = cshader.dispatch(vec3(512/16,512/16,1)); // 512^2 threads in blocks of 16^2
-		
-		glMemoryBarrier(GL_ALL_BARRIER_BITS);
-
-		if (!res) cout << res << endl;
-	}
-
+	cshader.setUniform("u_kernSize",5);
+	res += cshader.setUniform("u_inTex",inTex);
+	res += cshader.setUniform("u_outTex",outTex);
+	check(res);
+	
+	res += cshader.dispatch(inTex.getSize());
+	check(res);
+	
 	fg::Image img;
-	res = tex.copyToImage(img);
-
-	if (!res)
-	{
-		cout << res << endl;
-		return 1;
-	}
+	res += outTex.copyToImage(img);
+	check(res);
 
 	img.saveToFile("pic.png");
 }

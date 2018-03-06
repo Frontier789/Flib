@@ -166,6 +166,8 @@ namespace fg
 		
 		fm::Result res;
 		
+		bool sizeChange = (m_size != size);
+		
 		// setup internal data
 		m_realSize = realSize;
 		m_size = size;
@@ -200,7 +202,8 @@ namespace fg
 			res += glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_COMPARE_MODE,GL_COMPARE_REF_TO_TEXTURE));
 
 		// upload data
-		res += glCheck(glTexImage2D(getTexTarget(),0,getInternalFormat(),m_realSize.w,m_realSize.h,0,getFormat(),getType(),nullptr));
+		if (sizeChange)
+			res += glCheck(glTexImage2D(getTexTarget(),0,getInternalFormat(),m_realSize.w,m_realSize.h,0,getFormat(),getType(),nullptr));
 
 		return res;
 	}
