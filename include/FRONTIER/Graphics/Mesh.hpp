@@ -149,6 +149,21 @@ namespace fg
 		reference calcTangents();
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Tesselate a linestrip into series of quads (represented as 2 triangles / quad)
+		/// 
+		/// The points and the width is assumed to be in units
+		/// 
+		/// @param pts Pointer to the points on the linestrip
+		/// @param N The number of points
+		/// @param width The thickness of the line
+		/// @param distFieldOut Output inner distance field for antialiasing
+		/// 
+		/// @return The mesh calculated
+		/// 
+		/////////////////////////////////////////////////////////////
+		static Mesh tesLineStrip(fm::vec2 *pts,fm::Size N,float width,std::vector<fm::vec4> *distFieldOut = nullptr);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Calculate the vertices of a sphere
 		/// 
 		/// @param radius The radius of the sphere

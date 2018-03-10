@@ -199,7 +199,9 @@ namespace fgui
 											 m_size(size),
 											 m_guiLoop(false)
 	{
-		setupShader();
+		if (size.area())
+			setupShader();
+		
 		setMaxFps(60);
 		loadDefButtonImg(*this);
 	}

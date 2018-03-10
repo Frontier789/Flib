@@ -61,14 +61,19 @@
             "includePath": [
                 "${workspaceRoot}",
                 "${workspaceRoot}/include",
-                "c:/Programs/MinGW/include",
-                "c:/Programs/MinGW/lib/gcc/mingw32/5.3.0/include",
-                "c:/Programs/MinGW/lib/gcc/mingw32/5.3.0/include/c++",
-                "c:/Programs/MinGW/lib/gcc/mingw32/5.3.0/include/c++/mingw32"
+                "c:/programs/mingw/bin/../lib/gcc/mingw32/5.3.0/include/c++",
+                "c:/programs/mingw/bin/../lib/gcc/mingw32/5.3.0/include/c++/mingw32",
+                "c:/programs/mingw/bin/../lib/gcc/mingw32/5.3.0/include/c++/backward",
+                "c:/programs/mingw/bin/../lib/gcc/mingw32/5.3.0/include",
+                "c:/programs/mingw/bin/../lib/gcc/mingw32/5.3.0/../../../../include",
+                "c:/programs/mingw/bin/../lib/gcc/mingw32/5.3.0/include-fixed"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
+                "__GNUC__=6",
+                "__cdecl=__attribute__((__cdecl__))",
+                "__stdcall=attribute((stdcall))",
                 "__SIZE_TYPE__=long long "
             ],
             "intelliSenseMode": "clang-x64",

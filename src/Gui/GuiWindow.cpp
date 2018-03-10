@@ -37,13 +37,17 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiWindow::GuiWindow(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,fw::GLContext::Settings settings) : Window(pos,size,title,style,nullptr,0,settings)
+	GuiWindow::GuiWindow(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,fw::GLContext::Settings settings) : 
+		Window(pos,size,title,style,nullptr,0,settings),
+		GuiContext(size)																																					
 	{
 		setClearColor(fm::vec4::White);
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiWindow::GuiWindow(const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,fw::GLContext::Settings settings) : Window(size,title,style,nullptr,0,settings)
+	GuiWindow::GuiWindow(const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,fw::GLContext::Settings settings) : 
+		Window(size,title,style,nullptr,0,settings),
+		GuiContext(size)
 	{
 		setClearColor(fm::vec4::White);
 	}

@@ -27,6 +27,10 @@
 
 namespace fg
 {
+	using fm::vec2;
+	using fm::vec2i;
+	using fm::vec2s;
+	
 	/////////////////////////////////////////////////////////////
 	Mesh::Face::Face(fg::Primitive primitive ,fm::Size indexCount) : indices(indexCount,0),
 																	 primitive(primitive)
@@ -118,7 +122,7 @@ namespace fg
 				fm::vec3 p = fm::pol3(radius*r,fm::deg(xp*360),fm::deg(90-yp*180));
 
 				ret.pts[ptsi++]  = p;
-				ret.uvs[uvsi++] = fm::vec2(xpO,ypO);
+				ret.uvs[uvsi++] = vec2(xpO,ypO);
 
                 if (x<W && y>0)
                     inds[indi++] = (x+0)*H+y-1,
@@ -163,15 +167,15 @@ namespace fg
                 fm::vec3 majorP = fm::pol3(majorR,fm::deg(0),fm::deg(xp*360));
                 fm::vec3 f = majorP.sgn();
 
-				fm::vec2 minorP = fm::pol2(minorR*r,fm::deg(yp*360));
+				vec2 minorP = fm::pol2(minorR*r,fm::deg(yp*360));
 
 				fm::vec3 p = majorP + f*minorP.x + u*minorP.y;
 
 				ret.pts[ptsi++] = p;
-				ret.uvs[uvsi++] = fm::vec2(xpO,ypO);
+				ret.uvs[uvsi++] = vec2(xpO,ypO);
 
-				fm::vec2i offsets[] = {fm::vec2i(0,0),fm::vec2i(1,0),fm::vec2i(1,1),
-									   fm::vec2i(0,0),fm::vec2i(1,1),fm::vec2i(0,1)};
+				vec2i offsets[] = {vec2i(0,0),vec2i(1,0),vec2i(1,1),
+									   vec2i(0,0),vec2i(1,1),vec2i(0,1)};
 
 				if (x < W && y < H)
 					C(6)
@@ -202,7 +206,7 @@ namespace fg
 		    float yp = 1;
 		    float r = (rfunc ? rfunc(xp,yp) : 1.f);
 
-		    fm::vec2 p = fm::pol2(radius*r,fm::deg(xp*360));
+		    vec2 p = fm::pol2(radius*r,fm::deg(xp*360));
 		    ret.pts[ptsi++] = fm::vec3(p.x,height/2,p.y);
 		    if (i < W)
             {
@@ -219,7 +223,7 @@ namespace fg
 		    float yp = 0;
 		    float r = (rfunc ? rfunc(xp,yp) : 1.f);
 
-		    fm::vec2 p = fm::pol2(radius*r,fm::deg(xp*360));
+		    vec2 p = fm::pol2(radius*r,fm::deg(xp*360));
 		    ret.pts[ptsi++] = fm::vec3(p.x,-height/2,p.y);
 		    if (i < W)
             {
@@ -239,11 +243,11 @@ namespace fg
 			
 			float r = (rfunc ? rfunc(xp,yp) : 1.f);
 			
-			fm::vec2 p = fm::pol2(radius*r,fm::deg(xp*360));
+			vec2 p = fm::pol2(radius*r,fm::deg(xp*360));
 			ret.pts[ptsi++] = fm::vec3(p.x,height*yp - height/2,p.y);
 			
-			fm::vec2s inds[] = {fm::vec2s(0,0),fm::vec2s(1,1),fm::vec2s(1,0),
-								fm::vec2s(0,0),fm::vec2s(0,1),fm::vec2s(1,1)};
+			vec2s inds[] = {vec2s(0,0),vec2s(1,1),vec2s(1,0),
+								vec2s(0,0),vec2s(0,1),vec2s(1,1)};
 			
 			if (x < W && y < H-1)
 				C(6)
@@ -264,11 +268,11 @@ namespace fg
         fm::Size uvsi = 0;
         fm::Size indi = 0;
         
-		fm::vec2 texps[] = {fm::vec2(1,2),fm::vec2(1,0),fm::vec2(1,2),
-							fm::vec2(2,2),fm::vec2(1,3),fm::vec2(4,2)};
+		vec2 texps[] = {vec2(1,2),vec2(1,0),vec2(1,2),
+							vec2(2,2),vec2(1,3),vec2(4,2)};
         
-		fm::vec2 texpm[] = {fm::vec2(-1,-1),fm::vec2(1,1),fm::vec2(1,-1),
-							fm::vec2(1,-1),fm::vec2(1,-1),fm::vec2(-1,-1)};
+		vec2 texpm[] = {vec2(-1,-1),vec2(1,1),vec2(1,-1),
+							vec2(1,-1),vec2(1,-1),vec2(-1,-1)};
         
         C(6)
         {
@@ -291,14 +295,14 @@ namespace fg
 				
 				ret.pts[ptsi++] = d/2*n*size + (xp-0.5)*r*size*d + (yp-0.5)*u*size*d;
 				
-				fm::vec2 texp = (i%3==2 ? fm::vec2(yp,xp) : fm::vec2(xp,yp));
+				vec2 texp = (i%3==2 ? vec2(yp,xp) : vec2(xp,yp));
 				
-				ret.uvs[uvsi++] = (texps[i] + texp*texpm[i])/fm::vec2(4,3);
+				ret.uvs[uvsi++] = (texps[i] + texp*texpm[i])/vec2(4,3);
 				
 				if (x+1 < N && y+1 < N)
 				{
-					fm::vec2s inds[] = {fm::vec2s(0,0),fm::vec2s(1,1),fm::vec2s(1,0),
-										fm::vec2s(0,0),fm::vec2s(0,1),fm::vec2s(1,1)};
+					vec2s inds[] = {vec2s(0,0),vec2s(1,1),vec2s(1,0),
+										vec2s(0,0),vec2s(0,1),vec2s(1,1)};
 					
 					if (i > 2)
 					{
@@ -456,8 +460,8 @@ namespace fg
 				fm::vec3 v1 = pts[ind1] - pts[ind0];
 				fm::vec3 v2 = pts[ind2] - pts[ind0];
 
-				fm::vec2 s1 = uvs[ind1] - uvs[ind0];
-				fm::vec2 s2 = uvs[ind2] - uvs[ind0];
+				vec2 s1 = uvs[ind1] - uvs[ind0];
+				vec2 s2 = uvs[ind2] - uvs[ind0];
 
 				float tmat[] = {s1.x,s1.y,
 								s2.x,s2.y};
@@ -488,6 +492,73 @@ namespace fg
 		
 		return *this;
     }
+	
+	
+	// TODO: rounded joints
+	/////////////////////////////////////////////////////////////
+	Mesh Mesh::tesLineStrip(vec2 *pts,fm::Size N,float width,std::vector<fm::vec4> *distFieldOut)
+	{
+		Mesh m;
+		if (N < 2) return m;
+		
+		m.pts.resize((N-1)*3*2);
+		if (distFieldOut) distFieldOut->resize(m.pts.size());
+		
+		width /= 2;
+		
+		vec2 v = pts[1] - pts[0];
+		vec2 n = v.perp().sgn();
+		vec2 A = pts[0] + n * width, B = pts[0] - n * width;
+		
+		fm::Size baseIndex = 0;
+		
+		double lengthSum = 0;
+		for (fm::Size i=0;i+1<N;++i) lengthSum += (pts[i+1] - pts[i]).length();
+		
+		double curLen = 0;
+		
+		for (fm::Size i=1;i<N;++i)
+		{
+			vec2 v2 = pts[i+1] - pts[i];
+			vec2 n2 = v2.perp().sgn();
+			
+			vec2 C,D;
+			
+			if (i+1 < N)
+			{
+				double cos2a = n.dot(n2);
+				double cosa  = std::sqrt((cos2a + 1) / 2.0);
+				
+				vec2 b = (n + n2).sgn() * width / cosa;
+				C = pts[i] + b;
+				D = pts[i] - b;
+			}
+			else
+			{
+				n2 = (pts[N-1] - pts[N-2]).perp().sgn();
+				C = pts[N-1] + n2 * width;
+				D = pts[N-1] - n2 * width;
+			}
+			
+			for (vec2 p : {A,B,C,C,D,B})
+				m.pts[baseIndex++] = p;
+				
+			if (distFieldOut)
+			{
+				float lenRat    = curLen / lengthSum;
+				float nxtLenRat = (curLen + v.length()) / lengthSum;
+				baseIndex -= 6;
+				for (vec2 p : {vec2(1,lenRat),vec2(0,lenRat),vec2(1,nxtLenRat),vec2(1,nxtLenRat),vec2(0,nxtLenRat),vec2(0,lenRat)})
+					(*distFieldOut)[baseIndex++] = fm::vec4(p.x,1-p.x,p.y,1-p.y) * fm::vec4(width*2,width*2,lengthSum,lengthSum);
+			}
+			
+			curLen += v.length();
+			v = v2; n = n2;
+			A = C;  B = D;
+		}
+		
+		return m;
+	}
     
 	/////////////////////////////////////////////////////////////
 	Mesh Mesh::getCircle(float radius,fm::Size N,const fm::Delegate<float,float &> &rfunc)
@@ -502,10 +573,10 @@ namespace fg
 			float v = float(i) / N;
 			float r = (rfunc ? rfunc(v) : 1.0);
 			
-			fm::vec2 p = fm::pol2(r,fm::deg(360.0 * v));
+			vec2 p = fm::pol2(r,fm::deg(360.0 * v));
 			
 			ret.pts[i] = p * radius;
-			ret.uvs[i] = p/2 + fm::vec2(.5,.5);
+			ret.uvs[i] = p/2 + vec2(.5,.5);
 			
 			ret.faces.back().indices[i] = i;
 		}
@@ -527,9 +598,9 @@ namespace fg
 			
 			float r = (rfunc ? rfunc(onx,ony) : 1.0);
 			
-			fm::vec2 p(onx * r,ony * r);
+			vec2 p(onx * r,ony * r);
 			
-			ret.pts[index] = p * fm::vec2(width,height);
+			ret.pts[index] = p * vec2(width,height);
 			ret.uvs[index] = p;
 			
 			ret.faces.back().indices[index] = index;
