@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['kdtree',['KDTree',['../classfm_1_1_k_d_tree.html#a049e250a54b37163965cbae25bafddd7',1,'fm::KDTree::KDTree()'],['../classfm_1_1_k_d_tree.html#a2b1f6a97ab8a405e748712262874509f',1,'fm::KDTree::KDTree(const KDTree&lt; VectorType, Dim, AxisType &gt; &amp;copy)'],['../classfm_1_1_k_d_tree.html#a3c62713f9e3d5ca7025010c977b72446',1,'fm::KDTree::KDTree(KDTree&lt; VectorType, Dim, AxisType &gt; &amp;&amp;move)'],['../classfm_1_1_k_d_tree.html#a313cebcd1b4cb3ea09f2db6be7b52195',1,'fm::KDTree::KDTree(VectorType *ptr, fm::Size vecCount, fm::Delegate&lt; AxisType, const VectorType &amp;, const VectorType &amp;&gt; distFunc=defaultDistanceFunc)'],['../classfm_1_1_k_d_tree.html#afcc88ac3b9ef681b4ccf7efd1ea37505',1,'fm::KDTree::KDTree(std::vector&lt; VectorType &gt; &amp;&amp;data, fm::Delegate&lt; AxisType, const VectorType &amp;, const VectorType &amp;&gt; distFunc=defaultDistanceFunc)']]],
+  ['keepshadowcopy',['keepShadowCopy',['../classfg_1_1_buffer.html#af5aad4ce9edeb4653c9e5075c33f586d',1,'fg::Buffer']]]
+];

@@ -153,7 +153,17 @@ namespace fg
 
 		if (mesh.bitans.size())
 			bitangents.set(&mesh.bitans[0],mesh.bitans.size());
-
+		
+		if (mesh.extras.size())
+		{
+			int index = 0;
+			for (const auto &extra : mesh.extras)
+			{
+				getAttribute(Assoc::Custom0 + index).set(&extra[0],extra.size());
+				++index;
+			}
+		}
+		
 		if (mesh.faces.size())
 		{
 			fm::Size counts[]  = {0,0,0,0,0,0,0};

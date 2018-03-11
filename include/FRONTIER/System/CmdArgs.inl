@@ -21,7 +21,7 @@ namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	template<class T,class>
-	inline void CmdArgs::addSwitch(fm::String argSwitch,fm::Delegate<bool,T> callback)
+	inline CmdArgs &CmdArgs::addSwitch(fm::String argSwitch,fm::Delegate<bool,T> callback)
 	{
 		m_callbacks[argSwitch] = [&,callback](fm::Result &res,fm::Size &id) -> bool {
 			
@@ -44,6 +44,8 @@ namespace fm
 
 			return cb;
 		};
+		
+		return *this;
 	}
 }
 

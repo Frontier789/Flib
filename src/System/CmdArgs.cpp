@@ -38,7 +38,7 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	fm::Result CmdArgs::processArgs() const
 	{
-		// skip fist
+		// skip first
 		for (fm::Size id = 1;id < getArgCount();++id)
 		{
 			fm::String arg = getArg(id);
@@ -65,6 +65,14 @@ namespace fm
 		}
 
 		return fm::Result();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	CmdArgs &CmdArgs::addSwitch(fm::String argSwitch,fm::String forwSwitch)
+	{
+		m_callbacks[forwSwitch] = m_callbacks[argSwitch];
+		
+		return *this;
 	}
 }
 

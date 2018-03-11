@@ -52,6 +52,8 @@ namespace fg
 		std::vector<fm::vec3> norms;  ///< The normal vector
 		std::vector<fm::vec3> tans;   ///< The tangent vector
 		
+		std::vector<std::vector<fm::vec4>> extras; ///< Extra data vectors
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Simple class describing a face of the mesh
 		///
@@ -151,17 +153,18 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Tesselate a linestrip into series of quads (represented as 2 triangles / quad)
 		/// 
-		/// The points and the width is assumed to be in units
+		/// The point coordiantes and the width is assumed to be in units
+		/// Resulting mesh always has 2*N triangles where N is the number of points in the strip
 		/// 
 		/// @param pts Pointer to the points on the linestrip
 		/// @param N The number of points
 		/// @param width The thickness of the line
-		/// @param distFieldOut Output inner distance field for antialiasing
+		/// @param distField If set to true distance field will be processed into the next extra channel in mesh
 		/// 
 		/// @return The mesh calculated
 		/// 
 		/////////////////////////////////////////////////////////////
-		static Mesh tesLineStrip(fm::vec2 *pts,fm::Size N,float width,std::vector<fm::vec4> *distFieldOut = nullptr);
+		static Mesh tesLineStrip(fm::vec2 *pts,fm::Size N,float width,bool distField = false);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculate the vertices of a sphere

@@ -538,6 +538,34 @@ namespace fm
 	{
 		m_str = std::basic_string<fm::Uint32>();
 	}
+	
+	/////////////////////////////////////////////////////////////
+	String String::toLower() const
+	{
+		String ret = *this;
+		
+		C(length())
+		{
+			fm::Uint32 &chr = ret[i];
+			if (chr >= 'A' && chr <= 'Z') chr = chr - 'A' + 'a';
+		}
+		
+		return ret;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	String String::toUpper() const
+	{
+		String ret = *this;
+		
+		C(length())
+		{
+			fm::Uint32 &chr = ret[i];
+			if (chr >= 'a' && chr <= 'z') chr = chr - 'a' + 'A';
+		}
+		
+		return ret;
+	}
 
 	/////////////////////////////////////////////////////////////
 	String::iterator String::begin()

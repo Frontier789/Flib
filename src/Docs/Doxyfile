@@ -1,0 +1,38 @@
+PROJECT_NAME	 = Flib
+PROJECT_NUMBER 	 = 1.1b
+OUTPUT_LANGUAGE  = English
+
+EXTRACT_ALL 	 = YES
+EXTRACT_PRIVATE  = YES
+EXTRACT_STATIC   = YES
+
+SOURCE_BROWSER   = YES
+
+GENERATE_LATEX   = NO
+
+RECURSIVE 		 = YES
+
+INPUT			 = ../../include
+HTML_OUTPUT      = ../../Docs
+FILE_PATTERNS    = *.hpp
+EXCLUDE_PATTERNS = *Config.hpp* *GL_*.* *macros*
+EXCLUDE_SYMBOLS  = std std::* priv priv::*
+
+# for inheritance
+HAVE_DOT 		    = YES
+CLASS_GRAPH         = YES
+UML_LOOK            = NO
+CALL_GRAPH          = NO
+CALLER_GRAPH        = NO
+INCLUDE_GRAPH       = NO
+INCLUDED_BY_GRAPH   = NO
+TEMPLATE_RELATIONS  = NO
+COLLABORATION_GRAPH = NO
+
+SHOW_USED_FILES  = NO
+CLASS_GRAPH      = YES
+
+#sidebar with tree view
+#GENERATE_TREEVIEW = 
+#disable upper navigation bar
+#DISABLE_INDEX = 

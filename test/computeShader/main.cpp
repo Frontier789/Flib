@@ -29,6 +29,9 @@ int main()
 	res += cont.setActive();
 	check(res);
 	
+	cout << glGetString(GL_VERSION) << endl;
+	cout << glGetString(GL_VENDOR)  << endl;
+	
 	Texture inTex,outTex;
 	res += inTex.loadFromFile("rose.png");
 	res += outTex.create(inTex.getSize());

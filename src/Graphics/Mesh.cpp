@@ -496,13 +496,14 @@ namespace fg
 	
 	// TODO: rounded joints
 	/////////////////////////////////////////////////////////////
-	Mesh Mesh::tesLineStrip(vec2 *pts,fm::Size N,float width,std::vector<fm::vec4> *distFieldOut)
+	Mesh Mesh::tesLineStrip(vec2 *pts,fm::Size N,float width,bool distField)
 	{
 		Mesh m;
 		if (N < 2) return m;
 		
 		m.pts.resize((N-1)*3*2);
-		if (distFieldOut) distFieldOut->resize(m.pts.size());
+		if (distField)
+			m.extras.push_back(std::vector<fm::vec4>(m.pts.size()));
 		
 		width /= 2;
 		
@@ -543,13 +544,13 @@ namespace fg
 			for (vec2 p : {A,B,C,C,D,B})
 				m.pts[baseIndex++] = p;
 				
-			if (distFieldOut)
+			if (distField)
 			{
 				float lenRat    = curLen / lengthSum;
 				float nxtLenRat = (curLen + v.length()) / lengthSum;
 				baseIndex -= 6;
 				for (vec2 p : {vec2(1,lenRat),vec2(0,lenRat),vec2(1,nxtLenRat),vec2(1,nxtLenRat),vec2(0,nxtLenRat),vec2(0,lenRat)})
-					(*distFieldOut)[baseIndex++] = fm::vec4(p.x,1-p.x,p.y,1-p.y) * fm::vec4(width*2,width*2,lengthSum,lengthSum);
+					m.extras.back()[baseIndex++] = fm::vec4(p.x,1-p.x,p.y,1-p.y) * fm::vec4(width*2,width*2,lengthSum,lengthSum);
 			}
 			
 			curLen += v.length();

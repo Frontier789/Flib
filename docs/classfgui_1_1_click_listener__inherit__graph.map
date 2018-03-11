@@ -1,0 +1,8 @@
+<map id="fgui::ClickListener" name="fgui::ClickListener">
+<area shape="rect" id="node4" href="$classfgui_1_1_gui_button.html" title="Basic button class capable of displaying a text and having a callback. " alt="" coords="11,229,119,256"/>
+<area shape="rect" id="node6" href="$classfgui_1_1_scroll_bar.html" title="Skinned scrollbar gui element. " alt="" coords="143,229,245,256"/>
+<area shape="rect" id="node7" href="$classfgui_1_1_transform_listener.html" title="Listener for 2d transformations such as translation, zoom, rotation. " alt="" coords="269,229,423,256"/>
+<area shape="rect" id="node2" href="$classfgui_1_1_mouse_move_listener.html" title="Listener for mouse enter, leave, move. " alt="" coords="111,80,277,107"/>
+<area shape="rect" id="node3" href="$classfgui_1_1_gui_callback.html" title="Base class for classes that act as a callback. " alt="" coords="134,5,254,32"/>
+<area shape="rect" id="node5" href="$classfgui_1_1_push_button.html" title="Pushable button with a callback and sprite as background. " alt="" coords="5,304,124,331"/>
+</map>

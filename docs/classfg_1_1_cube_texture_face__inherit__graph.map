@@ -1,0 +1,4 @@
+<map id="fg::CubeTextureFace" name="fg::CubeTextureFace">
+<area shape="rect" id="node2" href="$classfg_1_1_texture.html" title="Class used to handle OpenGL 2D textures. " alt="" coords="35,80,118,107"/>
+<area shape="rect" id="node3" href="$classfg_1_1_gl_object.html" title="Base class for opengl objects that have id such as texture, shader etc. " alt="" coords="31,5,122,32"/>
+</map>

@@ -7,6 +7,7 @@ int main()
 {
 	cout << "left click: put new points" << endl
 		 << "right click: clear" << endl
+		 << "mouse wheel: change thickness" << endl
 		 << "a: toggle antialiasing" << endl;
 	
 	GuiWindow win(vec2(640,480),"Thicc");
@@ -71,6 +72,9 @@ int main()
 	shader.setUniform("u_antia",0.0001f);
 	int antia = 0;
 	
+	float lineW = 2.3;
+	bool rebuild = false;
+	
 	while (running)
 	{
 		Event ev;
@@ -88,19 +92,17 @@ int main()
 					shader.setUniform("u_antia",antis[antia]);
 				}
 			}
+			if (ev.type == Event::MouseWheelMoved)
+			{
+				lineW *= pow(1.1,ev.wheel.delta);
+				rebuild = true;
+			}
 			if (ev.type == Event::ButtonPressed)
 			{
 				if (ev.mouse.button == Mouse::Left)
 				{
-					vector<vec4> distf;
 					pts.push_back(ev.mouse);
-					Mesh m = Mesh::tesLineStrip(&pts[0],pts.size(),2.3,&distf);
-					m.clr.resize(m.pts.size(),vec4::Black);
-					
-					dd = m;
-					dd[Assoc::Custom0].set(&distf[0],distf.size());
-					dd.clearDraws();
-					dd.addDraw(0,m.pts.size(),fg::Triangles);
+					rebuild = true;
 				}
 				else
 				{
@@ -109,6 +111,17 @@ int main()
 				}
 			}
 		}
+		
+		if (rebuild)
+		{
+			Mesh m = Mesh::tesLineStrip(&pts[0],pts.size(),lineW,true);
+			m.clr.resize(m.pts.size(),vec4::Black);
+			
+			dd = m;
+			dd.clearDraws();
+			dd.addDraw(0,m.pts.size(),fg::Triangles);
+		}
+		
 		win.updateElements();
 		
 		win.clear();

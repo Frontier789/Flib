@@ -55,12 +55,21 @@ namespace fm
 		/// The callback shall return true when it accepts the value
 		/// And false if the value is out of bounds or otherwise illegal
 		/// 
-		/// @param switch The switch 
+		/// @param argSwitch The switch 
 		/// @param callback The callback which will be called
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T,class = typename std::enable_if<fm::StringDecoder<T>::value>::type>
-		void addSwitch(fm::String argSwitch,fm::Delegate<bool,T> callback = [](T){return true;});
+		CmdArgs &addSwitch(fm::String argSwitch,fm::Delegate<bool,T> callback);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Forward a switch to another switch
+		/// 
+		/// @param argSwitch The switch 
+		/// @param forwSwitch The switch to be forwarded
+		/// 
+		/////////////////////////////////////////////////////////////
+		CmdArgs &addSwitch(fm::String argSwitch,fm::String forwSwitch);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the arguments for the handler
