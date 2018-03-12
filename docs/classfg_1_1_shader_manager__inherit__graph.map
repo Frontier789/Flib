@@ -1,6 +1,0 @@
-<map id="fg::ShaderManager" name="fg::ShaderManager">
-<area shape="rect" id="node5" href="$classfg_1_1_fixed_shader_manager.html" title="Shader manager that utilises the fixed pipline rendering of OpenGL (to be used with version prior to ..." alt="" coords="50,229,213,256"/>
-<area shape="rect" id="node2" href="$classfg_1_1_shader.html" title="Class used to handle OpenGL shader programs in language GLSL " alt="" coords="91,80,172,107"/>
-<area shape="rect" id="node3" href="$classfm_1_1_non_copyable.html" title="Virtual base class for types that cannot be copied. " alt="" coords="5,5,127,32"/>
-<area shape="rect" id="node4" href="$classfg_1_1_gl_object.html" title="Base class for opengl objects that have id such as texture, shader etc. " alt="" coords="151,5,242,32"/>
-</map>

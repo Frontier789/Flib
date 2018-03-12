@@ -311,6 +311,7 @@ namespace fgui
 		/// @brief Set the desired time between updates
 		/// 
 		/// Same as calling setMaxFps(1s / interval)
+		/// Zero or negative update interval means unlimited fps
 		/// 
 		/// @param interval The interval between updates
 		/// 
@@ -321,6 +322,7 @@ namespace fgui
 		/// @brief Set the maximum fps (zero means inf)
 		/// 
 		/// Same as calling setUpdateInterval(1s / interval)
+		/// Zero or negative fps is interpreted as unlimited fps
 		/// 
 		/// @param fps The max fps
 		/// 

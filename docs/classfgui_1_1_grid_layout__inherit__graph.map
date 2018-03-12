@@ -1,6 +1,0 @@
-<map id="fgui::GridLayout" name="fgui::GridLayout">
-<area shape="rect" id="node2" href="$classfgui_1_1_gui_layout.html" title="Base class for every Layout class. " alt="" coords="63,155,172,181"/>
-<area shape="rect" id="node3" href="$classfgui_1_1_gui_element.html" title="Basic gui class. " alt="" coords="58,80,177,107"/>
-<area shape="rect" id="node4" href="$classfg_1_1_drawable.html" title="Abstract base class for classes that can be drawn using a shader. " alt="" coords="5,5,99,32"/>
-<area shape="rect" id="node5" href="$classfgui_1_1_gui_callback.html" title="Base class for classes that act as a callback. " alt="" coords="123,5,243,32"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="fgui::TransformListener" name="fgui::TransformListener">
-<area shape="rect" id="node2" href="$classfgui_1_1_scroll_listener.html" title="Listener base class for scrolling. " alt="" coords="5,155,135,181"/>
-<area shape="rect" id="node3" href="$classfgui_1_1_mouse_move_listener.html" title="Listener for mouse enter, leave, move. " alt="" coords="63,80,229,107"/>
-<area shape="rect" id="node5" href="$classfgui_1_1_click_listener.html" title="Listener for mouse click, doubleclick, press, release. " alt="" coords="159,155,285,181"/>
-<area shape="rect" id="node4" href="$classfgui_1_1_gui_callback.html" title="Base class for classes that act as a callback. " alt="" coords="86,5,206,32"/>
-</map>

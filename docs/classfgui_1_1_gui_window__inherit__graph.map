@@ -1,6 +1,0 @@
-<map id="fgui::GuiWindow" name="fgui::GuiWindow">
-<area shape="rect" id="node2" href="$classfw_1_1_window.html" title="Wrapper class used to manage windows and OpenGL contexts together, os independently. " alt="" coords="22,155,110,181"/>
-<area shape="rect" id="node3" href="$classfw_1_1_g_l_context.html" title="GLContext. " alt="" coords="14,80,118,107"/>
-<area shape="rect" id="node4" href="$classfm_1_1_non_copyable.html" title="Virtual base class for types that cannot be copied. " alt="" coords="5,5,127,32"/>
-<area shape="rect" id="node5" href="$classfgui_1_1_gui_context.html" title="Holds data for gui elements such as fonts. " alt="" coords="134,155,249,181"/>
-</map>

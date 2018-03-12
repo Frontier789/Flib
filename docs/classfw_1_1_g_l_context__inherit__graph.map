@@ -1,5 +1,0 @@
-<map id="fw::GLContext" name="fw::GLContext">
-<area shape="rect" id="node3" href="$classfw_1_1_window.html" title="Wrapper class used to manage windows and OpenGL contexts together, os independently. " alt="" coords="22,155,110,181"/>
-<area shape="rect" id="node2" href="$classfm_1_1_non_copyable.html" title="Virtual base class for types that cannot be copied. " alt="" coords="5,5,127,32"/>
-<area shape="rect" id="node4" href="$classfgui_1_1_gui_window.html" title="Wrapper class that extends the functionality of Window. " alt="" coords="8,229,124,256"/>
-</map>

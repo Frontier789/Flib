@@ -1,4 +1,0 @@
-<map id="fg::VertexState" name="fg::VertexState">
-<area shape="rect" id="node2" href="$classfg_1_1_gl_object.html" title="Base class for opengl objects that have id such as texture, shader etc. " alt="" coords="5,5,96,32"/>
-<area shape="rect" id="node3" href="$classfm_1_1_non_copyable.html" title="Virtual base class for types that cannot be copied. " alt="" coords="121,5,242,32"/>
-</map>

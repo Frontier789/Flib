@@ -1,6 +1,0 @@
-<map id="fg::FixedShaderManager" name="fg::FixedShaderManager">
-<area shape="rect" id="node2" href="$classfg_1_1_shader_manager.html" title="Class used to manage OpenGL shaders with a camera, matrix stacks and named attributes. " alt="" coords="66,155,197,181"/>
-<area shape="rect" id="node3" href="$classfg_1_1_shader.html" title="Class used to handle OpenGL shader programs in language GLSL " alt="" coords="91,80,172,107"/>
-<area shape="rect" id="node4" href="$classfm_1_1_non_copyable.html" title="Virtual base class for types that cannot be copied. " alt="" coords="5,5,127,32"/>
-<area shape="rect" id="node5" href="$classfg_1_1_gl_object.html" title="Base class for opengl objects that have id such as texture, shader etc. " alt="" coords="151,5,242,32"/>
-</map>

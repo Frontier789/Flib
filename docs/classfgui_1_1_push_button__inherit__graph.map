@@ -1,9 +1,0 @@
-<map id="fgui::PushButton" name="fgui::PushButton">
-<area shape="rect" id="node2" href="$classfgui_1_1_gui_button.html" title="Basic button class capable of displaying a text and having a callback. " alt="" coords="160,244,268,271"/>
-<area shape="rect" id="node3" href="$classfgui_1_1_gui_element.html" title="Basic gui class. " alt="" coords="5,80,124,107"/>
-<area shape="rect" id="node4" href="$classfg_1_1_drawable.html" title="Abstract base class for classes that can be drawn using a shader. " alt="" coords="18,5,111,32"/>
-<area shape="rect" id="node5" href="$classfgui_1_1_gui_callback.html" title="Base class for classes that act as a callback. " alt="" coords="153,5,273,32"/>
-<area shape="rect" id="node7" href="$classfgui_1_1_mouse_move_listener.html" title="Listener for mouse enter, leave, move. " alt="" coords="149,80,314,107"/>
-<area shape="rect" id="node6" href="$classfgui_1_1_click_listener.html" title="Listener for mouse click, doubleclick, press, release. " alt="" coords="151,162,277,189"/>
-<area shape="rect" id="node8" href="$classfgui_1_1_callback_user.html" title="fgui::CallbackUser\l\&lt; GuiButton \&gt;" alt="" coords="301,155,428,196"/>
-</map>
