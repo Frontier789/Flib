@@ -34,7 +34,6 @@ namespace fg
 
 }
 
-#include <FRONTIER/Graphics/FixedShaderManager.hpp>
 #include <FRONTIER/Graphics/TextureConvolution.hpp>
 #include <FRONTIER/Graphics/StateAnimation.hpp>
 #include <FRONTIER/Graphics/ShaderManager.hpp>

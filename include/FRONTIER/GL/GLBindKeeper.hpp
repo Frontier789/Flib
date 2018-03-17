@@ -14,35 +14,31 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_SHADER_INL_INCLUDED
-#define FRONTIER_SHADER_INL_INCLUDED
-#include <FRONTIER/System/String.hpp>
+#ifndef FRONTIER_GL_BINDKEEPER_INCLUDED
+#define FRONTIER_GL_BINDKEEPER_INCLUDED
+#include <FRONTIER/GL/GL_TYPES.hpp>
+#include <FRONTIER/GL/GL_FUNCTIONS.h>
 
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline fm::Result Shader::setAttribute(const std::string &name,fm::Ref<fg::Buffer> buf,fm::Size stride,fm::Size offset)
+	class GLBindKeeper
 	{
-		return m_vao.setAttribute<T>(getAttribLocation(name),buf,stride,offset);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,fm::Size N>
-	inline fm::Result Shader::setUniform(const std::string &name,const T (&values)[N])
-	{
-		for (fm::Size i = 0;i<N;++i)
-		{
-			fm::Result res = setUniform( (name + "[" + fm::toString(i) + "]").str() , values[i] );
-			
-			if (!res)
-				return res;
-		}
+		GLuint m_prevId;
+		GLenum m_enum;
+		void (API_ENTRY *m_binderA)(GLenum,GLuint);
+		void (API_ENTRY *m_binderB)(GLuint);
+	public:
+		/////////////////////////////////////////////////////////////
+		GLBindKeeper(void (API_ENTRY *binder)(GLenum,GLuint),GLenum bindPoint,GLenum binding,GLuint tmpId);
 		
-		return fm::Result();
-	}
+		/////////////////////////////////////////////////////////////
+		GLBindKeeper(void (API_ENTRY *binder)(GLuint),GLenum binding,GLuint tmpId);
+		
+		/////////////////////////////////////////////////////////////
+		~GLBindKeeper();
+	};
 }
 
-#endif // FRONTIER_SHADER_INL_INCLUDED
-
+#endif // FRONTIER_GL_TYPES_HPP_INCLUDED
 

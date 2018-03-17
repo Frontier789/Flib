@@ -13,6 +13,7 @@ float gauss(float dx,float dy,float sigma2)
 	return exp(-d / 2.0 / sigma2) / sqrt(2*3.1415*sigma2);
 }
 
+
 void main()
 {
 	vec4 sum = vec4(0,0,0,0);
@@ -22,11 +23,12 @@ void main()
 	for (int dx=-u_kernSize;dx<=u_kernSize;++dx)
 	for (int dy=-u_kernSize;dy<=u_kernSize;++dy)
 	{
-		sum += imageLoad(u_inTex, index + ivec2(dx,dy)) * gauss(dx,dy,10);
-		len += gauss(dx,dy,10);
+		float g = gauss(dx,dy,8);
+		vec4 c = imageLoad(u_inTex, index + ivec2(dx,dy));
+		
+		sum += c * g;
+		len += g;
 	}
 	
-	vec4 clr = sum / len + imageLoad(u_inTex, index);
-	
-	imageStore(u_outTex, index, clr);
+	imageStore(u_outTex, index, sum / len);
 }

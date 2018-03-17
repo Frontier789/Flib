@@ -12,17 +12,16 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	fm::Uint32 CubeTextureFace::getTexRebinding() const {return GL_TEXTURE_CUBE_MAP;}
 	fm::Uint32 CubeTextureFace::getTexBinding() const {return GL_TEXTURE_BINDING_CUBE_MAP;}
-	fm::Uint32 CubeTextureFace::getTexTarget() const {return GL_TEXTURE_CUBE_MAP_POSITIVE_X+m_faceId;}
+	fm::Uint32 CubeTextureFace::getTexTarget() const {return GL_TEXTURE_CUBE_MAP_POSITIVE_X + m_faceId;}
 
 	/////////////////////////////////////////////////////////////
 	CubeTextureFace::CubeTextureFace(CubeTexture &cubeTex,unsigned int faceId) : m_cubeTex(cubeTex),
-																				 m_faceId(faceId)
+																				 m_faceId(faceId % 6)
 	{
-		m_realSize = fm::vec2(cubeTex.getSize(),cubeTex.getSize()),
-		m_size = fm::vec2(cubeTex.getSize(),cubeTex.getSize()),
-		m_isRepeated = cubeTex.isRepeated(),
-		m_isSmooth = cubeTex.isSmooth(),
-		getGlId() = m_cubeTex.getGlId();
+		m_size = fm::vec2(cubeTex.getSize(),cubeTex.getSize());
+		m_isRepeated = cubeTex.isRepeated();
+		m_isSmooth   = cubeTex.isSmooth();
+		getGlId()    = m_cubeTex.getGlId();
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -30,21 +29,20 @@ namespace fg
 																	m_cubeTex(face.m_cubeTex),
 																	m_faceId(face.m_faceId)
 	{
-		m_realSize   = face.m_realSize,
-		m_size       = face.m_size,
-		m_isRepeated = face.m_isRepeated,
-		m_isSmooth   = face.m_isSmooth,
+		m_size       = face.m_size;
+		m_isRepeated = face.m_isRepeated;
+		m_isSmooth   = face.m_isSmooth;
 		getGlId()    = face.getGlId();
 	}
 	
 	/////////////////////////////////////////////////////////////
 	fm::Result CubeTextureFace::copyFace(const CubeTexture &cubeTex,unsigned int face)
 	{
-		CubeTextureFace fakeFace(m_cubeTex,face);
-		fakeFace.getGlId() = cubeTex.getGlId();
-		fakeFace.m_faceId  = face;
+		CubeTextureFace tmpFace(m_cubeTex,face);
+		tmpFace.getGlId() = cubeTex.getGlId();
+		tmpFace.m_faceId  = face % 6;
 		
-		return loadFromImage(fakeFace.copyToImage());
+		return loadFromImage(tmpFace.copyToImage());
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -157,7 +155,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	CubeTexture::~CubeTexture()
 	{
-		if (getGlId() && glIsTexture(getGlId()) == GL_TRUE)
+		if (getGlId())
 			glDeleteTextures(1,&getGlId());
 	}
 

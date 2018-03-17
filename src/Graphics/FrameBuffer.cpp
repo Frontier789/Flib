@@ -191,32 +191,35 @@ namespace fg
 		
 		fm::Result res;
 		
-		ObjectBinder binder(getGlId());
+		bind();
 		C(count)
 		{
 			const Texture *ptr = *(colorAttachments+i);
+			
+			if (!ptr) continue;
 			
 			res = glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, ptr->getTexTarget(), ptr->getGlId(), 0));
 			
 			if (!res) return res;
 
-			fm::vec2s size = ptr->getRealSize();
+			fm::vec2s size = ptr->getSize();
 
 			if (!i || size.w < m_width ) m_width  = size.w;
 			if (!i || size.h < m_height) m_height = size.h;
 		}
+		FrameBuffer::bind(nullptr);
 		
-		if (::priv::so_loader.getProcAddr("glDrawBuffers") != nullptr)
-		{
-			GLenum *drawBuffers = new GLenum[count];
-			C(count)
-				drawBuffers[i] = GL_COLOR_ATTACHMENT0+i;
-			res += glCheck(glDrawBuffers(count, drawBuffers));
-			delete[] drawBuffers;
-			
-			if (!res) return res;
-		}
+		GLenum *drawBuffers = new GLenum[count];
+		C(count)
+			drawBuffers[i] = GL_COLOR_ATTACHMENT0+i;
 		
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER,getGlId());
+		res += glCheck(glDrawBuffers(count, drawBuffers));
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
+		
+		delete[] drawBuffers;
+		
+		if (!res) return res;
 		
 		return checkFramebufferStatus("FrameBuffer.setColorAttachments",__FILE__,__LINE__);
 	}
@@ -227,7 +230,7 @@ namespace fg
 		init();
 		
 		fm::Result res;
-
+		
 		if (depthBuf.dtex)
 		{
 			ObjectBinder binder(getGlId());

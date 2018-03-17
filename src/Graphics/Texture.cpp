@@ -162,14 +162,10 @@ namespace fg
 	/// functions /////////////////////////////////////////////////////////
 	fm::Result Texture::create(fm::vec2s size)
 	{
-		fm::vec2s realSize = getValidSize(size);
-		
 		fm::Result res;
 		
 		bool sizeChange = (m_size != size);
 		
-		// setup internal data
-		m_realSize = realSize;
 		m_size = size;
 
 		if (glIsTexture(getGlId()) == GL_FALSE)
@@ -203,7 +199,7 @@ namespace fg
 
 		// upload data
 		if (sizeChange)
-			res += glCheck(glTexImage2D(getTexTarget(),0,getInternalFormat(),m_realSize.w,m_realSize.h,0,getFormat(),getType(),nullptr));
+			res += glCheck(glTexImage2D(getTexTarget(),0,getInternalFormat(),m_size.w,m_size.h,0,getFormat(),getType(),nullptr));
 
 		return res;
 	}
@@ -381,31 +377,9 @@ namespace fg
 		// prepare image
 		TextureSaver save(getTexBinding(),getTexRebinding());
 
-		// if npot textures are present or m_size is pot
-		if (m_size == m_realSize)
-		{
-			// simply copy back texture
-			bind();
-			res += glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),target.getPtr()));
-		}
-		else
-		{
-			// copy the whole texture
-			std::vector<Color> allPixels(m_realSize.w * m_realSize.h);
-			bind();
-			res += glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),&allPixels[0]));
-
-			// cut the useful part
-			const Color *src = &allPixels[0];
-			Color *dst = target.getPtr();
-
-			C((fm::Size)m_size.h)
-			{
-				std::memcpy(dst,src,m_size.w*sizeof(Color));
-				src += m_realSize.w,
-				dst += m_size.w;
-			}
-		}
+		// simply copy back texture
+		bind();
+		res += glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),target.getPtr()));
 
 		return res;
 	}
@@ -428,7 +402,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	fm::mat4 Texture::getPixToUnitMatrix() const
 	{
-		return fm::MATRIX::scaling(fm::vec2(1,1)/getRealSize());
+		return fm::MATRIX::scaling(fm::vec2(1,1)/getSize());
 	}
 
 	////////////////////////////////////////////////////////////
@@ -446,31 +420,6 @@ namespace fg
 		return m_size;
 	}
 
-	////////////////////////////////////////////////////////////
-	fm::vec2 Texture::getRealSize() const
-	{
-		return m_realSize;
-	}
-
-	////////////////////////////////////////////////////////////
-	fm::vec2s Texture::getValidSize(fm::vec2s size)
-	{
-		fm::Size mx = getMaximumSize();
-		
-		size.w = std::max<unsigned int>(std::min(size.w,mx),1);
-		size.h = std::max<unsigned int>(std::min(size.h,mx),1);
-		
-		const GLubyte *ver = glGetString(GL_VERSION);
-		if (ver && ver[0] > '1')
-			return size;
-
-		fm::vec2s ret(1,1);
-		while (ret.w < size.w) ret.w <<= 1;
-		while (ret.h < size.h) ret.h <<= 1;
-		
-		return ret;
-	}
-
 	/////////////////////////////////////////////////////////////
 	Texture::operator bool() const
 	{
@@ -481,7 +430,6 @@ namespace fg
 	Texture::reference Texture::swap(Texture &tex)
 	{
 		std::swap(getGlId()   ,tex.getGlId()    );
-		std::swap(m_realSize  ,tex.m_realSize   );
 		std::swap(m_size      ,tex.m_size       );
 		std::swap(m_isRepeated,tex.m_isRepeated );
 		std::swap(m_isSmooth  ,tex.m_isSmooth   );

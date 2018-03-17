@@ -173,7 +173,6 @@ int main()
 	
 	cout << glGetString(GL_VERSION) << endl;
 	cout << glGetString(GL_VENDOR) << endl;
-	cout << Buffer::keepShadowCopy() << endl;
 	cout << win.getShader().instancingAvailable() << endl;
 	
 	fg::SpriteManager *manager = new fg::SpriteManager(false);

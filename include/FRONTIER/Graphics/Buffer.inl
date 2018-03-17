@@ -17,34 +17,55 @@
 #ifndef FRONTIER_BUFFER_INL_INCLUDED
 #define FRONTIER_BUFFER_INL_INCLUDED
 #include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/GL/Is_GLDataType.hpp>
+
 namespace fg
 {
 	////////////////////////////////////////////////////////////
 	template<class T,fm::Size S>
-	fm::Result Buffer::setData(const T (&data)[S])
+	inline fm::Result Buffer::setData(const T (&data)[S])
 	{
-		return setData(&data[0],sizeof(data));
+		return setData(&data[0],sizeof(data)/sizeof(*data));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline fm::Result Buffer::setData(const T *data,fm::Size dataCount)
+	{
+		return setData((const void*)data,Is_GLDataType<T>::enumVal,Is_GLDataType<T>::compCount,sizeof(T)*dataCount);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,fm::Size S>
+	inline fm::Result Buffer::updateData(const T (&data)[S],fm::Size byteOffset)
+	{
+		return updateData(data,S,byteOffset);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline fm::Result Buffer::updateData(const T *data,fm::Size dataCount,fm::Size byteOffset)
+	{
+		return updateData((const void *)data,dataCount * sizeof(T),byteOffset);
 	}
 
-	////////////////////////////////////////////////////////////
-	template<class T,fm::Size S>
-	fm::Result Buffer::setData(const T (&data)[S],Usage usage)
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline T *Buffer::map(BufferAccess access)
 	{
-		return setData(&data[0],sizeof(data),m_type,usage);
+		void *ptr = nullptr;
+		mapData(ptr,access);
+		return (T*)ptr;
 	}
 
-	////////////////////////////////////////////////////////////
-	template<class T,fm::Size S>
-	fm::Result Buffer::setData(const T (&data)[S],BufferType type)
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline fm::Result Buffer::map(T *&ptr,BufferAccess access)
 	{
-		return setData(&data[0],sizeof(data),type,m_usage);
-	}
-
-	////////////////////////////////////////////////////////////
-	template<class T,fm::Size S>
-	fm::Result Buffer::setData(const T (&data)[S],BufferType type,Usage usage)
-	{
-		return setData(&data[0],sizeof(data),type,usage);
+		void *vptr = nullptr;
+		fm::Result res = mapData(vptr,access);
+		ptr = (T*)vptr;
+		return res;
 	}
 }
 #endif //FRONTIER_BUFFER_INL_INCLUDED

@@ -94,9 +94,7 @@ namespace fg
 	Attribute &DrawData::getAttribute(AssocPoint type)
 	{
 		if (!hasAttr(type))
-		{
 			return *(m_attrs[type] = new Attribute());
-		}
 		
 		return *m_attrs[type];
 	}

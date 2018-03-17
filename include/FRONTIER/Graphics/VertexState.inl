@@ -14,35 +14,23 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_SHADER_INL_INCLUDED
-#define FRONTIER_SHADER_INL_INCLUDED
-#include <FRONTIER/System/String.hpp>
+#ifndef FRONTIER_VERTEXSTATE_INL_INCLUDED
+#define FRONTIER_VERTEXSTATE_INL_INCLUDED
+#include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/System/Ref.hpp>
 
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline fm::Result Shader::setAttribute(const std::string &name,fm::Ref<fg::Buffer> buf,fm::Size stride,fm::Size offset)
+	inline fm::Result VertexState::setAttribute(fm::Size attrId,fm::Ref<fg::Buffer> buf,fm::Size stride,fm::Size offset)
 	{
-		return m_vao.setAttribute<T>(getAttribLocation(name),buf,stride,offset);
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T,fm::Size N>
-	inline fm::Result Shader::setUniform(const std::string &name,const T (&values)[N])
-	{
-		for (fm::Size i = 0;i<N;++i)
-		{
-			fm::Result res = setUniform( (name + "[" + fm::toString(i) + "]").str() , values[i] );
-			
-			if (!res)
-				return res;
-		}
+		Attribute attr;
+		if (buf)
+			attr.set<T>(*buf,stride,offset);
 		
-		return fm::Result();
+		return setAttribute(attrId,attr);
 	}
 }
 
-#endif // FRONTIER_SHADER_INL_INCLUDED
-
-
+#endif // FRONTIER_VERTEXSTATE_INL_INCLUDED

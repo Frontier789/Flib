@@ -502,19 +502,9 @@ namespace fg
 				m_drawData[fg::Assoc::Custom+4].instancesPerUpdate = 1;
 				m_drawData[fg::Assoc::Custom+5].instancesPerUpdate = 1;
 				m_drawData[fg::Assoc::Custom+6].instancesPerUpdate = 1;
-				
-				m_drawData[fg::Assoc::Custom+0].bufferUsage = fg::Buffer::StreamDraw;
-				m_drawData[fg::Assoc::Custom+1].bufferUsage = fg::Buffer::StreamDraw;
-				m_drawData[fg::Assoc::Custom+2].bufferUsage = fg::Buffer::StreamDraw;
 			}
 			else
-			{
 				m_drawData.addDraw(0,0,fg::Triangles);
-				
-				m_drawData[fg::Assoc::Position ].bufferUsage = fg::Buffer::StreamDraw;
-				m_drawData[fg::Assoc::TextureUV].bufferUsage = fg::Buffer::StreamDraw;
-				m_drawData[fg::Assoc::Color    ].bufferUsage = fg::Buffer::StreamDraw;
-			}
 		}
 		
 		/////////////////////////////////////////////////////////////

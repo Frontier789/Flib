@@ -48,6 +48,7 @@
 		"random": "cpp",
 		"vector": "cpp",
 		"map": "cpp",
-		"string": "cpp"
+		"string": "cpp",
+		"sstream": "cpp"
 	}
 }

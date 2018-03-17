@@ -132,7 +132,7 @@ namespace fg
             buf = new fg::Buffer(fg::IndexBuffer);
         }
 
-        buf->setData(ptr,bytesToCopy);
+        buf->setData(ptr,compType,1,bytesToCopy);
 
 		return *this;
     }

@@ -14,35 +14,49 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_SHADER_INL_INCLUDED
-#define FRONTIER_SHADER_INL_INCLUDED
-#include <FRONTIER/System/String.hpp>
+#include <FRONTIER/GL/GLBindKeeper.hpp>
+#include <FRONTIER/OpenGL.hpp>
 
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline fm::Result Shader::setAttribute(const std::string &name,fm::Ref<fg::Buffer> buf,fm::Size stride,fm::Size offset)
+	GLBindKeeper::GLBindKeeper(void (API_ENTRY *binder)(GLenum,GLuint),GLenum bindPoint,GLenum binding,GLuint tmpId) : 
+		m_enum(bindPoint),
+		m_binderA(binder),
+		m_binderB(nullptr)
 	{
-		return m_vao.setAttribute<T>(getAttribLocation(name),buf,stride,offset);
+		GLint id;
+		glGetIntegerv(binding,&id);
+		m_prevId = id;
+		
+		if (m_prevId != tmpId)
+			binder(bindPoint,tmpId);
+		else
+			m_binderA = nullptr;
+	}
+	/////////////////////////////////////////////////////////////
+	GLBindKeeper::GLBindKeeper(void (API_ENTRY *binder)(GLuint),GLenum binding,GLuint tmpId) : 
+		m_binderA(nullptr),
+		m_binderB(binder)
+	{
+		GLint id;
+		glGetIntegerv(binding,&id);
+		m_prevId = id;
+		
+		if (m_prevId != tmpId)
+			binder(tmpId);
+		else
+			m_binderB = nullptr;
 	}
 	
 	/////////////////////////////////////////////////////////////
-	template<class T,fm::Size N>
-	inline fm::Result Shader::setUniform(const std::string &name,const T (&values)[N])
+	GLBindKeeper::~GLBindKeeper()
 	{
-		for (fm::Size i = 0;i<N;++i)
-		{
-			fm::Result res = setUniform( (name + "[" + fm::toString(i) + "]").str() , values[i] );
-			
-			if (!res)
-				return res;
-		}
+		if (!m_binderA && !m_binderB) return;
 		
-		return fm::Result();
+		if (m_binderA)
+			m_binderA(m_enum,m_prevId);
+		else 
+			m_binderB(m_prevId);
 	}
 }
-
-#endif // FRONTIER_SHADER_INL_INCLUDED
-
-

@@ -14,12 +14,10 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Graphics/FixedShaderManager.hpp>
 #include <FRONTIER/Graphics/ShaderManager.hpp>
 #include <FRONTIER/Graphics/ShaderSource.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
-#include <FRONTIER/GL/Is_GLDataType.hpp>
 #include <FRONTIER/System/util/C.hpp>
 #include <FRONTIER/Graphics/Mesh.hpp>
 #include <FRONTIER/System/Matrix.hpp>
@@ -390,10 +388,10 @@ namespace fg
 				const fg::Attribute &attr = data[(fg::Assoc::Point)it.first];
 
 				fg::Buffer::bind(attr.buf,fg::ArrayBuffer),
-				res += setAttribPointer(it.second,attr.components,attr.componentType,false,nullptr,attr.stride);
+				res += setAttribPointer(it.second,attr.compCount,attr.compType,false,nullptr,attr.stride);
 				
 				if (instancingAvailable())
-					glVertexAttribDivisor(getAttribLocation(it.second),attr.instancesPerUpdate);
+					res += glCheck(glVertexAttribDivisor(getAttribLocation(it.second),attr.instancesPerUpdate));
 			}
 		}
 		
@@ -573,6 +571,6 @@ namespace fg
 			return shader;
 		}
 		
-		return new FixedShaderManager;
+		return nullptr;
 	}
 }

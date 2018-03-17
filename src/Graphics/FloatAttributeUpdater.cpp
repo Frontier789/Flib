@@ -82,16 +82,21 @@ namespace fg
 		unMap();
 		m_uploads = 0;
 		
-		m_attrib.set(m_floatPerVec,
-					 0,
-					 capacity,
-					 fg::Is_GLDataType<float>::enumVal,
-					 nullptr,
-					 getBytesPerItem() * capacity,
-					 m_attrib.bufferUsage,m_attrib.instancesPerUpdate);
+		m_attrib.compCount = m_floatPerVec;
+		m_attrib.compType  = fg::Is_GLDataType<float>::enumVal;
+		m_attrib.count     = capacity;
+		m_attrib.stride    = 0;
+		
+		if (!m_attrib.ownBuffer || !m_attrib.buf)
+		{
+			m_attrib.ownBuffer = true;
+			m_attrib.buf = new fg::Buffer(fg::ArrayBuffer,fg::StreamDraw);
+		}
+		
+		m_attrib.buf->setData<float>(nullptr,capacity * getFloatsPerItem());
 		
 		if (m_data.size())
-			m_attrib.buf->updateData((void*)&m_data[0],m_data.size() * sizeof(float),0);
+			m_attrib.buf->updateData<float>(&m_data[0],m_data.size());
 		
 		m_capacity = capacity;
 	}

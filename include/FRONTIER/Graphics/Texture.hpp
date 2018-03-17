@@ -55,7 +55,6 @@ namespace fg
 	class FRONTIER_API Texture : public GlObject
 	{
 	protected:
-		fm::vec2s m_realSize; ///< The actul size of the texture
 		fm::vec2s m_size;	  ///< The requested size of the texture
 		bool m_isRepeated;	  ///< True if the texture is repeated after its bounds
 		bool m_isSmooth;	  ///< If true then linear interpolation is used on magnifying
@@ -371,14 +370,6 @@ namespace fg
 		fm::vec2 getSize() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the real size of the texture
-		///
-		/// @return The real size of the texture
-		///
-		/////////////////////////////////////////////////////////////
-		fm::vec2 getRealSize() const;
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Find out if the texture is valid
 		///
 		/// @return true iff the texture is valid
@@ -417,19 +408,6 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		reference swap(Texture &tex);
-
-	private:
-		/////////////////////////////////////////////////////////////
-		/// @brief Convert size to an acceptable size
-		///
-		/// This function is private and used internally
-		///
-		/// @param size size
-		///
-		/// @return Real size
-		///
-		/////////////////////////////////////////////////////////////
-		static fm::vec2s getValidSize(fm::vec2s size);
 	};
 }
 #endif

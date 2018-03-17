@@ -16,49 +16,63 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_ATTRIBUTE_INL_INCLUDED
 #define FRONTIER_ATTRIBUTE_INL_INCLUDED
+#include <FRONTIER/GL/Is_GLDataType.hpp>
 
 namespace fg
 {
-    //////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////
     template<class T,fm::Size N>
-	inline Attribute &Attribute::operator=(const T (&data)[N])
+    Attribute &Attribute::operator=(const T (&data)[N])
     {
-        return set(data);
+        return set((const T*)data,N);
     }
-    
-    //////////////////////////////////////////////////////////////////////////
+ 
+    /////////////////////////////////////////////////////////////
     template<class T>
-	inline Attribute &Attribute::operator=(std::initializer_list<T> data)
+    Attribute &Attribute::operator=(std::initializer_list<T> data)
     {
         return set(data.begin(),data.size());
     }
 
-    //////////////////////////////////////////////////////////////////////////
-    template<class T,fm::Size N>
-    inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T (&data)[N],fg::Buffer::Usage bufferUsage,fm::Size instancesPerUpdate)
-    {
-        return set((const T*)data,N,bufferUsage,instancesPerUpdate);
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    template<class T,fm::Size N>
-    inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T (&data)[N],fg::Buffer::Usage bufferUsage,fm::Size instancesPerUpdate)
-    {
-        return set((const T*)data,N,bufferUsage,instancesPerUpdate);
-    }
-
-    //////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////
     template<class T>
-    inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage,fm::Size instancesPerUpdate)
+    Attribute &Attribute::set(const T *pointer,fm::Size N,fm::Size instancesPerUpdate)
     {
-        return set(1,0,N,fg::Is_GLDataType<T>::enumVal,pointer,sizeof(T)*N,bufferUsage,instancesPerUpdate);
+        if (ownBuffer)
+            delete buf;
+        
+        buf = new Buffer;
+        buf->setData(pointer,N);
+        
+        this->instancesPerUpdate = instancesPerUpdate;
+        compCount = buf->getCompCount();
+        compType  = buf->getCompType();
+        stride    = 0;
+        offset    = 0;
+        count     = buf->getItemCount();
+        ownBuffer = true;
+        
+        return *this;
     }
-
-    //////////////////////////////////////////////////////////////////////////
+    
+    /////////////////////////////////////////////////////////////
     template<class T>
-    inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &Attribute::set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage,fm::Size instancesPerUpdate)
+    Attribute &Attribute::set(fg::Buffer &buf,fm::Size stride,fm::Size offset,fm::Size instancesPerUpdate)
     {
-		return set(T::components,0,N,fg::Is_GLDataType<typename T::component_type>::enumVal,pointer,sizeof(T)*N,bufferUsage,instancesPerUpdate);
+        if (ownBuffer)
+            delete this->buf;
+        
+        this->buf = &buf;
+        
+        this->instancesPerUpdate = instancesPerUpdate;
+        compCount       = Is_GLDataType<T>::compCount;
+        compType        = Is_GLDataType<T>::enumVal;
+        this->stride    = stride;
+        this->offset    = offset;
+        count           = buf.getItemCount() - offset / buf.getItemSize();
+        ownBuffer       = false;
+        
+        return *this;
     }
 }
 

@@ -19,245 +19,239 @@
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/OpenGL.hpp>
-#include <cstring>
 
 namespace fg
 {
+	namespace 
+	{
+		fm::Size bytesPerItem(fm::Size compType,fm::Size compCount)
+		{
+			if (compType == GL_UNSIGNED_SHORT) return compCount * sizeof(GLushort);
+			if (compType == GL_UNSIGNED_BYTE)  return compCount * sizeof(GLubyte);
+			if (compType == GL_UNSIGNED_INT)   return compCount * sizeof(GLuint);
+			if (compType == GL_DOUBLE)         return compCount * sizeof(GLdouble);
+			if (compType == GL_FLOAT)          return compCount * sizeof(GLfloat);
+			if (compType == GL_SHORT)          return compCount * sizeof(GLshort);
+			if (compType == GL_BYTE)           return compCount * sizeof(GLbyte);
+			if (compType == GL_INT)            return compCount * sizeof(GLint);
+			
+			return 0;	
+		}
+	}
+	
 	////////////////////////////////////////////////////////////
 	Buffer::Buffer() : m_type(ArrayBuffer),
 					   m_usage(StaticDraw),
-					   m_data(nullptr),
-					   m_size(0)
+					   m_compType(0),
+					   m_compCount(0),
+					   m_byteCount(0)
 	{
 
 	}
 
 #ifndef FRONTIER_HEAVYCOPY_FORBID
 	////////////////////////////////////////////////////////////
-	Buffer::Buffer(const Buffer &buf) : m_data(nullptr),
-                                        m_size(0)
+	Buffer::Buffer(const Buffer &buf) : m_type(ArrayBuffer),
+										m_usage(StaticDraw),
+										m_compType(0),
+										m_compCount(0),
+										m_byteCount(0)
 	{
         (*this) = buf;
 	}
 #endif
 
 	////////////////////////////////////////////////////////////
-	Buffer::Buffer(Buffer &&buf) : m_data(nullptr),
-                                   m_size(0)
+	Buffer::Buffer(Buffer &&buf) : m_type(ArrayBuffer),
+								   m_usage(StaticDraw),
+								   m_compType(0),
+								   m_compCount(0),
+								   m_byteCount(0)
 	{
 		buf.swap(*this);
 	}
 
 	////////////////////////////////////////////////////////////
-	Buffer::Buffer(BufferType type,Buffer::Usage usage) : m_type(type),
-														  m_usage(usage),
-                                                          m_data(nullptr),
-                                                          m_size(0)
+	Buffer::Buffer(BufferType type,BufferUsage usage) : m_type(type),
+														m_usage(usage),
+														m_compType(0),
+														m_compCount(0),
+														m_byteCount(0)
 	{
 
 	}
-
-	////////////////////////////////////////////////////////////
-	Buffer::Buffer(Buffer::Usage usage,BufferType type) : m_type(type),
-														  m_usage(usage),
-                                                          m_data(nullptr),
-                                                          m_size(0)
+	
+	/////////////////////////////////////////////////////////////
+	fm::Size Buffer::getCompType() const
 	{
-
+		return m_compType;
+	} 
+	
+	/////////////////////////////////////////////////////////////
+	fm::Size Buffer::getCompCount() const
+	{
+		return m_compCount;
+	} 
+	
+	/////////////////////////////////////////////////////////////
+	fm::Size Buffer::getItemCount() const
+	{
+		if (getItemSize() == 0) return 0;
+		
+		return m_byteCount / getItemSize();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Size Buffer::getItemSize() const
+	{
+		return bytesPerItem(m_compType,m_compCount);
 	}
 
-	////////////////////////////////////////////////////////////
-	Buffer::Buffer(const void *data,fm::Size bytesToCopy,BufferType type,Buffer::Usage usage) : m_data(nullptr),
-                                                                                                m_size(0)
+	/////////////////////////////////////////////////////////////
+	Buffer &Buffer::setType(BufferType type)
 	{
-		setData(data,bytesToCopy,type,usage);
+		m_type = type;
+		return *this;
 	}
-
-	////////////////////////////////////////////////////////////
-	Buffer::Buffer(const void *data,fm::Size bytesToCopy,Buffer::Usage usage,BufferType type) : m_data(nullptr),
-                                                                                                m_size(0)
+	
+	/////////////////////////////////////////////////////////////
+	Buffer &Buffer::setUsage(BufferUsage usage)
 	{
-		setData(data,bytesToCopy,type,usage);
+		m_usage = usage;
+		return *this;
 	}
-
+	
 	////////////////////////////////////////////////////////////
 	Buffer::~Buffer()
 	{
-	    delete[] m_data;
-
-		if (getGlId() && glIsBuffer(getGlId()))
+		if (getGlId())
 			glCheck(glDeleteBuffers(1,&getGlId()));
-
-	}
-
-	////////////////////////////////////////////////////////////
-	void Buffer::init()
-	{
-		if (!getGlId() || !glIsBuffer(getGlId()))
-			glCheck(glGenBuffers(1,&getGlId()));
-	}
-
-	////////////////////////////////////////////////////////////
-	fm::Result Buffer::setData(const void *data,fm::Size bytesToCopy)
-	{
-		return setData(data,bytesToCopy,m_type,m_usage);
-	}
-
-	////////////////////////////////////////////////////////////
-	fm::Result Buffer::setData(const void *data,fm::Size bytesToCopy,Buffer::Usage usage)
-	{
-		return setData(data,bytesToCopy,m_type,usage);
-	}
-
-	////////////////////////////////////////////////////////////
-	fm::Result Buffer::setData(const void *data,fm::Size bytesToCopy,BufferType type)
-	{
-		return setData(data,bytesToCopy,type,m_usage);
 	}
 
 	////////////////////////////////////////////////////////////
 	unsigned int typeToGetBinding(BufferType type)
 	{
-		return type == IndexBuffer ? GL_ELEMENT_ARRAY_BUFFER_BINDING:
-									 GL_ARRAY_BUFFER_BINDING;
+		if (type == ArrayBuffer) return GL_ARRAY_BUFFER_BINDING;
+		if (type == IndexBuffer) return GL_ELEMENT_ARRAY_BUFFER_BINDING;
+		if (type == ShaderStorageBuffer) return GL_SHADER_STORAGE_BUFFER_BINDING;
+		
+		return GL_NONE;
 	}
 
-	////////////////////////////////////////////////////////////
-	unsigned int getFallBackUsage(Buffer::Usage usage)
+	/////////////////////////////////////////////////////////////
+	fm::Result Buffer::setData(const void *ptr,fm::Size compType,fm::Size compCount,fm::Size byteCount)
 	{
-		if (usage==GL_STATIC_READ) return GL_STATIC_DRAW;
-		if (usage==GL_STATIC_COPY) return GL_STATIC_DRAW;
-
-		if (usage==GL_DYNAMIC_DRAW) return GL_STATIC_DRAW;
-		if (usage==GL_DYNAMIC_READ) return GL_STATIC_READ;
-		if (usage==GL_DYNAMIC_COPY) return GL_STATIC_COPY;
-
-		if (usage==GL_STREAM_DRAW) return GL_STATIC_DRAW;
-		if (usage==GL_STREAM_READ) return GL_STATIC_READ;
-		if (usage==GL_STREAM_COPY) return GL_STATIC_COPY;
-
-		return 0;
-	}
-
-	////////////////////////////////////////////////////////////
-	bool Buffer::keepShadowCopy()
-	{
-        if (::priv::so_loader.getProcAddr("glCopyBufferSubData"))
-            return false;
-
-        if (::priv::so_loader.getProcAddr("glMapBuffer"))
-            return false;
-
-        return true;
-	}
-
-	////////////////////////////////////////////////////////////
-	fm::Result Buffer::setData(const void *data,fm::Size bytesToCopy,BufferType type,Buffer::Usage usage)
-	{
-	    // copy attrs
-		m_type  = type;
-		m_usage = usage;
-
-		// make sure buffer exists
 		init();
-		if (!getGlId())
-			return fm::Result("BufferError",fm::Result::OPFailed,"0ID","Buffer.setData",__FILE__,__LINE__);
+		
+		GLint boundBuffer = 0;
+        fm::Result res;
 
-        fm::Result err;
+		res += glCheck(glGetIntegerv(typeToGetBinding(m_type),&boundBuffer));
+		res += bind();
 
-        // switch to this buffer
-		int boundBuffer = 0;
+		glBufferData(m_type,byteCount,ptr,m_usage);
 
-		err += glCheck(glGetIntegerv(typeToGetBinding(m_type),&boundBuffer));
-		err += glCheck(glBindBuffer(m_type,getGlId()));
-
-        // copy data
-		glBufferData(m_type,bytesToCopy,data,m_usage);
-
-        // use fallback usage hint if needed
 		unsigned int errCode = glGetError();
 		if (errCode)
 		{
 			if (errCode == GL_OUT_OF_MEMORY)
-                return fm::Result("GLError",fm::Result::OPFailed,"OutOfMemory","Buffer.setData",__FILE__,__LINE__,fm::toString(bytesToCopy).str());
-			if (errCode == GL_INVALID_ENUM)
-				err += glCheck(glBufferData(m_type,bytesToCopy,data,getFallBackUsage(m_usage)));
+                return fm::Result("GLError",fm::Result::OPFailed,"OutOfMemory","Buffer.setData",__FILE__,__LINE__,fm::toString(byteCount).str());
 		}
+		
+		m_compType  = compType;
+		m_compCount = compCount;
+		m_byteCount = byteCount;
 
-        // on old hardware use cpu shadowcopy
-		if (keepShadowCopy())
-        {
-            delete[] m_data;
-            m_data = new fm::Uint8[bytesToCopy];
+		res += glCheck(glBindBuffer(m_type,boundBuffer));
 
-			if (data)
-            	std::memcpy(m_data,data,bytesToCopy);
-        }
-
-        m_size = bytesToCopy;
-
-        // reset binding
-		err += glCheck(glBindBuffer(m_type,boundBuffer));
-
-		return err;
+		return res;
 	}
 
-	////////////////////////////////////////////////////////////
-	fm::Result Buffer::updateData(const void *data,fm::Size bytesToCopy,fm::Size byteOffset)
+	/////////////////////////////////////////////////////////////
+	fm::Result Buffer::updateData(const void *ptr,fm::Size byteCount,fm::Size byteOffset)
 	{
-		// make sure buffer exists
-		init();
-		if (!getGlId())
-			return fm::Result("BufferError",fm::Result::OPFailed,"0ID","Buffer.updateData",__FILE__,__LINE__);
-
-        fm::Result err;
-
-        // activate this buffer
+		if (!getGlId() || byteOffset >= m_byteCount) return fm::Result();
+		
+		byteCount = std::min(byteCount,m_byteCount - byteOffset);
+		
 		int boundBuffer = 0;
+        fm::Result res;
 
-		err += glCheck(glGetIntegerv(typeToGetBinding(m_type),&boundBuffer));
+		res += glCheck(glGetIntegerv(typeToGetBinding(m_type),&boundBuffer));
 
-        // upload data
-		err += glCheck(glBindBuffer(m_type,getGlId()));
-		err += glCheck(glBufferSubData(m_type,byteOffset,bytesToCopy,data));
+		res += bind();
+		res += glCheck(glBufferSubData(m_type,byteOffset,byteCount,ptr));
 
-		// on old hardware use cpu shadowcopy
-		if (m_data)
-            std::memcpy(m_data+byteOffset,data,bytesToCopy);
+		res += glCheck(glBindBuffer(m_type,boundBuffer));
 
-		err += glCheck(glBindBuffer(m_type,boundBuffer));
-
-		return err;
+		return res;
 	}
-
-	/////////////////////////////////////////////////////////////
-	void *Buffer::map(bool read,bool write)
-	{
-		if (!read && !write)
-			return nullptr;
-
-		bind();
-
-        if (m_data) return m_data;
-
-		return glMapBuffer(m_type,read ? (write ? GL_READ_WRITE : GL_READ_ONLY) : (write ? GL_WRITE_ONLY : GL_NONE));
-	}
-
-	/////////////////////////////////////////////////////////////
-	void Buffer::unMap()
-	{
-		bind();
-
-        if (m_data) return;
-
-        glUnmapBuffer(m_type);
-	}
-
 
 	/////////////////////////////////////////////////////////////
 	BufferType Buffer::getType() const
 	{
 		return m_type;
+	}
+
+	/////////////////////////////////////////////////////////////
+	BufferUsage Buffer::getUsage() const
+	{
+		return m_usage;
+	}
+
+	////////////////////////////////////////////////////////////
+	void Buffer::init()
+	{
+		if (!getGlId())
+			glCheck(glGenBuffers(1,&getGlId()));
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::Result Buffer::mapData(void *&ptr,BufferAccess access)
+	{
+		bind();
+
+		ptr = glMapBuffer(m_type,access);
+		
+		return glCheck((void)0);
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::Result Buffer::unMap()
+	{
+		if (!getGlId()) return fm::Result();
+		
+		bind();
+
+        return glCheck(glUnmapBuffer(m_type));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Buffer Buffer::makeCopy() const
+	{
+		Buffer ret;
+		
+	    ret.m_usage = m_usage;
+	    ret.m_type  = m_type;
+	    ret.m_compType  = m_compType;
+	    ret.m_compCount = m_compCount;
+	    ret.m_byteCount = m_byteCount;
+
+        if (!m_byteCount) return ret;
+
+		ret.init();
+
+		glBindBuffer(GL_COPY_READ_BUFFER, getGlId());
+		glBindBuffer(GL_COPY_WRITE_BUFFER, ret.getGlId());
+
+		glBufferData(GL_COPY_WRITE_BUFFER, m_byteCount, nullptr, m_usage);
+
+		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, m_byteCount);
+
+		glBindBuffer(GL_COPY_READ_BUFFER, 0);
+		glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
+
+        return ret;
 	}
 
 #ifndef FRONTIER_HEAVYCOPY_FORBID
@@ -266,45 +260,9 @@ namespace fg
 	{
 		FRONTIER_HEAVYCOPY_NOTE;
 		
-        // copy attrs
-	    m_usage = buf.m_usage;
-	    m_type  = buf.m_type;
-	    m_size  = buf.m_size;
-
-        // reset data
-        delete[] m_data;
-        m_data = nullptr;
-
-        // check if there is data
-        if (!m_size) return *this;
-
-		// make sure buffer exists
-		init();
-		if (!getGlId())
-			return *this;
-
-        // decide whether it's local data
-        if (buf.m_data)
-        {
-            m_data = new fm::Uint8[m_size];
-            std::memcpy(m_data,buf.m_data,m_size);
-            setData(m_data,m_size);
-        }
-        else
-        {
-            glBindBuffer(GL_COPY_READ_BUFFER, buf.getGlId());
-            glBindBuffer(GL_COPY_WRITE_BUFFER, getGlId());
-
-            glBufferData(GL_COPY_WRITE_BUFFER, m_size, nullptr, m_usage);
-
-            // Copy Data
-            glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, m_size);
-
-            glBindBuffer(GL_COPY_READ_BUFFER, 0);
-            glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
-        }
-
-        return *this;
+        buf.makeCopy().swap(*this);
+		
+		return *this;
 	}
 #endif
 
@@ -315,9 +273,9 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result Buffer::bind(BufferType targetType) const
+	fm::Result Buffer::bind(BufferType type) const
 	{
-		return Buffer::bind(this,targetType);
+		return Buffer::bind(this,type);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -327,15 +285,9 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result Buffer::bind(const Buffer &buffer,BufferType targetType)
+	fm::Result Buffer::bind(fm::Ref<const Buffer> buffer,BufferType type)
 	{
-		return bind(&buffer,targetType);
-	}
-
-	////////////////////////////////////////////////////////////
-	fm::Result Buffer::bind(const Buffer *buffer,BufferType targetType)
-	{
-		return glCheck(glBindBuffer(targetType,buffer ? buffer->getGlId() : 0));
+		return glCheck(glBindBuffer(type,buffer ? buffer->getGlId() : 0));
 	}
 
 	////////////////////////////////////////////////////////////
@@ -345,9 +297,9 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result Buffer::unBind(BufferType targetType)
+	fm::Result Buffer::unBind(BufferType type)
 	{
-		return bind(nullptr,targetType);
+		return bind(nullptr,type);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -359,25 +311,14 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void *Buffer::getDataPtr()
-	{
-		return m_data;
-	}
-
-	/////////////////////////////////////////////////////////////
-	const void *Buffer::getDataPtr() const
-	{
-		return m_data;
-	}
-	
-	/////////////////////////////////////////////////////////////
 	Buffer::reference Buffer::swap(Buffer &buf)
 	{
 		std::swap(getGlId(),buf.getGlId());
 		std::swap(m_type   ,buf.m_type   );
 		std::swap(m_usage  ,buf.m_usage  );
-		std::swap(m_data   ,buf.m_data   );
-		std::swap(m_size   ,buf.m_size   );
+		std::swap(m_compType  ,buf.m_compType  );
+		std::swap(m_compCount ,buf.m_compCount );
+		std::swap(m_byteCount ,buf.m_byteCount );
 		
 		return *this;
 	}

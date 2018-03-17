@@ -19,6 +19,7 @@
 
 #include <FRONTIER/System/util/dont_include_inl_begin>
 
+#include <FRONTIER/Graphics/VertexState.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/System/Delegate.hpp>
@@ -103,16 +104,15 @@ namespace fg
 	{
 	public:
 		/////////////////////////////////////////////////////////////
-		/// @brief Pod type for describing a shader input's properties (like uniform or attribute)
+		/// @brief Pod type for describing a shader uniform's properties
 		///
 		/////////////////////////////////////////////////////////////
 		class InputData
 		{
 		public:
-			fm::Size flags; ///< Extra flags 
-			fm::Size type;  ///< The type of the shader input
-			fm::Size size;  ///< The number of array elements in the shader input
-			int location;   ///< The id of the shader input
+			fm::Size type;  ///< The type of the uniform
+			fm::Size size;  ///< The number of array elements in the uniform
+			int location;   ///< The id of the uniform
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Default constructor
@@ -131,14 +131,6 @@ namespace fg
 			///
 			/////////////////////////////////////////////////////////////
 			bool isArray() const;
-			
-			/////////////////////////////////////////////////////////////
-			/// @brief Check if the shader input is an associated one meaning the shader manager manages it
-			///
-			/// @return True iff the shader input is an associated one
-			///
-			/////////////////////////////////////////////////////////////
-			bool isAssociated() const;
 		};
 		
 		typedef InputData UniformData; ///< Uniform data
@@ -177,16 +169,14 @@ namespace fg
     public:
 		std::map<std::string, TexUniformData > m_textures; ///< The state and name of the sampler uniforms
 		std::map<std::string, TexUniformData > m_images;   ///< The state and name of the image uniforms
-		std::map<std::string, AttribData> m_attributes;    ///< The data of the uniforms
+		std::map<std::string, AttribData>  m_attributes;   ///< The data of the uniforms
 		std::map<std::string, UniformData> m_uniforms;     ///< The data of the uniforms
 		std::vector<unsigned int> m_subShaders; ///< The id of the shaders that builds up the shader program
-		fm::Uint32 m_defVao;   ///< Default vao for core profiles
+		fg::VertexArray m_vao; ///< The shader's own vertex array object
 		BlendMode m_blendMode; ///< The used blending
 		bool m_hasInstancing;  ///< Stores whether the shader can use instancing
 		fm::Result link();     ///< Internal function used to link the compiled shaders to the shader program
-		void init();           ///< Internal function used at setup
-		virtual fm::Result createDefVao(); ///< create default vao if needed
-		bool m_ownVao; ///< Indicates whether own vao should be created with the shader
+		fm::Result init();     ///< Internal function used at setup
 		fm::Result freeSubShaders(); ///< Internal function used at clean-up
 		virtual void clearData();    ///< clear uniforms, attributes, textures etc
 		virtual fm::Result postProcess(const std::string *data,const unsigned int *types,unsigned int count); ///< Process source of the successfully loaded shader
@@ -319,8 +309,10 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the shader program for usage
 		///
+		/// @return The result of the call
+		///
 		/////////////////////////////////////////////////////////////
-        void bind() const;
+        fm::Result bind() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Find the "id" of a uniform
@@ -353,17 +345,6 @@ namespace fg
         int hasUniform(const std::string &name);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Enable/disable a given attribute pointer
-		///
-		/// @param name The name of the attribute
-		/// @param enable True to enable false to disable
-		/// 
-		/// @return The error-state of the function
-		/// 
-		/////////////////////////////////////////////////////////////
-		fm::Result enableAttribPointer(const std::string &name,bool enable = true);
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Find the "id" of an attribute
 		///
 		/// This function is mostly used internally
@@ -384,66 +365,55 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
         int hasAttribute(const std::string &name);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set an attribute of the shader's vao
+		///
+		/// @param name The name of the Attribute
+		/// @param buf The buffer to set
+		///
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setAttribute(const std::string &name,const Attribute &attr);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the pointer data associated with one attributes
+		/// @brief Set an interleaved attribute of the shader's vao
+		/// 
+		/// @param name The name of the Attribute
+		/// @param buf The buffer to set
+		/// @param stride The offset between the start of two consecutive items in bytes
+		/// @param offset The offset to the beginning of the data in bytes
 		///
-		/// If the shader program is invalid no error will be returnes
-		/// and the shader program will not be modified
-		///
-		/// After successfully calling this function
-		/// a call to glDrawArrays or glDrawElements
-		/// with this shader program being bound will use
-		/// this data
-		///
-		/// This function is mostly used internally
-		///
-		/// @param name The name of the attribute
-		/// @param components The number of components in the attribute
-		/// @param type The type of data component (e.g. GL_FLOAT)
-		/// @param normalize Specify if the data should be normalized when accessed
-		/// @param pointer A pointer to the data
-		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
-		///
-		/// @return The error-state of the function
+		/// @return The result of the operation
 		///
 		/////////////////////////////////////////////////////////////
-        fm::Result setAttribPointer(const std::string &name,unsigned int components,unsigned long type,bool normalize,const void *pointer,unsigned int stride = 0);
-
+		template<class T>
+		fm::Result setAttribute(const std::string &name,fm::Ref<fg::Buffer> buf,fm::Size stride = 0,fm::Size offset = 0);
+	
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the pointer data associated with a one dimensional attribute
+		/// @brief Access the shader's verex array object
 		///
-		/// If the shader program is invalid no error will be returned
-		/// and the shader program will not be modified
-		///
-		/// @param name The name of the attribute
-		/// @param pointer A pointer to the data
-		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
-		///
-		/// @return The error-state of the function
+		/// @return The vertex array object
 		///
 		/////////////////////////////////////////////////////////////
-		template<class T,class = typename std::enable_if<fg::Is_GLDataType<T>::value>::type>
-		fm::Result setAttribPointer(const std::string &name,const T *pointer,unsigned int stride = 0);
-
+		const VertexArray &getVao() const;
+	
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the pointer data associated with one multidimensional attribute
+		/// @brief Access the shader's verex array object
 		///
-		/// If the shader program is invalid no error will be returned
-		/// and the shader program will not be modified
-		///	
-		///	The T::components will be used to determine the number of components 
-		/// And T::component_type to determine the type
-		///	
-		/// @param name The name of the attribute
-		/// @param pointer A pointer to the data
-		/// @param stride Byte offset between the beginning of two attributes (0 means tightly packed)
-		///
-		/// @return The error-state of the function
+		/// @return The vertex array object
 		///
 		/////////////////////////////////////////////////////////////
-		template<class T,class = int,class = typename std::enable_if<!fg::Is_GLDataType<T>::value>::type>
-		fm::Result setAttribPointer(const std::string &name,const T *pointer,unsigned int stride = 0);
+		VertexArray &getVao();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Bind the shader's vertex array object
+		///
+		/// @return The result of the call
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result bindVao() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an int uniform
@@ -704,8 +674,10 @@ namespace fg
 		///
 		/// @param program The program to be bound
 		///
+		/// @return The result of the call
+		///
 		/////////////////////////////////////////////////////////////
-        static void bind(fm::Ref<const Shader> program);
+        static fm::Result bind(fm::Ref<const Shader> program);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if shaders are available
@@ -797,14 +769,6 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		bool isLoaded() const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Set whether the shader should use own vao 
-		/// 
-		/// @param ownVao True iff the shader should own vao
-		/// 
-		/////////////////////////////////////////////////////////////
-		void setOwnVao(bool ownVao);
 	};
 
 }

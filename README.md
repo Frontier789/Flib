@@ -35,6 +35,7 @@ development libraries
 The source code uses selfdocumentation in doxygen style
 A compiled html version can be found on my site:
 http://makom789.web.elte.hu/docs/index.html
+<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Automatic testing</h2>
 Testing done via AutoTester (https://github.com/Frontier789/AutoTester)
 <p align="center"><img src="https://raw.githubusercontent.com/Frontier789/AutoTester/master/result.png"/></p>

@@ -42,7 +42,7 @@ int main()
 	check(res);
 
 	cshader.bind();
-	cshader.setUniform("u_kernSize",5);
+	cshader.setUniform("u_kernSize",12);
 	res += cshader.setUniform("u_inTex",inTex);
 	res += cshader.setUniform("u_outTex",outTex);
 	check(res);

@@ -7,4 +7,6 @@
 !*/makefile
 !*/
 !pixy/*.png
+!mandelbrot/pal.png
+!computeShader/rose.png
 lib*

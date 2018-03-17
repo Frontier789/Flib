@@ -24,7 +24,6 @@
 #include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/Graphics/DrawCall.hpp>
-#include <FRONTIER/GL/Is_GLDataType.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/System/util/API.h>
 

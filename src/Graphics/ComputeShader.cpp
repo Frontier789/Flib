@@ -25,13 +25,12 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	ComputeShader::ComputeShader()
 	{
-		m_shader.setOwnVao(true);
+		
 	}
 
 	/////////////////////////////////////////////////////////////
 	ComputeShader::ComputeShader(ComputeShader &&shader)
 	{
-		m_shader.setOwnVao(true);
 		shader.swap(*this);
 	}
 

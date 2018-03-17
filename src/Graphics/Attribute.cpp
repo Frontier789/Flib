@@ -19,152 +19,122 @@
 
 namespace fg
 {
-	//////////////////////////////////////////////////////////////////////////
-	Attribute::Attribute(fm::Size components,
-						 fm::Size stride,
-						 fm::Size count,
-						 fm::Size componentType,
-						 fg::Buffer *buffer,
-						 bool ownBuffer,
-						 fg::Buffer::Usage bufferUsage,
-						 fm::Size instancesPerUpdate) : bufferUsage(bufferUsage),
-														instancesPerUpdate(instancesPerUpdate),
-														componentType(componentType),
-														components(components),
-														buf(buffer ? buffer : new fg::Buffer),
-														stride(stride),
-														count(count),
-														ownBuffer(buffer ? ownBuffer : true)
+	/////////////////////////////////////////////////////////////
+	Attribute::Attribute() : instancesPerUpdate(0),
+							 compCount(0),
+							 compType(0),
+							 buf(nullptr),
+							 stride(0),
+							 offset(0),
+							 count(0),
+							 ownBuffer(false)
 	{
+		
+	}
 
+	/////////////////////////////////////////////////////////////
+	Attribute::Attribute(fg::Buffer &buf,fm::Size instancesPerUpdate) : 
+		instancesPerUpdate(instancesPerUpdate),
+		compCount(buf.getCompCount()),
+		compType(buf.getCompType()),
+		buf(&buf),
+		stride(0),
+		offset(0),
+		count(buf.getItemCount()),
+		ownBuffer(false)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Attribute::~Attribute()
+	{
+		if (ownBuffer)
+			delete buf;
 	}
 
 #ifndef FRONTIER_HEAVYCOPY_FORBID
-	//////////////////////////////////////////////////////////////////////////
-	Attribute::Attribute(const Attribute &attr) : buf(nullptr),
-												  ownBuffer(false)
+	/////////////////////////////////////////////////////////////
+	Attribute::Attribute(const Attribute &attr) : 
+		instancesPerUpdate(attr.instancesPerUpdate),
+		compCount(attr.compCount),
+		compType(attr.compType),
+		buf(attr.buf),
+		stride(attr.stride),
+		offset(attr.offset),
+		count(attr.count),
+		ownBuffer(attr.ownBuffer)
 	{
-		(*this) = attr;
+		FRONTIER_HEAVYCOPY_NOTE;
+		
+		if (ownBuffer)
+		{
+			Buffer *tmp = buf;
+			buf = new Buffer;
+			
+			buf->swap(tmp->makeCopy());
+		}
 	}
 #endif
 
-	//////////////////////////////////////////////////////////////////////////
-	Attribute::Attribute(Attribute &&attr) : buf(nullptr),
-											 ownBuffer(false)
+	/////////////////////////////////////////////////////////////
+	Attribute::Attribute(Attribute &&attr) : 
+		instancesPerUpdate(0),
+		compCount(0),
+		compType(0),
+		buf(nullptr),
+		stride(0),
+		offset(0),
+		count(0),
+		ownBuffer(false)
 	{
 		attr.swap(*this);
 	}
 
 #ifndef FRONTIER_HEAVYCOPY_FORBID
-	//////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
 	Attribute &Attribute::operator=(const Attribute &attr)
 	{
 		FRONTIER_HEAVYCOPY_NOTE;
 		
-		bufferUsage        = attr.bufferUsage;
-		componentType      = attr.componentType;
-		components         = attr.components;
-		stride             = attr.stride;
-		count              = attr.count;
-		instancesPerUpdate = attr.instancesPerUpdate;
-		
-		if (ownBuffer) delete buf;
-		
-		ownBuffer = attr.ownBuffer;
-		
-		if (attr.buf)
-		{
-			if (ownBuffer)
-			{
-				buf = new fg::Buffer;
-				(*buf) = (*attr.buf);
-			}
-			else buf = attr.buf;
-		}
-		else buf = nullptr;
-
-		return *this;
+		Buffer b = attr;
+		return this->swap(b);
 	}
 #endif
 
-	//////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
 	Attribute &Attribute::operator=(Attribute &&attr)
 	{
 		return this->swap(attr);
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 	Attribute &Attribute::swap(Attribute &attr)
 	{
 		std::swap(instancesPerUpdate,attr.instancesPerUpdate);
-		std::swap(componentType,attr.componentType);
-		std::swap(bufferUsage,attr.bufferUsage);
-		std::swap(components,attr.components);
-		std::swap(ownBuffer,attr.ownBuffer);
-		std::swap(stride,attr.stride);
-		std::swap(count,attr.count);
+		std::swap(compCount,attr.compCount);
+		std::swap(compType,attr.compType);
 		std::swap(buf,attr.buf);
+		std::swap(stride,attr.stride);
+		std::swap(offset,attr.offset);
+		std::swap(count,attr.count);
+		std::swap(ownBuffer,attr.ownBuffer);
 		
 		return *this;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	Attribute &Attribute::set(fm::Size components,
-							  fm::Size stride,
-							  fm::Size count,
-							  fm::Size componentType,
-							  const void *pointer,
-							  fm::Size bytesToCopy,
-							  fg::Buffer::Usage bufferUsage,
-							  fm::Size instancesPerUpdate)
+	/////////////////////////////////////////////////////////////
+	Attribute &Attribute::operator=(fg::Buffer &buf)
 	{
-		this->instancesPerUpdate = instancesPerUpdate;
-		this->componentType = componentType;
-		this->bufferUsage = bufferUsage;
-		this->components  = components;
-		this->stride = stride;
-		this->count  = count;
+		instancesPerUpdate = 0;
+		compCount = buf.getCompCount();
+		compType  = buf.getCompType();
+		this->buf = &buf;
+		stride    = 0;
+		offset    = 0;
+		count     = buf.getItemCount();
+		ownBuffer = false;
 		
-		if (!ownBuffer || !buf)
-		{
-			ownBuffer = true;
-			buf = new fg::Buffer;
-		}
-
-		buf->setData(pointer,bytesToCopy,bufferUsage);
-
 		return *this;
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	Attribute &Attribute::set(fm::Size components,
-							  fm::Size stride,
-							  fm::Size count,
-							  fm::Size componentType,
-							  fg::Buffer *buf,
-							  bool ownBuffer,
-							  fg::Buffer::Usage bufferUsage,
-							  fm::Size instancesPerUpdate)
-	{
-		this->instancesPerUpdate = instancesPerUpdate;
-		this->componentType = componentType;
-		this->bufferUsage = bufferUsage;
-		this->components  = components;
-		this->stride = stride;
-		this->count  = count;
-
-		if (ownBuffer) delete buf;
-
-		this->buf = buf;
-		this->ownBuffer = ownBuffer;
-
-		return *this;
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	Attribute::~Attribute()
-	{
-		if (ownBuffer)
-			delete buf;
 	}
 }

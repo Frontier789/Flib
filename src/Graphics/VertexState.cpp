@@ -15,49 +15,88 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/VertexState.hpp>
+#include <FRONTIER/GL/GL_SO_LOADER.hpp>
+#include <FRONTIER/GL/GLBindKeeper.hpp>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/GL/GL_CHECK.hpp>
-#include <FRONTIER/GL/GL_SO_LOADER.hpp>
 #include <FRONTIER/OpenGL.hpp>
 
 namespace fg
 {
-	////////////////////////////////////////////////////////////
-	void VertexState::init()
+	/////////////////////////////////////////////////////////////
+	fm::Result VertexState::create()
 	{
-		if (!getGlId() || !glIsVertexArray(getGlId()))
-			glCheck(glGenVertexArrays(1,&getGlId()));
+		if (!getGlId())
+			return glCheck(glGenVertexArrays(1,&getGlId()));
+		
+		return fm::Result();
 	}
-
-	////////////////////////////////////////////////////////////
-	VertexState::VertexState()
+	
+	/////////////////////////////////////////////////////////////
+	VertexState::VertexState(VertexState &&mv)
 	{
-
+		mv.swap(*this);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	VertexState &VertexState::swap(VertexState &state)
+	{
+		std::swap(getGlId(),state.getGlId());
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result VertexState::clearData()
+	{
+		fm::Result res;
+		
+		if (getGlId())
+		{
+			res += glCheck(glDeleteVertexArrays(1,&getGlId()));
+			res += create();
+		}
+		
+		return res;
 	}
 
 	////////////////////////////////////////////////////////////
 	VertexState::~VertexState()
 	{
-		if (getGlId() && glIsVertexArray(getGlId()))
+		if (getGlId())
 			glCheck(glDeleteVertexArrays(1,&getGlId()));
 	}
 
 	////////////////////////////////////////////////////////////
-	void VertexState::bind()
+	fm::Result VertexState::bind() const
 	{
-		if (!getGlId())
-			init();
-
-		glCheck(glBindVertexArray(getGlId()));
+		return glCheck(glBindVertexArray(getGlId()));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result VertexState::setAttribute(fm::Size attrId,const Attribute &attr)
+	{
+		GLBindKeeper guard(glBindVertexArray,GL_VERTEX_ARRAY_BINDING,getGlId());
+		
+		fm::Result res = fg::Buffer::bind(attr.buf,fg::ArrayBuffer);
+		
+		if (attr.buf)
+		{
+			res += glCheck(glEnableVertexAttribArray(attrId));
+			res += glCheck(glVertexAttribPointer(attrId, attr.compCount, attr.compType, GL_FALSE, attr.stride, (void*)attr.offset));
+		}
+		else 
+			res += glCheck(glDisableVertexAttribArray(attrId));
+		
+		return res;
 	}
 
 	////////////////////////////////////////////////////////////
-	void VertexState::bind(VertexState *vao)
+	fm::Result VertexState::bind(fm::Ref<const VertexState> vao)
 	{
 		if (vao)
-			vao->bind();
+			return vao->bind();
 		else
-			glCheck(glBindVertexArray(0));
+			return glCheck(glBindVertexArray(0));
 	}
 
 	////////////////////////////////////////////////////////////

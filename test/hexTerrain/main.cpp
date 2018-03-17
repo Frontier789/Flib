@@ -33,7 +33,6 @@ int main()
 	bool running = true;
 	Clock fpsClock;
 	
-	FixedShaderManager fixedShader;
 	ShaderManager shader110;
 	ShaderManager shader150;
 	
@@ -74,12 +73,12 @@ int main()
 	}
 	else
 	{
-		cout << "shaders not supported, using fixed pipeline" << endl;
+		cout << "shaders not supported, quitting" << endl;
 		
-		usedShader = 0;
+		return 0;
 	}
 	
-	ShaderManager &shader = ((usedShader == 0) ? fixedShader : (usedShader == 1 ? shader110 : shader150));
+	ShaderManager &shader = (usedShader == 1 ? shader110 : shader150);
 	
 	Camera &cam = shader.getCamera();
 	shader.setUniform("u_doLight",1);

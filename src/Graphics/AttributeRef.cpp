@@ -54,33 +54,9 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	AttributeRef &AttributeRef::set(fm::Size components,
-									fm::Size stride,
-									fm::Size count,
-									fm::Size componentType,
-									const void *pointer,
-									fm::Size bytesToCopy,
-									fg::Buffer::Usage bufferUsage,
-									fm::Size instancesPerUpdate)
+	Attribute &AttributeRef::operator=(fg::Buffer &buf)
 	{
-		m_drawData.getAttribute(m_assoc).set(components,stride,count,componentType,pointer,bytesToCopy,bufferUsage,instancesPerUpdate);
-		
-		return *this;
-	}
-
-	/////////////////////////////////////////////////////////////
-	AttributeRef &AttributeRef::set(fm::Size components,
-									fm::Size stride,
-									fm::Size count,
-									fm::Size componentType,
-									fg::Buffer *buffer,
-									bool ownBuffer,
-									fg::Buffer::Usage bufferUsage,
-									fm::Size instancesPerUpdate)
-	{
-		m_drawData.getAttribute(m_assoc).set(components,stride,count,componentType,buffer,ownBuffer,bufferUsage,instancesPerUpdate);
-		
-		return *this;
+		return m_drawData.getAttribute(m_assoc) = buf;
 	}
 	
 	/////////////////////////////////////////////////////////////

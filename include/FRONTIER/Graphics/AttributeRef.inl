@@ -24,37 +24,26 @@
 
 namespace fg
 {
-	/////////////////////////////////////////////////////////////
-	template<class T,fm::Size N>
-	inline AttributeRef &AttributeRef::operator=(const T (&data)[N])
-	{
-		m_drawData.getAttribute(m_assoc).set(data);
-		return *this;
-	}
-    
-    //////////////////////////////////////////////////////////////////////////
-    template<class T>
-	inline AttributeRef &AttributeRef::operator=(std::initializer_list<T> data)
+    /////////////////////////////////////////////////////////////
+    template<class T,fm::Size N>
+    Attribute &AttributeRef::operator=(const T (&data)[N])
     {
-		m_drawData.getAttribute(m_assoc) = data;
-		return *this;
+        return m_drawData.getAttribute(m_assoc).set((const T*)data,N);
+    }
+ 
+    /////////////////////////////////////////////////////////////
+    template<class T>
+    Attribute &AttributeRef::operator=(std::initializer_list<T> data)
+    {
+        return m_drawData.getAttribute(m_assoc).set(data.begin(),data.size());
     }
 
-	/////////////////////////////////////////////////////////////
-	template<class T,fm::Size N>
-	inline AttributeRef &AttributeRef::set(const T (&data)[N],fg::Buffer::Usage bufferUsage,fm::Size instancesPerUpdate)
-	{
-		m_drawData.getAttribute(m_assoc).set(data,bufferUsage,instancesPerUpdate);
-		return *this;
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline AttributeRef &AttributeRef::set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage,fm::Size instancesPerUpdate)
-	{
-		m_drawData.getAttribute(m_assoc).set(pointer,N,bufferUsage,instancesPerUpdate);
-		return *this;
-	}
+    /////////////////////////////////////////////////////////////
+    template<class T>
+    Attribute &AttributeRef::set(const T *pointer,fm::Size N,fm::Size instancesPerUpdate)
+    {
+        return m_drawData.getAttribute(m_assoc).set(pointer,N,instancesPerUpdate);
+    }
 }
 
 #endif // FRONTIER_ATTRIBUTE_REF_INL_INCLUDED

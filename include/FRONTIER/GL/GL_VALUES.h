@@ -369,6 +369,7 @@
 	#define GL_ELEMENT_ARRAY_BUFFER_ARB                                   0x8893
 	#define GL_ELEMENT_ARRAY_BUFFER_BINDING                               0x8895
 	#define GL_ELEMENT_ARRAY_BUFFER_BINDING_ARB                           0x8895
+	#define GL_SHADER_STORAGE_BUFFER_BINDING                              0x90d3
 	#define GL_EMISSION                                                   0x1600
 	#define GL_ENABLE_BIT                                                 0x2000
 	#define GL_EQUAL                                                      0x202

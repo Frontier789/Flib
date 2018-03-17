@@ -18,6 +18,7 @@
 #include <FRONTIER/Graphics/CubeTexture.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
+#include <FRONTIER/GL/GLBindKeeper.hpp>
 #include <FRONTIER/Graphics/Shader.hpp>
 #include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
@@ -56,8 +57,7 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Shader::InputData::InputData(fm::Size type,fm::Size size,int location) : flags(0),
-																			 type(type),
+	Shader::InputData::InputData(fm::Size type,fm::Size size,int location) : type(type),
 																			 size(size),
 																			 location(location)
 	{
@@ -68,12 +68,6 @@ namespace fg
 	bool Shader::InputData::isArray() const
 	{
 		return size != 0;
-	}
-	
-	/////////////////////////////////////////////////////////////
-	bool Shader::InputData::isAssociated() const
-	{
-		return flags & FRONTIER_SHADER_UNIFORM_ASSOCIATED_BIT;
 	}
 
 	/// compile shader objects /////////////////////////////////////////////////////////
@@ -145,52 +139,29 @@ namespace fg
     }
 
     ////////////////////////////////////////////////////////////
-	void Shader::init()
-	{
-		if (!getGlId())
-			getGlId() = glCreateProgram();
-	}
-	
-    ////////////////////////////////////////////////////////////
-	fm::Result Shader::createDefVao()
+	fm::Result Shader::init()
 	{
 		fm::Result res;
 		
-		if (!m_ownVao) return res;
-		
-    	// generate default vao if available
-		if (::priv::so_loader.getProcAddr("glGenVertexArrays"))
+		if (!getGlId())
 		{
-			if (glIsVertexArray(m_defVao))
-				glDeleteVertexArrays(1,&m_defVao);
+			getGlId() = glCreateProgram();
+			if (!getGlId())
+				res += fm::Result("GLError",fm::Result::OPFailed,"0ID","glCreateProgram",__FILE__,__LINE__);
 			
-			GLint program;
-			res += glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
-			res += glCheck(glUseProgram(getGlId()));
-
-			res += glCheck(glGenVertexArrays(1, &m_defVao));
-    		res += glCheck(glBindVertexArray(m_defVao));
-			
-			res += glCheck(glUseProgram(program));
+			res += m_vao.create();
 		}
-		
 		return res;
 	}
 	
     ////////////////////////////////////////////////////////////
 	fm::Result Shader::link()
 	{
-		// init GlId
-		init();
-		if (!getGlId())
-			return fm::Result("GLError",fm::Result::OPFailed,"InitFailed","link",__FILE__,__LINE__);
+		fm::Result res = init();
+		if (!res) return res;
 
-		// reset containers
 		clearData();
-		
-		fm::Result res;
-		
-		// attach subshaders
+
 		C(m_subShaders.size())
 			res += glCheck(glAttachShader(getGlId(),m_subShaders[i]));
 
@@ -224,8 +195,6 @@ namespace fg
 			delete[] logData;
 			return res;
 		}
-		
-		res += createDefVao();
 
 		return res;
 	}
@@ -249,8 +218,7 @@ namespace fg
 	}
 
 	/// constructor /////////////////////////////////////////////////////////
-	Shader::Shader() : m_blendMode(fg::Alpha),
-					   m_ownVao(true)
+	Shader::Shader() : m_blendMode(fg::Alpha)
 	{
 
 	}
@@ -269,12 +237,6 @@ namespace fg
 			
 			freeSubShaders();
 			glDeleteProgram(getGlId());
-			
-			if (::priv::so_loader.getProcAddr("glGenVertexArrays"))
-			{
-				if (glIsVertexArray(m_defVao))
-					glDeleteVertexArrays(1,&m_defVao);
-			}
 		}
 	}
 
@@ -298,9 +260,7 @@ namespace fg
 		m_textures.swap(shader.m_textures);
 		m_images.swap(shader.m_images);
 		m_attributes.swap(shader.m_attributes);
-		
-		std::swap(m_defVao,shader.m_defVao);
-		std::swap(m_ownVao,shader.m_ownVao);
+		m_vao.swap(shader.m_vao);
 		
 		std::swap(getGlId(),shader.getGlId());
 		
@@ -325,10 +285,8 @@ namespace fg
 	/// functions /////////////////////////////////////////////////////////
 	fm::Result Shader::loadFromFiles(const std::string *files,const unsigned int *types,unsigned int count)
 	{
-		// init GlId
-		init();
-		if (!getGlId())
-			return fm::Result("GLError",fm::Result::OPFailed,"InitFailed","loadFromFiles",__FILE__,__LINE__);
+		fm::Result res = init();
+		if (!res) return res;
 		
 		std::vector<std::string> data(count,"");
 		
@@ -357,16 +315,13 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	fm::Result Shader::loadFromMemory(const std::string *data,const unsigned int *types,unsigned int count)
 	{
-		// init GlId
-		init();
-		if (!getGlId())
-			return fm::Result("GLError",fm::Result::OPFailed,"InitFailed","loadFromMemory",__FILE__,__LINE__);
+		fm::Result res = init();
+		if (!res) return res;
 		
 		// refill sub shaders
 		freeSubShaders();
 		m_subShaders.resize(count);
 		
-		fm::Result res;
 		C(count)
 		{
 			res += compileSubShader(data[i],types[i],m_subShaders[i]);
@@ -425,21 +380,22 @@ namespace fg
 
 
 	////////////////////////////////////////////////////////////
-	void Shader::bind() const
+	fm::Result Shader::bind() const
 	{
-		glUseProgram(getGlId());
+		fm::Result res = m_vao.bind();
+		res += glCheck(glUseProgram(getGlId()));
+		
+		return res;
 	}
 
 
 	////////////////////////////////////////////////////////////
-	void Shader::bind(fm::Ref<const Shader> program)
+	fm::Result Shader::bind(fm::Ref<const Shader> program)
 	{
-		const Shader *ptr = program;
-		
-		if (ptr)
-			ptr->bind();
+		if (program)
+			return program->bind();
 		else 
-			glUseProgram(0);
+			return glCheck(glUseProgram(0));
 	}
 
 	////////////////////////////////////////////////////////////
@@ -460,7 +416,7 @@ namespace fg
 									 fm::Size maxLenFlag,
 									 decltype(glGetActiveUniform) glDataGetterFunc,
 									 decltype(glGetUniformLocation) glLocGetterFunc,
-									 decltype(m_uniforms) &inputDataHolder){
+									 decltype(m_uniforms) &inputDataHolder) {
 			GLint dataCount;
 			glGetProgramiv(getGlId(),activeFlag,&dataCount);
 			
@@ -527,27 +483,6 @@ namespace fg
 		return glGetUniformLocation(getGlId(),name.c_str()) + 1;	
 	}
 
-	/////////////////////////////////////////////////////////////
-	fm::Result Shader::enableAttribPointer(const std::string &name,bool enable)
-	{
-		int location = getAttribLocation(name);
-
-		if (location == -1)
-			return fm::Result("GLError",fm::Result::OPFailed,"AttrNotFound","enableAttribPointer",__FILE__,__LINE__,name);
-		
-		if (enable)
-		{
-			m_attributes[name].flags |= FRONTIER_SHADER_ATTRIB_POINTER_ENABLED_BIT;
-			return glCheck(glEnableVertexAttribArray(location));			
-		}
-		else
-		{
-			m_attributes[name].flags &= ~FRONTIER_SHADER_ATTRIB_POINTER_ENABLED_BIT;
-			return glCheck(glDisableVertexAttribArray(location));
-		}
-	}
-
-
 	////////////////////////////////////////////////////////////
 	int Shader::getAttribLocation(const std::string &name)
 	{
@@ -573,32 +508,14 @@ namespace fg
 		return 0;
 	}
 	
+	/////////////////////////////////////////////////////////////
+	fm::Result Shader::setAttribute(const std::string &name,const Attribute &attr)
+	{
+		return m_vao.setAttribute(getAttribLocation(name),attr);
+	}
+	
 	namespace priv
 	{
-		class ProgKeeper
-		{
-			GLint m_newId;
-			GLint m_id;
-		public:
-			fm::Result &res;
-			
-			ProgKeeper(GLint id,fm::Result &res) : m_newId(id), res(res)
-			{
-				glGetIntegerv(GL_CURRENT_PROGRAM,&m_id);
-				
-				if (m_id != m_newId)
-					res += glCheck(glUseProgram(m_newId));
-			}
-			
-			~ProgKeeper()
-			{
-				if (m_id != m_newId)
-				{
-					res += glCheck(glUseProgram(m_id));
-				}
-			}
-		};
-		
 		template<class A,class B> class ConvertHelper                   { public: static A convert(const B &b) {return b;}};
 		template<class A,class B> class ConvertHelper<A,fm::vector2<B>> { public: static A convert(const fm::vector2<B> &b) {return b.x;}};
 		template<class A,class B> class ConvertHelper<A,fm::vector3<B>> { public: static A convert(const fm::vector3<B> &b) {return b.x;}};
@@ -634,9 +551,9 @@ namespace fg
 	fm::Result Shader::setUniform(const std::string &name,param)                                \
 	{                                                                                           \
 		fm::Result res;                                                                         \
-		if (isLoaded())                                                                          \
+		if (isLoaded())                                                                         \
 		{                                                                                       \
-			priv::ProgKeeper keeper(getGlId(),res);                                             \
+			GLBindKeeper keeper(glUseProgram,GL_CURRENT_PROGRAM,getGlId());                     \
 			                                                                                    \
 			auto it = m_uniforms.find(name);                                                    \
 			UniformData dat;                                                                    \
@@ -697,9 +614,7 @@ namespace fg
 		
 		if (isLoaded())
 		{
-			GLint program;
-			res += glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
-			res += glCheck(glUseProgram(getGlId()));
+			GLBindKeeper keeper(glUseProgram,GL_CURRENT_PROGRAM,getGlId());
 
 			auto &texDict = (sampler ? m_textures : m_images);
 
@@ -742,7 +657,6 @@ namespace fg
 			}
 			
 			res += glCheck(glActiveTexture(GL_TEXTURE0));
-			res += glCheck(glUseProgram(program));
 		}
 		
 		return res;
@@ -761,9 +675,7 @@ namespace fg
 			
 		if (isLoaded())
 		{
-			GLint program;
-			res += glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
-			res += glCheck(glUseProgram(getGlId()));
+			GLBindKeeper keeper(glUseProgram,GL_CURRENT_PROGRAM,getGlId());
 
 			// check if the uniform is in the dictionary
 			std::map<std::string, TexUniformData >::iterator it = m_textures.find(name);
@@ -797,30 +709,11 @@ namespace fg
 					res += fm::Result("GLSLError",fm::Result::OPFailed,"UniformNotFound","setUniform",__FILE__,__LINE__,name);
 
 				res += glCheck(glActiveTexture(GL_TEXTURE0));
-				res += glCheck(glUseProgram(program));
 			}
 		}
 		
 		return res;
 	}
-
-	////////////////////////////////////////////////////////////
-    fm::Result Shader::setAttribPointer(const std::string &name,unsigned int components,unsigned long type,bool normalize,const void *pointer,unsigned int stride)
-    {
-		fm::Result res;
-		
-		if (isLoaded())
-		{
-			int location = getAttribLocation(name);
-
-			if (location != -1)
-			{
-				enableAttribPointer(name,true);
-				res += glCheck(glVertexAttribPointer(location,components,type,normalize,stride,pointer));
-			}
-		}
-		return res;
-    }
 
 	////////////////////////////////////////////////////////////
     bool Shader::isAvailable()
@@ -873,11 +766,5 @@ namespace fg
 	bool Shader::isLoaded() const
 	{
 		return getGlId();
-	}
-	
-	/////////////////////////////////////////////////////////////
-	void Shader::setOwnVao(bool ownVao)
-	{
-		m_ownVao = ownVao;
 	}
 }

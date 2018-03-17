@@ -21,18 +21,45 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/System/Ref.hpp>
 #define FRONTIER_BUFFER
 
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	/// @brief Type used to hint OpenGL on buffer-usage
+	/// @brief Type used to specify OpenGL buffer-usage
 	///
 	/////////////////////////////////////////////////////////////
 	enum BufferType {
 		ArrayBuffer = 0x8892, ///< Means that the buffer is generic (may hold position color etc)
 		IndexBuffer = 0x8893, ///< Means that the buffer holds indices
 		ShaderStorageBuffer = 0x90D2 ///< Indicates a buffer for plain shader input output 
+	};
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Values used to hint OpenGL on the usage of the data
+	///
+	/////////////////////////////////////////////////////////////
+	enum BufferUsage {
+		StaticDraw  = 0x88e4, ///< The application will send data to OpenGL once        (Please note that this is only a hint)
+		StaticRead  = 0x88e5, ///< OpenGL will send data to the application once        (Please note that this is only a hint)
+		StaticCopy  = 0x88e6, ///< Data will be transferred inside OpenGL once          (Please note that this is only a hint)
+		DynamicDraw = 0x88e8, ///< The application will send data to OpenGL frequently  (Please note that this is only a hint)
+		DynamicRead = 0x88e9, ///< OpenGL will send data to the application frequently  (Please note that this is only a hint)
+		DynamicCopy = 0x88ea, ///< Data will be transferred inside OpenGL frequently    (Please note that this is only a hint)
+		StreamDraw  = 0x88e0, ///< The application will send data to OpenGL per frame   (Please note that this is only a hint)
+		StreamRead  = 0x88e1, ///< OpenGL will send data to the application per frame   (Please note that this is only a hint)
+		StreamCopy  = 0x88e2  ///< Data will be transferred inside OpenGL per frame     (Please note that this is only a hint)
+	};
+	
+	/////////////////////////////////////////////////////////////
+	/// @brief Encode an access policy for buffer mapping
+	///
+	/////////////////////////////////////////////////////////////
+	enum BufferAccess {
+		BufferReadOnly  = 0x88b8,
+		BufferWriteOnly = 0x88b9,
+		BufferReadWrite = 0x88ba
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -43,37 +70,54 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API Buffer : public GlObject
 	{
-	public:
-		/////////////////////////////////////////////////////////////
-		/// @brief Values used to hint OpenGL on the usage of the data
-		///
-		/////////////////////////////////////////////////////////////
-		enum Usage {
-			StaticDraw  = 0x88e4, ///< The application will send data to OpenGL once        (Please note that this is only a hint)
-			StaticRead  = 0x88e5, ///< OpenGL will send data to the application once        (Please note that this is only a hint)
-			StaticCopy  = 0x88e6, ///< Data will be transferred inside OpenGL once          (Please note that this is only a hint)
-			DynamicDraw = 0x88e8, ///< The application will send data to OpenGL frequently  (Please note that this is only a hint)
-			DynamicRead = 0x88e9, ///< OpenGL will send data to the application frequently  (Please note that this is only a hint)
-			DynamicCopy = 0x88ea, ///< Data will be transferred inside OpenGL frequently    (Please note that this is only a hint)
-			StreamDraw  = 0x88e0, ///< The application will send data to OpenGL per frame   (Please note that this is only a hint)
-			StreamRead  = 0x88e1, ///< OpenGL will send data to the application per frame   (Please note that this is only a hint)
-			StreamCopy  = 0x88e2  ///< Data will be transferred inside OpenGL per frame     (Please note that this is only a hint)
-		};
 	private:
-		BufferType m_type; ///< Type of the buffer
-		Usage m_usage;	   ///< Hinting for OpenGL on buffer usage
-		fm::Uint8 *m_data; ///< Internal shadow copy
-		fm::Size m_size;   ///< Number of bytes stored
+		BufferType m_type;    ///< Type of the buffer
+		BufferUsage m_usage;  ///< Hinting for OpenGL on buffer usage
+		fm::Size m_compType;  ///< The OpenGL id of the type of components
+		fm::Size m_compCount; ///< The number of components
+		fm::Size m_byteCount; ///< Number of bytes stored
 		void init(); ///< Internal function used to create the OpenGL id
+		
+		fm::Result mapData(void *&ptr,BufferAccess access); ///< Internal helper map function
 
 	public:
 		typedef Buffer &reference;
 		typedef const Buffer &const_reference;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the component type enum
+		///
+		/// @return The OpenGL id of the type of components
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Size getCompType() const; 
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the number of components in an item
+		///
+		/// @return The number of components
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Size getCompCount() const; 
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the number of items in the buffer
+		///
+		/// @return The number of items
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Size getItemCount() const; 
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the number of bytes an item occupies
+		///
+		/// @return The number of bytes per item
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Size getItemSize() const; 
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
-		///
-		/// The object is uninitialized (invalid) after this call
 		///
 		/////////////////////////////////////////////////////////////
 		Buffer();
@@ -97,54 +141,6 @@ namespace fg
 		Buffer(Buffer &&buf);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct buffer with given type
-		///
-		/// The object is uninitialized (invalid) after this call
-		///
-		/// @param type The type of the new buffer
-		/// @param usage The usage hint of the new buffer
-		///
-		/////////////////////////////////////////////////////////////
-		explicit Buffer(BufferType type,Usage usage = StaticDraw);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct buffer with given type
-		///
-		/// The object is uninitialized (invalid) after this call
-		///
-		/// @param usage The usage hint of the new buffer
-		/// @param type The type of the new buffer
-		///
-		/////////////////////////////////////////////////////////////
-		explicit Buffer(Usage usage,BufferType type = ArrayBuffer);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct buffer with given type
-		///
-		/// The object is initialized (valid) after this call
-		///
-		/// @param data Pointer to the data to be sent to OpenGL
-		/// @param bytesToCopy Number of bytes to copy
-		/// @param type The type of the new buffer
-		/// @param usage The usage hint of the new buffer
-		///
-		/////////////////////////////////////////////////////////////
-		Buffer(const void *data,fm::Size bytesToCopy,BufferType type = ArrayBuffer,Usage usage = StaticDraw);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct buffer with given type
-		///
-		/// The object is initialized (valid) after this call
-		///
-		/// @param data Pointer to the data to be sent to OpenGL
-		/// @param bytesToCopy Number of bytes to copy
-		/// @param usage The usage hint of the new buffer
-		/// @param type The type of the new buffer
-		///
-		/////////////////////////////////////////////////////////////
-		Buffer(const void *data,fm::Size bytesToCopy,Usage usage,BufferType type = ArrayBuffer);
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
 		///
 		/// If the OpenGL id is valid it will be
@@ -154,7 +150,55 @@ namespace fg
 		~Buffer();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set data of the buffer
+		/// @brief Construct buffer with given type
+		///
+		/// The object is uninitialized (invalid) after this call
+		///
+		/// @param type The type of the new buffer
+		/// @param usage The usage hint of the new buffer
+		///
+		/////////////////////////////////////////////////////////////
+		explicit Buffer(BufferType type,BufferUsage = StaticDraw);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the type of the buffer
+		///
+		/// @param type The new type of the buffer
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		Buffer &setType(BufferType type);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the usage of the buffer
+		///
+		/// @param usage The new usage of the buffer
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		Buffer &setUsage(BufferUsage usage);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set whole data of the buffer
+		///
+		/// Resizes the buffer if necessary
+		///
+		/// @param ptr Pointer to the data
+		/// @param compType The GL enum of the type of data
+		/// @param compCount The number of components per data
+		/// @param byteCount The number of BYTES (not items) to upload
+		///
+		/// @return the error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setData(const void *ptr,fm::Size compType,fm::Size compCount,fm::Size byteCount);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set whole data of the buffer
+		///
+		/// Resizes the buffer if necessary
 		///
 		/// @param data The data to be sent to OpenGL
 		///
@@ -165,101 +209,74 @@ namespace fg
 		fm::Result setData(const T (&data)[S]);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set data and the usage hint of the buffer
+		/// @brief Set whole data of the buffer
+		///
+		/// Resizes the buffer if necessary
+		///
+		/// @param data Pointer to the data to be sent to OpenGL
+		/// @param dataCount The number of Ts in data
+		///
+		/// @return the error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		fm::Result setData(const T *data,fm::Size dataCount);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set part of the data in the buffer
+		/// 
+		/// Does not create or resize buffer automatically
+		/// 
+		/// @param ptr Pointer to The data to be updated
+		/// @param byteCount The number of BYTES (not items) to upload
+		/// @param byteOffset Offset for the data to be uploaded in bytes
+		///
+		/// @return the error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result updateData(const void *ptr,fm::Size byteCount,fm::Size byteOffset = 0);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set part of the data in the buffer
+		/// 
+		/// Does not create or resize buffer automatically
 		///
 		/// @param data The data to be sent to OpenGL
-		/// @param usage Usage hint for OpenGL
+		/// @param byteOffset Offset for the data to be uploaded in bytes
 		///
 		/// @return the error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
 		template<class T,fm::Size S>
-		fm::Result setData(const T (&data)[S],Usage usage);
-
+		fm::Result updateData(const T (&data)[S],fm::Size byteOffset = 0);
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set data of the buffer
+		/// 
+		/// Does not create or resize buffer automatically
 		///
-		/// @param data The data to be sent to OpenGL
-		/// @param type The type to change the current type of the buffer
+		/// @param data Pointer to the data to be sent to OpenGL
+		/// @param dataCount The number of Ts in data
+		/// @param byteOffset Offset for the data to be uploaded in bytes
 		///
 		/// @return the error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		template<class T,fm::Size S>
-		fm::Result setData(const T (&data)[S],BufferType type);
+		template<class T>
+		fm::Result updateData(const T *data,fm::Size dataCount,fm::Size byteOffset = 0);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Set data, AccessFrequency and Usage
+		/// @brief Map the whole buffer for read/write
 		///
-		/// @param data The data to be sent to OpenGL
-		/// @param type The type to change the current type of the buffer
-		/// @param usage Usage hint for OpenGL
+		/// Returns nullptr on error
 		///
-		/// @return the error-state of the function
+		/// @param access The access policy for the mapping
 		///
-		/////////////////////////////////////////////////////////////
-		template<class T,fm::Size S>
-		fm::Result setData(const T (&data)[S],BufferType type,Usage usage);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Set data of the buffer
-		///
-		/// @param data Pointer the data to be sent to OpenGL
-		/// @param bytesToCopy Number of bytes in the data
-		///
-		/// @return the error-state of the function
+		/// @return A pointer to the mapped memory (nullptr on error)
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setData(const void *data,fm::Size bytesToCopy);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Set data and type
-		///
-		/// @param data Pointer the data to be sent to OpenGL
-		/// @param bytesToCopy Number of bytes in the data
-		/// @param type The new type of the buffer
-		///
-		/// @return the error-state of the function
-		///
-		/////////////////////////////////////////////////////////////
-		fm::Result setData(const void *data,fm::Size bytesToCopy,BufferType type);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Set data and usage hint
-		///
-		/// @param data Pointer the data to be sent to OpenGL
-		/// @param bytesToCopy Number of bytes in the data
-		/// @param usage Usage hint for OpenGL
-		///
-		/// @return the error-state of the function
-		///
-		/////////////////////////////////////////////////////////////
-		fm::Result setData(const void *data,fm::Size bytesToCopy,Usage usage);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Set data, type and Usage
-		///
-		/// @param data Pointer the data to be sent to OpenGL
-		/// @param bytesToCopy Number of bytes in the data
-		/// @param type The new type of the buffer
-		/// @param usage Usage hint for OpenGL
-		///
-		/// @return the error-state of the function
-		///
-		/////////////////////////////////////////////////////////////
-		fm::Result setData(const void *data,fm::Size bytesToCopy,BufferType type,Usage usage);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Change data in the buffer
-		///
-		/// @param data Pointer the data to be sent to OpenGL
-		/// @param bytesToCopy Number of bytes in the data
-		/// @param byteOffset The offset in the buffer, where the data will be uploaded
-		///
-		/// @return the error-state of the function
-		///
-		/////////////////////////////////////////////////////////////
-		fm::Result updateData(const void *data,fm::Size bytesToCopy,fm::Size byteOffset = 0);
+		template<class T = void>
+		T *map(BufferAccess access = BufferReadWrite);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Map the whole buffer for read/write
@@ -269,19 +286,22 @@ namespace fg
 		///
 		/// Returns nullptr on error
 		///
-		/// @param read Allow reading the data from GPU
-		/// @param write Allow changing the data
+		/// @param ptr The pointer returned (not mdified on error)
+		/// @param access The access policy for the mapping
 		///
-		/// @return A pointer to the mapped memory (nullptr on error)
+		/// @return The result of the operation
 		///
 		/////////////////////////////////////////////////////////////
-		void *map(bool read = true,bool write = true);
+		template<class T = void>
+		fm::Result map(T *&ptr,BufferAccess access = BufferReadWrite);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Unmap the mapped buffer
 		///
+		/// @return The result of the operation
+		///
 		/////////////////////////////////////////////////////////////
-		void unMap();
+		fm::Result unMap();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the type of the buffer
@@ -292,25 +312,30 @@ namespace fg
 		BufferType getType() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Bind the buffer for usage
-		/// 
-		/// @param targetType The type to bind the buffer to
+		/// @brief Get the usage of the buffer
 		///
-		/// @return the error-state of the function
+		/// @return The usage
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result bind(BufferType targetType) const;
+		BufferUsage getUsage() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Bind the buffer for usage
-		///
-		/// The type the buffer will be bound is defined when
-		/// When setData or the constructor is called
+		/// @brief Bind the buffer to the binding defined by its type
 		///
 		/// @return the error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Result bind() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Bind the buffer to a given binding point
+		///
+		/// @param type The binding point
+		/// 
+		/// @return the error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result bind(BufferType type) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Binary operator =
@@ -335,32 +360,18 @@ namespace fg
 		Buffer &operator=(Buffer &&buf);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Bind a buffer for usage
+		/// @brief Bind a buffer to a given binding point
 		///
 		/// @param buffer The buffer to bind
-		/// @param targetType The type to bind the buffer to
+		/// @param type The type to bind the buffer to
 		///
 		/// @return the error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		static fm::Result bind(const Buffer &buffer,BufferType targetType);
+		static fm::Result bind(fm::Ref<const Buffer> buffer,BufferType type);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Bind a buffer for usage
-		///
-		/// @param buffer The buffer to bind
-		/// @param targetType The type to bind the buffer to
-		///
-		/// @return the error-state of the function
-		///
-		/////////////////////////////////////////////////////////////
-		static fm::Result bind(const Buffer *buffer,BufferType targetType);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Bind a buffer for usage
-		///
-		/// The buffer will be bound to the target specifed
-		/// by its constructor or the last call on setData
+		/// @brief Bind a buffer to the binding defined by its type
 		///
 		/// @param buffer The buffer to bind
 		///
@@ -372,12 +383,12 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Release binding on a type of buffer
 		///
-		/// @param targetType The type on the binding to be released
+		/// @param type The type on the binding to be released
 		///
 		/// @return the error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		static fm::Result unBind(BufferType targetType);
+		static fm::Result unBind(BufferType type);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Check if buffers can be used
@@ -386,30 +397,6 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		static bool isAvailable();
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Check if buffers need to keep client side shadow copies
-		///
-		/// @return true iff shdow copies are used
-		///
-		/////////////////////////////////////////////////////////////
-		static bool keepShadowCopy();
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Access the internal shadow copy
-		///
-		/// @return Pointer to the shadow copy
-		///
-		/////////////////////////////////////////////////////////////
-		void *getDataPtr();
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Access the internal shadow copy
-		///
-		/// @return Pointer to the shadow copy
-		///
-		/////////////////////////////////////////////////////////////
-		const void *getDataPtr() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Swap the content of the two objects
@@ -422,13 +409,21 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		reference swap(Buffer &buf);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Create a hard copy of the buffer object
+		/// 
+		/// @return A brand new buffer with the same properties as the original
+		///
+		/////////////////////////////////////////////////////////////
+		Buffer makeCopy() const;
 	};
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Overload of binary operator ==
 	///
 	/// This function does not check if the two buffers' content is the
-	/// same just compares their id
+	/// same just compares their ids
 	///
 	/// @param left Left operand (Buffer)
 	/// @param right Right operand (Buffer)
@@ -442,7 +437,7 @@ namespace fg
 	/// @brief Overload of binary operator !=
 	///
 	/// This function does not check if the two buffers' content is the
-	/// same just compares their id
+	/// same just compares their ids
 	///
 	/// @param left Left operand (Buffer)
 	/// @param right Right operand (Buffer)

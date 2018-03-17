@@ -19,7 +19,6 @@
 
 #include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
-#include <FRONTIER/GL/Is_GLDataType.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/System/util/API.h>
 
@@ -40,36 +39,29 @@ namespace fg
 	class FRONTIER_API Attribute
 	{
 	public:
-		fg::Buffer::Usage bufferUsage; ///< Buffer usage hint
-		fm::Size instancesPerUpdate;   ///< Number of instances between updates
-		fm::Size componentType; ///< The OpenGL id of the type of components
-		fm::Size components;    ///< The number of components
+		fm::Size instancesPerUpdate; ///< Number of instances between updates
+		fm::Size compCount; ///< The number of components 0 means fetch from buffer props
+		fm::Size compType;  ///< The OpenGL id of the type of components 0 means fetch from buffer props
 		fg::Buffer *buf; ///< The buffer that holds the data 
 		fm::Size stride; ///< The offset between two vertex data
-		fm::Size count;  ///< The number of vertices
+		fm::Size offset; ///< The offset to the first item
+		fm::Size count;  ///< The number of vertices 0 means fetch from buffer props
 		bool ownBuffer;  ///< Stores whether the buffer was created by this class
-
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		/// 
-		/// @param components The number of components
-		/// @param stride The offset between two vertex data
-		/// @param count The number of vertices
-		/// @param componentType The OpenGL id of the type of components
-		/// @param buffer The buffer that holds the data 
-		/// @param ownBuffer Indicates whether the buffer is to be created by this class
-		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
+		/////////////////////////////////////////////////////////////
+		Attribute();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct the Attribute from a Buffer
+		/// 
+		/// @param buf The buffer to use
 		/// @param instancesPerUpdate Number of instances between updates
 		/// 
 		/////////////////////////////////////////////////////////////
-		Attribute(fm::Size components = 0,
-				  fm::Size stride = 0,
-				  fm::Size count = 0,
-				  fm::Size componentType = 0,
-				  fg::Buffer *buffer = nullptr,
-				  bool ownBuffer = true,
-				  fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,
-				  fm::Size instancesPerUpdate = 0);
+		Attribute(fg::Buffer &buf,fm::Size instancesPerUpdate = 0);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -126,6 +118,16 @@ namespace fg
 		Attribute &swap(Attribute &attr);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Assign data to the attribute through a buffer
+		/// 
+		/// @param data The data to assign
+		/// 
+		/// @return Reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		Attribute &operator=(fg::Buffer &buf);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
 		/// 
 		/// If T is a GL data type componentType is assumed to be T,
@@ -139,7 +141,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T,fm::Size N>
-		inline Attribute &operator=(const T (&data)[N]);
+		Attribute &operator=(const T (&data)[N]);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -155,25 +157,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		inline Attribute &operator=(std::initializer_list<T> data);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Assign data to the attribute
-		/// 
-		/// If T is a GL data type componentType is assumed to be T,
-		/// components to be 1
-		/// If T is not a GL data type componentType is fetched from T::component_type
-		/// and components from T::components
-		/// 
-		/// @param data The data to assign
-		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
-		/// @param instancesPerUpdate Number of instances between updates
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-		template<class T,fm::Size N>
-		inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N],fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,fm::Size instancesPerUpdate = 0);
+		Attribute &operator=(std::initializer_list<T> data);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assign data to the attribute
@@ -185,99 +169,32 @@ namespace fg
 		/// 
 		/// @param pointer Pointer to the data to assign
 		/// @param N The number of Ts to be requested to be copied
-		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
 		/// @param instancesPerUpdate Number of instances between updates
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		inline typename std::enable_if<fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,fm::Size instancesPerUpdate = 0);
+		Attribute &set(const T *pointer,fm::Size N,fm::Size instancesPerUpdate = 0);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Assign data to the attribute
+		/// @brief Assign buffer to the attribute
 		/// 
 		/// If T is a GL data type componentType is assumed to be T,
 		/// components to be 1
 		/// If T is not a GL data type componentType is fetched from T::component_type
 		/// and components from T::components
 		/// 
-		/// @param data The data to assign
-		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
-		/// @param instancesPerUpdate Number of instances between updates
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-		template<class T,fm::Size N>
-		inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T (&data)[N],fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,fm::Size instancesPerUpdate = 0);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Assign data to the attribute
-		/// 
-		/// If T is a GL data type componentType is assumed to be T,
-		/// components to be 1
-		/// If T is not a GL data type componentType is fetched from T::component_type
-		/// and components from T::components
-		/// 
-		/// @param pointer Pointer to the data to assign
-		/// @param N The number of Ts to be requested to be copied
-		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
+		/// @param buf The buffer to use
+		/// @param stride The offset between the start of two consecutive items in bytes
+		/// @param offset Offset to the first item in buffer in bytes
 		/// @param instancesPerUpdate Number of instances between updates
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		inline typename std::enable_if<!fg::Is_GLDataType<T>::value,Attribute>::type &set(const T *pointer,fm::Size N,fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,fm::Size instancesPerUpdate = 0);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Assign data to the attribute
-		/// 
-		/// @param components The number of components
-		/// @param stride The offset between two vertex data
-		/// @param count The number of vertices
-		/// @param componentType The OpenGL id of the type of components
-		/// @param pointer Pointer to the data to be copied
-		/// @param bytesToCopy Number of bytes to be copied
-		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
-		/// @param instancesPerUpdate Number of instances between updates
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-		Attribute &set(fm::Size components,
-					   fm::Size stride,
-					   fm::Size count,
-					   fm::Size componentType,
-					   const void *pointer,
-					   fm::Size bytesToCopy,
-					   fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,
-					   fm::Size instancesPerUpdate = 0);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Assign data to the attribute
-		/// 
-		/// @param components The number of components
-		/// @param stride The offset between two vertex data
-		/// @param count The number of vertices
-		/// @param componentType The OpenGL id of the type of components
-		/// @param buffer The buffer that holds the data 
-		/// @param ownBuffer Indicates whether the buffer is to be created by this class
-		/// @param bufferUsage The hint passed to opengl regarding the usage of the buffer
-		/// @param instancesPerUpdate Number of instances between updates
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-		Attribute &set(fm::Size components,
-					   fm::Size stride,
-					   fm::Size count,
-					   fm::Size componentType,
-					   fg::Buffer *buffer = nullptr,
-					   bool ownBuffer = true,
-					   fg::Buffer::Usage bufferUsage = fg::Buffer::StaticDraw,
-					   fm::Size instancesPerUpdate = 0);
+		Attribute &set(fg::Buffer &buf,fm::Size stride,fm::Size offset,fm::Size instancesPerUpdate = 0);
 	};
 }
 

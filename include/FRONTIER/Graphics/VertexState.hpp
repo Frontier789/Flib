@@ -19,9 +19,14 @@
 
 #include <FRONTIER/System/util/dont_include_inl_begin>
 #include <FRONTIER/System/NonCopyable.hpp>
+#include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
+#include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/System/util/dont_include_inl_end>
+
 #include <FRONTIER/System/util/API.h>
+#include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/System/Ref.hpp>
 
 #define FRONTIER_VERTEXSTATE
 
@@ -36,14 +41,28 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API VertexState : public fg::GlObject, public fm::NonCopyable
 	{
-		void init(); ///< internal initializer function
 	public:
-
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		///
 		/////////////////////////////////////////////////////////////
-		VertexState();
+		VertexState() = default;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Move constructor
+		///
+		/// @param mv The state to move
+		///
+		/////////////////////////////////////////////////////////////
+		VertexState(VertexState &&mv);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Swap two vertex state objects
+		///
+		/// @param state The state to swap with
+		///
+		/////////////////////////////////////////////////////////////
+		VertexState &swap(VertexState &state);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -52,18 +71,63 @@ namespace fg
 		~VertexState();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Bind the vertex state object for usage
+		/// @brief Create the vertex state object
+		///
+		/// @return The result of the operation
 		///
 		/////////////////////////////////////////////////////////////
-		void bind();
+		fm::Result create();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Reset the vertex state object
+		///
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result clearData();
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Bind the vertex state object for usage
+		///
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result bind() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set an attribute of the vao
+		///
+		/// @param attrId The id of the Attribute
+		/// @param buf The buffer to set
+		///
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setAttribute(fm::Size attrId,const Attribute &attr);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set an interleaved attribute of the vao
+		/// 
+		/// @param attrId The id of the Attribute
+		/// @param buf The buffer to set
+		/// @param stride The offset between the start of two consecutive items in bytes
+		/// @param offset The offset to the beginning of the data in bytes
+		///
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		fm::Result setAttribute(fm::Size attrId,fm::Ref<fg::Buffer> buf,fm::Size stride = 0,fm::Size offset = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a vertex state object for usage
 		///
 		/// @param vao The vertex state object to be bound
 		///
+		/// @return The result of the operation
+		///
 		/////////////////////////////////////////////////////////////
-		static void bind(VertexState *vao);
+		static fm::Result bind(fm::Ref<const VertexState> vao);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Check if vertex state objects are available
@@ -78,3 +142,7 @@ namespace fg
 }
 
 #endif // FRONTIER_VERTEXSTATE_HPP_INCLUDED
+
+#ifndef FRONTIER_DONT_INCLUDE_INL
+	#include <FRONTIER/Graphics/VertexState.inl>
+#endif // FRONTIER_DONT_INCLUDE_INL

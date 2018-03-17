@@ -14,7 +14,6 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Graphics/FixedShaderManager.hpp>
 #include <FRONTIER/Graphics/ShaderManager.hpp>
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>
