@@ -14,7 +14,6 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/Graphics/IndexHolder.hpp>
 #include <FRONTIER/System/util/C.hpp>
 #include <algorithm>

@@ -46,10 +46,9 @@ namespace fg
 #include <FRONTIER/Graphics/RenderStates.hpp>
 #include <FRONTIER/Graphics/ShaderSource.hpp>
 #include <FRONTIER/Graphics/TextureAtlas.hpp>
-#include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/Graphics/FrameBuffer.hpp>
 #include <FRONTIER/Graphics/CubeTexture.hpp>
-#include <FRONTIER/Graphics/VertexState.hpp>
+#include <FRONTIER/Graphics/VertexArray.hpp>
 #include <FRONTIER/Graphics/IndexHolder.hpp>
 #include <FRONTIER/Graphics/AssocPoint.hpp>
 #include <FRONTIER/Graphics/TimeQuery.hpp>

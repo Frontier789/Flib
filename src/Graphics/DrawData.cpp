@@ -14,8 +14,8 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/Graphics/IndexHolder.hpp>
+#include <FRONTIER/Graphics/AssocPoint.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/DrawCall.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
@@ -26,36 +26,21 @@
 namespace fg
 {
     //////////////////////////////////////////////////////////////////////////
-	DrawData::DrawData() : positions(*this,Assoc::Position),
-						   colors(*this,Assoc::Color),
-						   normals(*this,Assoc::Normal),
-						   tangents(*this,Assoc::Tangent),
-						   bitangents(*this,Assoc::Bitangent),
-						   texPositions(*this,Assoc::TextureUV)
+	DrawData::DrawData()
 	{
 
 	}
 
 #ifndef FRONTIER_HEAVYCOPY_FORBID
     //////////////////////////////////////////////////////////////////////////
-	DrawData::DrawData(const DrawData &drawData) : positions(*this,Assoc::Position),
-												   colors(*this,Assoc::Color),
-												   normals(*this,Assoc::Normal),
-												   tangents(*this,Assoc::Tangent),
-												   bitangents(*this,Assoc::Bitangent),
-												   texPositions(*this,Assoc::TextureUV)
+	DrawData::DrawData(const DrawData &drawData)
 	{
 		(*this) = drawData;
 	}
 #endif
 
     //////////////////////////////////////////////////////////////////////////
-	DrawData::DrawData(DrawData &&drawData) : positions(*this,Assoc::Position),
-											  colors(*this,Assoc::Color),
-											  normals(*this,Assoc::Normal),
-											  tangents(*this,Assoc::Tangent),
-											  bitangents(*this,Assoc::Bitangent),
-											  texPositions(*this,Assoc::TextureUV)
+	DrawData::DrawData(DrawData &&drawData)
 	{
 		drawData.swap(*this);
 	}
@@ -63,17 +48,12 @@ namespace fg
     //////////////////////////////////////////////////////////////////////////
 	DrawData::~DrawData()
 	{
-		for (auto it : m_attrs)
+		for (auto it : m_extraAttrs)
 			delete it.second;
 	}
 
     //////////////////////////////////////////////////////////////////////////
-	DrawData::DrawData(const Mesh &m) : positions(*this,Assoc::Position),
-										colors(*this,Assoc::Color),
-										normals(*this,Assoc::Normal),
-										tangents(*this,Assoc::Tangent),
-										bitangents(*this,Assoc::Bitangent),
-										texPositions(*this,Assoc::TextureUV)
+	DrawData::DrawData(const Mesh &m)
 	{
 		(*this) = m;
 	}
@@ -93,21 +73,45 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	Attribute &DrawData::getAttribute(AssocPoint type)
 	{
-		if (!hasAttr(type))
-			return *(m_attrs[type] = new Attribute());
+		if (type >= Assoc::Custom0)
+		{
+			Attribute *&ptr = m_extraAttrs[type];
+			if (!ptr)
+				ptr = new Attribute;
+			
+			return *ptr;
+		}
 		
-		return *m_attrs[type];
+		if (type == Assoc::Color)     return colors;
+		if (type == Assoc::Normal)    return normals;
+		if (type == Assoc::Tangent)   return tangents;
+		if (type == Assoc::Position)  return positions;
+		if (type == Assoc::Bitangent) return bitangents;
+		if (type == Assoc::TextureUV) return texPositions;
+		
+		return m_unusedAttr;
 	}
 
 	/////////////////////////////////////////////////////////////
 	const Attribute &DrawData::getAttribute(AssocPoint type) const
 	{
-		if (!hasAttr(type))
+		if (type >= Assoc::Custom0)
 		{
-			return *(m_attrs[type] = new Attribute());
+			Attribute *&ptr = m_extraAttrs[type];
+			if (!ptr)
+				ptr = new Attribute;
+			
+			return *ptr;
 		}
 		
-		return *m_attrs[type];
+		if (type == Assoc::Color)     return colors;
+		if (type == Assoc::Normal)    return normals;
+		if (type == Assoc::Tangent)   return tangents;
+		if (type == Assoc::Position)  return positions;
+		if (type == Assoc::Bitangent) return bitangents;
+		if (type == Assoc::TextureUV) return texPositions;
+		
+		return m_unusedAttr;
 	}
 
 #ifndef FRONTIER_HEAVYCOPY_FORBID
@@ -116,8 +120,14 @@ namespace fg
 	{
 		FRONTIER_HEAVYCOPY_NOTE;
 		
-		m_drawCalls = drawData.m_drawCalls;
-		m_attrs = drawData.m_attrs;
+		m_drawCalls  = drawData.m_drawCalls;
+		m_extraAttrs = drawData.m_extraAttrs;
+		colors       = drawData.colors;
+		normals      = drawData.normals;
+		tangents     = drawData.tangents;
+		positions    = drawData.positions;
+		bitangents   = drawData.bitangents;
+		texPositions = drawData.texPositions;
 		
 		return *this;
 	}
@@ -205,14 +215,15 @@ namespace fg
     //////////////////////////////////////////////////////////////////////////
 	DrawData &DrawData::remAttr(AssocPoint type)
 	{
-		m_attrs.erase(type);
+		getAttribute(type) = Attribute();
+		
 		return *this;
 	}
 
     //////////////////////////////////////////////////////////////////////////
 	bool DrawData::hasAttr(AssocPoint type) const
 	{
-		return m_attrs.find(type) != m_attrs.end();
+		return getAttribute(type).buf != nullptr;
 	}
 
     //////////////////////////////////////////////////////////////////////////
@@ -265,14 +276,7 @@ namespace fg
     //////////////////////////////////////////////////////////////////////////
 	DrawData &DrawData::reset()
 	{
-		for (auto it : m_attrs)
-			delete it.second;
-		
-		m_attrs.clear();
-		
-		clearDraws();
-		
-		return *this;
+		return *this = DrawData();
 	}
 
     //////////////////////////////////////////////////////////////////////////
@@ -284,9 +288,31 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	DrawData::reference DrawData::swap(DrawData &drawData)
 	{
-		m_attrs    .swap(drawData.m_attrs    );
+		m_extraAttrs.swap(drawData.m_extraAttrs);
 		m_drawCalls.swap(drawData.m_drawCalls);
+		positions.swap(drawData.positions);
+		colors.swap(drawData.colors);
+		normals.swap(drawData.normals);
+		tangents.swap(drawData.tangents);
+		bitangents.swap(drawData.bitangents);
+		texPositions.swap(drawData.texPositions);
 		
 		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void DrawData::forEachAttr(fm::Delegate<void,fg::AssocPoint,const Attribute &> func) const
+	{
+		for (AssocPoint pt = Assoc::Position;pt != AssocPoint::Custom;pt = pt+1)
+		{
+			auto &attr = getAttribute(pt);
+			
+			if (attr.buf)
+				func(pt,attr);
+		}
+		
+		for (auto &it : m_extraAttrs)
+			if (it.second && it.second->buf)
+				func(it.first,*it.second);
 	}
 }

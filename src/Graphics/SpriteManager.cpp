@@ -1,6 +1,5 @@
 #include <FRONTIER/Graphics/SpriteManager.hpp>
 #include <FRONTIER/Graphics/ShaderSource.hpp>
-#include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/Graphics/AssocPoint.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/System/Delegate.hpp>

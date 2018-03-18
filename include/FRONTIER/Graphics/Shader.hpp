@@ -19,7 +19,7 @@
 
 #include <FRONTIER/System/util/dont_include_inl_begin>
 
-#include <FRONTIER/Graphics/VertexState.hpp>
+#include <FRONTIER/Graphics/VertexArray.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/System/Delegate.hpp>

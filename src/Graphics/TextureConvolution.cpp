@@ -1,5 +1,4 @@
 #include <FRONTIER/Graphics/TextureConvolution.hpp>
-#include <FRONTIER/Graphics/AttributeRef.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/util/C.hpp>

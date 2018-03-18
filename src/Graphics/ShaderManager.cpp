@@ -381,19 +381,7 @@ namespace fg
 		
 		setBlendMode(m_blendMode);
 
-		for (auto it : m_assocPoints)
-		{
-			if (data.hasAttr((fg::Assoc::Point)it.first) && hasAttribute(it.second))
-			{
-				const fg::Attribute &attr = data[(fg::Assoc::Point)it.first];
-
-				fg::Buffer::bind(attr.buf,fg::ArrayBuffer),
-				res += setAttribPointer(it.second,attr.compCount,attr.compType,false,nullptr,attr.stride);
-				
-				if (instancingAvailable())
-					res += glCheck(glVertexAttribDivisor(getAttribLocation(it.second),attr.instancesPerUpdate));
-			}
-		}
+		m_vao.setAttributes(data,[&](AssocPoint pt) -> fm::Size {return getAttribLocation(m_assocPoints[pt]);});
 		
 		return res;
 	}
@@ -446,12 +434,12 @@ namespace fg
 				{
 					if (instancingAvailable())
 					{
-						glDrawArraysInstanced(draw.primitive,draw.drawBeg,len,draw.instances);
+						res += glCheck(glDrawArraysInstanced(draw.primitive,draw.drawBeg,len,draw.instances));
 					}
 					else
 					{
 						C(draw.instances)
-							glDrawArrays(draw.primitive,draw.drawBeg,len);
+							res += glCheck(glDrawArrays(draw.primitive,draw.drawBeg,len));
 					}
 				}
 			}
@@ -461,19 +449,6 @@ namespace fg
 		{
 			res += glCheck(glDrawArrays(fg::Triangles,0,data[fg::Assoc::Position].count));
 		}
-
-		for (auto it : m_assocPoints)
-		{
-			if (data.hasAttr((fg::Assoc::Point)it.first) && hasAttribute(it.second))
-			{
-				enableAttribPointer(it.second,false);
-				
-				if (instancingAvailable())
-					glVertexAttribDivisor(getAttribLocation(it.second),0);
-			}
-		}
-		
-		res += glCheck((void)0);
 		
 		return res;
 	}

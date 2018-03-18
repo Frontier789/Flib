@@ -14,7 +14,8 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/Graphics/VertexState.hpp>
+#include <FRONTIER/Graphics/VertexArray.hpp>
+#include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
 #include <FRONTIER/GL/GLBindKeeper.hpp>
 #include <FRONTIER/System/Result.hpp>
@@ -24,7 +25,7 @@
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	fm::Result VertexState::create()
+	fm::Result VertexArray::create()
 	{
 		if (!getGlId())
 			return glCheck(glGenVertexArrays(1,&getGlId()));
@@ -33,65 +34,88 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	VertexState::VertexState(VertexState &&mv)
+	VertexArray::VertexArray(VertexArray &&mv)
 	{
 		mv.swap(*this);
 	}
 	
 	/////////////////////////////////////////////////////////////
-	VertexState &VertexState::swap(VertexState &state)
+	VertexArray &VertexArray::swap(VertexArray &state)
 	{
+		m_attrsEnabled.swap(state.m_attrsEnabled);
 		std::swap(getGlId(),state.getGlId());
+		
 		return *this;
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fm::Result VertexState::clearData()
+	fm::Result VertexArray::clearData()
 	{
 		fm::Result res;
 		
 		if (getGlId())
 		{
-			res += glCheck(glDeleteVertexArrays(1,&getGlId()));
-			res += create();
+			for (fm::Size i=0;i<m_attrsEnabled.size();++i)
+			{
+				if (m_attrsEnabled[i])
+					res += glCheck(glDisableVertexAttribArray(i));
+			}
+			
+			m_attrsEnabled.clear();
 		}
 		
 		return res;
 	}
 
 	////////////////////////////////////////////////////////////
-	VertexState::~VertexState()
+	VertexArray::~VertexArray()
 	{
 		if (getGlId())
 			glCheck(glDeleteVertexArrays(1,&getGlId()));
 	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result VertexState::bind() const
+	fm::Result VertexArray::bind() const
 	{
 		return glCheck(glBindVertexArray(getGlId()));
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fm::Result VertexState::setAttribute(fm::Size attrId,const Attribute &attr)
+	fm::Result VertexArray::setAttributeBound(fm::Size attrId,const Attribute &attr)
 	{
-		GLBindKeeper guard(glBindVertexArray,GL_VERTEX_ARRAY_BINDING,getGlId());
-		
 		fm::Result res = fg::Buffer::bind(attr.buf,fg::ArrayBuffer);
 		
 		if (attr.buf)
 		{
-			res += glCheck(glEnableVertexAttribArray(attrId));
+			if (m_attrsEnabled.size() <= attrId) m_attrsEnabled.resize(attrId+1,false);
+			
+			if (!m_attrsEnabled[attrId])
+				res += glCheck(glEnableVertexAttribArray(attrId));
+			
 			res += glCheck(glVertexAttribPointer(attrId, attr.compCount, attr.compType, GL_FALSE, attr.stride, (void*)attr.offset));
+			res += glCheck(glVertexAttribDivisor(attrId, attr.instancesPerUpdate));
+			
+			m_attrsEnabled[attrId] = true;
 		}
-		else 
+		else if (m_attrsEnabled.size() > attrId && m_attrsEnabled[attrId])
+		{
+			m_attrsEnabled[attrId] = false;
 			res += glCheck(glDisableVertexAttribArray(attrId));
+		}
 		
 		return res;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result VertexArray::setAttribute(fm::Size attrId,const Attribute &attr)
+	{
+		GLBindKeeper guard(glBindVertexArray,GL_VERTEX_ARRAY_BINDING,getGlId());
+		
+		return setAttributeBound(attrId,attr);
+	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result VertexState::bind(fm::Ref<const VertexState> vao)
+	fm::Result VertexArray::bind(fm::Ref<const VertexArray> vao)
 	{
 		if (vao)
 			return vao->bind();
@@ -100,8 +124,43 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	bool VertexState::isAvailable()
+	bool VertexArray::isAvailable()
 	{
 		return ::priv::so_loader.getProcAddr("glGenVertexArrays") != nullptr;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result VertexArray::setAttributes(const DrawData &drawData,fm::Delegate<fm::Size,fg::AssocPoint> assocToAttrId)
+	{
+		GLBindKeeper guard(glBindVertexArray,GL_VERTEX_ARRAY_BINDING,getGlId());
+		
+		fm::Result res;
+		std::vector<bool> attrsEnabled;
+		
+		drawData.forEachAttr([&](fg::AssocPoint pt,const Attribute &attr) {
+			
+			fm::Size id = assocToAttrId(pt);
+			
+			if (id == fm::Size(-1))
+				return;
+			
+			if (attrsEnabled.size() <= id) attrsEnabled.resize(id+1,false);
+			attrsEnabled[id] = true;
+			
+			res += setAttributeBound(id,attr);
+		});
+		
+		for (fm::Size i=0;i<m_attrsEnabled.size();++i)
+		{
+			bool prev = m_attrsEnabled[i];
+			bool cur  = (i < attrsEnabled.size() ? attrsEnabled[i] : false);
+			
+			if (prev && !cur)
+				res += setAttributeBound(i,nullptr);
+		}
+		
+		m_attrsEnabled.swap(attrsEnabled);
+		
+		return res;
 	}
 }

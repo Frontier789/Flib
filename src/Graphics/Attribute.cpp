@@ -31,6 +31,12 @@ namespace fg
 	{
 		
 	}
+	
+	/////////////////////////////////////////////////////////////
+	Attribute::Attribute(std::nullptr_t) : Attribute()
+	{
+		
+	}
 
 	/////////////////////////////////////////////////////////////
 	Attribute::Attribute(fg::Buffer &buf,fm::Size instancesPerUpdate) : 

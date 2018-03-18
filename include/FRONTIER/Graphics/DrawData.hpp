@@ -17,14 +17,12 @@
 #ifndef FRONTIER_DRAWDATA_HPP_INCLUDED
 #define FRONTIER_DRAWDATA_HPP_INCLUDED
 
-#include <FRONTIER/System/util/dont_include_inl_begin>
-#include <FRONTIER/Graphics/AttributeRef.hpp>
-#include <FRONTIER/System/util/dont_include_inl_end>
-
+#include <FRONTIER/Graphics/AssocPoint.hpp>
 #include <FRONTIER/System/HeavyToCopy.hpp>
 #include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/DrawCall.hpp>
-#include <FRONTIER/Graphics/Buffer.hpp>
+#include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/System/util/API.h>
 
 #define FRONTIER_DRAWDATA
@@ -44,19 +42,20 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API DrawData
 	{
-		mutable std::map<AssocPoint,Attribute*> m_attrs; ///< Maps the association points to attributes
+		mutable std::map<AssocPoint,Attribute*> m_extraAttrs; ///< The extra (custom) attributes
 		std::vector<DrawCall> m_drawCalls; ///< Stores drawing calls
+		Attribute m_unusedAttr; ///< Dummy attr for unused
 
     public:
 		typedef DrawData &reference;
 		typedef const DrawData &const_reference;
 		
-		AttributeRef positions;    ///< References the positions attribute
-		AttributeRef colors;       ///< References the colors attribute
-		AttributeRef normals;      ///< References the normals attribute
-		AttributeRef tangents;     ///< References the tangents attribute
-		AttributeRef bitangents;   ///< References the bitangents attribute
-		AttributeRef texPositions; ///< References the texPositions attribute
+		Attribute positions;    ///< The positions attribute
+		Attribute colors;       ///< The colors attribute
+		Attribute normals;      ///< The normals attribute
+		Attribute tangents;     ///< The tangents attribute
+		Attribute bitangents;   ///< The bitangents attribute
+		Attribute texPositions; ///< The texPositions attribute
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
@@ -293,6 +292,14 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		reference swap(DrawData &drawData);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Call a function for each attribute in the drawing data
+		/// 
+		/// @param func The function to call
+		/// 
+		/////////////////////////////////////////////////////////////
+		void forEachAttr(fm::Delegate<void,fg::AssocPoint,const Attribute &> func) const;
 	};
 }
 

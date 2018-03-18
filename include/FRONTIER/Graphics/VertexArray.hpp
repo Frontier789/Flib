@@ -14,39 +14,46 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_VERTEXSTATE_HPP_INCLUDED
-#define FRONTIER_VERTEXSTATE_HPP_INCLUDED
+#ifndef FRONTIER_VERTEXARRAY_HPP_INCLUDED
+#define FRONTIER_VERTEXARRAY_HPP_INCLUDED
 
 #include <FRONTIER/System/util/dont_include_inl_begin>
+#include <FRONTIER/Graphics/AssocPoint.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
+#include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/System/util/dont_include_inl_end>
 
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/System/Ref.hpp>
+#include <vector>
 
-#define FRONTIER_VERTEXSTATE
+#define FRONTIER_VERTEXARRAY
 
 
 namespace fg
 {
+	class DrawData;
+	
 	/////////////////////////////////////////////////////////////
-	/// @brief Stores vertex state data on gpu
+	/// @brief Stores vertex array data on gpu
 	///
 	/// @ingroup Graphics
 	///
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API VertexState : public fg::GlObject, public fm::NonCopyable
+	class FRONTIER_API VertexArray : public fg::GlObject, public fm::NonCopyable
 	{
+		std::vector<bool> m_attrsEnabled; ///< Stores whther the generic vertex atttributes are enabled
+		fm::Result setAttributeBound(fm::Size attrId,const Attribute &attr); ///< Internal helper function
 	public:
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		///
 		/////////////////////////////////////////////////////////////
-		VertexState() = default;
+		VertexArray() = default;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Move constructor
@@ -54,24 +61,24 @@ namespace fg
 		/// @param mv The state to move
 		///
 		/////////////////////////////////////////////////////////////
-		VertexState(VertexState &&mv);
+		VertexArray(VertexArray &&mv);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Swap two vertex state objects
+		/// @brief Swap two vertex array objects
 		///
 		/// @param state The state to swap with
 		///
 		/////////////////////////////////////////////////////////////
-		VertexState &swap(VertexState &state);
+		VertexArray &swap(VertexArray &state);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
 		///
 		/////////////////////////////////////////////////////////////
-		~VertexState();
+		~VertexArray();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Create the vertex state object
+		/// @brief Create the vertex array object
 		///
 		/// @return The result of the operation
 		///
@@ -79,7 +86,7 @@ namespace fg
 		fm::Result create();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Reset the vertex state object
+		/// @brief Reset the vertex array object
 		///
 		/// @return The result of the operation
 		///
@@ -87,7 +94,7 @@ namespace fg
 		fm::Result clearData();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Bind the vertex state object for usage
+		/// @brief Bind the vertex array object for usage
 		///
 		/// @return The result of the operation
 		///
@@ -120,29 +127,40 @@ namespace fg
 		fm::Result setAttribute(fm::Size attrId,fm::Ref<fg::Buffer> buf,fm::Size stride = 0,fm::Size offset = 0);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Bind a vertex state object for usage
+		/// @brief Bind a vertex array object for usage
 		///
-		/// @param vao The vertex state object to be bound
+		/// @param vao The vertex array object to be bound
 		///
 		/// @return The result of the operation
 		///
 		/////////////////////////////////////////////////////////////
-		static fm::Result bind(fm::Ref<const VertexState> vao);
+		static fm::Result bind(fm::Ref<const VertexArray> vao);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the attributes of a vertex array object from a drawdata
+		///
+		/// @param drawData The draw data to load the attributes from
+		/// @param assocToAttrId A function that converts association points to attribute ids
+		/// 
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setAttributes(const DrawData &drawData,fm::Delegate<fm::Size,fg::AssocPoint> assocToAttrId);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Check if vertex state objects are available
+		/// @brief Check if vertex array objects are available
 		///
-		/// @return True iff vertex state objects are available
+		/// @return True iff vertex array objects are available
 		///
 		/////////////////////////////////////////////////////////////
 		static bool isAvailable();
 	};
 
-	typedef VertexState VertexArray;
+	typedef VertexArray VertexState;
 }
 
-#endif // FRONTIER_VERTEXSTATE_HPP_INCLUDED
+#endif // FRONTIER_VERTEXARRAY_HPP_INCLUDED
 
 #ifndef FRONTIER_DONT_INCLUDE_INL
-	#include <FRONTIER/Graphics/VertexState.inl>
+	#include <FRONTIER/Graphics/VertexArray.inl>
 #endif // FRONTIER_DONT_INCLUDE_INL

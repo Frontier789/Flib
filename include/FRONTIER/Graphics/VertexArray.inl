@@ -14,8 +14,8 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_VERTEXSTATE_INL_INCLUDED
-#define FRONTIER_VERTEXSTATE_INL_INCLUDED
+#ifndef FRONTIER_VERTEXARRAY_INL_INCLUDED
+#define FRONTIER_VERTEXARRAY_INL_INCLUDED
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/System/Ref.hpp>
 
@@ -23,7 +23,7 @@ namespace fg
 {
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline fm::Result VertexState::setAttribute(fm::Size attrId,fm::Ref<fg::Buffer> buf,fm::Size stride,fm::Size offset)
+	inline fm::Result VertexArray::setAttribute(fm::Size attrId,fm::Ref<fg::Buffer> buf,fm::Size stride,fm::Size offset)
 	{
 		Attribute attr;
 		if (buf)
@@ -33,4 +33,4 @@ namespace fg
 	}
 }
 
-#endif // FRONTIER_VERTEXSTATE_INL_INCLUDED
+#endif // FRONTIER_VERTEXARRAY_INL_INCLUDED
