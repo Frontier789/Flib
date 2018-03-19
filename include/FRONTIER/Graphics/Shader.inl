@@ -41,6 +41,13 @@ namespace fg
 		
 		return fm::Result();
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class>
+	inline fm::Result Shader::setAttribute(const std::string &name,const T &val)
+	{
+		return m_vao.setAttribute<T>(getAttribLocation(name),val);
+	}
 }
 
 #endif // FRONTIER_SHADER_INL_INCLUDED

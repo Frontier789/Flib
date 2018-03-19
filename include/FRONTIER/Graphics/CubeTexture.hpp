@@ -42,9 +42,9 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API CubeTextureFace : public fg::Texture
 	{
-		virtual fm::Uint32 getTexRebinding() const; ///< Internal function
-		virtual fm::Uint32 getTexBinding() const; ///< Internal function
-		virtual fm::Uint32 getTexTarget() const; ///< Internal function
+		fm::Uint32 getTexRebinding() const override; ///< Internal function
+		fm::Uint32 getTexBinding() const override; ///< Internal function
+		fm::Uint32 getTexTarget() const override; ///< Internal function
 
 		CubeTexture &m_cubeTex; ///< Reference to the owner cube texture
 		unsigned int m_faceId;  ///< The id of this face

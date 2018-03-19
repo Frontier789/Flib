@@ -31,6 +31,13 @@ namespace fg
 		
 		return setAttribute(attrId,attr);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class>
+	inline fm::Result VertexArray::setAttribute(fm::Size attrId,const T &t)
+	{
+		return setAttribute(attrId,Is_GLDataType<T>::compCount,Is_GLDataType<T>::enumVal,(const void*)&t);
+	}
 }
 
 #endif // FRONTIER_VERTEXARRAY_INL_INCLUDED

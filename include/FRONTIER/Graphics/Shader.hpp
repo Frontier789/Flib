@@ -663,6 +663,18 @@ namespace fg
 		fm::Result setUniform(const std::string &name,const T (&values)[N]);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Set one attribute of the shader's vertex array object to a given value 
+		///
+		/// @param attrId The id of the attribute to set
+		/// @param t The data to set
+		/// 
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T,class = typename std::enable_if<Is_GLDataType<T>::value>::type>
+		fm::Result setAttribute(const std::string &name,const T &val);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Bind a shader program for usage
 		///
 		/// If @a program is NULL the current

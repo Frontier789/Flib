@@ -22,6 +22,7 @@
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
+#include <FRONTIER/GL/Is_GLDataType.hpp>
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/System/util/dont_include_inl_end>
@@ -146,6 +147,31 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Result setAttributes(const DrawData &drawData,fm::Delegate<fm::Size,fg::AssocPoint> assocToAttrId);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set one attribute of the vertex array to a given constant 
+		///
+		/// @param attrId The id of the attribute to set
+		/// @param t The data to set
+		/// 
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T,class = typename std::enable_if<Is_GLDataType<T>::value>::type>
+		fm::Result setAttribute(fm::Size attrId,const T &t);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set one attribute of the vertex array to a given value 
+		///
+		/// @param attrId The id of the attribute to set
+		/// @param compCount The number of components in the data's type
+		/// @param compType Encodes the data's cmponents' type
+		/// @param ptr Pointer to the data to set
+		/// 
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setAttribute(fm::Size attrId,fm::Size compCount,fm::Size compType,const void *ptr);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Check if vertex array objects are available

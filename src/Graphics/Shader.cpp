@@ -624,7 +624,7 @@ namespace fg
 			{
 				// activate slot
 				res += glCheck(glActiveTexture(GL_TEXTURE0 + it->second.slot));
-				res += glCheck(glBindTexture(GL_TEXTURE_2D,tex ? tex->getGlId() : 0));
+				res += glCheck(glBindTexture(tex ? tex->getTexTarget() : GL_TEXTURE_2D,tex ? tex->getGlId() : 0));
 				if (!sampler && tex && tex->getGlId())
 					res += glCheck(glBindImageTexture(it->second.slot, tex->getGlId(), 0, GL_FALSE, 0, GL_READ_WRITE, tex->getInternalFormat()));
 				
@@ -647,7 +647,7 @@ namespace fg
 
 					// activate slot
 					res += glCheck(glActiveTexture(GL_TEXTURE0 + texCount));
-					res += glCheck(glBindTexture(GL_TEXTURE_2D,tex ? tex->getGlId() : 0));
+					res += glCheck(glBindTexture(tex ? tex->getTexTarget() : GL_TEXTURE_2D,tex ? tex->getGlId() : 0));
 
 					if (!sampler && tex && tex->getGlId())
 						res += glCheck(glBindImageTexture(texCount, tex->getGlId(), 0, GL_FALSE, 0, GL_READ_WRITE, tex->getInternalFormat()));

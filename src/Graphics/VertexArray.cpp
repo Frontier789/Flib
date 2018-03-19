@@ -163,4 +163,49 @@ namespace fg
 		
 		return res;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result VertexArray::setAttribute(fm::Size attrId,fm::Size compCount,fm::Size compType,const void *ptr)
+	{
+		GLBindKeeper guard(glBindVertexArray,GL_VERTEX_ARRAY_BINDING,getGlId());
+		
+		if (m_attrsEnabled.size() > attrId && m_attrsEnabled[attrId])
+		{
+			m_attrsEnabled[attrId] = false;
+			fm::Result res = glCheck(glDisableVertexAttribArray(attrId));
+			
+			if (!res) return res;
+		}
+		
+		
+		#ifndef FRONTIER_VERTEX_ARR_SETATTR_GEN
+			#define FRONTIER_VERTEX_ARR_SETATTR(n,Q,q,type) if (compCount == n) return glCheck(glVertex##Q##n##q##v(attrId,(const GL##type*)ptr))
+			#define FRONTIER_VERTEX_ARR_SETATTR_GEN(GL_TYPE,Q,q,type) \
+			if (compType == GL_TYPE)                                  \
+			{                                                         \
+				FRONTIER_VERTEX_ARR_SETATTR(1,Q,q,type);              \
+				FRONTIER_VERTEX_ARR_SETATTR(2,Q,q,type);              \
+				FRONTIER_VERTEX_ARR_SETATTR(3,Q,q,type);              \
+				FRONTIER_VERTEX_ARR_SETATTR(4,Q,q,type);              \
+			}
+		#endif
+		
+		int t[4] = {0,0,0,1};
+		
+		if (compType == GL_BYTE || compType == GL_UNSIGNED_BYTE)
+		{
+			for (fm::Size i=0;i<compCount;++i) t[i] = ((char*)ptr)[i];
+			compType = GL_INT;
+			ptr = (void*)t;
+		}
+		
+		FRONTIER_VERTEX_ARR_SETATTR_GEN(GL_FLOAT,Attrib,f,float)
+		FRONTIER_VERTEX_ARR_SETATTR_GEN(GL_SHORT,Attrib,s,short)
+		FRONTIER_VERTEX_ARR_SETATTR_GEN(GL_UNSIGNED_SHORT,Attrib,s,short)
+		FRONTIER_VERTEX_ARR_SETATTR_GEN(GL_DOUBLE,Attrib,d,double)
+		FRONTIER_VERTEX_ARR_SETATTR_GEN(GL_INT,AttribI,i,int)
+		FRONTIER_VERTEX_ARR_SETATTR_GEN(GL_UNSIGNED_INT,AttribI,ui,uint)
+		
+		return fm::Result();
+	}
 }
