@@ -75,6 +75,13 @@ bool bufferTest(ostream &out)
 	return true;
 }
 
+bool colMatch(Color c1,Color c2,float d = 2)
+{
+	vec4 ro = vec4(c1.rgba()) - vec4(c2.rgba());
+
+	return max(max(abs(ro.x),abs(ro.y)),max(abs(ro.z),abs(ro.w))) < d;
+}
+
 bool textureTest(ostream &out)
 {
 	out << "--- -- --- Texture test --- -- ---" << endl;
@@ -103,7 +110,7 @@ bool textureTest(ostream &out)
 	
 	// --- //
 	bool allmatch = true;
-	img.forEach([&](vec2s,Color c) { allmatch = allmatch && c == cc; } );
+	img.forEach([&](vec2s,Color c) { allmatch = allmatch && colMatch(c,cc); } );
 	
 	ok = allmatch;
 	out << "Texture.copyToImage reads good values: " << boolalpha << ok << endl;
@@ -170,7 +177,7 @@ bool fboTest(ostream &out)
 	img = tex.copyToImage();
 	allmatch = true;
 	
-	img.forEach([&](vec2s,Color c) { allmatch = allmatch && c == cc; } );
+	img.forEach([&](vec2s,Color c) { allmatch = allmatch && colMatch(c,cc); } );
 	
 	ok = allmatch;
 	out << "FrameBuffer.clear works correctly: " << boolalpha << ok << endl;
@@ -185,13 +192,6 @@ bool fboTest(ostream &out)
 	}
 	
 	return true;
-}
-
-bool clrMatch(Color c1,Color c2)
-{
-	vec4 d = vec4(c1.rgba()) - vec4(c2.rgba());
-
-	return (abs(d.x) + abs(d.y) + abs(d.z) + abs(d.w)) < 4;
 }
 
 bool shaderTest(ostream &out,bool createPics = true)
@@ -253,7 +253,7 @@ void main()
 	bool allmatch = true;
 	img.forEach([&](vec2s p,Color c){
 		Color correct = ((p.x >= 64 && p.y >= 64) ? Color(64,128,191,255) : Color::White);
-		allmatch = allmatch && clrMatch(c,correct);
+		allmatch = allmatch && colMatch(c,correct);
 	});
 	
 	ok = ok && allmatch;
@@ -276,7 +276,7 @@ void main()
 	img.forEach([&](vec2s p,Color &c){
 		Color correct = ((p.x >= 64 && p.y >= 64) ? Color(64,128,191,255) : Color::White);
 		if (p.x < 64 && p.y < 64) correct = Color(242,56,46,255);
-		allmatch = allmatch && clrMatch(c,correct);
+		allmatch = allmatch && colMatch(c,correct);
 	});
 	
 	ok = ok && allmatch;
@@ -351,7 +351,7 @@ void main()
 		for (fm::Size y=0;y<img.getSize().h;++y)
 		{
 			if (x < 64 && y < 64)
-				allmatch = allmatch && img.getTexel(vec2s(x,y)) == Color(242,56,46,255);
+				allmatch = allmatch && colMatch(img.getTexel(vec2s(x,y)),Color(242,56,46,255));
 			else if ((x >= 64 && y) || y > 64)
 				allmatch = allmatch && img.getTexel(vec2s(x,y)) == img.getTexel(vec2s(x,y-1));
 		}
@@ -377,7 +377,7 @@ void main()
 	if (createPics) img.saveToFile("s4.png");
 	
 	allmatch = true;
-	img.forEach([&](vec2s,Color c) { allmatch = allmatch && clrMatch(c,Color::Red); } );
+	img.forEach([&](vec2s,Color c) { allmatch = allmatch && colMatch(c,Color::Red); } );
 	
 	ok = ok && allmatch;
 	out << "Shader.setAttribute works with constants: " << boolalpha << ok << endl;
