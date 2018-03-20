@@ -75,6 +75,13 @@ bool bufferTest(ostream &out)
 	return true;
 }
 
+bool colMatch(Color c1,Color c2,float d = 2)
+{
+	vec4 ro = vec4(c1.rgba()) - vec4(c2.rgba());
+
+	return max(max(abs(ro.x),abs(ro.y)),max(abs(ro.z),abs(ro.w))) < d;
+}
+
 bool textureTest(ostream &out)
 {
 	out << "--- -- --- Texture test --- -- ---" << endl;
@@ -103,7 +110,7 @@ bool textureTest(ostream &out)
 	
 	// --- //
 	bool allmatch = true;
-	img.forEach([&](vec2s,Color c) { allmatch = allmatch && c == cc; } );
+	img.forEach([&](vec2s,Color c) { allmatch = allmatch && colMatch(c,cc); } );
 	
 	ok = allmatch;
 	out << "Texture.copyToImage reads good values: " << boolalpha << ok << endl;
@@ -170,7 +177,7 @@ bool fboTest(ostream &out)
 	img = tex.copyToImage();
 	allmatch = true;
 	
-	img.forEach([&](vec2s,Color c) { allmatch = allmatch && c == cc; } );
+	img.forEach([&](vec2s,Color c) { allmatch = allmatch && colMatch(c,cc); } );
 	
 	ok = allmatch;
 	out << "FrameBuffer.clear works correctly: " << boolalpha << ok << endl;
@@ -201,7 +208,7 @@ bool shaderTest(ostream &out,bool createPics = true)
 	Shader shader2;
 	Shader shader;
 	Texture tex;
-	bool ok;
+	bool ok = true;
 	
 	// --- //
 	res += shader.loadFromMemory(R"(
@@ -224,9 +231,9 @@ void main()
     out_color = u_clr;
 })");
 	
-	ok = glIsProgram(shader.getGlId());
+	ok = ok && glIsProgram(shader.getGlId());
 	out << "Shader.create creates shader program: " << boolalpha << ok << endl;
-	if (!ok && res) return false;
+	//if (!ok && res) return false;
 	
 	// --- //
 	res += buf.setData(pts);
@@ -246,12 +253,12 @@ void main()
 	bool allmatch = true;
 	img.forEach([&](vec2s p,Color c){
 		Color correct = ((p.x >= 64 && p.y >= 64) ? Color(64,128,191,255) : Color::White);
-		allmatch = allmatch && (c == correct);
+		allmatch = allmatch && colMatch(c,correct);
 	});
 	
-	ok = allmatch;
+	ok = ok && allmatch;
 	out << "Shader.setAttribPointer works with buffer: " << boolalpha << ok << endl;
-	if (!ok && res) return false;
+	// if (!ok && res) return false;
 	
 	// --- //
 	res += buf2.setData(pts2);
@@ -268,12 +275,12 @@ void main()
 	img.forEach([&](vec2s p,Color &c){
 		Color correct = ((p.x >= 64 && p.y >= 64) ? Color(64,128,191,255) : Color::White);
 		if (p.x < 64 && p.y < 64) correct = Color(242,56,46,255);
-		allmatch = allmatch && (c == correct);
+		allmatch = allmatch && colMatch(c,correct);
 	});
 	
-	ok = allmatch;
+	ok = ok && allmatch;
 	out << "Shader.setAttribPointer works on interleaved attributes: " << boolalpha << ok << endl;
-	if (!ok && res) return false;
+	// if (!ok && res) return false;
 	
 	// --- //
 	res += shader2.loadFromMemory(R"(
@@ -326,9 +333,9 @@ void main()
 		allmatch = allmatch && img.getTexel(vec2s(x,0)).g == 0;
 	}
 	
-	ok = allmatch;
+	ok = ok && allmatch;
 	out << "Interpolating Shader with float attrs works: " << boolalpha << ok << endl;
-	if (!ok && res) return false;
+	// if (!ok && res) return false;
 	
 	// --- //
 	res += shader.bind();
@@ -343,7 +350,7 @@ void main()
 		for (fm::Size y=0;y<img.getSize().h;++y)
 		{
 			if (x < 64 && y < 64)
-				allmatch = allmatch && img.getTexel(vec2s(x,y)) == Color(242,56,46,255);
+				allmatch = allmatch && colMatch(img.getTexel(vec2s(x,y)),Color(242,56,46,255));
 			else if ((x >= 64 && y) || y > 64)
 				allmatch = allmatch && img.getTexel(vec2s(x,y)) == img.getTexel(vec2s(x,y-1));
 		}
@@ -356,9 +363,9 @@ void main()
 		}
 	}
 	
-	ok = allmatch;
+	ok = ok && allmatch;
 	out << "Shaders keep their set attributes: " << boolalpha << ok << endl;
-	if (!ok && res) return false;
+	// if (!ok && res) return false;
 	
 	// --- //
 	res += shader2.setAttribute("in_clr",vec4::Red);
@@ -369,11 +376,11 @@ void main()
 	if (createPics) img.saveToFile("s4.png");
 	
 	allmatch = true;
-	img.forEach([&](vec2s,Color c) { allmatch = allmatch && c == Color::Red; } );
+	img.forEach([&](vec2s,Color c) { allmatch = allmatch && colMatch(c,Color::Red); } );
 	
-	ok = allmatch;
+	ok = ok && allmatch;
 	out << "Shader.setAttribute works with constants: " << boolalpha << ok << endl;
-	if (!ok && res) return false;
+	// if (!ok && res) return false;
 	
 	// --- //
 	if (!res)
@@ -382,7 +389,7 @@ void main()
 		return false;
 	}
 	
-	return true;
+	return ok;
 }
 /*
 bool shaderManagerTest(ostream &out,bool createPics = true)

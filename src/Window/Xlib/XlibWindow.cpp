@@ -771,7 +771,8 @@ namespace fw
 				enableResize(style & fw::Window::Resize);
 
 				// tell X to show it
-				XMapWindow(m_disp,m_win);
+				if (!(style & fw::Window::Hidden))
+					XMapWindow(m_disp,m_win);
 				
 				// reset storages
 				enableKeyRepeat(false);
@@ -1121,9 +1122,11 @@ namespace fw
 				return fm::Result();
 			
 			if (visible)
-				XMapWindow(m_disp,m_win);
+				XMapRaised(m_disp,m_win);
 			else
 				XUnmapWindow(m_disp,m_win);
+			
+			XFlush(m_disp);
 			
 			return fm::Result();
 		}
