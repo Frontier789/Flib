@@ -259,7 +259,6 @@ void main()
 	shader.setUniform("u_clr",vec4(.95,.22,.18,1));
 	
 	// shader.draw maybe?
-	// vao.setAttrib to value
 	res += glCheck(glDrawArrays(GL_TRIANGLES,0,sizeof(pts2)/sizeof(*pts2)));
 	
 	img = tex.copyToImage();
