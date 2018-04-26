@@ -7,10 +7,6 @@
 
 using namespace std;
 
-/*
-https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_shader_storage_buffer_object.txt
-*/
-
 void check(fm::Result res)
 {
 	if (!res)
@@ -18,6 +14,12 @@ void check(fm::Result res)
 		cout << res << endl;
 		std::exit(1);
 	}
+}
+
+float gauss(float dx,float dy,float sigma2)
+{
+	float d = dx*dx + dy*dy;
+	return exp(-d / 2.0 / sigma2) / sqrt(2*3.1415*sigma2);
 }
 
 int main()
@@ -46,6 +48,13 @@ int main()
 	res += cshader.setUniform("u_inTex",inTex);
 	res += cshader.setUniform("u_outTex",outTex);
 	check(res);
+	
+	cshader.bind();
+	float gaussData[12][12];
+	fg::Buffer gaussbuf;
+	Cxy(12,12) gaussData[x][y] = gauss(x,y,8);
+	gaussbuf.setData(gaussData);
+	res += cshader.setStorageBuf(3,gaussbuf);
 	
 	res += cshader.dispatch(inTex.getSize());
 	check(res);

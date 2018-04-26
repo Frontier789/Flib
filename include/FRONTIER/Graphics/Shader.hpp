@@ -673,6 +673,19 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		template<class T,class = typename std::enable_if<Is_GLDataType<T>::value>::type>
 		fm::Result setAttribute(const std::string &name,const T &val);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set one shader storage object of the shader
+		///
+		/// @param index The index The index (binding) of the storage point
+		/// @param buf The buffer to use (nullptr to unbind)
+		/// @param offset The offset into the buffer (in items not bytes)
+		/// @param size The number of items to set (not bytes, 0 means all)
+		/// 
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setStorageBuf(fm::Size index,fm::Ref<const fg::Buffer> buf,fm::Size offset = 0,fm::Size size = 0);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a shader program for usage

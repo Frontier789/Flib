@@ -213,6 +213,19 @@ namespace fg
 		///
 		/// Resizes the buffer if necessary
 		///
+		/// @param data The data to be sent to OpenGL
+		///
+		/// @return the error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T,fm::Size S>
+		fm::Result operator=(const T (&data)[S]);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set whole data of the buffer
+		///
+		/// Resizes the buffer if necessary
+		///
 		/// @param data Pointer to the data to be sent to OpenGL
 		/// @param dataCount The number of Ts in data
 		///

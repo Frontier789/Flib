@@ -391,21 +391,63 @@ void main()
 	
 	return ok;
 }
-/*
-bool shaderManagerTest(ostream &out,bool createPics = true)
+
+bool compShaderTest(ostream &out,bool createPics = true)
 {
-	out << "--- -- --- ShaderManager test --- -- ---" << endl;
+	out << "--- -- --- ComputeShader test --- -- ---" << endl;
 	
-	ShaderManager shader;
+	ComputeShader cshader;
 	fm::Result res;
-	bool ok;
+	bool ok = true;
+	bool allmatch;
+	Image img;
+	
+	res += cshader.loadFromMemory(R"(
+#version 430
+layout(rgba8) uniform writeonly image2D u_outTex;
+
+layout (local_size_x = 1, local_size_y = 1) in;
+
+int t(int a) {return a%256;}
+
+void main()
+{
+	ivec2 index = ivec2(gl_GlobalInvocationID.xy);
+	imageStore(u_outTex, index, vec4(t(index.x),t(index.y*3 + index.x*2),t(index.x+index.y),255)/255.f);
+})");
 	
 	// --- //
+	ok = ok && glIsProgram(cshader.getGlId());
+	out << "ComputeShader.loadFromMemory creates shader program: " << boolalpha << ok << endl;
+	if (!ok && res) return false;
 	
+	
+	// --- //
+	Texture tex(vec2(768,768));
+	res += cshader.setUniform("u_outTex",tex);
+	res += cshader.dispatch(vec2(768,768));
+	
+	img = tex.copyToImage();
+	
+	if (createPics)
+		img.saveToFile("s5.png");
+	
+	allmatch = true;
+	img.forEach([&](vec2s p,Color c) { allmatch = allmatch && colMatch(c,Color(p.x%256,(p.y*3 + p.x*2)%256,(p.x+p.y)%256,255)); } );
+	
+	ok = ok && allmatch;
+	out << "ComputShader.dispatch works with single output: " << boolalpha << ok << endl;
+	
+	// --- //
+	if (!res)
+	{
+		out << "Some operation resulted in GLError: " << res << endl;
+		return false;
+	}
 	
 	return true;
 }
-*/
+
 void testContext(ostream &out)
 {
 	out << "OpenGL version:    " << glGetString(GL_VERSION) << endl;
@@ -439,6 +481,10 @@ void testContext(ostream &out)
 	
 	ok = shaderTest(out);
 	if (!ok) out << "Error: Shader test failed" << endl;
+	out << endl;
+	
+	ok = compShaderTest(out);
+	if (!ok) out << "Error: ComputeShader test failed" << endl;
 }
 
 int main()

@@ -301,6 +301,51 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		fm::Result dispatch(fm::vec3s workGroupDims) const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Access the shader's verex array object
+		///
+		/// @return The vertex array object
+		///
+		/////////////////////////////////////////////////////////////
+		const VertexArray &getVao() const;
+	
+		/////////////////////////////////////////////////////////////
+		/// @brief Access the shader's verex array object
+		///
+		/// @return The vertex array object
+		///
+		/////////////////////////////////////////////////////////////
+		VertexArray &getVao();
+	
+		/////////////////////////////////////////////////////////////
+		/// @brief Access the compute shader's underlying shader object
+		///
+		/// @return The shader
+		///
+		/////////////////////////////////////////////////////////////
+		const Shader &getShader() const;
+	
+		/////////////////////////////////////////////////////////////
+		/// @brief Access the compute shader's underlying shader object
+		///
+		/// @return The shader
+		///
+		/////////////////////////////////////////////////////////////
+		Shader &getShader();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set one shader storage object of the shader
+		///
+		/// @param index The index The index (binding) of the storage point
+		/// @param buf The buffer to use (nullptr to unbind)
+		/// @param offset The offset into the buffer (in items not bytes)
+		/// @param size The number of items to set (not bytes, 0 means all)
+		/// 
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setStorageBuf(fm::Size index,fm::Ref<const fg::Buffer> buf,fm::Size offset = 0,fm::Size size = 0);
 	};
 }
 #endif // FRONTIER_SHADER_INCLUDED

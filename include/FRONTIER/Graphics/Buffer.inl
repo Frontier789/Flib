@@ -28,6 +28,13 @@ namespace fg
 		return setData(&data[0],sizeof(data)/sizeof(*data));
 	}
 	
+	////////////////////////////////////////////////////////////
+	template<class T,fm::Size S>
+	inline fm::Result Buffer::operator=(const T (&data)[S])
+	{
+		return setData(&data[0],sizeof(data)/sizeof(*data));
+	}
+	
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	inline fm::Result Buffer::setData(const T *data,fm::Size dataCount)

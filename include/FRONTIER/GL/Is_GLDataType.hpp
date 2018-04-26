@@ -158,6 +158,17 @@ namespace fg
 			compCount = Is_GLDataType<typename T::component_type>::compCount * T::components
 		};
 	};
+	
+	template<class T,fm::Size S>
+	class Is_GLDataType<T[S],false>
+	{
+	public:
+		enum {
+			value     = Is_GLDataType<T>::value,
+			enumVal   = Is_GLDataType<T>::enumVal,
+			compCount = Is_GLDataType<T>::compCount * S
+		};
+	};
 	/// @endcond
 }
 

@@ -714,6 +714,16 @@ namespace fg
 		
 		return res;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result Shader::setStorageBuf(fm::Size index,fm::Ref<const fg::Buffer> buf,fm::Size offset,fm::Size size)
+	{
+		if (buf && !size) size = buf->getItemCount();
+		
+		fm::Size bytesPerItem = buf ? buf->getItemSize() : 0;
+		
+		return glCheck(glBindBufferRange(fg::ShaderStorageBuffer, index, buf ? buf->getGlId() : 0,offset*bytesPerItem,size*bytesPerItem));
+	}
 
 	////////////////////////////////////////////////////////////
     bool Shader::isAvailable()
@@ -766,5 +776,17 @@ namespace fg
 	bool Shader::isLoaded() const
 	{
 		return getGlId();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	const VertexArray &Shader::getVao() const
+	{
+		return m_vao;
+	}
+
+	/////////////////////////////////////////////////////////////
+	VertexArray &Shader::getVao()
+	{
+		return m_vao;
 	}
 }

@@ -190,4 +190,34 @@ namespace fg
 	{
 		return dispatch(workGroupDims);
 	}
+	
+	/////////////////////////////////////////////////////////////
+	const VertexArray &ComputeShader::getVao() const
+	{
+		return m_shader.getVao();
+	}
+
+	/////////////////////////////////////////////////////////////
+	VertexArray &ComputeShader::getVao()
+	{
+		return m_shader.getVao();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	const Shader &ComputeShader::getShader() const
+	{
+		return m_shader;
+	}
+
+	/////////////////////////////////////////////////////////////
+	Shader &ComputeShader::getShader()
+	{
+		return m_shader;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result ComputeShader::setStorageBuf(fm::Size index,fm::Ref<const fg::Buffer> buf,fm::Size offset,fm::Size size)
+	{
+		return m_shader.setStorageBuf(index,buf,offset,size);
+	}
 }

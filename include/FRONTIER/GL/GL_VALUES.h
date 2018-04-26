@@ -1265,6 +1265,7 @@
 	#define GL_SHADER_IMAGE_ACCESS_BARRIER_BIT                            0x20
 	#define GL_SHADER_OBJECT_ARB                                          0x8b48
 	#define GL_SHADER_SOURCE_LENGTH                                       0x8b88
+	#define GL_SHADER_STORAGE_BARRIER_BIT                                 0x2000
 	#define GL_SHADER_TYPE                                                0x8b4f
 	#define GL_SHADE_MODEL                                                0xb54
 	#define GL_SHADING_LANGUAGE_VERSION                                   0x8b8c
