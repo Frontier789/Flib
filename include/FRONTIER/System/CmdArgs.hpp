@@ -50,7 +50,7 @@ namespace fm
 		CmdArgs(int argc,char *argv[]);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Register a new switch to be interpreted
+		/// @brief Register a new switch with exactly one argument to be interpreted
 		/// 
 		/// The callback shall return true when it accepts the value
 		/// And false if the value is out of bounds or otherwise illegal
@@ -63,13 +63,25 @@ namespace fm
 		CmdArgs &addSwitch(fm::String argSwitch,fm::Delegate<bool,T> callback);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Register a new switch with no arguments needed to it to be interpreted
+		/// 
+		/// The callback shall return true when it accepts the value
+		/// And false if the value is out of bounds or otherwise illegal
+		/// 
+		/// @param argSwitch The switch 
+		/// @param callback The callback which will be called
+		/// 
+		/////////////////////////////////////////////////////////////
+		CmdArgs &addSwitch(fm::String argSwitch,fm::Delegate<bool> callback);
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Forward a switch to another switch
 		/// 
 		/// @param argSwitch The switch 
 		/// @param forwSwitch The switch to be forwarded
 		/// 
 		/////////////////////////////////////////////////////////////
-		CmdArgs &addSwitch(fm::String argSwitch,fm::String forwSwitch);
+		CmdArgs &forwSwitch(fm::String argSwitch,fm::String forwSwitch);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the arguments for the handler

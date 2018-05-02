@@ -68,9 +68,26 @@ namespace fm
 	}
 	
 	/////////////////////////////////////////////////////////////
-	CmdArgs &CmdArgs::addSwitch(fm::String argSwitch,fm::String forwSwitch)
+	CmdArgs &CmdArgs::forwSwitch(fm::String argSwitch,fm::String forwSwitch)
 	{
 		m_callbacks[forwSwitch] = m_callbacks[argSwitch];
+		
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	CmdArgs &CmdArgs::addSwitch(fm::String argSwitch,fm::Delegate<bool> callback)
+	{
+		m_callbacks[argSwitch] = [&,callback](fm::Result &res,fm::Size &id) -> bool {
+			
+			++id;
+			bool cb = callback();
+
+			if (!cb)
+				res = fm::Result("CMDError",fm::Result::OPFailed,"UnaccpetedValue","processSwitch",__FILE__,__LINE__,"Unacceptable value was given to " + argSwitch.str());
+
+			return cb;
+		};
 		
 		return *this;
 	}

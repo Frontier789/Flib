@@ -25,22 +25,6 @@ else
  F_NEEDED_LIB=libf.a
 endif
 
-# linker flags
-ifeq ($(LDFLAGS),)
- ifeq ($(F_DEBUG),)
-  LDFLAGS=-s
- endif
-endif
-
-# compile falgs
-ifeq ($(F_DEBUG),)
- CXXFLAGS+=-O3
-else
- CXXFLAGS+=-g
-endif
-
-CXXFLAGS+=-DFRONTIER_DEBUG
-
 # executable name
 EXEC?=exec
 

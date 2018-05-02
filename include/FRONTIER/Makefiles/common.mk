@@ -28,12 +28,26 @@ endif
 
 ifeq ($(CXX),undefined)
 error:
-	$(error no compiler specified and g++ and clang++ not available)
+	$(error no compiler specified, g++ and clang++ not available)
 endif
 
 # set cmpiler flags
 CXXFLAGS ?= -std=gnu++11 -pedantic -Werror -Wextra -Wall -DFRONTIER_DEBUG
 CXX_WNO_FLAGS ?= -DFRONTIER_MISSING_IMPL_NO_WARNING
+
+# linker flags
+ifeq ($(LDFLAGS),)
+ ifeq ($(F_DEBUG),)
+  LDFLAGS=-s
+ endif
+endif
+
+# compile falgs
+ifeq ($(F_DEBUG),)
+ CXXFLAGS+=-O2
+else
+ CXXFLAGS+=-g
+endif
 
 # common tools
 MAKE=make

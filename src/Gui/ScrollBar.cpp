@@ -15,6 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/ShaderManager.hpp>
+#include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/Gui/GuiContext.hpp>
 #include <FRONTIER/Graphics/Mesh.hpp>
 #include <FRONTIER/Gui/ScrollBar.hpp>

@@ -2,6 +2,7 @@
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/System/Vector3.hpp>
+#include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/util/C.hpp>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/GL/GL_CHECK.hpp>

@@ -2,6 +2,7 @@
 #include <FRONTIER/Graphics/ShaderSource.hpp>
 #include <FRONTIER/Graphics/AssocPoint.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
+#include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/GL/GL_SO_LOADER.hpp>
 

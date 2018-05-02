@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/DepthTexture.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
+#include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/util/C.hpp>
 #include <FRONTIER/OpenGL.hpp>
 

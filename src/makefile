@@ -18,11 +18,11 @@ err:
 endif
 endif
 
-# all the .a targets
-all: make_lib_files make_lib_f
-
 # all the static targets
 static: make_lib_files make_lib_f
+
+# all the .a targets
+all: static dynamic
 
 # all the dynamic targets
 dynamic: make_so_files make_so_f
@@ -76,7 +76,7 @@ $(foreach MODULE,$(F_MODULES), \
  $(eval $(F_$(F_CUR_MODULE)_MODULE_A): $(F_$(F_CUR_MODULE)_STATIC_O_FILES) ; \
 	$(AR) $$@ $$^ ) \
  $(eval $(F_$(F_CUR_MODULE)_MODULE_SO): $(F_$(F_CUR_MODULE)_DYNAMIC_O_FILES) $(F_DYNREQUIRE_$(F_CUR_MODULE)) ; \
-	$(CXX) -shared -o $$@ $(F_$(F_CUR_MODULE)_DYNAMIC_O_FILES) -L$(F_O_FILES_DIR) $(F_DYNLINK_TO_$(F_CUR_MODULE)) $(call F_SO_IMPLIB,$(F_O_FILES_DIR),-$(F_CUR_MODULE_LOWERCASE)) ) \
+	$(CXX) -shared -o $$@ $(LDFLAGS) $(F_$(F_CUR_MODULE)_DYNAMIC_O_FILES) -L$(F_O_FILES_DIR) $(F_DYNLINK_TO_$(F_CUR_MODULE)) $(call F_SO_IMPLIB,$(F_O_FILES_DIR),-$(F_CUR_MODULE_LOWERCASE)) ) \
  \
  $(eval $(F_O_FILES_DIR)/static/$(MODULE)/%.o: $(MODULE)/%.cpp | $(F_O_FILES_DIR)/static/$(MODULE) ; \
 	$(CXX) $(CXXFLAGS) $(CXX_WNO_FLAGS) -I $(F_PATH_TO_INCLUDE) -c $$< -o $$@ ) \
