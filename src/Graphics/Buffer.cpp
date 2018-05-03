@@ -19,6 +19,7 @@
 #include <FRONTIER/Graphics/Buffer.hpp>
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/OpenGL.hpp>
+#include <algorithm>
 
 namespace fg
 {

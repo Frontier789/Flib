@@ -223,7 +223,7 @@ namespace fg
 	#ifdef FRONTIER_OS_WINDOWS
 	
 		char buffer[MAX_PATH];
-		::GetWindowsDirectory(buffer, MAX_PATH);
+		::GetWindowsDirectoryA(buffer, MAX_PATH);
 		
 		return loadFromFile(std::string(buffer) + "\\fonts\\" + fileName,characterSize);
 	

@@ -24,6 +24,7 @@
 #include <FRONTIER/System/Camera.hpp>
 #include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/OpenGL.hpp>
+#include <algorithm>
 
 namespace fg
 {

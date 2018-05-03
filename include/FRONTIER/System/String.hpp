@@ -587,7 +587,7 @@ namespace fm
 	/// @return True iff the two strings match
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator==(const String &str1, const String &str2);
+	bool FRONTIER_API operator==(const String &str1, const String &str2);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief chaeck two strings are different
@@ -598,7 +598,7 @@ namespace fm
 	/// @return True iff the two strings don't match
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator!=(const String &str1, const String &str2);
+	bool FRONTIER_API operator!=(const String &str1, const String &str2);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Check if a string is alphabetically comes before an other
@@ -609,7 +609,7 @@ namespace fm
 	/// @return True iff the the first string comes before the second
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator<(const String &str1, const String &str2);
+	bool FRONTIER_API operator<(const String &str1, const String &str2);
 
 	/////////////////////////////////////////////////////////////
 	/// @brief Check if a string is alphabetically comes after an other
@@ -620,8 +620,8 @@ namespace fm
 	/// @return True iff the the first string comes after the second
 	///
 	/////////////////////////////////////////////////////////////
-	bool operator>(const String &str1, const String &str2);
-
+	bool FRONTIER_API operator>(const String &str1, const String &str2);
+	
 	/////////////////////////////////////////////////////////////
 	/// @brief Concatenate two strings
 	///
@@ -631,22 +631,22 @@ namespace fm
 	/// @return The concatenated string
 	///
 	/////////////////////////////////////////////////////////////
-	String operator+(const String &str1, const String &str2);
-
-	String toString(char               num,fm::Size base = 10);
-	String toString(unsigned char      num,fm::Size base = 10);
-	String toString(short              num,fm::Size base = 10);
-	String toString(unsigned short     num,fm::Size base = 10);
-	String toString(int                num,fm::Size base = 10);
-	String toString(unsigned int       num,fm::Size base = 10);
-	String toString(long               num,fm::Size base = 10);
-	String toString(unsigned long      num,fm::Size base = 10);
-	String toString(long long          num,fm::Size base = 10);
-	String toString(unsigned long long num,fm::Size base = 10);
+	String FRONTIER_API operator+(const String &str1, const String &str2);
+    
+	String FRONTIER_API toString(char               num,fm::Size base = 10);
+	String FRONTIER_API toString(unsigned char      num,fm::Size base = 10);
+	String FRONTIER_API toString(short              num,fm::Size base = 10);
+	String FRONTIER_API toString(unsigned short     num,fm::Size base = 10);
+	String FRONTIER_API toString(int                num,fm::Size base = 10);
+	String FRONTIER_API toString(unsigned int       num,fm::Size base = 10);
+	String FRONTIER_API toString(long               num,fm::Size base = 10);
+	String FRONTIER_API toString(unsigned long      num,fm::Size base = 10);
+	String FRONTIER_API toString(long long          num,fm::Size base = 10);
+	String FRONTIER_API toString(unsigned long long num,fm::Size base = 10);
 	
-	String toString(float num,      fm::Size precision = 4);
-	String toString(double num,     fm::Size precision = 4);
-	String toString(long double num,fm::Size precision = 4);
+	String FRONTIER_API toString(float num,      fm::Size precision = 4);
+	String FRONTIER_API toString(double num,     fm::Size precision = 4);
+	String FRONTIER_API toString(long double num,fm::Size precision = 4);
 
 	template<class>
 	class StringDecoder : public std::false_type {};

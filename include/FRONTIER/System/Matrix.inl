@@ -73,7 +73,16 @@ namespace fm
 			m_data[x][y] = mat[x][y];
 	}
 
+#ifdef _MSVC_LANG
+	/////////////////////////////////////////////////////////////
+	template<size_t W, size_t H, class T>
+	template<class... ArgTypes>
+	inline matrix<W, H, T>::matrix(const ArgTypes &... args) : m_data{(T)args...}
+	{
 
+	}
+
+#else
 	/////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
 	template<class,class>
@@ -109,7 +118,7 @@ namespace fm
 	{
 		
 	}
-
+#endif
 	/// functions /////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
 	inline T matrix<W,H,T>::at(size_t x,size_t y) const
@@ -317,7 +326,6 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
-	template<class,class>
 	inline T matrix<W,H,T>::det() const
 	{
 		return priv::getDet<W,T>::getDeterminant(*this);
@@ -325,7 +333,6 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
-	template<class,class>
 	inline matrix<W,H,T> matrix<W,H,T>::minors() const
 	{
 		matrix<W,H,T> ret;
@@ -353,7 +360,6 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
-	template<class,class>
 	inline matrix<W,H,T> matrix<W,H,T>::adjugate() const
 	{
 		matrix<W,H,T> cofactors = minors();
@@ -365,7 +371,6 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
-	template<class,class>
 	inline matrix<W,H,T> matrix<W,H,T>::inverse() const
 	{
 		return adjugate()/det();
@@ -373,11 +378,10 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<size_t W,size_t H,class T>
-	template<class,class>
 	inline T matrix<W,H,T>::trace() const
 	{
 		T ret = T();
-		C(W)
+		C(W>H ? H : W)
 			ret = ret + m_data[i][i];
 		
 		return ret;
@@ -395,60 +399,6 @@ namespace fm
 	inline const T *matrix<W,H,T>::operator[](size_t index) const
 	{
 		return m_data[index];
-	}
-
-	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
-	inline typename matrix<W,H,T>::reference matrix<W,H,T>::operator()(const T (&data)[W][H])
-	{
-		Cx(W)Cy(H)
-			m_data[x][y] = *((const T*)data+x*H+y);
-		return *this;
-	}
-
-	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
-	inline typename matrix<W,H,T>::reference matrix<W,H,T>::operator()(const T (&data)[W*H])
-	{
-		Cx(W)Cy(H)
-			m_data[x][y] = *(data+x*H+y);
-		return *this;
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
-	template<class,class>
-	inline typename matrix<W,H,T>::reference matrix<W,H,T>::operator()(const T &a00,const T &a01,
-																	   const T &a10,const T &a11)
-	{
-		return *this = matrix<W,H,T>(a00,a01,
-									 a10,a11);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
-	template<class,class>
-	inline typename matrix<W,H,T>::reference matrix<W,H,T>::operator()(const T &a00,const T &a01,const T &a02,
-																	   const T &a10,const T &a11,const T &a12,
-																	   const T &a20,const T &a21,const T &a22)
-	{
-		return *this = matrix<W,H,T>(a00,a01,a02,
-									 a10,a11,a12,
-									 a20,a21,a22);
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
-	template<class,class>
-	inline typename matrix<W,H,T>::reference matrix<W,H,T>::operator()(const T &a00,const T &a01,const T &a02,const T &a03,
-																	   const T &a10,const T &a11,const T &a12,const T &a13,
-																	   const T &a20,const T &a21,const T &a22,const T &a23,
-																	   const T &a30,const T &a31,const T &a32,const T &a33)
-	{
-		return *this = matrix<W,H,T>(a00,a01,a02,a03,
-									 a10,a11,a12,a13,
-									 a20,a21,a22,a23,
-									 a30,a31,a32,a33);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -672,10 +622,10 @@ namespace fm
 		////////////////////////////////////////////////////////////
 		inline matrix<4,4,float> translation(float x,float y,float z)
 		{
-			return matrix<4,4,float>(1,0,0,x,
-									 0,1,0,y,
-									 0,0,1,z,
-									 0,0,0,1);
+			return matrix<4, 4, float>(1,0,0,x,
+						               0,1,0,y,
+						               0,0,1,z,
+						               0,0,0,1);
 		}
 
 		////////////////////////////////////////////////////////////

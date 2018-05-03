@@ -15,7 +15,7 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 
-#if __cplusplus < 201103L
+#if __cplusplus < 201103L && (!defined(_MSVC_LANG) || _MSVC_LANG < 201403)
 
 	#error C++11 Required for this library
 

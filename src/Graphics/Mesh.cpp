@@ -22,6 +22,7 @@
 #include <FRONTIER/System/Polar2.hpp>
 #include <FRONTIER/System/Polar3.hpp>
 #include <FRONTIER/Graphics/Mesh.hpp>
+#include <algorithm>
 #include <map>
 #include <set>
 

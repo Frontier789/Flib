@@ -26,7 +26,7 @@ namespace fm
 	namespace priv
 	{
 		/////////////////////////////////////////////////////////////
-		fm::Uint32 FRONTIER_API utf32FromAnsi(char character,const std::locale &loc = std::locale())
+		fm::Uint32 utf32FromAnsi(char character,const std::locale &loc = std::locale())
 		{
         #ifdef FRONTIER_OS_WINDOWS
 
@@ -46,13 +46,13 @@ namespace fm
 		}
 
 		/////////////////////////////////////////////////////////////
-		fm::Uint32 FRONTIER_API utf32FromWide(wchar_t character)
+		fm::Uint32 utf32FromWide(wchar_t character)
 		{
 			return (fm::Uint32)character;
 		}
 
 		/////////////////////////////////////////////////////////////
-		unsigned short FRONTIER_API getTrailingBytes(fm::Uint8 u)
+		unsigned short getTrailingBytes(fm::Uint8 u)
 		{
 			if (u < 192) return 0;
 			if (u < 224) return 1;
@@ -63,7 +63,7 @@ namespace fm
 		}
 
 		/////////////////////////////////////////////////////////////
-		fm::Uint32 FRONTIER_API getOffsetUTF8(fm::Uint8 u)
+		fm::Uint32 getOffsetUTF8(fm::Uint8 u)
 		{
 			if (u == 0) return 0x00000000UL;
 			if (u == 1) return 0x00003080UL;
@@ -691,7 +691,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	String operator+(const String &str1, const String &str2)
+	String FRONTIER_API operator+(const String &str1, const String &str2)
 	{
 		String ret;
 		ret.insert(0,str1);

@@ -17,6 +17,7 @@
 #ifndef FRONTIER_RESULT_HPP_INCLUDED
 #define FRONTIER_RESULT_HPP_INCLUDED
 #include <FRONTIER/System/CommonTypes.hpp>
+#include <FRONTIER/System/util/API.h>
 #define FRONTIER_RESULT
 #include <vector>
 #include <string>
@@ -29,7 +30,7 @@ namespace fm
 	/// @ingroup System
 	///
 	/////////////////////////////////////////////////////////////
-	class Result
+	class FRONTIER_API Result
 	{
 	public:
 		/// Encodes the level of the error

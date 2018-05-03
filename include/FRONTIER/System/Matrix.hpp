@@ -106,6 +106,17 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		matrix(const matrix<W,H,T> &mat);
 
+#ifdef _MSVC_LANG
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct a matrix<n,n> from n*n values
+		///
+		/// @param args The values to use
+		///
+		/////////////////////////////////////////////////////////////
+		template<class... ArgTypes>
+		matrix(const ArgTypes &... args);
+#else
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct a matrix<2,2> from 4 values
 		///
@@ -164,7 +175,7 @@ namespace fm
 			   const T &a10,const T &a11,const T &a12,const T &a13,
 			   const T &a20,const T &a21,const T &a22,const T &a23,
 			   const T &a30,const T &a31,const T &a32,const T &a33);
-
+#endif
 		/////////////////////////////////////////////////////////////
 		/// @brief Element access with bound check
 		///
@@ -286,7 +297,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		template<Size W2,Size H2>
 		matrix<W2,H2,T> convert() const;
-		
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculates the <a href="http://en.wikipedia.org/wiki/Determinant">determinant</a> of a square matrix
 		///
@@ -296,7 +307,6 @@ namespace fm
 		/// @return The determinant
 		///
 		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == H,K>::type>
 		T det() const;
 
 		/////////////////////////////////////////////////////////////
@@ -305,8 +315,7 @@ namespace fm
 		/// @return The matrix of minors
 		///
 		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == H,K>::type>
-		matrix<W,H,T> minors() const;
+		matrix<W, H, T> minors() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculates the <a href="http://en.wikipedia.org/wiki/Adjugate_matrix">adjugate</a> of a matrix
@@ -314,8 +323,7 @@ namespace fm
 		/// @return The adjugate
 		///
 		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == H,K>::type>
-		matrix<W,H,T> adjugate() const;
+		matrix<W, H, T> adjugate() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculates the <a href="http://en.wikipedia.org/wiki/Invertible_matrix">inverse</a> of a matrix
@@ -323,8 +331,7 @@ namespace fm
 		/// @return The inverse
 		///
 		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == H,K>::type>
-		matrix<W,H,T> inverse() const;
+		matrix<W, H, T> inverse() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculate the <a href="http://en.wikipedia.org/wiki/Trace_%28linear_algebra%29">trace</a> of a matrix
@@ -332,7 +339,6 @@ namespace fm
 		/// @return The trace
 		///
 		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == H,K>::type>
 		T trace() const;
 
 		/////////////////////////////////////////////////////////////
@@ -360,86 +366,6 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		const T *operator[](Size index) const;
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the data of the matrix
-		///
-		/// @param data Data to replace the matrix's fileds to
-		///
-		/// @return Reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference operator()(const T (&data)[W][H]);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Set the data of the matrix
-		///
-		/// @param data Data to replace the matrix's fileds to
-		///
-		/// @return Reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference operator()(const T (&data)[W*H]);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct a matrix<2,2> from 4 values
-		///
-		/// @param a00 The element at 0,0
-		/// @param a01 The element at 0,1
-		/// @param a10 The element at 1,0
-		/// @param a11 The element at 1,1
-		///
-		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == H && W == 2,K>::type>
-		reference operator()(const T &a00,const T &a01,
-							 const T &a10,const T &a11);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct a matrix<3,3> from 9 values
-		///
-		/// @param a00 The element at 0,0
-		/// @param a01 The element at 0,1
-		/// @param a02 The element at 0,2
-		/// @param a10 The element at 1,0
-		/// @param a11 The element at 1,1
-		/// @param a12 The element at 1,2
-		/// @param a20 The element at 2,0
-		/// @param a21 The element at 2,1
-		/// @param a22 The element at 2,2
-		///
-		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == H && W == 3,K>::type>
-		reference operator()(const T &a00,const T &a01,const T &a02,
-							 const T &a10,const T &a11,const T &a12,
-							 const T &a20,const T &a21,const T &a22);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct a matrix<4,4> from 16 values
-		///
-		/// @param a00 The element at 0,0
-		/// @param a01 The element at 0,1
-		/// @param a02 The element at 0,2
-		/// @param a03 The element at 0,3
-		/// @param a10 The element at 1,0
-		/// @param a11 The element at 1,1
-		/// @param a12 The element at 1,2
-		/// @param a13 The element at 1,3
-		/// @param a20 The element at 2,0
-		/// @param a21 The element at 2,1
-		/// @param a22 The element at 2,2
-		/// @param a23 The element at 2,3
-		/// @param a30 The element at 3,0
-		/// @param a31 The element at 3,1
-		/// @param a32 The element at 3,2
-		/// @param a33 The element at 3,3
-		///
-		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == H && W == 4,K>::type>
-		reference operator()(const T &a00,const T &a01,const T &a02,const T &a03,
-							 const T &a10,const T &a11,const T &a12,const T &a13,
-							 const T &a20,const T &a21,const T &a22,const T &a23,
-							 const T &a30,const T &a31,const T &a32,const T &a33);
-
 
 		/////////////////////////////////////////////////////////////
 		/// @brief The <a href="http://en.wikipedia.org/wiki/Identity_matrix">identity matrix</a>

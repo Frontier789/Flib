@@ -212,7 +212,7 @@ namespace fw
 			// iIf needed create a dummy class
 			if (m_contextWindowCount == 0)
 			{
-				WNDCLASS winClass;
+				WNDCLASSA winClass;
 				ZeroMemory(&winClass,sizeof(winClass));
 
 				// Fill in the fields of the WNDCLASS

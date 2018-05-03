@@ -30,7 +30,7 @@ namespace fw
 					   NULL,
 					   err,
 					   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-					   (LPTSTR)&errorText,0,NULL);
+					   (LPSTR)&errorText,0,NULL);
 		if (errorText)
 		{
 			// convert description to string

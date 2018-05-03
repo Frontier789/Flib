@@ -649,7 +649,7 @@ namespace fw
 					HDROP hDrop = (HDROP)wParam;
 
 					// query the number of files
-					unsigned int fileCount = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+					unsigned int fileCount = DragQueryFileA(hDrop, 0xFFFFFFFF, NULL, 0);
 
 					Event ev(Event::FileDrop);
 					fm::vec2i pos = Mouse::getPosition(*this);
@@ -658,11 +658,11 @@ namespace fw
 
 					for (unsigned int i=0;i<fileCount;i++)
 					{
-						unsigned int bufSize = DragQueryFile(hDrop,i,NULL,0);
+						unsigned int bufSize = DragQueryFileA(hDrop,i,NULL,0);
 
 						char *buf = new char[bufSize+1];
 
-						DragQueryFile(hDrop,i,buf,bufSize+1);
+						DragQueryFileA(hDrop,i,buf,bufSize+1);
 
 						buf[bufSize] = '\0';
 
@@ -829,7 +829,7 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		fm::Result Window::createClass()
 		{
-			WNDCLASS winClass;
+			WNDCLASSA winClass;
 
 			ZeroMemory(&winClass,sizeof(winClass));
 

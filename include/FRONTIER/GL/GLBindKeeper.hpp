@@ -22,7 +22,7 @@
 namespace fg
 {
 	/////////////////////////////////////////////////////////////
-	class GLBindKeeper
+	class FRONTIER_API GLBindKeeper
 	{
 		GLuint m_prevId;
 		GLenum m_enum;

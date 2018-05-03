@@ -7,6 +7,7 @@
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/GL/GL_CHECK.hpp>
 #include <FRONTIER/OpenGL.hpp>
+#include <algorithm>
 
 namespace fg
 {

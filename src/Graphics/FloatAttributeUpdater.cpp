@@ -1,5 +1,6 @@
 #include <FRONTIER/Graphics/FloatAttributeUpdater.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
+#include <algorithm>
 #include <cstring>
 
 namespace fg

@@ -156,6 +156,19 @@ namespace fw
 		///
 		/////////////////////////////////////////////////////////////
 		static bool isKeyHeld(Key key);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Convert a key to a 3d offset vector
+		///
+		/// @param key The key to convert
+		/// @param allowWASD Indicates whether pressing WASD keys should affect return value
+		/// @param allowArrows Indicates whether pressing the arrow keys should affect return value
+		/// @param allowShiftSpace Indicates whether pressing LeftShift or Space should affect return value
+		///
+		/// @return The 3d directional vector
+		///
+		/////////////////////////////////////////////////////////////
+		static fm::vec3i keyToDelta(Key key,bool allowWASD = true,bool allowArrows = true,bool allowShiftSpace = true);
 	};
 	
 	/////////////////////////////////////////////////////////////

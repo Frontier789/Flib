@@ -18,7 +18,7 @@
 #define FRONTIER_API_H_INCLUDED
 #include <FRONTIER/System/util/OS.h>
 
-	#ifdef FRONTIER_DYNAMIC
+	#if defined(FRONTIER_DYNAMIC) || defined(FRONTIER_SHARED_LIBBUILD)
 
 		#ifdef FRONTIER_OS_WINDOWS
 			

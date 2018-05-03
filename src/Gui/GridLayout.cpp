@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Gui/GridLayout.hpp>
 #include <FRONTIER/System/util/C.hpp>
+#include <algorithm>
 
 namespace fgui
 {

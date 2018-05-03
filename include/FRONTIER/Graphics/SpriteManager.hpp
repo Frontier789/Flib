@@ -45,7 +45,7 @@ namespace fg
 		/// @brief Base class with for non templated functions for sprite manager
 		/// 
 		/////////////////////////////////////////////////////////////
-		class SpriteManagerBaseNonTemplate : public fg::Drawable
+		class FRONTIER_API SpriteManagerBaseNonTemplate : public fg::Drawable
 		{
 			fg::DrawData m_drawData; ///< The drawData
 			bool m_useFrames; ///< Indicates whether frames are used
