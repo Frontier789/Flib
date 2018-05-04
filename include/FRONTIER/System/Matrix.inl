@@ -29,21 +29,21 @@
 namespace fm
 {
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline matrix<W,H,T>::matrix()
 	{
 		reset();
 	}
 	
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline matrix<W,H,T>::matrix(const T &all)
 	{
 		reset(all);
 	}
 
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline matrix<W,H,T>::matrix(const T (&data)[W*H])
 	{
 		Cx(W)Cy(H)
@@ -51,7 +51,7 @@ namespace fm
 	}
 
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline matrix<W,H,T>::matrix(const T (&data)[W][H])
 	{
 		Cx(W)Cy(H)
@@ -59,23 +59,47 @@ namespace fm
 	}
 	
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline matrix<W,H,T>::matrix(const T &diagonal,const T &rest)
 	{
 		reset(diagonal,rest);
 	}
 	
-	/// constructors /////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
 	inline matrix<W,H,T>::matrix(const matrix<W,H,T> &mat)
 	{
 		Cx(W)Cy(H)
 			m_data[x][y] = mat[x][y];
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
+	inline matrix<W,H,T>::matrix(std::initializer_list<T> data)
+	{
+		T *ptr = &m_data[0][0];
+		auto dpt = data.begin();
+		
+		C(W*H)
+		{
+			if (dpt == data.end())
+			{
+				while (i < W*H)
+				{
+					*ptr = T();
+					++ptr;
+					++i;
+				}
+			}
+			*ptr = *dpt;
+			++ptr;
+			++dpt;
+		}
+	}
 
 #ifdef _MSVC_LANG
 	/////////////////////////////////////////////////////////////
-	template<size_t W, size_t H, class T>
+	template<Size W, Size H, class T>
 	template<class... ArgTypes>
 	inline matrix<W, H, T>::matrix(const ArgTypes &... args) : m_data{(T)args...}
 	{
@@ -84,7 +108,7 @@ namespace fm
 
 #else
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	template<class,class>
 	inline matrix<W,H,T>::matrix(const T &a00,const T &a01,
 								 const T &a10,const T &a11) : m_data{{a00,a01},
@@ -94,7 +118,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	template<class,class>
 	inline matrix<W,H,T>::matrix(const T &a00,const T &a01,const T &a02,
 								 const T &a10,const T &a11,const T &a12,
@@ -106,7 +130,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	template<class,class>
 	inline matrix<W,H,T>::matrix(const T &a00,const T &a01,const T &a02,const T &a03,
 								 const T &a10,const T &a11,const T &a12,const T &a13,
@@ -120,15 +144,15 @@ namespace fm
 	}
 #endif
 	/// functions /////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
-	inline T matrix<W,H,T>::at(size_t x,size_t y) const
+	template<Size W,Size H,class T>
+	inline T matrix<W,H,T>::at(Size x,Size y) const
 	{
 		return (x<W && y<H && x>=0 && y>=0) ? m_data[x][y] : T();
 	}
 
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
-	inline typename matrix<W,H,T>::reference matrix<W,H,T>::set(size_t x,size_t y,const T &value)
+	template<Size W,Size H,class T>
+	inline typename matrix<W,H,T>::reference matrix<W,H,T>::set(Size x,Size y,const T &value)
 	{
 		if (x<W && y<H && x>=0 && y>=0)
 			m_data[x][y] = value;
@@ -137,7 +161,7 @@ namespace fm
 	}
 
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline typename matrix<W,H,T>::reference matrix<W,H,T>::reset()
 	{
 		Cx(W)Cy(H)
@@ -147,7 +171,7 @@ namespace fm
 	}
 
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline typename matrix<W,H,T>::reference matrix<W,H,T>::reset(const T &all)
 	{
 		Cx(W)Cy(H)
@@ -157,7 +181,7 @@ namespace fm
 	}
 
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline typename matrix<W,H,T>::reference matrix<W,H,T>::reset(const T &diag,const T &rest)
 	{
 		Cx(W)Cy(H)
@@ -172,7 +196,7 @@ namespace fm
 	}
 
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline matrix<H,W,T> matrix<W,H,T>::transpose() const
 	{
 		matrix<H,W,T> ret;
@@ -183,7 +207,7 @@ namespace fm
 	}
 
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline matrix<W,H,T> matrix<W,H,T>::byComp(const matrix<W,H,T> &mat) const
 	{
 		matrix<W,H,T> ret;
@@ -194,8 +218,8 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
-	template<size_t H2>
+	template<Size W,Size H,class T>
+	template<Size H2>
 	inline typename matrix<W,H,T>::reference matrix<W,H,T>::preMul(const matrix<H,H2,T> &mat)
 	{
 		return (*this) = mat * (*this);
@@ -203,8 +227,8 @@ namespace fm
 
 
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
-	template<size_t W2,size_t H2,class T2>
+	template<Size W,Size H,class T>
+	template<Size W2,Size H2,class T2>
 	inline matrix<W2,H2,T2> matrix<W,H,T>::convert() const
 	{
 		matrix<W2,H2,T2> ret;
@@ -216,7 +240,7 @@ namespace fm
 	
 	namespace priv
 	{
-		template<size_t N,class T>
+		template<Size N,class T>
 		class getDet
 		{
 		public:
@@ -224,7 +248,7 @@ namespace fm
 			{
 				if (mat[0][0] == T())
 				{
-					size_t mxp = 0;
+					Size mxp = 0;
 
 					C(N)
 						if (std::abs(mat[i][0]) > std::abs(mat[mxp][0]))
@@ -249,20 +273,20 @@ namespace fm
 
 				Cx(N)
 				{
-					for (size_t y = x;y<N;y++)
+					for (Size y = x;y<N;y++)
 					{
 						sum = T();
-						for (size_t k = 0;k<x;k++)
+						for (Size k = 0;k<x;k++)
 							sum += L[y][k] * U[k][x];
 
 						L[y][x] = mat[y][x] - sum;
 					}
 
 
-					for (size_t y = x;y<N;y++)
+					for (Size y = x;y<N;y++)
 					{
 						sum = T();
-						for (size_t k = 0;k<x;k++)
+						for (Size k = 0;k<x;k++)
 							sum += L[x][k] * U[k][y];
 
 						if (L[x][x] == T())
@@ -325,14 +349,14 @@ namespace fm
 	}
 	
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline T matrix<W,H,T>::det() const
 	{
 		return priv::getDet<W,T>::getDeterminant(*this);
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline matrix<W,H,T> matrix<W,H,T>::minors() const
 	{
 		matrix<W,H,T> ret;
@@ -340,12 +364,12 @@ namespace fm
 		{
 			matrix<W-1u,H-1u,T> mx;
 			
-			for (size_t dx=0;dx<W;dx++)
-				for (size_t dy=0;dy<H;dy++)
+			for (Size dx=0;dx<W;dx++)
+				for (Size dy=0;dy<H;dy++)
 					if (dx!=x && dy!=y)
 					{
-						size_t px = dx;
-						size_t py = dy;
+						Size px = dx;
+						Size py = dy;
 						
 						if (px > x) px--;
 						if (py > y) py--;
@@ -359,7 +383,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline matrix<W,H,T> matrix<W,H,T>::adjugate() const
 	{
 		matrix<W,H,T> cofactors = minors();
@@ -370,14 +394,14 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline matrix<W,H,T> matrix<W,H,T>::inverse() const
 	{
 		return adjugate()/det();
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline T matrix<W,H,T>::trace() const
 	{
 		T ret = T();
@@ -388,26 +412,26 @@ namespace fm
 	}
 
 	/// operators /////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
-	inline T *matrix<W,H,T>::operator[](size_t index)
+	template<Size W,Size H,class T>
+	inline T *matrix<W,H,T>::operator[](Size index)
 	{
 		return m_data[index];
 	}
 
 	////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
-	inline const T *matrix<W,H,T>::operator[](size_t index) const
+	template<Size W,Size H,class T>
+	inline const T *matrix<W,H,T>::operator[](Size index) const
 	{
 		return m_data[index];
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	matrix<W,H,T> matrix<W,H,T>::identity;
 
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	inline auto operator*(const T &left,const matrix<W,H,T2> &right) -> matrix<W,H,decltype(left*right[0][0])>
 	{
 		matrix<W,H,decltype(left*right[0][0])> ret;
@@ -419,7 +443,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	inline auto operator*(const matrix<W,H,T> &left,const T2 &right) -> matrix<W,H,decltype(left[0][0]*right)>
 	{
 		matrix<W,H,decltype(left[0][0]*right)> ret;
@@ -431,7 +455,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	inline auto operator/(const matrix<W,H,T> &left,const T2 &right) -> matrix<W,H,decltype(left[0][0]/right)>
 	{
 		matrix<W,H,decltype(left[0][0]/right)> ret;
@@ -443,7 +467,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,size_t H2,class T2>
+	template<Size W,Size H,class T,Size H2,class T2>
 	inline auto operator*(const matrix<W,H,T> &left,const matrix<H,H2,T2> &right) -> matrix<W,H2,decltype(left[0][0]*right[0][0])>
 	{
 		typedef decltype(left[0][0]*right[0][0]) TR;
@@ -459,7 +483,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	inline auto operator+(const matrix<W,H,T> &left,const matrix<W,H,T2> &right) -> matrix<W,H,decltype(left[0][0]+right[0][0])>
 	{
 		matrix<W,H,decltype(left[0][0]+right[0][0])> ret = left;
@@ -471,7 +495,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	inline auto operator-(const matrix<W,H,T> &left,const matrix<W,H,T2> &right) -> matrix<W,H,decltype(left[0][0]-right[0][0])>
 	{
 		matrix<W,H,decltype(left[0][0]-right[0][0])> ret = left;
@@ -483,7 +507,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T>
+	template<Size W,Size H,class T>
 	inline auto operator-(const matrix<W,H,T> &mat) -> matrix<W,H,decltype(-mat[0][0])>
 	{
 		matrix<W,H,decltype(-mat[0][0])> ret = mat;
@@ -495,29 +519,29 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	inline matrix<W,H,T> &operator+=(matrix<W,H,T> &left,const matrix<W,H,T2> &right)
 	{
 		return left = left + right;
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	inline matrix<W,H,T> &operator-=(matrix<W,H,T> &left,const matrix<W,H,T2> &right)
 	{
 		return left = left - right;
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W,size_t H,class T,class T2>
+	template<Size W,Size H,class T,class T2>
 	inline matrix<W,H,T> &operator*=(matrix<W,H,T> &left,const matrix<H,H,T2> &right)
 	{
 		return left = left * right;
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W ,size_t H ,class T,
-             size_t W2,size_t H2,class T2,class,class,class>
+	template<Size W ,Size H ,class T,
+             Size W2,Size H2,class T2,class,class,class>
 	inline bool operator==(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right)
 	{
 		Cx(W)Cy(H)
@@ -528,8 +552,8 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W ,size_t H ,class T,
-             size_t W2,size_t H2,class T2,class,class>
+	template<Size W ,Size H ,class T,
+             Size W2,Size H2,class T2,class,class>
 	inline bool operator==(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right)
 	{
 		(void)left;
@@ -538,8 +562,8 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W ,size_t H ,class T,
-             size_t W2,size_t H2,class T2,class,class,class>
+	template<Size W ,Size H ,class T,
+             Size W2,Size H2,class T2,class,class,class>
 	inline bool operator!=(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right)
 	{
 		Cx(W)Cy(H)
@@ -550,8 +574,8 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	template<size_t W ,size_t H ,class T,
-             size_t W2,size_t H2,class T2,class,class>
+	template<Size W ,Size H ,class T,
+             Size W2,Size H2,class T2,class,class>
 	inline bool operator!=(const matrix<W,H,T> &left,const matrix<W2,H2,T2> &right)
 	{
 		(void)left;
@@ -720,7 +744,7 @@ namespace fm
 #include <iosfwd>
 
 ////////////////////////////////////////////////////////////
-template<size_t W,size_t H,class T,class CharT,class CharTraitT>
+template<fm::Size W,fm::Size H,class T,class CharT,class CharTraitT>
 inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT,CharTraitT> &out, const fm::matrix<W,H,T> &mat)
 {
 	Cx(W)
@@ -735,7 +759,7 @@ inline std::basic_ostream<CharT,CharTraitT> &operator<<(std::basic_ostream<CharT
 }
 
 ////////////////////////////////////////////////////////////
-template<size_t W,size_t H,class T,class CharT,class CharTraitT>
+template<fm::Size W,fm::Size H,class T,class CharT,class CharTraitT>
 inline std::basic_istream<CharT,CharTraitT> &operator>>(std::basic_istream<CharT,CharTraitT> &in, fm::matrix<W,H,T> &mat)
 {
 	Cx(W) Cy(H)

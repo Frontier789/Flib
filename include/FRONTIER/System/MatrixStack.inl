@@ -14,6 +14,9 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#ifndef FRONTIER_MATRIXSTACK_INL_INCLUDED
+#define FRONTIER_MATRIXSTACK_INL_INCLUDED
+
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
@@ -137,3 +140,5 @@ namespace fm
 		return m_container.size();
 	}
 }
+
+#endif

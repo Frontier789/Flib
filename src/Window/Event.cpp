@@ -14,9 +14,10 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#include <FRONTIER/System/util/OS.h>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/Window/Event.hpp>
+#include <FRONTIER/System/util/OS.h>
 
 #ifdef FRONTIER_OS_WINDOWS
 	#include "Wapi/WapiEvent.cpp"
@@ -30,6 +31,31 @@
 
 namespace fw
 {
+	/////////////////////////////////////////////////////////////
+	fm::vec3i Keyboard::keyToDelta(Key key,bool allowWASD,bool allowArrows,bool allowShiftSpace)
+	{
+		fm::vec3i ret;
+		if (allowWASD) {
+			if (key == Keyboard::W) ret.y++;
+			if (key == Keyboard::A) ret.x--;
+			if (key == Keyboard::S) ret.y--;
+			if (key == Keyboard::D) ret.x++;
+		}
+		if (allowArrows) {
+			if (key == Keyboard::Up)    ret.y++;
+			if (key == Keyboard::Left)  ret.x--;
+			if (key == Keyboard::Down)  ret.y--;
+			if (key == Keyboard::Right) ret.x++;
+		}
+		if (allowShiftSpace) {
+			if (key == Keyboard::LShift) ret.z--;
+			if (key == Keyboard::RShift) ret.z--;
+			if (key == Keyboard::Space)  ret.z++;
+		}
+		
+		return ret;
+	}
+	
 	/////////////////////////////////////////////////////////////
 	MouseCursor::MouseCursor(const fg::Image &img,
 							 fm::vec2s clickSpot,

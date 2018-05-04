@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #ifndef FRONTIER_NONCOPYABLE_HPP_INCLUDED
 #define FRONTIER_NONCOPYABLE_HPP_INCLUDED
+#include <FRONTIER/System/util/API.h>
 #define FRONTIER_NONCOPYABLE
 namespace fm
 {
@@ -25,7 +26,7 @@ namespace fm
 	/// @ingroup System
 	/// 
 	/////////////////////////////////////////////////////////////
-    class NonCopyable
+    class FRONTIER_API NonCopyable
     {
     public:
     

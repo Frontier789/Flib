@@ -56,6 +56,7 @@ namespace fm
 #include <FRONTIER/System/Delegate.hpp>
 #include <FRONTIER/System/Quaternion.hpp>
 #include <FRONTIER/System/Transition.hpp>
+#include <FRONTIER/System/MatrixStack.hpp>
 #include <FRONTIER/System/HeavyToCopy.hpp>
 
 #endif // FRONTIER_SYSTEM_MODULE_HPP_INCLUDED

@@ -14,6 +14,10 @@ int main()
 				 0,0,0,1) << endl;
 	cout << endl;
 	
+	cout << "here is a 4x2 column matrix" << endl;
+	cout << matrix<4,2>({1,2,3,4,5,6,7,8}) << endl;
+	cout << endl;
+	
 	
 	cout << "                          (1,2,3)" << endl;
 	cout << "The determinant of matrix (4,5,6) = " << mat3(1,2,3,4,5,6,7,8,9).det() << endl;

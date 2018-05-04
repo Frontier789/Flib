@@ -106,10 +106,25 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		matrix(const matrix<W,H,T> &mat);
 
+		/////////////////////////////////////////////////////////////
+		/// @brief Create a matrix using an initializer list
+		/// 
+		/// Matrix is filled in row-major order
+		/// Unspecified elements are set to T()
+		/// Extra elements are ignored
+		/// 
+		/// @param data The data to use
+		///
+		/////////////////////////////////////////////////////////////
+		matrix(std::initializer_list<T> data);
+
 #ifdef _MSVC_LANG
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct a matrix<n,n> from n*n values
-		///
+		/// 
+		/// This is only a workaround for MSVC 
+		/// for it lacks proper SFINAE support
+		/// 
 		/// @param args The values to use
 		///
 		/////////////////////////////////////////////////////////////
