@@ -53,13 +53,13 @@ fm::Result checkFramebufferStatus(const std::string &func,const std::string &fil
 {
 	unsigned int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
-		return fm::Result("GLresor",fm::Result::OPFailed,"FrameBufferresor",func,file,line,"wrong size");
+		return fm::Result("GLError",fm::Result::OPFailed,"FrameBufferError",func,file,line,"wrong size");
 	
 	if (status == GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
-		return fm::Result("GLresor",fm::Result::OPFailed,"FrameBufferresor",func,file,line,"no color attachment");
+		return fm::Result("GLError",fm::Result::OPFailed,"FrameBufferError",func,file,line,"no color attachment");
 	
 	if (status == GL_FRAMEBUFFER_UNSUPPORTED)
-		return fm::Result("GLresor",fm::Result::OPFailed,"FrameBufferresor",func,file,line,"FBO not supported by GL");
+		return fm::Result("GLError",fm::Result::OPFailed,"FrameBufferError",func,file,line,"FBO not supported by GL");
 	
 	return fm::Result();
 }
@@ -132,25 +132,27 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	FrameBuffer::FrameBuffer(const Texture **colorAttachments,fm::Size count,const DepthBuffer &depthBuf) : m_depthBufID(0),
-																											m_width(0),
-																										    m_height(0),
-																										    m_clearDepth(1),
-																											m_depthTestMode(Unused)
+	FrameBuffer::FrameBuffer(const Texture **colorAttachments,fm::Size count,const DepthBuffer &depthBuf,fg::DepthTestMode depthMode) : 
+		m_depthBufID(0),
+		m_width(0),
+		m_height(0),
+		m_clearDepth(1),
+		m_depthTestMode(Unused)
 	{
-		create(colorAttachments,count,depthBuf);
+		create(colorAttachments,count,depthBuf,depthMode);
 	}
 
 	////////////////////////////////////////////////////////////
-	FrameBuffer::FrameBuffer(const Texture &colorAttachment,const DepthBuffer &depthBuf) : m_depthBufID(0),
-																						   m_width(0),
-																						   m_height(0),
-																						   m_clearDepth(1),
-																						   m_depthTestMode(Unused)
+	FrameBuffer::FrameBuffer(const Texture &colorAttachment,const DepthBuffer &depthBuf,fg::DepthTestMode depthMode) : 
+		m_depthBufID(0),
+		m_width(0),
+		m_height(0),
+		m_clearDepth(1),
+		m_depthTestMode(Unused)
 	{
 		const Texture *ptr = &colorAttachment;
 		
-		create(&ptr,1,depthBuf);
+		create(&ptr,1,depthBuf,depthMode);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -164,21 +166,21 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result FrameBuffer::create(const Texture **colorAttachments,fm::Size count,const DepthBuffer &depthBuf)
+	fm::Result FrameBuffer::create(const Texture **colorAttachments,fm::Size count,const DepthBuffer &depthBuf,fg::DepthTestMode depthMode)
 	{
 		fm::Result res = setColorAttachments(colorAttachments,count);
 		
 		if (!res) return res;
 		
-		return setDepthBuffer(depthBuf);
+		return setDepthBuffer(depthBuf,depthMode);
 	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result FrameBuffer::create(const Texture &colorAttachment,const DepthBuffer &depthBuf)
+	fm::Result FrameBuffer::create(const Texture &colorAttachment,const DepthBuffer &depthBuf,fg::DepthTestMode depthMode)
 	{
 		const Texture *ptr = &colorAttachment;
 		
-		return create(&ptr,1,depthBuf);
+		return create(&ptr,1,depthBuf,depthMode);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -225,7 +227,7 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	fm::Result FrameBuffer::setDepthBuffer(const DepthBuffer &depthBuf)
+	fm::Result FrameBuffer::setDepthBuffer(const DepthBuffer &depthBuf,fg::DepthTestMode depthMode)
 	{
 		init();
 		
@@ -246,6 +248,11 @@ namespace fg
 			res += glCheck(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBufID));
 		}
 		
+		m_depthTestMode = depthMode;
+		if (m_depthTestMode == fg::AutoDepthTest) {
+			m_depthTestMode = ((depthBuf).dtex == nullptr && (depthBuf.width == 0 || depthBuf.height == 0) ? fg::Unused : fg::LEqual);
+		}
+		
 		if (!res) return res;
 		
 		return checkFramebufferStatus("FrameBuffer.setDepthBuffer",__FILE__,__LINE__);
@@ -263,14 +270,31 @@ namespace fg
 	{
 		return FrameBuffer::bind(this);
 	}
+	
+	////////////////////////////////////////////////////////////
+	void FrameBuffer::applyDepthTest() const
+	{
+		if (m_depthTestMode != Unused)
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
 
+		if (m_depthTestMode == Less)    glDepthFunc(GL_LESS);
+		if (m_depthTestMode == LEqual)  glDepthFunc(GL_LEQUAL);
+		if (m_depthTestMode == GEqual)  glDepthFunc(GL_GEQUAL);
+		if (m_depthTestMode == Greater) glDepthFunc(GL_GREATER);
+		if (m_depthTestMode == Always)  glDepthFunc(GL_ALWAYS);
+	}
+	
 	////////////////////////////////////////////////////////////
 	fm::Result FrameBuffer::bind(const FrameBuffer *fbo)
 	{
 		fm::Result res = glCheck(glBindFramebuffer(GL_FRAMEBUFFER, fbo ? fbo->getGlId() : 0));
 		
-		if (res && fbo)
+		if (res && fbo) {
 			glViewport(0,0,fbo->m_width,fbo->m_height);
+			fbo->applyDepthTest();
+		}
 		
 		return res;
 	}
@@ -323,18 +347,9 @@ namespace fg
 	{
 		bind();
 		
-		if (mode != Unused)
-			glEnable(GL_DEPTH_TEST);
-		else
-			glDisable(GL_DEPTH_TEST);
-
-		if (mode == Less)    glDepthFunc(GL_LESS);
-		if (mode == LEqual)  glDepthFunc(GL_LEQUAL);
-		if (mode == GEqual)  glDepthFunc(GL_GEQUAL);
-		if (mode == Greater) glDepthFunc(GL_GREATER);
-		if (mode == Always)  glDepthFunc(GL_ALWAYS);
-		
 		m_depthTestMode = mode;
+		
+		applyDepthTest();
 	}
 
 	////////////////////////////////////////////////////////////

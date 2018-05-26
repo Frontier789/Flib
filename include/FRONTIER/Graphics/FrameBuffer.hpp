@@ -53,7 +53,8 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API FrameBuffer : public fm::NonCopyable, public GlObject
 	{
-		unsigned int m_depthBufID; ///< The id of the depth buffer
+		void applyDepthTest() const; ///< Set the depth test specified active
+		unsigned int m_depthBufID;   ///< The id of the depth buffer
 		void init();        ///< Internal function used at setup
 		fm::Size m_width;   ///< The width of the FrameBuffer
 		fm::Size m_height;  ///< The height of the FrameBuffer
@@ -149,18 +150,20 @@ namespace fg
 		/// @param colorAttachments A pointer to the textures that will be used as color attachments
 		/// @param count The number of textures in @a colorAttachments
 		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
+		/// @param depthMode The new depth test mode
 		///
 		/////////////////////////////////////////////////////////////
-		explicit FrameBuffer(const Texture **colorAttachments,fm::Size count = 1,const DepthBuffer &depthBuf = DepthBuffer::noDepthBuffer);
+		explicit FrameBuffer(const Texture **colorAttachments,fm::Size count = 1,const DepthBuffer &depthBuf = DepthBuffer::noDepthBuffer,fg::DepthTestMode depthMode = fg::AutoDepthTest);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the framebuffer from attachments and depth buffer
 		///
 		/// @param colorAttachment The texturesthat will be used as color attachment
 		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
+		/// @param depthMode The new depth test mode
 		///
 		/////////////////////////////////////////////////////////////
-		explicit FrameBuffer(const Texture &colorAttachment,const DepthBuffer &depthBuf = DepthBuffer::noDepthBuffer);
+		explicit FrameBuffer(const Texture &colorAttachment,const DepthBuffer &depthBuf = DepthBuffer::noDepthBuffer,fg::DepthTestMode depthMode = fg::AutoDepthTest);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -185,11 +188,12 @@ namespace fg
 		/// @brief Set the framebuffer's depth attachment
 		///
 		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
+		/// @param depthMode The new depth test mode
 		///
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setDepthBuffer(const DepthBuffer &depthBuf);
+		fm::Result setDepthBuffer(const DepthBuffer &depthBuf,fg::DepthTestMode depthMode = fg::AutoDepthTest);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the framebuffer from attachments and depth buffer
@@ -197,22 +201,24 @@ namespace fg
 		/// @param colorAttachments A pointer to the textures that will be used as color attachments
 		/// @param count The number of textures in @a colorAttachments
 		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
+		/// @param depthMode The new depth test mode
 		///
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result create(const Texture **colorAttachments,fm::Size count = 1,const DepthBuffer &depthBuf = DepthBuffer::noDepthBuffer);
+		fm::Result create(const Texture **colorAttachments,fm::Size count = 1,const DepthBuffer &depthBuf = DepthBuffer::noDepthBuffer,fg::DepthTestMode depthMode = fg::AutoDepthTest);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the framebuffer from attachments and depth buffer
 		///
 		/// @param colorAttachment The texturesthat will be used as color attachment
 		/// @param depthBuf The details of the depth attachment (noDepthBuffer means no depth buffer will be used)
+		/// @param depthMode The new depth test mode
 		///
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result create(const Texture &colorAttachment,const DepthBuffer &depthBuf=DepthBuffer::noDepthBuffer);
+		fm::Result create(const Texture &colorAttachment,const DepthBuffer &depthBuf = DepthBuffer::noDepthBuffer,fg::DepthTestMode depthMode = fg::AutoDepthTest);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind a framebuffer for usage

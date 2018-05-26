@@ -323,14 +323,14 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Image Texture::copyToImage(fm::Result *error) const
+	Image Texture::copyToImage(fm::Result *error,fm::rect2s part) const
 	{
 		if (!getGlId())
 			return Image();
 		
 		Image ret;
 		
-		fm::Result res = copyToImage(ret);
+		fm::Result res = copyToImage(ret,part);
 		
 		if (error) *error = res;
 		
@@ -338,16 +338,21 @@ namespace fg
 	}
 	
 	////////////////////////////////////////////////////////////
-	fm::Result Texture::copyToImage(Image &target) const
+	fm::Result Texture::copyToImage(Image &target,fm::rect2s part) const
 	{
 		if (!getGlId())
 			return fm::Result();
+			
+		if (part.size.w == 0) part.size.w = getSize().w;
+		if (part.size.h == 0) part.size.h = getSize().h;
+		if (part.pos.x + part.size.w > getSize().w) part.pos.x = getSize().w - part.size.w;
+		if (part.pos.y + part.size.h > getSize().h) part.pos.y = getSize().h - part.size.h;
 		
-		if (target.getSize() != getSize())
-			target.create(getSize());
+		if (target.getSize() != part.size)
+			target.create(part.size);
 		
 		fm::Result res;
-
+		
 		if (fg::FrameBuffer::isAvailable())
 		{
 			// retrieve bound framebuffer
@@ -368,20 +373,13 @@ namespace fg
 			}
 
 			// read back texture
-			res += glCheck(glReadPixels(0,0,m_size.w,m_size.h,getFormat(),getType(),target.getPtr()));
+			res += glCheck(glReadPixels(0,0,part.size.w,part.size.h,getFormat(),getType(),target.getPtr()));
 			glBindFramebuffer(GL_FRAMEBUFFER,framebuffer);
 			glDeleteFramebuffers(1,&fb_id);
 			return res;
 		}
 
-		// prepare image
-		TextureSaver save(getTexBinding(),getTexRebinding());
-
-		// simply copy back texture
-		bind();
-		res += glCheck(glGetTexImage(getTexTarget(),0,getFormat(),getType(),target.getPtr()));
-
-		return res;
+		return fm::Result("GLError",fm::Result::OPFailed,"FrameBufferNotSupported","copyToImage",__FILE__,__LINE__,"copy from texture failed");
 	}
 
 	////////////////////////////////////////////////////////////

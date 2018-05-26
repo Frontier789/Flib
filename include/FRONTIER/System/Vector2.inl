@@ -166,6 +166,13 @@ namespace fm
 		return w*h;
 	}
 	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline T vector2<T>::aspect() const
+	{
+		return w/h;
+	}
+	
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline T &vector2<T>::min()

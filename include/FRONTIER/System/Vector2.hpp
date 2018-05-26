@@ -281,6 +281,14 @@ namespace fm
 		T area() const;
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the aspect ratio of the vector
+		///
+		/// @return w/h
+		///
+		/////////////////////////////////////////////////////////////
+		T aspect() const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Get the <a href="http://en.wikipedia.org/wiki/Dot_product">dot product</a> of two vectors
 		///
 		/// @param other The vector to take the dot product with

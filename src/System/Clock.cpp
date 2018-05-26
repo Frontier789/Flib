@@ -36,7 +36,7 @@ namespace fm
 	
     /// Constructors /////////////////////////////////////////////////////////
     Clock::Clock(bool paused) : m_startTime(getCurrentTime()),
-								m_pauseTime(paused ? -1 : m_startTime)
+								m_pauseTime(paused ? m_startTime : -1)
     {
     	
     }
@@ -52,7 +52,7 @@ namespace fm
     
     ////////////////////////////////////////////////////////////
     Clock::Clock(double startTime,bool paused) : m_startTime(getCurrentTime()-startTime),
-												 m_pauseTime(paused ? -1 : m_startTime)
+												 m_pauseTime(paused ? m_startTime : -1)
     {
     	
     }

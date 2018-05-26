@@ -756,6 +756,17 @@ namespace fg
         static fm::Result compileSubShaderFromFile(const std::string &file,unsigned int type,unsigned int &ret);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Validate the shader
+		///
+		/// Checks whether with the current settings the shader would function
+		/// Use only in developement code
+		///
+		/// @return The result of the validation
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result validate() const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Set the blending mode of the shader
 		///
 		/// @param mode The new blending mode

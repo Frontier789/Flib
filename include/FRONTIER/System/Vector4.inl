@@ -149,7 +149,7 @@ namespace fm
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	inline vector4<T> vector4<T>::unsign()
+	inline vector4<T> vector4<T>::unsign() const
 	{
 		return vector4<T>(x < T(0) ? x*T(-1) : x,
 						  y < T(0) ? y*T(-1) : y,

@@ -334,6 +334,21 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		static fm::Result bind(fm::Ref<const CubeTexture> texture);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Load a cubetexture from a file
+		///
+		/// Loads all faces from the file the following scheme:
+		/// -2--
+		/// 1405
+		/// -3--
+		///
+		/// @param texture The texture
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result loadFromFile(const std::string &file);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the maximum size in any dimension of a texture

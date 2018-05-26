@@ -32,7 +32,8 @@ namespace fg
 		GEqual,  ///< Writes the fragment iff it's distance is greater or equal than the current in the depth buffer
 		Greater, ///< Writes the fragment iff it's distance is greater than the current in the depth buffer
 		Always,  ///< Always writes the fragment in the depth buffer
-		Unused   ///< Does not perform depth test
+		Unused,  ///< Does not perform depth test
+		AutoDepthTest ///< Choose best method based on depth buffer specification of the framebuffer
 	};
 }
 #endif // FRONTIER_DEPTHTESTMODE_INCLUDED

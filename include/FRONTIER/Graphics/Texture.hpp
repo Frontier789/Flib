@@ -28,6 +28,7 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Result.hpp>
+#include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/System/Ref.hpp>
 
 #define FRONTIER_TEXTURE
@@ -300,11 +301,12 @@ namespace fg
 		/// if neither of the above then a white fg::Image (same size as texture) is returned
 		/// 
 		/// @param error The error returned
+		/// @param part The part of the texture to copy (zero area means the whole texture)
 		/// 
 		/// @return the copied image
 		///
 		/////////////////////////////////////////////////////////////
-		Image copyToImage(fm::Result *error = nullptr) const;
+		Image copyToImage(fm::Result *error = nullptr,fm::rect2s part = fm::rect2s()) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy the content of the texture to client-memory
@@ -314,11 +316,12 @@ namespace fg
 		/// if neither of the above then a white fg::Image (same size as texture) is returned
 		/// 
 		/// @param target The image to copy to (uses allocated data if available)
+		/// @param part The part of the texture to copy (zero area means the whole texture)
 		/// 
 		/// @return The result
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result copyToImage(Image &target) const;
+		fm::Result copyToImage(Image &target,fm::rect2s part = fm::rect2s()) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the texture for usage

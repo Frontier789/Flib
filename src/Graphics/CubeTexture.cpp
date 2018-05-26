@@ -56,8 +56,14 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	fm::Result CubeTextureFace::create(fm::vec2s size)
 	{
-        if (m_cubeTex.getSize() != std::max(size.w,size.h))
-			return m_cubeTex.create(std::max(size.w,size.h));
+        if (m_cubeTex.getSize() != std::max(size.w,size.h)) 
+		{
+			fm::Result res = m_cubeTex.create(std::max(size.w,size.h));
+			
+			getGlId() = m_cubeTex.getGlId();
+			
+			return res;
+		}
 
 		return fm::Result();
 	}
@@ -246,8 +252,7 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	CubeTextureFace CubeTexture::getFace(const fm::vec3 &normal)
 	{
-		fm::vec3 n = normal;
-		n.unsign();
+		fm::vec3 n = normal.unsign();
 
 		int index = 0;
 
@@ -313,6 +318,25 @@ namespace fg
 		}
 
 		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Result CubeTexture::loadFromFile(const std::string &file)
+	{
+		fg::Image img;
+		fm::Result res = img.loadFromFile(file);
+		
+		if (!res) return res;
+
+		fm::vec2 startPts[] = {fm::vec2(2,1),fm::vec2(0,1),fm::vec2(1,0),fm::vec2(1,2),fm::vec2(1,1),fm::vec2(3,1)};
+		fm::vec2 tileSize = img.getSize()/fm::vec2(4,3);
+
+		create(tileSize.w);
+		
+		C(6)
+			res += getFace(i).loadFromImage(img.getSubImage(startPts[i]*tileSize,tileSize));
+		
+		return res;
 	}
 
 	/////////////////////////////////////////////////////////////

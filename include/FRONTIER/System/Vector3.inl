@@ -104,7 +104,7 @@ namespace fm
 
 	////////////////////////////////////////////////////////////
 	template<class T>
-	inline vector3<T> vector3<T>::unsign()
+	inline vector3<T> vector3<T>::unsign() const
 	{
 		return vector3<T>(x < T(0) ? x*T(-1) : x,
 						  y < T(0) ? y*T(-1) : y,

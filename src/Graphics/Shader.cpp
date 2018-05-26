@@ -154,6 +154,35 @@ namespace fg
 		return res;
 	}
 	
+	/////////////////////////////////////////////////////////////
+	fm::Result Shader::validate() const
+	{
+		if (!isLoaded()) 
+			return fm::Result();
+		
+		int success;
+		fm::Result res;
+		
+		res += glCheck(glValidateProgram(getGlId()));
+		res += glCheck(glGetProgramiv(getGlId(), GL_VALIDATE_STATUS, &success));
+
+		if (!success)
+		{
+			int logSize;
+			res += glCheck(glGetProgramiv(getGlId(), GL_INFO_LOG_LENGTH, &logSize));
+
+			char *logData = new char[logSize];
+
+			res += glCheck(glGetProgramInfoLog(getGlId(), logSize, NULL, (GLchar*)logData));
+			res += fm::Result("GLSLError",fm::Result::OPFailed,"ValidateFailed","validate",__FILE__,__LINE__,logData);
+
+			delete[] logData;
+			return res;
+		}
+
+		return res;
+	}
+	
     ////////////////////////////////////////////////////////////
 	fm::Result Shader::link()
 	{
@@ -169,12 +198,6 @@ namespace fg
 		int success;
 		res += glCheck(glLinkProgram(getGlId()));
 		res += glCheck(glGetProgramiv(getGlId(), GL_LINK_STATUS, &success));
-		if (success)
-		{
-			// on success validate status
-			res += glCheck(glValidateProgram(getGlId()));
-			res += glCheck(glGetProgramiv(getGlId(), GL_VALIDATE_STATUS, &success));
-		}
 
 		// on error print description
 		if (!success)
@@ -435,7 +458,7 @@ namespace fg
 				std::string name;
 				bool isarray = false;
 				
-				for (fm::Size i=0;i<buf.size();++i)
+				for (fm::Size i=0;i<fm::Size(written);++i)
 				{
 					if (buf[i] == '[')
 					{
@@ -447,7 +470,7 @@ namespace fg
 				
 				if (!isarray)
 				{
-					name = &buf[0];
+					name.assign(buf.begin(),buf.begin() + written);
 					unisize = 0;
 				}
 				
