@@ -770,7 +770,7 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		void Window::cleanUp()
 		{
-			// destrox children properly
+			// destroy children properly
 			std::deque<Wapi::Window *> children = m_children;
 			fm::Size count = children.size();
 			for (fm::Size i = 0;i<count;i++)

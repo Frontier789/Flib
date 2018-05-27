@@ -148,9 +148,9 @@ namespace fw
 				if (!m_hglrc)
 					return fw::WapiGetLastError("wglCreateContext");
 				
-				const unsigned char *(*glGetString)(unsigned int) = (const unsigned char *(*)(unsigned int))wglGetProcAddress("glGetString");
+				const unsigned char *(*glGetString_fun)(unsigned int) = (const unsigned char *(*)(unsigned int))wglGetProcAddress("glGetString");
 
-				if (glGetString)
+				if (glGetString_fun)
 				{
 					unsigned int i=0;
 
@@ -159,7 +159,7 @@ namespace fw
 
 					m_settings.majorVersion = 0;
 					m_settings.minorVersion = 0;
-					const unsigned char *version = glGetString(0x1F02 /*GL_VERSION*/); // "MAJOR.MINOR....(extra)"
+					const unsigned char *version = glGetString_fun(0x1F02 /*GL_VERSION*/); // "MAJOR.MINOR....(extra)"
 
 					// extract major version (loop until the '.')
 					for (;*(version+i) >= '0' && *(version+i) <= '9';i++)

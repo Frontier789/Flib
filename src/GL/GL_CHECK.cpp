@@ -54,11 +54,8 @@ namespace fg
 		//////////////////////////////////
 		bool hasGLError()
 		{
-		    if (glErrors.size())
-                return true;
-
-            return false;
-		}
+			return !glErrors.empty();
+        }
 
 		//////////////////////////////////
 		void raiseGLError(const fm::Result &error)

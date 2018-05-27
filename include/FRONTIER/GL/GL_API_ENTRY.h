@@ -14,31 +14,29 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_GL_BINDKEEPER_INCLUDED
-#define FRONTIER_GL_BINDKEEPER_INCLUDED
-#include <FRONTIER/GL/GL_FUNCTIONS.h>
-#include <FRONTIER/GL/GL_TYPES.hpp>
+#ifndef FRONTIER_GL_API_ENTRY_H_INCLUDED
+#define FRONTIER_GL_API_ENTRY_H_INCLUDED
+	
+	#ifdef __GNUC__
+		#ifndef __stdcall
+			#define __stdcall __attribute__((stdcall))
+		#endif
+	#endif
+	
+	#ifndef APIENTRY
+		#if defined(__MINGW32__) || (defined(_MSC_VER) && (_MSC_VER >= 800)) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__)
+			#define APIENTRY __stdcall
+		#else
+			#define APIENTRY
+		#endif
+	#endif // APIENTRY
+	
+	#ifndef API_ENTRY
+		#if defined(_WIN32)
+			#define API_ENTRY APIENTRY
+		#else
+			#define API_ENTRY
+		#endif
+	#endif // API_ENTRY
 
-namespace fg
-{
-	/////////////////////////////////////////////////////////////
-	class FRONTIER_API GLBindKeeper
-	{
-		GLuint m_prevId;
-		GLenum m_enum;
-		void (API_ENTRY *m_binderA)(GLenum,GLuint);
-		void (API_ENTRY *m_binderB)(GLuint);
-	public:
-		/////////////////////////////////////////////////////////////
-		GLBindKeeper(void (API_ENTRY *binder)(GLenum,GLuint),GLenum bindPoint,GLenum binding,GLuint tmpId);
-		
-		/////////////////////////////////////////////////////////////
-		GLBindKeeper(void (API_ENTRY *binder)(GLuint),GLenum binding,GLuint tmpId);
-		
-		/////////////////////////////////////////////////////////////
-		~GLBindKeeper();
-	};
-}
-
-#endif // FRONTIER_GL_TYPES_HPP_INCLUDED
-
+#endif // FRONTIER_GL_API_ENTRY_H_INCLUDED

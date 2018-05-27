@@ -123,7 +123,7 @@ namespace fg
 	/// @brief A six sided OpenGL texture 
 	///
 	/////////////////////////////////////////////////////////////
-	class CubeTexture : public fg::GlObject
+	class FRONTIER_API CubeTexture : public fg::GlObject
 	{
 		virtual fm::Int32  getInternalFormat() const; ///< Internal function
 		virtual fm::Uint32 getFormat() const; ///< Internal function
