@@ -23,6 +23,7 @@
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/Delegate.hpp>
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
@@ -39,7 +40,7 @@ namespace fm
 	/// @ingroup System
 	///
 	/////////////////////////////////////////////////////////////
-	template<Size W,Size H,class T = float>
+	template<Size W,Size H = W,class T = float>
 	class matrix
 	{
 		T m_data[W][H]; ///< 2D array holding the data of the matrix
@@ -105,6 +106,14 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		matrix(const matrix<W,H,T> &mat);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Create a matrix given a function
+		///
+		/// @param fun The function to use
+		///
+		/////////////////////////////////////////////////////////////
+		matrix(fm::Delegate<T,vec2i> fun);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create a matrix using an initializer list
@@ -190,6 +199,16 @@ namespace fm
 			   const T &a10,const T &a11,const T &a12,const T &a13,
 			   const T &a20,const T &a21,const T &a22,const T &a23,
 			   const T &a30,const T &a31,const T &a32,const T &a33);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Convert to scalar if 1x1 matrix
+		///
+		/// @return Value at [0][0]
+		///
+		/////////////////////////////////////////////////////////////
+		template<class K = T,class = typename std::enable_if<W == 1 && H == 1,K>::type>
+		operator T() const;
+		
 #endif
 		/////////////////////////////////////////////////////////////
 		/// @brief Element access with bound check
@@ -261,6 +280,16 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		matrix<H,W,T> transpose() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Flips the matrix around its main diagonal ( <a href="http://en.wikipedia.org/wiki/Transpose_matrix">matrix transpose</a>)
+		///
+		/// Returns a m matrix such that m[i][j]==original[j][i]
+		///
+		/// @return Transposed matrix
+		///
+		/////////////////////////////////////////////////////////////
+		matrix<H,W,T> t() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Multiply two matrices component-wisely (<a href="http://en.wikipedia.org/wiki/Hadamard_product_%28matrices%29">Hadamard product</a>)
@@ -383,6 +412,39 @@ namespace fm
 		const T *operator[](Size index) const;
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Apply a function to all the elements of the matrix
+		///
+		/// @param fun The function to apply
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		matrix<W,H,T> &operator()(fm::Delegate<T,T,vec2i> fun);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Apply a function to all the elements of the matrix
+		///
+		/// @param fun The function to apply
+		///
+		/// @return Reference to itself
+		///
+		/////////////////////////////////////////////////////////////
+		matrix<W,H,T> &apply(fm::Delegate<T,T,vec2i> fun);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Fold the matrix, running a fold function on it
+		///
+		/// folding is done in row-major order
+		///
+		/// @param ffun The folding to calculate
+		/// @param init The initial value of the fold
+		///
+		/// @return The result of the folding
+		///
+		/////////////////////////////////////////////////////////////
+		T fold(fm::Delegate<T,T,T> ffun,T init = T()) const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief The <a href="http://en.wikipedia.org/wiki/Identity_matrix">identity matrix</a>
 		///
 		/// 1 0 . . . 0  <br/>
@@ -396,6 +458,15 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		static matrix<W,H,T> identity;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get a rectangle shaped partition (slice) of the matrxi
+		///
+		/// @return The silce of matrix, copied
+		///
+		/////////////////////////////////////////////////////////////
+		template<Size W2,Size H2=W2,Size X=0,Size Y=0>
+		matrix<W2,H2,T> slice() const;
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -632,7 +703,24 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
 	auto operator*(const matrix<4,4,T> &mat,const vector4<T2> &vec) -> vector4<decltype(mat[0][0]*vec[0])>;
-
+	
+	/////////////////////////////////////////////////////////////
+	/// @relates fm::matrix
+	/// @brief Overload of binary operator | as concatenation
+	///
+	/// Matrices of argument must agree on height
+	///
+	/// @param mat Left operand (matrix)
+	/// @param vec Right operand (vector)
+	///
+	/// @return Result of the operation
+	///
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,Size H2,class T>
+	matrix<W,H+H2,T> operator|(const matrix<W,H,T> &m1,const matrix<W,H2,T> &m2);
+	
+	
+	
 
 	/////////////////////////////////////////////////////////////
 	///
@@ -641,6 +729,32 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	namespace MATRIX
 	{
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::matrix
+		/// @brief Concatenate two matrices of same height
+		///
+		/// @param m1 The left matrix of the concatenation
+		/// @param m2 The right matrix of the concatenation
+		///
+		/// @return The resulting matrix
+		///
+		/////////////////////////////////////////////////////////////
+		template<Size W,Size H,Size H2,class T>
+		matrix<W,H+H2,T> concatH(const matrix<W,H,T> &m1,const matrix<W,H2,T> &m2);
+		
+		/////////////////////////////////////////////////////////////
+		/// @relates fm::matrix
+		/// @brief Concatenate two matrices of same width
+		///
+		/// @param m1 The upper matrix of the concatenation
+		/// @param m2 The lower matrix of the concatenation
+		///
+		/// @return The resulting matrix
+		///
+		/////////////////////////////////////////////////////////////
+		template<Size W,Size W2,Size H,class T>
+		matrix<W+W2,H,T> concatW(const matrix<W,H,T> &m1,const matrix<W2,H,T> &m2);
+		
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
 		/// @brief Calculate a <a href="http://en.wikipedia.org/wiki/Translation_%28geometry%29#Matrix_representation">translation matrix</a>

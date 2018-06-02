@@ -91,7 +91,7 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	const FrameBuffer::DepthBuffer FrameBuffer::DepthBuffer::noDepthBuffer = FrameBuffer::DepthBuffer(0,0);
+	FRONTIER_API const FrameBuffer::DepthBuffer FrameBuffer::DepthBuffer::noDepthBuffer = FrameBuffer::DepthBuffer(0,0);
 
 	////////////////////////////////////////////////////////////
 	FrameBuffer::FrameBuffer() : m_depthBufID(0),
@@ -272,18 +272,24 @@ namespace fg
 	}
 	
 	////////////////////////////////////////////////////////////
-	void FrameBuffer::applyDepthTest() const
+	void FrameBuffer::applyDepthTest(fg::DepthTestMode depthMode)
 	{
-		if (m_depthTestMode != Unused)
+		if (depthMode != Unused)
 			glEnable(GL_DEPTH_TEST);
 		else
 			glDisable(GL_DEPTH_TEST);
 
-		if (m_depthTestMode == Less)    glDepthFunc(GL_LESS);
-		if (m_depthTestMode == LEqual)  glDepthFunc(GL_LEQUAL);
-		if (m_depthTestMode == GEqual)  glDepthFunc(GL_GEQUAL);
-		if (m_depthTestMode == Greater) glDepthFunc(GL_GREATER);
-		if (m_depthTestMode == Always)  glDepthFunc(GL_ALWAYS);
+		if (depthMode == Less)    glDepthFunc(GL_LESS);
+		if (depthMode == LEqual)  glDepthFunc(GL_LEQUAL);
+		if (depthMode == GEqual)  glDepthFunc(GL_GEQUAL);
+		if (depthMode == Greater) glDepthFunc(GL_GREATER);
+		if (depthMode == Always)  glDepthFunc(GL_ALWAYS);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	DepthTestMode FrameBuffer::getDepthTest() const
+	{
+		return m_depthTestMode;
 	}
 	
 	////////////////////////////////////////////////////////////
@@ -293,7 +299,7 @@ namespace fg
 		
 		if (res && fbo) {
 			glViewport(0,0,fbo->m_width,fbo->m_height);
-			fbo->applyDepthTest();
+			applyDepthTest(fbo->getDepthTest());
 		}
 		
 		return res;
@@ -349,7 +355,7 @@ namespace fg
 		
 		m_depthTestMode = mode;
 		
-		applyDepthTest();
+		applyDepthTest(m_depthTestMode);
 	}
 
 	////////////////////////////////////////////////////////////

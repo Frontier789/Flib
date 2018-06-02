@@ -58,6 +58,14 @@ namespace fm
 			m_data[x][y] = *((const T*)data+x*H+y);
 	}
 	
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
+	inline matrix<W,H,T>::matrix(fm::Delegate<T,vec2i> fun)
+	{
+		Cx(W)Cy(H)
+			m_data[x][y] = fun(vec2i(x,y));
+	}
+	
 	////////////////////////////////////////////////////////////
 	template<Size W,Size H,class T>
 	inline matrix<W,H,T>::matrix(const T &diagonal,const T &rest)
@@ -142,6 +150,14 @@ namespace fm
 	{
 		
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
+	template<class,class>
+	inline matrix<W,H,T>::operator T() const
+	{
+		return m_data[0][0];
+	}
 #endif
 	/// functions /////////////////////////////////////////////////////////
 	template<Size W,Size H,class T>
@@ -208,6 +224,13 @@ namespace fm
 
 	////////////////////////////////////////////////////////////
 	template<Size W,Size H,class T>
+	inline matrix<H,W,T> matrix<W,H,T>::t() const
+	{
+		return transpose();
+	}
+
+	////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
 	inline matrix<W,H,T> matrix<W,H,T>::byComp(const matrix<W,H,T> &mat) const
 	{
 		matrix<W,H,T> ret;
@@ -234,6 +257,18 @@ namespace fm
 		matrix<W2,H2,T2> ret;
 		Cx(W)Cy(H)
 			ret[x][y] = (x<W2 && y<H2) ? T2(m_data[x][y]) : T2(int(x == y));
+			
+		return ret;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
+	template<Size W2,Size H2,Size X,Size Y>
+	inline matrix<W2,H2,T> matrix<W,H,T>::slice() const
+	{
+		matrix<W2,H2,T> ret;
+		Cx(W2)Cy(H2)
+			ret[x][y] = m_data[x+X][y+Y];
 			
 		return ret;
 	}
@@ -423,6 +458,33 @@ namespace fm
 	inline const T *matrix<W,H,T>::operator[](Size index) const
 	{
 		return m_data[index];
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
+	inline matrix<W,H,T> &matrix<W,H,T>::operator()(fm::Delegate<T,T,vec2i> fun)
+	{
+		return apply(fun);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
+	inline matrix<W,H,T> &matrix<W,H,T>::apply(fm::Delegate<T,T,vec2i> fun)
+	{
+		Cx(W)Cy(H)
+			m_data[x][y] = fun(m_data[x][y],vec2i(x,y));
+		
+		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
+	inline T matrix<W,H,T>::fold(fm::Delegate<T,T,T> ffun,T init) const
+	{
+		Cx(W)Cy(H)
+			init = ffun(init,m_data[x][y]);
+		
+		return init;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -639,6 +701,13 @@ namespace fm
 												   mat[3][0]*vec.w + mat[3][1]*vec.w + mat[3][2]*vec.w + mat[3][3]*vec.w);
 	}
 	
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,Size H2,class T>
+	inline matrix<W,H+H2,T> operator|(const matrix<W,H,T> &m1,const matrix<W,H2,T> &m2)
+	{
+		return MATRIX::concatH(m1,m2);
+	}
+	
 
 	/// square matrix methods /////////////////////////////////////////////////////////
 	namespace MATRIX
@@ -737,6 +806,32 @@ namespace fm
 		inline matrix<4,4,float> lookAt(const vec3 &cam_pos,const vec3 &target_pos)
 		{
 			return lookAt(cam_pos,target_pos,vec3(0,1,0));
+		}
+		
+		/////////////////////////////////////////////////////////////
+		template<Size W,Size H,Size H2,class T>
+		inline matrix<W,H+H2,T> concatH(const matrix<W,H,T> &m1,const matrix<W,H2,T> &m2)
+		{
+			matrix<W,H+H2> ret;
+			Cx(W)Cy(H)
+				ret[x][y] = m1[x][y];
+			Cx(W)Cy(H2)
+				ret[x][H+y] = m2[x][y];
+			
+			return ret;
+		}
+		
+		/////////////////////////////////////////////////////////////
+		template<Size W,Size W2,Size H,class T>
+		inline matrix<W+W2,H,T> concatW(const matrix<W,H,T> &m1,const matrix<W2,H,T> &m2)
+		{
+			matrix<W+W2,H> ret;
+			Cx(W)Cy(H)
+				ret[x][y] = m1[x][y];
+			Cx(W2)Cy(H)
+				ret[W+x][y] = m2[x][y];
+			
+			return ret;
 		}
 	}
 }

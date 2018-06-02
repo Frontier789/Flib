@@ -164,7 +164,7 @@ namespace fg
 		/// @return The mesh calculated
 		/// 
 		/////////////////////////////////////////////////////////////
-		static Mesh tesLineStrip(fm::vec2 *pts,fm::Size N,float width,bool distField = false);
+		static Mesh tesLineStrip(const fm::vec2 *pts,fm::Size N,float width,bool distField = false);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculate the vertices of a sphere

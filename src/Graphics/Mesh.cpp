@@ -497,7 +497,7 @@ namespace fg
 	
 	// TODO: rounded joints
 	/////////////////////////////////////////////////////////////
-	Mesh Mesh::tesLineStrip(vec2 *pts,fm::Size N,float width,bool distField)
+	Mesh Mesh::tesLineStrip(const vec2 *pts,fm::Size N,float width,bool distField)
 	{
 		Mesh m;
 		if (N < 2) return m;

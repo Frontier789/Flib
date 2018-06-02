@@ -109,7 +109,7 @@ namespace fm
 		};
 
 		template<class AltR,class FuncArgList,class R,class... CallArgs>
-		using BaseDelegateIfCompatible = std::enable_if<TListBeginsWith<ArgumentList<CallArgs...>,FuncArgList>::value && (std::is_same<AltR,R>::value || std::is_same<void,R>::value),BaseDelegate<R,CallArgs...> >;
+		using BaseDelegateIfCompatible = std::enable_if<TListBeginsWith<ArgumentList<CallArgs...>,FuncArgList>::value && (std::is_convertible<AltR,R>::value || std::is_same<void,R>::value),BaseDelegate<R,CallArgs...> >;
 	}
 }
 

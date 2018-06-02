@@ -41,6 +41,7 @@ namespace fm
 #include <FRONTIER/System/Ref.hpp>
 #include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/System/Time.hpp>
+#include <FRONTIER/System/Math.hpp>
 #include <FRONTIER/System/Clock.hpp>
 #include <FRONTIER/System/Sleep.hpp>
 #include <FRONTIER/System/Angle.hpp>
@@ -54,6 +55,7 @@ namespace fm
 #include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/CmdArgs.hpp>
 #include <FRONTIER/System/Delegate.hpp>
+#include <FRONTIER/System/NeuralNet.hpp>
 #include <FRONTIER/System/Quaternion.hpp>
 #include <FRONTIER/System/Transition.hpp>
 #include <FRONTIER/System/MatrixStack.hpp>

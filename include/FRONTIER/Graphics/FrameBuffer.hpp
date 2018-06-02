@@ -53,7 +53,6 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API FrameBuffer : public fm::NonCopyable, public GlObject
 	{
-		void applyDepthTest() const; ///< Set the depth test specified active
 		unsigned int m_depthBufID;   ///< The id of the depth buffer
 		void init();        ///< Internal function used at setup
 		fm::Size m_width;   ///< The width of the FrameBuffer
@@ -105,7 +104,7 @@ namespace fg
 			/// @brief Indicates that no depth buffer is present
 			///
 			/////////////////////////////////////////////////////////////
-			static const DepthBuffer noDepthBuffer;
+			static FRONTIER_API const DepthBuffer noDepthBuffer;
 		};
 
 		/////////////////////////////////////////////////////////////
@@ -289,6 +288,15 @@ namespace fg
 		void setDepthTest(DepthTestMode mode);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the depth testing mode set
+		///
+		/// @return The DepthTestMode set
+		///
+		/////////////////////////////////////////////////////////////
+		DepthTestMode getDepthTest() const;
+
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Test if framebuffers are available
 		///
 		/// @return True if available
@@ -335,6 +343,12 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		const fm::vec2s &getSize() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Apply the given depth test to the currently bound framebuffer
+		///
+		/////////////////////////////////////////////////////////////
+		static void applyDepthTest(fg::DepthTestMode depthMode);
 	};
 }
 #endif // FRONTIER_FRAMEBUFFER_INCLUDED

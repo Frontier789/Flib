@@ -14,6 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Graphics/DepthTestMode.hpp>
 #include <FRONTIER/Window/GLContext.hpp>
 #include <FRONTIER/Graphics/Image.hpp>
 #include <FRONTIER/System/Vector2.hpp>
@@ -167,7 +168,7 @@ namespace fw
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fm::Result GLContext::bindDefaultFrameBuffer()
+	fm::Result GLContext::bindDefaultFrameBuffer() const
 	{
 		fm::Result res = glCheck(glBindFramebuffer(GL_FRAMEBUFFER,0));
 		
@@ -177,6 +178,8 @@ namespace fw
 			res += m_context->getSize(w,h);
 			
 			glViewport(0,0,w,h);
+			
+			applyDepthTest();
 		}
 		
 		return res;
@@ -284,20 +287,27 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
-	void GLContext::setDepthTest(fg::DepthTestMode mode)
+	void GLContext::applyDepthTest() const
 	{
-		if (mode != fg::Unused)
+		if (m_depthTestMode != fg::Unused)
 			glEnable(GL_DEPTH_TEST);
 		else
 			glDisable(GL_DEPTH_TEST);
 
-		if (mode == fg::Less)    glDepthFunc(GL_LESS);
-		if (mode == fg::LEqual)  glDepthFunc(GL_LEQUAL);
-		if (mode == fg::GEqual)  glDepthFunc(GL_GEQUAL);
-		if (mode == fg::Greater) glDepthFunc(GL_GREATER);
-		if (mode == fg::Always)  glDepthFunc(GL_ALWAYS);
-		
+		if (m_depthTestMode == fg::Less)    glDepthFunc(GL_LESS);
+		if (m_depthTestMode == fg::LEqual)  glDepthFunc(GL_LEQUAL);
+		if (m_depthTestMode == fg::GEqual)  glDepthFunc(GL_GEQUAL);
+		if (m_depthTestMode == fg::Greater) glDepthFunc(GL_GREATER);
+		if (m_depthTestMode == fg::Always)  glDepthFunc(GL_ALWAYS);
+	}
+
+
+	/////////////////////////////////////////////////////////////
+	void GLContext::setDepthTest(fg::DepthTestMode mode)
+	{
 		m_depthTestMode = mode;
+		
+		applyDepthTest();
 	}
 
 	/////////////////////////////////////////////////////////////

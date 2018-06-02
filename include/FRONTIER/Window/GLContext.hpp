@@ -57,6 +57,8 @@ namespace fw
 		fg::DepthTestMode m_depthTestMode; ///< The current depth test mode
 		fm::vec4 m_clearColor; ///< The color used when clearing the framebuffer
 		float m_clearDepth;    ///< The depth value used when clearing the framebuffer
+		
+		void applyDepthTest() const; ///< Apply the current depth test method
 	public:
 
 		typedef GLContext &reference;
@@ -174,12 +176,12 @@ namespace fw
 		fm::Result setActive(bool active = true);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Bind the default vbo of the context
+		/// @brief Bind the default fbo of the context
 		///
 		/// @return The result of the call
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result bindDefaultFrameBuffer();
+		fm::Result bindDefaultFrameBuffer() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Swap the back and front buffer

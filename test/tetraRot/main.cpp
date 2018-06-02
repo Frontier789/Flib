@@ -255,8 +255,7 @@ int main()
 			blurConv.applyTo(glowTexture,blurAm);
 			
 			
-			FrameBuffer::bind(nullptr);
-			FrameBuffer::setViewport(rect2s(vec2(),win.getSize()));
+			win.bindDefaultFrameBuffer();
 			glEnable(GL_POLYGON_OFFSET_FILL);
 			glPolygonOffset(1,1);
 			shader->draw(dd);
