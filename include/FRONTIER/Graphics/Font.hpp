@@ -80,7 +80,7 @@ namespace fg
 			bool operator<(const Identifier &other) const;
 
 			/////////////////////////////////////////////////////////////
-			bool operator==(const Identifier &other) const {return style == other.style && codePoint == other.codePoint;};
+			bool operator==(const Identifier &other) const;
 		};
 		
 	private:
