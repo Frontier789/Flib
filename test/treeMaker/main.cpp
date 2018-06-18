@@ -176,7 +176,7 @@ Tree::Tree() : branchCount(0),
 	funcMinGrowPoint = [this](float p) -> float {
 		return (p + .95) / 2 - getRandom() / 2;
 	};
-	funcLeafProbability = [this](float p) -> float {
+	funcLeafProbability = [](float p) -> float {
 		return (p + 1)/2;
 	};
 	funcLeafTurnYellow = [this](vec4 c) -> vec4 {

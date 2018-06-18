@@ -88,7 +88,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result create(fm::vec2s size);
+		fm::Result create(fm::vec2s size) override;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the repeate flag
@@ -101,7 +101,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		Texture::reference setRepeated(bool repeat);
+		Texture::reference setRepeated(bool repeat) override;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the smoothness flag
@@ -114,7 +114,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		Texture::reference setSmooth(bool smooth);
+		Texture::reference setSmooth(bool smooth) override;
 		
 		friend class CubeTexture;
 	};
