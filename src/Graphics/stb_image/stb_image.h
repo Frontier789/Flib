@@ -505,10 +505,11 @@ STBIDEF int   stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const ch
 
 #ifdef STB_IMAGE_IMPLEMENTATION
 
-#pragma clang diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wmisleading-indentation"
-#pragma GCC diagnostic ignored "-Wshift-negative-value"
+#ifndef __clang__
+	#pragma GCC diagnostic ignored "-Wpragmas"
+	#pragma GCC diagnostic ignored "-Wmisleading-indentation"
+	#pragma GCC diagnostic ignored "-Wshift-negative-value"
+#endif
 
 #if defined(STBI_ONLY_JPEG) || defined(STBI_ONLY_PNG) || defined(STBI_ONLY_BMP) \
   || defined(STBI_ONLY_TGA) || defined(STBI_ONLY_GIF) || defined(STBI_ONLY_PSD) \

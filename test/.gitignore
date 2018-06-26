@@ -9,4 +9,6 @@
 !pixy/*.png
 !mandelbrot/pal.png
 !computeShader/rose.png
+!phong/*.png
+!*/*.db
 lib*
