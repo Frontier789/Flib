@@ -4,9 +4,9 @@
 using namespace std;
 
 #include <random>
-std::mt19937_64 mt(42.69);
+std::mt19937_64 mt(42);
 std::uniform_real_distribution<double> dst(0,1);
-double random()
+double random01()
 {
 	return dst(mt);
 }
@@ -56,7 +56,7 @@ public:
 		for (auto &ind : population) {
 			ind = new Individual;
 			ind->plot_pts.resize(64);
-			ind->c = vec4(random(),random(),random(),1);
+			ind->c = vec4(random01(),random01(),random01(),1);
 		}
 		
 		population[0]->nn.loadFromFile("best.nn");
@@ -96,18 +96,18 @@ public:
 	
 	void mutate(T chance,T mut) {
 		for (auto &ind : population) {
-			if (random() < chance)
+			if (random01() < chance)
 				ind->nn.mutate(mut);
 		}
 	}
 	
 	void cross(Size elite) {
 		for (Size i=elite;i<P;++i) {
-			int p1 = random() * elite;
-			int p2 = random() * elite;
+			int p1 = random01() * elite;
+			int p2 = random01() * elite;
 			NN::cross(population[i]->nn,population[p1]->nn,population[p2]->nn);
-			T r = random();
-			population[i]->c = population[p1]->c * r + population[p2]->c * (1-r) + vec4(random()-.5,random()-.5,random()-.5,0)*2*.1;
+			T r = random01();
+			population[i]->c = population[p1]->c * r + population[p2]->c * (1-r) + vec4(random01()-.5,random01()-.5,random01()-.5,0)*2*.1;
 		}
 	}
 	
@@ -163,7 +163,7 @@ public:
 			for (auto ind : gen.population) {
 				for (int i=0;i<1000;++i)
 				{
-					float k = (random())*1.4-.2;
+					float k = (random01())*1.4-.2;
 					ind->nn.train(k,f(k),4/(1+.3*learn_clk.getSeconds()) + .09);
 					
 					++db;

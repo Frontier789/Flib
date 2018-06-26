@@ -59,7 +59,7 @@ namespace fgui
 		
 	void EditText::setText(const fm::String &str)
 	{
-		m_lines = std::move(strToData(str));
+		m_lines = strToData(str);
 		
 		createSpritesFromText();
 	}
