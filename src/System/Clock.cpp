@@ -24,86 +24,93 @@
 #else
 	#include "Generic/GenericClock.cpp"
 #endif
-	
+
 namespace fm
 {
     /// /////////////////////////////////////////////////////////
     Clock::Clock() : m_startTime(getCurrentTime()),
 					 m_pauseTime(-1)
     {
-    	
+
     }
-	
+
     /// Constructors /////////////////////////////////////////////////////////
     Clock::Clock(bool paused) : m_startTime(getCurrentTime()),
 								m_pauseTime(paused ? m_startTime : -1)
     {
-    	
+
     }
-    
-    
+
+
     ////////////////////////////////////////////////////////////
     Clock::Clock(Clock::const_reference copy) : m_startTime(copy.m_startTime),
                                                 m_pauseTime(copy.m_pauseTime)
     {
-    	
+
     }
-    
-    
+
+
     ////////////////////////////////////////////////////////////
     Clock::Clock(double startTime,bool paused) : m_startTime(getCurrentTime()-startTime),
 												 m_pauseTime(paused ? m_startTime : -1)
     {
-    	
+
     }
-    
-    
+
+
     ////////////////////////////////////////////////////////////
     double Clock::getSeconds() const
     {
 		if (isPaused())
     		return m_pauseTime - m_startTime;
-    	
+
     	return getCurrentTime() - m_startTime;
     }
-    
-    
+
+
+    ////////////////////////////////////////////////////////////
+    double Clock::s() const
+    {
+    	return getSeconds();
+    }
+
+
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::pause()
     {
 		if (!isPaused())
 			m_pauseTime = getCurrentTime();
-		
+
 		return *this;
     }
-    
-    
+
+
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::unPause()
     {
 		if (isPaused())
 			m_startTime = getCurrentTime() - getSeconds(),
 			m_pauseTime = -1;
-		
+
 		return *this;
     }
-    
-    
+
+
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::resume()
     {
 		return unPause();
     }
-    
+
 	/////////////////////////////////////////////////////////////
 	double Clock::restart()
 	{
 		double ret = getSeconds();
 		setTime(0);
-		
+
 		return ret;
 	}
-    
+
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::setTime(double elapsedSeconds)
     {
@@ -111,30 +118,30 @@ namespace fm
 			m_startTime = m_pauseTime - elapsedSeconds;
 		else
 			m_startTime = getCurrentTime() - elapsedSeconds;
-		
+
     	return *this;
     }
-    
+
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::setTime(fm::Time time)
     {
 		return setTime(time.asSecs());
     }
-    
+
 	/////////////////////////////////////////////////////////////
 	fm::Time Clock::getTime() const
 	{
 		return fm::seconds(getSeconds());
 	}
-    
-    
+
+
     ////////////////////////////////////////////////////////////
     bool Clock::isPaused() const
     {
 		return m_pauseTime != -1;
     }
-    
-    
+
+
     ////////////////////////////////////////////////////////////
     const Clock Clock::now = Clock();
 }

@@ -58,7 +58,8 @@ namespace fm
 		/// @param endIt The first item not to include
 		///
 		/////////////////////////////////////////////////////////////
-		String(const_iterator begIt,const_iterator endIt);
+		template<class ForwIt>
+		String(ForwIt begIt,ForwIt endIt);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct containing n identical characters

@@ -19,6 +19,9 @@
 
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/System/Result.hpp>
+#include <random>
+#include <array>
 
 #define FRONTIER_NEURALNET
 
@@ -42,7 +45,7 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		/// 
-		/// Initializes the weights and biases to random values
+		/// Initializes the weights and biases to 0
 		/// 
 		/////////////////////////////////////////////////////////////
 		NeuralLayer();
@@ -54,6 +57,14 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		NeuralLayer(fm::Delegate<T,vec2i> w);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the weights according to a given function
+		/// 
+		/// @param w The weight function
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setWeights(fm::Delegate<T,T,vec2i> w);
 		
 		mutable matrix<1,O,T> out; ///< The last output
 		mutable matrix<1,I,T> in;  ///< The last input
@@ -76,6 +87,30 @@ namespace fm
 		/// 
 		///////////////////////////////////////////////////////////// 
 		void backProp(const matrix<1,O,T> &dE_dOut,T learn_rate);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Mutate the layer weights and biases with a given intensity
+		/// 
+		/// All weights and biases get randomly changed with values in [-rate,rate]
+		/// 
+		/// @param rate The rate at which to mutate
+		/// @param rnd The (pseudo) random generator function (in range [0,1])
+		/// 
+		/////////////////////////////////////////////////////////////
+		void mutate(T rate,fm::Delegate<T> rnd);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Cross (breed) two neural network layers
+		/// 
+		/// All weights and biases get randomly chosen between the parents' weights and biases
+		/// 
+		/// @param child The layer to store the cross in 
+		/// @param parent1 The first parent of the new layer 
+		/// @param parent2 The second parent of the new layer 
+		/// @param rnd The (pseudo) random generator function (in range [0,1])
+		/// 
+		/////////////////////////////////////////////////////////////
+		static void cross(NeuralLayer<I,O,T> &child,const NeuralLayer<I,O,T> &parent1,const NeuralLayer<I,O,T> &parent2,fm::Delegate<T> rnd);
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -89,10 +124,20 @@ namespace fm
 	template<Size I,Size N,Size H,Size O,class T = float>
 	class NeuralNet
 	{
+		std::mt19937_64 m_mt; ///< Mersenne twister used in random number generation
+		std::uniform_real_distribution<double> m_dst; ///< Unifrom real distribution used in random number generation
+		
 		NeuralLayer<I,H,T> m_layerIn; ///< The input layer of the NN
 		std::array<NeuralLayer<H,H,T>,N-1> m_layersHidden; ///< The array of hidden layers in the NN
 		NeuralLayer<H,O,T> m_layerOut; ///< The output layer of the NN
 	public:
+		/////////////////////////////////////////////////////////////
+		/// @brief Default constructor
+		/// 
+		/// Initializes the layers' weights and biases to random numbers
+		/// 
+		/////////////////////////////////////////////////////////////
+		NeuralNet();
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Evaluate the Neural Network on a given input
@@ -123,6 +168,51 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		void train(const matrix<1,I,T> &input,const matrix<1,O,T> &target,T learning_rate);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Mutate the NN weights and biases with a given intensity
+		/// 
+		/// All weights and biases get randomly changed with values in [-rate,rate]
+		/// 
+		/// @param rate The rate at which to mutate
+		/// 
+		///////////////////////////////////////////////////////////// 
+		void mutate(T rate);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Cross (breed) two neural networks
+		/// 
+		/// All weights and biases get randomly chosen between the parents' weights and biases
+		/// 
+		/// @param child The NN to store the cross in 
+		/// @param parent1 The first parent of the new NN 
+		/// @param parent2 The second parent of the new NN 
+		/// 
+		/////////////////////////////////////////////////////////////
+		static void cross(NeuralNet<I,N,H,O,T> &child,const NeuralNet<I,N,H,O,T> &parent1,const NeuralNet<I,N,H,O,T> &parent2);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Save the NN to a file
+		/// 
+		/// @param file The name of the file
+		/// 
+		/// @return The result of the operation
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Result saveToFile(const std::string &file) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Load the NN from a file
+		/// 
+		/// If the saved NN and the loaded NN does not match on size
+		/// the load will fail
+		/// 
+		/// @param file The name of the file
+		/// 
+		/// @return The result of the operation
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Result loadFromFile(const std::string &file) const;
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -136,8 +226,19 @@ namespace fm
 	template<Size I,Size H,Size O,class T>
 	class NeuralNet<I,0,H,O,T>
 	{
+		std::mt19937_64 m_mt; ///< Mersenne twister used in random number generation
+		std::uniform_real_distribution<double> m_dst; ///< Unifrom real distribution used in random number generation
+		
 		NeuralLayer<I,O,T> m_layer; ///< The single layer of the NN
 	public:
+		/////////////////////////////////////////////////////////////
+		/// @brief Default constructor
+		/// 
+		/// Initializes the layers' weights and biases to random numbers
+		/// 
+		/////////////////////////////////////////////////////////////
+		NeuralNet();
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Evaluate the Neural Network on a given input
 		/// 
@@ -167,6 +268,16 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		void train(const matrix<1,I,T> &input,const matrix<1,O,T> &target,T learning_rate);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Mutate the NN weights and biases with a given intensity
+		/// 
+		/// All weights and biases get randomly changed with values in [-rate,rate]
+		/// 
+		/// @param rate The rate at which to mutate
+		/// 
+		///////////////////////////////////////////////////////////// 
+		void mutate(T rate);
 	};
 }
 #endif //FRONTIER_NEURALNET_HPP_INCLUDED

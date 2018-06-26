@@ -83,13 +83,6 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	String::String(String::const_iterator begIt,String::const_iterator endIt)
-	{
-		while (begIt != endIt)
-			m_str += *begIt++;
-	}
-
-	/////////////////////////////////////////////////////////////
 	String::String(fm::Size charCount,fm::Uint32 character) : m_str(charCount,character)
 	{
 

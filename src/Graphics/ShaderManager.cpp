@@ -253,10 +253,10 @@ namespace fg
 		
 		std::vector<std::string> names[] = {{"proj","projmat","proj_mat","projection","projectionmat","projection_mat"},
 											{"view","viewmat","view_mat"},
-											{"plypos","ply_pos","playerpos","player_pos"},
+											{"plypos","ply_pos","playerpos","player_pos","campos","cam_pos","camera_pos"},
 											{"dir","viewdir","view_dir","direction","viewdirection","view_direction"},
 											{"model","modelmat","model_mat"},
-											{"normmat","norm_mat","normalmat","normal_mat"},
+											{"normmat","norm_mat","nrmmat","nrm_mat","normalmat","normal_mat"},
 											{"clrmat","clr_mat","colormat","color_mat"},
 											{"texturemat","texture_mat","texmat","tex_mat"},
 											{"time","secs","seconds","clock"},

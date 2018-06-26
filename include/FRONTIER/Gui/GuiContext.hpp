@@ -340,10 +340,12 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief Run the gui loop of the context
 		/// 
+		/// @param user_update Optional update function to call each iteration
+		/// 
 		/// @return The exit code
 		/// 
 		/////////////////////////////////////////////////////////////
-		int runGuiLoop();
+		int runGuiLoop(fm::Delegate<void> user_update = fm::Delegate<void>());
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the loop condition in the gui loop to false

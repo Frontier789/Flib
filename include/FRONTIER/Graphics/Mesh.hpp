@@ -141,7 +141,7 @@ namespace fg
 		reference calcNormals(bool joinIdenticalVertices = true);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Calculate the tangent vectors for every vertex
+		/// @brief Calculate the tangent and bitangent vectors for every vertex
 		/// 
 		/// Needs normals to be able to calculate
 		/// 

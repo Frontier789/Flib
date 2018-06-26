@@ -45,6 +45,7 @@ namespace fm
 #include <FRONTIER/System/Clock.hpp>
 #include <FRONTIER/System/Sleep.hpp>
 #include <FRONTIER/System/Angle.hpp>
+#include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Camera.hpp>

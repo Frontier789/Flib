@@ -49,6 +49,12 @@
 		"vector": "cpp",
 		"map": "cpp",
 		"string": "cpp",
-		"sstream": "cpp"
+		"sstream": "cpp",
+		"cstdarg": "cpp",
+		"deque": "cpp",
+		"unordered_map": "cpp",
+		"numeric": "cpp",
+		"cinttypes": "cpp",
+		"list": "cpp"
 	}
 }

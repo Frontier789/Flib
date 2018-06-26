@@ -448,13 +448,15 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	int GuiContext::runGuiLoop()
+	int GuiContext::runGuiLoop(fm::Delegate<void> user_update)
 	{
 		for (m_guiLoop = true;m_guiLoop;)
 		{
 			handlePendingEvents();
 
 			updateElements();
+			
+			user_update();
 			
 			drawElementsGuiLoop();
 			

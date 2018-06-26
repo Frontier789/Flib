@@ -44,6 +44,7 @@ namespace fm
 
 namespace fg
 {
+	class ShaderManager;
 	class FontRenderer;
 	template<class> class SpriteManagerBase;
 	template<class> class SpriteBase;
