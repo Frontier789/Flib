@@ -53,7 +53,7 @@ bool Game::checkwin() const
 			if (a) {
 				bool win = true;
 				for (int i=1;i<5;++i) {
-					int j = (d.z == -1 ? 5-i : i);
+					int j = (d.z == -1 ? 5-i : i*d.z);
 					win = win && m_map[x+j][y+i*d.w]==a;
 				}
 				if (win) return true;
