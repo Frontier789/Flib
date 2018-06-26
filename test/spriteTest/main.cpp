@@ -138,7 +138,7 @@ public:
 					continue;
 				}
 				else
-				{ 
+				{
 					vec2 s,p;
 					randSizePos(s,p);
 					

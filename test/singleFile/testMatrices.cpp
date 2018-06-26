@@ -54,7 +54,7 @@ int main()
 	
 	matrix<3,3,string> sm("lol","   ");
 	cout << sm << endl << endl;
-	cout << sm + matrix<3,3,string>("_k") << endl << endl;
+	cout << sm + matrix<3,3,string>(string("_k")) << endl << endl;
 	
 	
 	cout << "or a matrix of matrices" << endl;

@@ -32,7 +32,12 @@ error:
 endif
 
 # set cmpiler flags
-CXXFLAGS ?= -std=gnu++11 -pedantic -Werror -Wextra -Wall -DFRONTIER_DEBUG
+STRICT_COMPILE ?= yes
+ifeq ($(STRICT_COMPILE),yes)
+ CXXFLAGS ?= -std=gnu++11 -pedantic -Werror -Wextra -Wall -DFRONTIER_DEBUG
+else
+ CXXFLAGS ?= -std=gnu++11 -DFRONTIER_DEBUG
+endif
 CXX_WNO_FLAGS ?= -DFRONTIER_MISSING_IMPL_NO_WARNING
 
 # linker flags

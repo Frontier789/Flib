@@ -29,8 +29,12 @@
 namespace fg
 {
 	////////////////////////////////////////////////////////////
-	Font::Identifier::Identifier() {}
+	Font::Identifier::Identifier() : 
+		codePoint(0),
+		style(Glyph::Regular)
+	{
 
+	}
 
 	////////////////////////////////////////////////////////////
 	Font::Identifier::Identifier(const fm::Uint32 &codePoint,Glyph::Style style) : codePoint(codePoint),
@@ -44,6 +48,12 @@ namespace fg
 	{
 		// used for sorting
 		return (codePoint==other.codePoint ? style < other.style : codePoint < other.codePoint);
+	}
+
+	////////////////////////////////////////////////////////////
+	bool Font::Identifier::operator==(const Font::Identifier &other) const
+	{
+		return style == other.style && codePoint == other.codePoint;
 	}
 	
 	////////////////////////////////////////////////////////////
