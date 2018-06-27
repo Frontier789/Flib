@@ -3,6 +3,7 @@
 
 #include <Frontier.hpp>
 #include <iostream>
+#include "BoardDisp.hpp"
 
 using namespace std;
 
@@ -26,8 +27,28 @@ public:
 	int getid() const;
 	bool ready() const;
 	vec2i getmove() const;
-	void enemymove(vec2i p,int eid);
+	virtual void enemymove(vec2i p,int eid);
 	int getcell(vec2i p) const;
+};
+
+class HumanPlayer : public Player, public GuiElement
+{
+	const BoardDisp &m_board;
+public:
+	HumanPlayer(const BoardDisp &board,int id,GuiContext &cont);
+
+	bool onEvent(fw::Event &ev) override;
+};
+
+class NNPlayer : public Player
+{
+	NeuralNet<225,2,300,225> m_nn;
+	string m_file;
+public:
+	NNPlayer(int N,int id,string nn);
+	virtual ~NNPlayer();
+
+	void enemymove(vec2i p,int eid) override;
 };
 
 #endif // PLAYER_INCLUDED

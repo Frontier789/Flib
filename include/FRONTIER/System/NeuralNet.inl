@@ -122,9 +122,9 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<Size I,Size N,Size H,Size O,class T>
-	inline NeuralNet<I,N,H,O,T>::NeuralNet() :
+	inline NeuralNet<I,N,H,O,T>::NeuralNet(T rndrange) :
 		m_mt(std::random_device()() + 42.69),
-		m_dst(0,1)
+		m_dst(-rndrange,rndrange)
 	{
 		fm::Delegate<T> rnd = [&](){return m_dst(m_mt);};
 		

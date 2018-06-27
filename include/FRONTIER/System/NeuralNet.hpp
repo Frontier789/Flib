@@ -134,10 +134,11 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
 		/// 
-		/// Initializes the layers' weights and biases to random numbers
+		/// Initializes the layers' weights and biases to random 
+		/// numbers in the interval [-range,range]
 		/// 
 		/////////////////////////////////////////////////////////////
-		NeuralNet();
+		NeuralNet(T rndrange = 1);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Evaluate the Neural Network on a given input

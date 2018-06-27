@@ -48,6 +48,10 @@ public:
 		T fit;
 		vec4 c;
 		vector<vec2> plot_pts;
+
+		Individual() : nn(1) {
+			
+		}
 	};
 	
 	array<Individual*,P> population;

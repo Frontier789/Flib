@@ -55,6 +55,7 @@
 		"unordered_map": "cpp",
 		"numeric": "cpp",
 		"cinttypes": "cpp",
-		"list": "cpp"
+		"list": "cpp",
+		"hash_map": "cpp"
 	}
 }
