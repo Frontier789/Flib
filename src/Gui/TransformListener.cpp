@@ -40,7 +40,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void TransformListener::onMouseMoved(fm::vec2 p,fm::vec2 prevP)
+	void TransformListener::onMouseMove(fm::vec2 p,fm::vec2 prevP)
 	{
 		if (isPressed(fw::Mouse::Left))
 		{

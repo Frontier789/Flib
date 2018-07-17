@@ -60,10 +60,10 @@ namespace fgui
 					if (m_btnPressed[i])
 						mouseGrab = true;
 				}
-				
-				if (mouseGrab)
+
+				if (mouseGrab && !mouseInside())
 				{
-					onMouseMoved(p,m_prevPos);
+					onMouseMove(p,m_prevPos);
 					m_prevPos = p;
 					
 					return true;

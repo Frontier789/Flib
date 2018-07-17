@@ -151,7 +151,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void ScrollBar::onMouseMoved(fm::vec2 p,fm::vec2 /* prevP */ )
+	void ScrollBar::onMouseMove(fm::vec2 p,fm::vec2 /* prevP */ )
 	{
 		if (m_grabbed)
 		{

@@ -86,7 +86,7 @@ bool ColorPicker::contains(fm::vec2 p) const
 	return p.x*2 + p.y >= 100 && p.x*2 - p.y <= 100 && p.y <= 100;
 }
 
-void ColorPicker::onMouseMoved(fm::vec2 p,fm::vec2)
+void ColorPicker::onMouseMove(fm::vec2 p,fm::vec2)
 {
 	if (isPressed(Mouse::Left))
 	{

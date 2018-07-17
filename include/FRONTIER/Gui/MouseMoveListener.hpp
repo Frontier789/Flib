@@ -69,7 +69,7 @@ namespace fgui
 		/// @param prevP The position of the mouse before moving
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void onMouseMoved(fm::vec2 p,fm::vec2 prevP);
+		virtual void onMouseMove(fm::vec2 p,fm::vec2 prevP);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Checks whether the mouse is inside the gui element

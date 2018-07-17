@@ -192,7 +192,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void GuiButton::onMouseMoved(fm::vec2,fm::vec2)
+	void GuiButton::onMouseMove(fm::vec2,fm::vec2)
 	{
 		m_actionCb(*this,GuiButton::Drag);
 	}

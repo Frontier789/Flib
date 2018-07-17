@@ -70,7 +70,7 @@ public:
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void onMouseMoved(fm::vec2 p,fm::vec2 prevP) override
+	void onMouseMove(fm::vec2 p,fm::vec2 prevP) override
 	{
 		if (isPressed(Mouse::Left)) {
 			vec2 delta = p - prevP;
