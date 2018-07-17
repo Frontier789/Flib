@@ -15,7 +15,7 @@ public:
 	void onDraw(fg::ShaderManager &shader) override;
 	void onPress(fw::Mouse::Button button,fm::vec2 p) override;
 	bool contains(fm::vec2 p) const override;
-	void onMouseMoved(fm::vec2 p,fm::vec2 prevP) override;
+	void onMouseMove(fm::vec2 p,fm::vec2 prevP) override;
 	void onScroll(float amount) override;
 	
 	void raiseBrightness(float amount);

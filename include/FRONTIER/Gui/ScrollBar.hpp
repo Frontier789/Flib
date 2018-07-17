@@ -149,7 +149,7 @@ namespace fgui
 		/// @param prevP The position of the mouse before moving
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void onMouseMoved(fm::vec2 p,fm::vec2 prevP) override;
+		virtual void onMouseMove(fm::vec2 p,fm::vec2 prevP) override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Called when a mouse button is pressed while inside the gui element

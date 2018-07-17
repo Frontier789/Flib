@@ -118,7 +118,7 @@ public:
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void onMouseMoved(fm::vec2 p,fm::vec2 prevP) override
+	void onMouseMove(fm::vec2 p,fm::vec2 prevP) override
 	{
 		if (sideGrab == 0)
 		{

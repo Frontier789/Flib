@@ -31,7 +31,8 @@ namespace fgui
 				
 				if (m_mouseIn)
 				{
-					onMouseMoved(p,m_prevPos);
+					onMouseMove(p,m_prevPos);
+					m_prevPos = p;
 					
 					if (!in)
 						onMouseLeave(p);
@@ -42,7 +43,6 @@ namespace fgui
 						onMouseEnter(p);
 				}
 				
-				m_prevPos = p;
 				m_mouseIn = in;
 			}
 			
@@ -74,7 +74,7 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	void MouseMoveListener::onMouseMoved(fm::vec2 p,fm::vec2 prevP)
+	void MouseMoveListener::onMouseMove(fm::vec2 p,fm::vec2 prevP)
 	{
 		(void)p;
 		(void)prevP;

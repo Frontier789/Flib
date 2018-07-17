@@ -200,7 +200,7 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class T>
-		Attribute &set(fg::Buffer &buf,fm::Size stride,fm::Size offset,fm::Size instancesPerUpdate = 0);
+		Attribute &set(fg::Buffer &buf,fm::Size stride = 0,fm::Size offset = 0,fm::Size instancesPerUpdate = 0);
 	};
 }
 
