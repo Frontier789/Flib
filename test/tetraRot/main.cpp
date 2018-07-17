@@ -4,49 +4,7 @@
 
 using namespace std;
 
-class Triangle
-{
-public:
-	vec3 a,b,c;
-	int state;
-	int depth;
-	
-	Triangle() : state(0) {}
-	Triangle(vec3 a,vec3 b,vec3 c,int state = 0,int depth = 0) : a(a), b(b), c(c), state(state), depth(depth) {}
-	
-	void populate(Triangle *&tris)
-	{
-		if (state == 0)
-		{
-			vec3 midA = (b+c)/2;
-			vec3 midB = (a+c)/2;
-			vec3 midC = (b+a)/2;
-			
-			vec3 n = (a-b).cross(a-c).sgn();
-			vec3 mid = (a+b+c)/3 + sqrt(5.f/6.f) / 2 * (a-b).length() * n;
-			
-			*(tris++) = Triangle(a,midC,midB,1,depth+1);
-			*(tris++) = Triangle(b,midA,midC,1,depth+1);
-			*(tris++) = Triangle(c,midB,midA,1,depth+1);
-			
-			*(tris++) = Triangle(midA,midB,mid,0,depth+1);
-			*(tris++) = Triangle(midB,midC,mid,0,depth+1);
-			*(tris++) = Triangle(midC,midA,mid,0,depth+1);
-		}
-		if (state == 1)
-		{
-			*(tris++) = *this;
-		}
-	}
-	
-	int getNewPopCount()
-	{
-		if (state == 0)
-			return 6;
-		
-		return 1;
-	}
-};
+#include "Triangle.hpp"
 
 void buildDrawData(int depth,DrawData &dd,DrawData &ddWf,DrawData &ddGw)
 {
@@ -121,9 +79,105 @@ void printUsage()
 		 << "\tG: Toggle glow" << endl;
 }
 
+class Roti : public GuiElement, public MouseMoveListener
+{
+	ShaderManager &m_shader;
+	Camera &m_cam;
+	vec2 m_glowSize;
+	Texture m_glowTex;
+	FrameBuffer m_glowFBO;
+	DrawData m_glowApplyDD;
+	TextureConvolution m_blurConv;
+	DrawData m_dd,m_ddWire,m_ddGlow;
+	mat4 m_rotMat;
+	
+	void init();
+public:
+	Roti(GuiContext &cont);
+	
+	void onDraw(ShaderManager &) override;
+	
+	void onMouseMoved(vec2 p,vec2 prev) override;
+};
+
+Roti::Roti(GuiContext &cont) : 
+	GuiElement(cont,cont.getSize()),
+	m_shader(cont.getShader()),
+	m_cam(m_shader.getCamera())
+{
+	init();
+}
+
+void Roti::init()
+{
+	m_cam.set3D(getSize(),vec3(3,3,3),vec3());
+	m_glowSize = getSize() * .5;
+	
+	m_glowTex.create(m_glowSize);
+	m_glowFBO.create(m_glowTex,FrameBuffer::DepthBuffer(m_glowSize));
+	m_glowFBO.setDepthTest(LEqual);
+	m_glowApplyDD.positions = {vec2(-1,-1),vec2(1,-1),vec2(1,1),vec2(-1,-1),vec2(1,1),vec2(-1,1)};
+	m_glowApplyDD.texPositions = {vec2(0,0),vec2(1,0),vec2(1,1),vec2(0,0),vec2(1,1),vec2(0,1)};
+	
+	m_blurConv = TextureConvolution({0.01598,0.060626,0.241843,0.383103,0.241843,0.060626,0.01598});
+	
+	buildDrawData(5,m_dd,m_ddWire,m_ddGlow);
+}
+	
+void Roti::onDraw(ShaderManager &)
+{
+	m_shader.getModelStack().top(m_rotMat);
+	
+	m_glowFBO.bind();
+	m_glowFBO.clear(true,true);
+	m_shader.draw(m_ddGlow);
+	
+	m_blurConv.applyTo(m_glowTex,50);
+	
+	
+	FrameBuffer::bind(nullptr);
+	FrameBuffer::setViewport(rect2s(vec2(),getSize()));
+	FrameBuffer::applyDepthTest(fg::LEqual);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(1,1);
+	m_shader.draw(m_dd);
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	
+	glDepthMask(GL_FALSE);
+	m_cam.getViewStack().push(mat4());
+	m_cam.getProjStack().push(mat4());
+	m_shader.getModelStack().push(mat4());
+	m_shader.setBlendMode(fg::Additive);
+	m_glowTex.setSmooth(true);
+	m_shader.useTexture(m_glowTex);
+	
+	m_shader.draw(m_glowApplyDD);
+	
+	m_shader.useTexture(nullptr);
+	m_shader.setBlendMode(fg::Alpha);
+	m_shader.getModelStack().pop();
+	m_cam.getProjStack().pop();
+	m_cam.getViewStack().pop();
+	glDepthMask(GL_TRUE);
+	
+	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	m_shader.draw(m_ddWire);
+	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+}
+
+void Roti::onMouseMoved(vec2 p,vec2 prev)
+{
+	vec2 delta = p-prev;
+	m_rotMat = Quat(m_cam.u(),-delta.x/80) * Quat(m_cam.r(),-delta.y/80) * m_rotMat;
+}
 
 int main()
 {
+	GuiWindow wwin(vec2(640,480),"Rotx");
+	wwin.setClearColor(vec4::Black);
+	wwin.getMainLayout().addChildElement(new Roti(wwin));
+	return wwin.runGuiLoop();
+	
 	printUsage();
 	
 	GuiWindow win(vec2(640,480),"Rotx");
@@ -138,9 +192,9 @@ int main()
 	Clock loopClk;
 	Clock rotClk;
 	
-	ShaderManager *shader = ShaderManager::getDefaultShader();
+	ShaderManager &shader = win.getShader();
 	
-	Camera &cam = shader->getCamera();
+	Camera &cam = shader.getCamera();
 	cam.set3D(win.getSize(),vec3(3,3,3),vec3());
 	
 	vec2 glowSize = win.getSize() * .5;
@@ -182,6 +236,7 @@ int main()
 		Event ev;
 		while (win.popEvent(ev))
 		{
+			win.handleEvent(ev);
 			if (ev.type == Event::Closed) running = false;
 			
 			if (ev.type == Event::KeyPressed)
@@ -199,12 +254,6 @@ int main()
 					else
 						glowAm.set(glowAm.get(),0,seconds(.2));
 				}
-			}
-			
-			if (ev.type == Event::Resized)
-			{
-				cam.setCanvasSize(win.getSize());
-				FrameBuffer::setViewport(rect2s(vec2(),win.getSize()));
 			}
 			
 			if (ev.type == Event::ButtonPressed)
@@ -246,11 +295,11 @@ int main()
 		
 		if (renderBlur)
 		{
-			shader->getModelStack().top(rotM);
+			shader.getModelStack().top(rotM);
 			
 			glowFBO.bind();
 			glowFBO.clear(true,true);
-			shader->draw(ddGw);
+			shader.draw(ddGw);
 			
 			blurConv.applyTo(glowTexture,blurAm);
 			
@@ -258,41 +307,41 @@ int main()
 			win.bindDefaultFrameBuffer();
 			glEnable(GL_POLYGON_OFFSET_FILL);
 			glPolygonOffset(1,1);
-			shader->draw(dd);
+			shader.draw(dd);
 			glDisable(GL_POLYGON_OFFSET_FILL);
 			
 			glDepthMask(GL_FALSE);
 			cam.getViewStack().push(mat4());
 			cam.getProjStack().push(mat4());
-			shader->getModelStack().push(mat4());
-			shader->setBlendMode(fg::Additive);
+			shader.getModelStack().push(mat4());
+			shader.setBlendMode(fg::Additive);
 			glowTexture.setSmooth(true);
-			shader->useTexture(glowTexture);
+			shader.useTexture(glowTexture);
 			
-			shader->draw(glowApplyDD);
+			shader.draw(glowApplyDD);
 			
-			shader->useTexture(nullptr);
-			shader->setBlendMode(fg::Alpha);
-			shader->getModelStack().pop();
+			shader.useTexture(nullptr);
+			shader.setBlendMode(fg::Alpha);
+			shader.getModelStack().pop();
 			cam.getProjStack().pop();
 			cam.getViewStack().pop();
 			glDepthMask(GL_TRUE);
 			
 			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-			shader->draw(ddWf);
+			shader.draw(ddWf);
 			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		}
 		else
 		{
-			shader->getModelStack().top(rotM);
+			shader.getModelStack().top(rotM);
 			
 			glEnable(GL_POLYGON_OFFSET_FILL);
 			glPolygonOffset(1,1);
-			shader->draw(dd);
+			shader.draw(dd);
 			glDisable(GL_POLYGON_OFFSET_FILL);
 			
 			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-			shader->draw(ddWf);
+			shader.draw(ddWf);
 			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		}
 
@@ -300,7 +349,4 @@ int main()
 		
 		win.applyFpsLimit();
 	}
-	
-	
-	delete shader;
 }
