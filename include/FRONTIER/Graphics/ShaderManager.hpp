@@ -321,13 +321,12 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a ShaderManager capable of drawing simple gui elements
 		/// 
-		/// Iff shaders are available, a suitable shader is returned otherwise a 
-		/// FixedShaderManager is returned
+		/// @param transf The source transformation to apply
 		/// 
-		/// @return The ShaderManager
+		/// @return The ShaderManager or nullptr if shaders are not supported
 		/// 
 		/////////////////////////////////////////////////////////////
-		static ShaderManager *getDefaultShader();
+		static ShaderManager *getDefaultShader(fm::Delegate<void,ShaderSource&> transf = nullptr);
     };
 }
 

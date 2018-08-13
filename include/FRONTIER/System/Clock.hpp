@@ -147,6 +147,16 @@ namespace fm
 		double restart();
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Toggle the running of the clock
+		/// 
+		/// Start the clock if pauses, pause otherwise
+		/// 
+		/// @return True iff the clock is running after the call
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool togglePause();
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Set the elapsed time
 		/// 
 		/// @param elapsedSeconds The elapsed time in seconds to use

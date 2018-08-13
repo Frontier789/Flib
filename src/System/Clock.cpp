@@ -61,7 +61,7 @@ namespace fm
     ////////////////////////////////////////////////////////////
     double Clock::getSeconds() const
     {
-		if (isPaused())
+	  	if (isPaused())
     		return m_pauseTime - m_startTime;
 
     	return getCurrentTime() - m_startTime;
@@ -78,46 +78,55 @@ namespace fm
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::pause()
     {
-		if (!isPaused())
-			m_pauseTime = getCurrentTime();
+      if (!isPaused())
+        m_pauseTime = getCurrentTime();
 
-		return *this;
+      return *this;
     }
 
 
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::unPause()
     {
-		if (isPaused())
-			m_startTime = getCurrentTime() - getSeconds(),
-			m_pauseTime = -1;
+      if (isPaused())
+        m_startTime = getCurrentTime() - getSeconds(),
+        m_pauseTime = -1;
 
-		return *this;
+      return *this;
     }
 
 
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::resume()
     {
-		return unPause();
+		  return unPause();
     }
 
-	/////////////////////////////////////////////////////////////
-	double Clock::restart()
-	{
-		double ret = getSeconds();
-		setTime(0);
+    /////////////////////////////////////////////////////////////
+    double Clock::restart()
+    {
+      double ret = getSeconds();
+      setTime(0);
 
-		return ret;
-	}
+      return ret;
+    }
+
+		/////////////////////////////////////////////////////////////
+		bool Clock::togglePause()
+    {
+      bool p = !isPaused();
+      if (p)
+        pause();
+      else
+        resume();
+      
+      return p;
+    }
 
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::setTime(double elapsedSeconds)
     {
-		if (isPaused())
-			m_startTime = m_pauseTime - elapsedSeconds;
-		else
-			m_startTime = getCurrentTime() - elapsedSeconds;
+      m_startTime = (isPaused() ? m_pauseTime : getCurrentTime()) - elapsedSeconds;
 
     	return *this;
     }
@@ -125,22 +134,20 @@ namespace fm
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::setTime(fm::Time time)
     {
-		return setTime(time.asSecs());
+		  return setTime(time.asSecs());
     }
 
-	/////////////////////////////////////////////////////////////
-	fm::Time Clock::getTime() const
-	{
-		return fm::seconds(getSeconds());
-	}
-
+    /////////////////////////////////////////////////////////////
+    fm::Time Clock::getTime() const
+    {
+      return fm::seconds(getSeconds());
+    }
 
     ////////////////////////////////////////////////////////////
     bool Clock::isPaused() const
     {
-		return m_pauseTime != -1;
+		  return m_pauseTime != -1;
     }
-
 
     ////////////////////////////////////////////////////////////
     const Clock Clock::now = Clock();

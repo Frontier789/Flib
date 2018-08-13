@@ -492,7 +492,7 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	ShaderManager *ShaderManager::getDefaultShader()
+	ShaderManager *ShaderManager::getDefaultShader(fm::Delegate<void,ShaderSource&> transf)
 	{
 		if (Shader::isAvailable())
 		{
@@ -541,6 +541,9 @@ namespace fg
 										   )",
 										fg::FragmentShader};
 			
+			transf(vertSource);
+			transf(fragSource);
+
 			shader->loadFromMemory(vertSource,fragSource);
 			shader->regTexture("u_tex","u_useTex");
 			shader->useTexture(nullptr);
