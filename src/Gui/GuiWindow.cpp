@@ -87,7 +87,7 @@ namespace fgui
 	{
 		if (ev.type == fw::Event::Resized)
 		{
-			getShader().getCamera().set2D(getSize());
+			getShader().getCamera().setCanvasSize(getSize());
 			fg::FrameBuffer::setViewport(fm::rect2s(fm::vec2s(),getSize()));
 		}
 		
