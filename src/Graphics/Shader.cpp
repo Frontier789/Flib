@@ -742,6 +742,7 @@ namespace fg
 	fm::Result Shader::setStorageBuf(fm::Size index,fm::Ref<const fg::Buffer> buf,fm::Size offset,fm::Size size)
 	{
 		if (buf && !size) size = buf->getItemCount();
+		if (!size) return fm::Result();
 		
 		fm::Size bytesPerItem = buf ? buf->getItemSize() : 0;
 		

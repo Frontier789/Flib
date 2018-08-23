@@ -335,6 +335,8 @@ namespace fm
 		m_viewDir = newv;
 		m_up      = newu;
 		
+		updateView();
+		
 		return *this;
 	}
 
@@ -355,6 +357,8 @@ namespace fm
 		rotateY(m_right);
 		rotateY(m_up);
 		
+		updateView();
+		
 		return *this;
 	}
 
@@ -369,6 +373,8 @@ namespace fm
 		
 		m_up      = newu;
 		m_right   = newr;
+		
+		updateView();
 		
 		return *this;
 	}
