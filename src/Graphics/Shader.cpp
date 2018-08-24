@@ -738,6 +738,59 @@ namespace fg
 		return res;
 	}
 	
+	////////////////////////////////////////////////////////////
+	fm::Result Shader::setUniform(const std::string &name,const Texture3D &tex)
+	{
+		return setUniform(name,&tex);
+	}
+
+	////////////////////////////////////////////////////////////
+	fm::Result Shader::setUniform(const std::string &name,const Texture3D *tex)
+	{
+		fm::Result res;
+		
+		if (isLoaded())
+		{
+			GLBindKeeper keeper(glUseProgram,GL_CURRENT_PROGRAM,getGlId());
+
+			// check if the uniform is in the dictionary
+			auto it = m_textures.find(name);
+			if (it != m_textures.end())
+			{
+				// activate slot
+				res += glCheck(glActiveTexture(GL_TEXTURE0 + it->second.slot));
+				res += glCheck(glBindTexture(tex ? tex->getTexTarget() : GL_TEXTURE_3D,tex ? tex->getGlId() : 0));
+				it->second.act_id = tex ? tex->getGlId() : 0;
+			}
+			else
+			{
+				// get uniform location
+				int location = glGetUniformLocation(getGlId(),name.c_str());
+
+				if (location != -1)
+				{
+					fm::Size texCount = m_textures.size();
+
+					// add to dictionary
+					m_textures.insert(std::make_pair(name, TexUniformData(location,texCount,tex ? tex->getGlId() : 0)));
+
+					// assign id to texture slot
+					res += glCheck(glUniform1i(location, texCount));
+
+					// activate slot
+					res += glCheck(glActiveTexture(GL_TEXTURE0 + texCount));
+					res += glCheck(glBindTexture(tex ? tex->getTexTarget() : GL_TEXTURE_3D,tex ? tex->getGlId() : 0));
+				}
+				else
+					res += fm::Result("GLSLError",fm::Result::OPFailed,"UniformNotFound","setUniform",__FILE__,__LINE__,name);
+			}
+			
+			res += glCheck(glActiveTexture(GL_TEXTURE0));
+		}
+		
+		return res;
+	}
+	
 	/////////////////////////////////////////////////////////////
 	fm::Result Shader::setStorageBuf(fm::Size index,fm::Ref<const fg::Buffer> buf,fm::Size offset,fm::Size size)
 	{

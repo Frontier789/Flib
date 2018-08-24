@@ -48,6 +48,7 @@ namespace fg
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/Graphics/DrawCall.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
+#include <FRONTIER/Graphics/Texture3D.hpp>
 #include <FRONTIER/Graphics/TimeQuery.hpp>
 #include <FRONTIER/Graphics/Attribute.hpp>
 #include <FRONTIER/Graphics/Primitive.hpp>

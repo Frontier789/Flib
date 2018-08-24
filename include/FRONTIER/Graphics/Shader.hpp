@@ -20,6 +20,7 @@
 #include <FRONTIER/System/util/dont_include_inl_begin>
 
 #include <FRONTIER/Graphics/VertexArray.hpp>
+#include <FRONTIER/Graphics/Texture3D.hpp>
 #include <FRONTIER/System/NonCopyable.hpp>
 #include <FRONTIER/Graphics/GlObject.hpp>
 #include <FRONTIER/System/Delegate.hpp>
@@ -644,6 +645,34 @@ namespace fg
 		///
 		/////////////////////////////////////////////////////////////
 		fm::Result setUniform(const std::string &name,const CubeTexture *tex);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of a sampler3D uniform
+		///
+		/// If the shader program is invalid no error will be returnes
+		/// and the shader program will not be modified
+		///
+		/// @param name The name of the uniform
+		/// @param tex The value of the uniform
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setUniform(const std::string &name,const Texture3D &tex);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the value of a sampler3D uniform
+		///
+		/// If the shader program is invalid no error will be returnes
+		/// and the shader program will not be modified
+		///
+		/// @param name The name of the uniform
+		/// @param tex The value of the uniform
+		///
+		/// @return The error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		fm::Result setUniform(const std::string &name,const Texture3D *tex);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an array of uniforms

@@ -149,7 +149,7 @@ namespace fg
 		create(size,color);
 	}
 
-	/// destructor /////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
 	Texture::~Texture()
 	{
 		if (getGlId() && glIsTexture(getGlId()) == GL_TRUE)
@@ -159,7 +159,7 @@ namespace fg
 		}
 	}
 
-	/// functions /////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
 	fm::Result Texture::create(fm::vec2s size)
 	{
 		fm::Result res;
@@ -181,14 +181,8 @@ namespace fg
 		bind();
 
 		// set TEXTURE_WRAP
-		glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-		glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-		if (glGetError() != GL_NO_ERROR)
-		{
-			m_isRepeated = !m_isRepeated;
-			res += glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
-			res += glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
-		}
+		res += glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
+		res += glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
 
 		// set TEXTURE_FILTER
 		res += glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_MAG_FILTER,m_isSmooth ? GL_LINEAR : GL_NEAREST));
@@ -218,11 +212,9 @@ namespace fg
 	{
 		fm::Result res = create(img.getSize());
 
-		// resize texture to needed size
 		if (!res) return res;
 		else
 		{
-			// upload data
 			TextureSaver save(getTexBinding(),getTexRebinding());
 			bind();
 
@@ -258,13 +250,8 @@ namespace fg
 
 				bind();
 
-				glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-				glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-				if (glGetError() != GL_NO_ERROR)
-				{
-					glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-					glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-				}
+				glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_S,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
+				glCheck(glTexParameteri(getTexTarget(),GL_TEXTURE_WRAP_T,m_isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE));
 			}
 		}
 		return *this;
