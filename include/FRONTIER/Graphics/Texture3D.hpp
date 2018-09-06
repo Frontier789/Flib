@@ -20,6 +20,7 @@
 #include <FRONTIER/System/util/dont_include_inl_begin>
 
 #include <FRONTIER/Graphics/GlObject.hpp>
+#include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 

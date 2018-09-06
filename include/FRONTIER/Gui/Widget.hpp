@@ -22,6 +22,7 @@ namespace fgui
         fm::Delegate<void,fw::Keyboard::Key> onkeypress; ///< Callback used when a key is started being pressed
         fm::Delegate<void,fw::Keyboard::Key> onkeyrelease; ///< Callback used when a key is no longer pressed
         fm::Delegate<void,fm::Time> onupdate; ///< Callback used once every frame
+        fm::Delegate<void,fm::vec2i> onresize; ///< Callback used when the owner context is resized;
 
         /////////////////////////////////////////////////////////////
         /// @brief Default constructor
