@@ -46,15 +46,19 @@ void Game::onUpdate(const fm::Time &)
 
 bool Game::checkwin() const
 {
-	for (vec4i d : {vec4i(-4,0,1,0),vec4i(0,-4,0,1),vec4i(-4,-4,1,1),vec4i(-4,-4,-1,1)}) {
-		for (int x=0;x<m_N + d.x;++x)
-		for (int y=0;y<m_N + d.y;++y) {
-			int a = m_map[x][y];
-			if (a) {
+	for (int x=0;x<m_N;++x)
+	for (int y=0;y<m_N;++y) {
+		int a = m_map[x][y];
+		if (a) {
+			for (vec2i dir : {vec2i(1,0),vec2i(1,1),vec2i(0,1),vec2i(1,-1)}) {
 				bool win = true;
 				for (int i=1;i<5;++i) {
-					int j = (d.z == -1 ? 5-i : i*d.z);
-					win = win && m_map[x+j][y+i*d.w]==a;
+					vec2i p = vec2i(x,y) + dir * i;
+					if (p.x < 0 || p.y < 0 || p.x > m_N-1 || p.y > m_N-1) {
+						win = false;
+					} else {
+						win = win && a == m_map[p.x][p.y];
+					}
 				}
 				if (win) return true;
 			}

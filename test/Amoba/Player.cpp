@@ -1,9 +1,5 @@
 #include "Player.hpp"
 
-	bool m_ready;
-	vec2i m_move;
-	vector<vector<int>> m_map; 
-
 void Player::setmove(vec2i p)
 {
 	if (canmove(p) && !m_ready) {
