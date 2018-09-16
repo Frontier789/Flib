@@ -57,7 +57,7 @@ bool Game::checkwin() const
 			for (vec2i d : {vec2i(1,0), vec2i(0,1), vec2i(1,-1), vec2i(1,1)}) {
 				bool win = true;
 				for (int i=1;i<m_winlen;++i) {
-					vec2i p = vec2i(x,y) + d;
+					vec2i p = vec2i(x,y) + d*i;
 					if (p.x >= 0 && p.y >= 0 && p.x < m_size && p.y < m_size) {
 						int j = m_map[p.x][p.y];
 						win = win && j==a;

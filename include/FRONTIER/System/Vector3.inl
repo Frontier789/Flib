@@ -126,13 +126,6 @@ namespace fm
 	{
 		return x*x+y*y+z*z;
 	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class T>
-	inline T vector3<T>::volume() const
-	{
-		return x*y*z;
-	}
 
 	////////////////////////////////////////////////////////////
 	template<class T>
@@ -156,6 +149,13 @@ namespace fm
 	{
 		T lth=LENGTH();
 		return (lth==T(1) || lth==T(0)) ? *this : (*this)/std::sqrt(lth);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline T vector3<T>::volume() const
+	{
+		return x*y*z;
 	}
 
 	////////////////////////////////////////////////////////////

@@ -65,6 +65,12 @@ namespace fm
 			/// use first dimension as red component of a color
 			///
 			T r;
+			///
+			/// @brief width dimension
+			///
+			/// use first dimension as width of a cuboid
+			///
+			T w;
 
 		};
 
@@ -89,6 +95,12 @@ namespace fm
 			/// use second dimension as green component of a color
 			///
 			T g;
+			///
+			/// @brief height diemnsion
+			///
+			/// use second dimension as height of a cuboid
+			///
+			T h;
 
 		};
 
@@ -113,6 +125,12 @@ namespace fm
 			/// use third dimension as blue component of a color
 			///
 			T b;
+			///
+			/// @brief depth dimension
+			///
+			/// use third dimension as depth of a cuboid
+			///
+			T d;
 
 		};
 
@@ -227,16 +245,6 @@ namespace fm
 		T LENGTH() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the area of the 3D vector
-		///
-		/// v.x*v.y*v.z
-		///
-		/// @return Area of the vector
-		///
-		/////////////////////////////////////////////////////////////
-		T volume() const;
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Get the normed version of the 3D vector
 		///
 		/// v/|v|
@@ -265,6 +273,16 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		vector3<T> sgn() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the volume of the cuboid having the 3D vector as main diagonal
+		///
+		/// v.x * v.y * v.z
+		///
+		/// @return The volume of the cuboid
+		///
+		/////////////////////////////////////////////////////////////
+		T volume() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Compute cross product

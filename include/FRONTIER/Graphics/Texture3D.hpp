@@ -14,13 +14,15 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_TEXTURE_HPP_INCLUDED
-#define FRONTIER_TEXTURE_HPP_INCLUDED
+#ifndef FRONTIER_TEXTURE3D_HPP_INCLUDED
+#define FRONTIER_TEXTURE3D_HPP_INCLUDED
 
 #include <FRONTIER/System/util/dont_include_inl_begin>
 
 #include <FRONTIER/Graphics/GlObject.hpp>
+#include <FRONTIER/Graphics/Color.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/Vector3.hpp>
 
 #include <FRONTIER/System/util/dont_include_inl_end>
 
@@ -28,35 +30,22 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/Result.hpp>
-#include <FRONTIER/System/Rect.hpp>
 #include <FRONTIER/System/Ref.hpp>
 
-#define FRONTIER_TEXTURE
-
-namespace fm
-{
-	template<fm::Size,fm::Size,class> class matrix;
-	template<class> class vector4;
-	
-	typedef matrix<4,4,float> mat4;
-	typedef vector4<float> vec4;
-}
+#define FRONTIER_TEXTURE3D
 
 namespace fg
 {
-	class Image;
-	class Color;
-	
 	/////////////////////////////////////////////////////////////
-	/// @brief Class used to handle OpenGL 2D textures
+	/// @brief Class used to handle OpenGL 3D textures
 	///
 	/// @ingroup Graphics
 	///
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API Texture : public GlObject
+	class FRONTIER_API Texture3D : public GlObject
 	{
 	protected:
-		fm::vec2s m_size;	  ///< The requested size of the texture
+		fm::vec3s m_size;	  ///< The requested size of the texture
 		bool m_isRepeated;	  ///< True if the texture is repeated after its bounds
 		bool m_isSmooth;	  ///< If true then linear interpolation is used on magnifying
 
@@ -65,13 +54,13 @@ namespace fg
 		virtual fm::Uint32 getTexRebinding() const;   ///< The rebinding point of the texture
 		virtual fm::Uint32 getAttachement() const;    ///< Attachement point of the texture
 		virtual fm::Uint32 getTexBinding() const;     ///< Binding point of the texture
-		virtual fm::Uint32 getTexTarget() const;      ///< Texture target associated with the object
+		virtual fm::Uint32 getTexTarget() const;      ///< Texture3D target associated with the object
 		virtual fm::Uint32 getFormat() const; ///< Pixelformat
 		virtual fm::Uint32 getType() const;   ///< Type of the texture
 
 	public:
-		typedef Texture &reference;
-		typedef const Texture &const_reference;
+		typedef Texture3D &reference;
+		typedef const Texture3D &const_reference;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
@@ -79,7 +68,7 @@ namespace fg
 		/// Leaves the texture uninitialized thus invalid
 		///
 		/////////////////////////////////////////////////////////////
-		Texture();
+		Texture3D();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy constructor
@@ -93,7 +82,7 @@ namespace fg
 		/// @param copy The texture to be copied
 		///
 		/////////////////////////////////////////////////////////////
-		Texture(const Texture &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
+		Texture3D(const Texture3D &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move constructor
@@ -103,50 +92,43 @@ namespace fg
 		/// @param move The texture to be moved
 		///
 		/////////////////////////////////////////////////////////////
-		Texture(Texture &&move);
+		Texture3D(Texture3D &&move);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Create a OpenGL texture from image
-		///
-		/// This function sends the client-side data (the image)
-		/// to OpenGL
-		///
-		/// If @a img has an invalid size (w or h is 0) or its width or height
-		/// is bigger than getMaximumSize() then an error is returned
-		/// and the texture is left invalid
-		///
-		/// @param img The image to send to OpenGL
-		///
-		/////////////////////////////////////////////////////////////
-		Texture(const Image &img);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Create a OpenGL texture from an image in a file
-		///
-		/// This function sends the client-side data (the image)
-		/// to OpenGL
-		///
-		/// @param filename The file's name
-		///
-		/////////////////////////////////////////////////////////////
-		explicit Texture(const std::string &filename);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Create a OpenGL texture with given size and uninitialized data
+		/// @brief Create a 3d OpenGL texture with given size and uninitialized data
 		/// 
 		/// @param size The requested size
 		///
 		/////////////////////////////////////////////////////////////
-		explicit Texture(fm::vec2s size);
+		explicit Texture3D(fm::vec3s size);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Create a OpenGL texture with given size and uninitialized data
+		/// @brief Create a 3d OpenGL texture with given size and color
 		///
 		/// @param size The requested size
 		/// @param color The color to fill with
 		///
 		/////////////////////////////////////////////////////////////
-		explicit Texture(fm::vec2s size,const fm::vec4 &color);
+		Texture3D(fm::vec3s size,fg::Color color);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Create a 3d OpenGL texture with given size and data
+		///
+		/// @param size The requested size
+		/// @param color The color to load
+		///
+		/////////////////////////////////////////////////////////////
+		Texture3D(fm::vec3s size,const fg::Color *color);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Create a 3d OpenGL texture from given 3d array
+		///
+		/// @param size The requested size
+		/// @param color The color to load
+		///
+		/////////////////////////////////////////////////////////////
+		template<fm::Size W,fm::Size H,fm::Size D>
+		explicit Texture3D(const fg::Color (&color)[W][H][D]);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -154,7 +136,7 @@ namespace fg
 		/// Automatically deletes the OpenGL id
 		///
 		/////////////////////////////////////////////////////////////
-		virtual ~Texture();
+		virtual ~Texture3D();
 
 		/////////////////////////////////////////////////////////////
 		/// @brief (re)create the texture with given size
@@ -163,7 +145,7 @@ namespace fg
 		/// an error is returned
 		///
 		/// The content of the texture is undefined after successfully calling this
-		/// function and should be filled by fg::Texture::update or any other method
+		/// function and should be filled by fg::Texture3D::update or any other method
 		/// before usage
 		///
 		/// @param size The requested size
@@ -171,7 +153,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		virtual fm::Result create(fm::vec2s size);
+		virtual fm::Result create(fm::vec3s size);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief (re)create the texture with given size
@@ -185,44 +167,20 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result create(fm::vec2s size,const fm::vec4 &color);
+		fm::Result create(fm::vec3s size,fg::Color color);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Create a OpenGL texture from image
+		/// @brief Create a 3d OpenGL texture from image
 		///
 		/// This function sends the client-side data (the image)
 		/// to OpenGL
-		///
-		/// If @a img has an invalid size (w or h is 0) or its width or height
-		/// is bigger than getMaximumSize() then an error is returned
-		/// and the texture is not modified
 		///
 		/// @param img The image to send to OpenGL
 		///
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		virtual fm::Result loadFromImage(const Image &img);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Load a OpenGL texture from a file
-		///
-		/// This function sends the client-side data (the loaded image)
-		/// to OpenGL
-		///
-		/// This function loads the file with fg::Image::loadFromFile and
-		/// sends it to OpenGL using fg::Texture::loadFromImage
-		///
-		/// If the file is not accessible or has an unsopported extension
-		/// or has invalid data then an error is returned and the texture
-		/// is not modified
-		///
-		/// @param filename The name of the image file
-		///
-		/// @return The error-state of the function
-		///
-		/////////////////////////////////////////////////////////////
-		fm::Result loadFromFile(const std::string &filename);
+		virtual fm::Result loadFromMemory(fm::vec3s size,const fg::Color *data);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the repeate flag
@@ -278,55 +236,44 @@ namespace fg
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference update(const Color *pixels,fm::vec2s pos,fm::vec2s size);
-
-		/////////////////////////////////////////////////////////////
-		/// @brief Change the content of the texture
-		///
-		/// @a image will be blit at @a pos
-		///
-		/// @param sourceImage The image to blit
-		/// @param pos The position where the image will be blit
-		///
-		/// @return Reference to itself
-		///
-		/////////////////////////////////////////////////////////////
-		reference update(const Image &sourceImage,fm::vec2s pos = fm::vec2s());
+		reference update(const Color *pixels,fm::vec3s pos,fm::vec3s size);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy the content of the texture to client-memory
 		///
 		/// If available an FBO will be used to retrieve the data
 		/// if not glGetTexImage will be used (if available)
-		/// if neither of the above then a white fg::Image (same size as texture) is returned
+		/// if neither of the above then a white image (same size as texture) is returned
 		/// 
 		/// @param error The error returned
-		/// @param part The part of the texture to copy (zero area means the whole texture)
+		/// @param pos The position of the subcuboid to copy
+		/// @param size The size of the subcuboid to copy (zero means entire texture)
 		/// 
-		/// @return the copied image
+		/// @return The copied image allocated with new
 		///
 		/////////////////////////////////////////////////////////////
-		Image copyToImage(fm::Result *error = nullptr,fm::rect2s part = fm::rect2s()) const;
+		Color *copyToMemory(fm::Result *error = nullptr,fm::vec3s pos = fm::vec3s(),fm::vec3s size = fm::vec3s()) const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Copy the content of the texture to client-memory
+		/// @brief Copy the content of the texture to preallocated client-memory
 		///
 		/// If available an FBO will be used to retrieve the data
 		/// if not glGetTexImage will be used (if available)
 		/// if neither of the above then a white fg::Image (same size as texture) is returned
 		/// 
-		/// @param target The image to copy to (uses allocated data if available)
-		/// @param part The part of the texture to copy (zero area means the whole texture)
+		/// @param data The preallocated memory region to copy to
+		/// @param pos The position of the subcuboid to copy
+		/// @param size The size of the subcuboid to copy (zero means entire texture)
 		/// 
 		/// @return The result
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result copyToImage(Image &target,fm::rect2s part = fm::rect2s()) const;
+		fm::Result copyToMemory(Color *data,fm::vec3s pos = fm::vec3s(),fm::vec3s size = fm::vec3s()) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Bind the texture for usage
 		///
-		/// This function uses the GL_TXTURE_2D target
+		/// This function uses the GL_TXTURE_3D target
 		///
 		/// @return The error-state of the function
 		///
@@ -344,7 +291,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		static fm::Result bind(fm::Ref<const Texture> texture);
+		static fm::Result bind(fm::Ref<const Texture3D> texture);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the pixel-to-unit transformation for the texture
@@ -370,7 +317,7 @@ namespace fg
 		/// @return The size of the texture
 		///
 		/////////////////////////////////////////////////////////////
-		fm::vec2 getSize() const;
+		fm::vec3 getSize() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Find out if the texture is valid
@@ -388,7 +335,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference operator=(const Texture &tex) FRONTIER_HEAVYCOPY_QUALIFIER;
+		reference operator=(const Texture3D &tex) FRONTIER_HEAVYCOPY_QUALIFIER;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Assignment operator
@@ -398,7 +345,7 @@ namespace fg
 		/// @return reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference operator=(Texture &&tex);
+		reference operator=(Texture3D &&tex);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Swap the content of the two objects
@@ -410,7 +357,11 @@ namespace fg
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference swap(Texture &tex);
+		reference swap(Texture3D &tex);
 	};
 }
+#endif
+
+#ifndef FROTNIER_DONT_INCLUDE_INL
+	#include <FRONTIER/Graphics/Texture3D.inl>
 #endif

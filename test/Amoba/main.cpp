@@ -14,14 +14,14 @@ int main()
 	
 	auto board = new BoardDisp(win);
 	auto p1 = new HumanPlayer(*board,1,win);
-	auto p2 = new NNPlayer(board->getProps().N,2,"ply.nn");
+	auto p2 = new HumanPlayer(*board,2,win);
+	// auto p2 = new NNPlayer(board->getProps().N,2,"ply.nn");
 	auto game = new Game(p1,p2,board,win);
 
 	win.getMainLayout().addChildElement(board);
 	win.getMainLayout().addChildElement(p1);
+	win.getMainLayout().addChildElement(p2);
 	win.getMainLayout().addChildElement(game);
 	
 	win.runGuiLoop();
-
-	delete p2;
 }
