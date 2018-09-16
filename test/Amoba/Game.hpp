@@ -3,28 +3,30 @@
 
 #include <Frontier.hpp>
 #include <iostream>
+#include <vector>
 #include "BoardDisp.hpp"
 #include "Player.hpp"
 
 using namespace std;
 
-class Game : public GuiElement
+class Game
 {
-	Player *m_p1;
-	Player *m_p2;
+	vector<Player*> m_players;
 	BoardDisp *m_board;
 	bool m_playing;
+	int m_winlen;
+	int m_size;
 	int m_turn;
-	int m_N;
 	vector<vector<int>> m_map;
+	GuiWindow m_win;
 
 	bool checkwin() const;
+	void handlePlayers();
 public:
-	Game(Player *p1,Player *p2,BoardDisp *board,GuiContext &cont);
+	Game(vector<Player*> players,int size,int winlen = 5);
 
 	~Game();
-
-	void onUpdate(const fm::Time &) override;
+	
 };
 
 #endif // GAME_INCLUDED

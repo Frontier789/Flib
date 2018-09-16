@@ -1,31 +1,29 @@
 #include "Game.hpp"
 
-Game::Game(Player *p1,Player *p2,BoardDisp *board,GuiContext &cont) : 
-	GuiElement(cont),
-	m_p1(p1),
-	m_p2(p2),
-	m_board(board),
+Game::Game(vector<Player*> players,int size,int winlen) : 
+	m_players(players),
+	m_board(new BoardDisp(size)),
+	m_winlen(winlen),
 	m_playing(true),
 	m_turn(0),
-	m_N(board->getProps().N),
-	m_map(vector<vector<int>>(m_N,vector<int>(m_N,0)))
+	m_size(size),
+	m_map(vector<vector<int>>(m_size,vector<int>(m_size,0)))
 {
 
 }
 
 Game::~Game()
 {
-	
+	delete m_board;
 }
 
-void Game::onUpdate(const fm::Time &)
+void Game::handlePlayers()
 {
 	if (!m_playing) return;
 
-	bool ply1 = m_turn%2 == 0;
-	Player *ply = (ply1 ? m_p1 : m_p2);
-	Player *enemy = (ply1 ? m_p2 : m_p1);
-
+	int plyId = m_turn%m_size;
+	auto ply = m_players[plyId];
+	
 	ply->update();
 
 	if (ply->ready()) {
@@ -38,27 +36,37 @@ void Game::onUpdate(const fm::Time &)
 			cout << "player id " << ply->getid() << " won" << endl;
 		}
 
-		enemy->enemymove(m,ply->getid());
-		m_board->addStep(m);
+		for (int i=0;i<m_size;++i) {
+			if (i != plyId) {
+				auto enemy = m_players[i];
+				enemy->enemymove(m,ply->getid());
+			}
+		}
+		
+		m_board->addStep(m, ply->getid());
 		++m_turn;
 	}
 }
 
 bool Game::checkwin() const
 {
-	for (vec4i d : {vec4i(-4,0,1,0),vec4i(0,-4,0,1),vec4i(-4,-4,1,1),vec4i(-4,-4,-1,1)}) {
-		for (int x=0;x<m_N + d.x;++x)
-		for (int y=0;y<m_N + d.y;++y) {
-			int a = m_map[x][y];
-			if (a) {
+	for (int x=0;x<m_size;++x)
+	for (int y=0;y<m_size;++y) {
+		int a = m_map[x][y];
+		if (a) {
+			for (vec2i d : {vec2i(1,0), vec2i(0,1), vec2i(1,-1), vec2i(1,1)}) {
 				bool win = true;
-				for (int i=1;i<5;++i) {
-					int j = (d.z == -1 ? 5-i : i*d.z);
-					win = win && m_map[x+j][y+i*d.w]==a;
+				for (int i=1;i<m_winlen;++i) {
+					vec2i p = vec2i(x,y) + d;
+					if (p.x >= 0 && p.y >= 0 && p.x < m_size && p.y < m_size) {
+						int j = m_map[p.x][p.y];
+						win = win && j==a;
+					} else win = false;
 				}
 				if (win) return true;
 			}
 		}
 	}
+	
 	return false;
 }

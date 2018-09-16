@@ -22,11 +22,11 @@ private:
 	Props props;
 	void makeProps();
 public:
-	BoardDisp(GuiContext &cont);
+	BoardDisp(int size);
 	
 	void prepareDDs();
 	
-	void addStep(vec2i p);
+	void addStep(vec2i p,int ply);
 	void remStep(bool all = false);
 	
 	void onDraw(fg::ShaderManager &shader) override;

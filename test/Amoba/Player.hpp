@@ -7,12 +7,13 @@
 
 using namespace std;
 
-class Player
+class Player : public Widget
 {
 	int m_id;
-	int m_N;
+	int m_size;
 	bool m_ready;
 	vec2i m_move;
+	const BoardDisp &m_board;
 	vector<vector<int>> m_map; 
 
 protected:
@@ -33,7 +34,7 @@ public:
 
 class HumanPlayer : public Player, public GuiElement
 {
-	const BoardDisp &m_board;
+	
 public:
 	HumanPlayer(const BoardDisp &board,int id,GuiContext &cont);
 
