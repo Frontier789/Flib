@@ -3,7 +3,7 @@
 
 #include <Frontier.hpp>
 #include <iostream>
-#include "BoardDisp.hpp"
+#include "Game.hpp"
 
 using namespace std;
 
@@ -13,43 +13,25 @@ class Player : public Widget
 	int m_size;
 	bool m_ready;
 	vec2i m_move;
-	const BoardDisp &m_board;
-	vector<vector<int>> m_map; 
+	Game &m_game;
 
 protected:
 	void setmove(vec2i p);
 	bool canmove(vec2i p) const;
-	int mapsize() const;
+	Game &getgame() {return m_game;}
+	const Game &getgame() const {return m_game;}
 
 public:
-	Player(int N,int id);
+	Player(Game &game,int id);
 
-	virtual void update();
 	int getid() const;
 	bool ready() const;
 	vec2i getmove() const;
-	virtual void enemymove(vec2i p,int eid);
-	int getcell(vec2i p) const;
-};
-
-class HumanPlayer : public Player, public GuiElement
-{
+	void beginturn();
+	bool myturn() const {return !m_ready;}
 	
-public:
-	HumanPlayer(const BoardDisp &board,int id,GuiContext &cont);
-
-	bool onEvent(fw::Event &ev) override;
-};
-
-class NNPlayer : public Player
-{
-	NeuralNet<225,2,300,225> m_nn;
-	string m_file;
-public:
-	NNPlayer(int N,int id,string nn);
-	virtual ~NNPlayer();
-
-	void enemymove(vec2i p,int eid) override;
+	virtual void enemymove(vec2i p,int eid);
+	virtual void update();
 };
 
 #endif // PLAYER_INCLUDED

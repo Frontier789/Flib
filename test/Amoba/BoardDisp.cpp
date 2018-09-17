@@ -1,16 +1,21 @@
 #include "BoardDisp.hpp"
 
-BoardDisp::BoardDisp(GuiContext &cont) : 
-	GuiElement(cont) 
+BoardDisp::BoardDisp(GuiContext &cont, int size) : Widget(cont, cont.getSize()),
+	m_size(size)
 {
-	setSize(cont.getSize());
 	makeProps();
 	prepareDDs();
+	
+	onresize = [&](vec2 s){
+		setSize(s);
+		makeProps();
+		prepareDDs();
+	};
 }
 
 void BoardDisp::makeProps()
 {
-	props.N    = 15;
+	props.N    = m_size;
 	props.mid  = getSize()/2;
 	props.siz  = getSize().min();
 	props.base = props.mid - vec2(props.siz)/2;
@@ -82,8 +87,8 @@ void BoardDisp::onDraw(fg::ShaderManager &shader)
 	shader.draw(m_grid);
 	
 	shader.getModelStack().push();
-	for (auto &s : m_game) {
-		DrawData &dd = (s.z ? m_X : m_O);
+	for (auto &s : m_moves) {
+		DrawData &dd = (s.z == 1 ? m_X : m_O);
 		
 		shader.getModelStack().top(MATRIX::translation(props.base + vec2(s)*props.gsz));
 		shader.draw(dd);
@@ -91,23 +96,14 @@ void BoardDisp::onDraw(fg::ShaderManager &shader)
 	shader.getModelStack().pop();
 }
 	
-void BoardDisp::addStep(vec2i p)
+void BoardDisp::addStep(vec2i p,int id)
 {
-	int x = m_game.empty() ? 1 : 1-m_game.back().z;
-	m_game.push_back(vec3i(p,x));
+	m_moves.push_back(vec3i(p,id));
 }
 
 void BoardDisp::remStep(bool all)
 {
-	if (all) m_game.clear();
-	else if (!m_game.empty()) {
-		m_game.pop_back();
-	}
-}
-
-vec2i BoardDisp::cellFromPix(vec2 p) const
-{
-	vec2 t = (p - props.base) / float(props.gsz);
-
-	return vec2i(floor(t.x),floor(t.y));
+	if (all) m_moves.clear();
+	else if (!m_moves.empty())
+		m_moves.pop_back();
 }

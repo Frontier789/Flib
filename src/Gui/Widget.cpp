@@ -1,8 +1,12 @@
 #include <FRONTIER/Gui/Widget.hpp>
+#include <iostream>
+using namespace std;
 
 namespace fgui
 {
-    Widget::Widget(GuiContext &owner,fm::vec2 size) : GuiElement(owner,size) {}
+    Widget::Widget(GuiContext &owner,fm::vec2 size) :
+        GuiElement(owner,size)
+    {}
 
     /////////////////////////////////////////////////////////////
     void Widget::onDraw(fg::ShaderManager &shader)
@@ -14,7 +18,7 @@ namespace fgui
     /////////////////////////////////////////////////////////////
     void Widget::onMouseMove(fm::vec2 p,fm::vec2 prevP)
     {
-        ClickListener::onMouseMove(p,prevP);
+        MouseMoveListener::onMouseMove(p,prevP);
         onmousemove(p,prevP);
     }
 
@@ -44,6 +48,15 @@ namespace fgui
         if (ev.type == fw::Event::KeyReleased)
             onkeyrelease(ev.key.code);
 
+        if (ev.type == fw::Event::ButtonPressed)
+            onbuttonpress(fm::vec2i(ev.mouse), ev.mouse.button);
+
+        if (ev.type == fw::Event::ButtonReleased)
+            onbuttonrelease(fm::vec2i(ev.mouse), ev.mouse.button);
+
+        if (ev.type == fw::Event::Resized)
+            onresize(ev.size);
+        
         return handled;
     }
 }

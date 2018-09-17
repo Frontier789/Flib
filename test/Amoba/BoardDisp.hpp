@@ -5,10 +5,11 @@
 
 using namespace std;
 
-class BoardDisp : public GuiElement
+class BoardDisp : public Widget
 {
 	DrawData m_grid,m_O,m_X;
-	vector<vec3i> m_game;
+	vector<vec3i> m_moves;
+	int m_size;
 public:
 	struct Props {
 		int N;
@@ -22,7 +23,7 @@ private:
 	Props props;
 	void makeProps();
 public:
-	BoardDisp(int size);
+	BoardDisp(GuiContext &cont,int size);
 	
 	void prepareDDs();
 	
@@ -30,8 +31,6 @@ public:
 	void remStep(bool all = false);
 	
 	void onDraw(fg::ShaderManager &shader) override;
-
-	vec2i cellFromPix(vec2 p) const;
 };
 
 #endif // BOARDDISP_INCLUDED

@@ -1,27 +1,22 @@
 #include <Frontier.hpp>
-#include <iostream>
+#include "HumanPlayer.hpp"
 #include "BoardDisp.hpp"
 #include "Player.hpp"
 #include "Game.hpp"
 
 using namespace std;
 
-#include <fstream>
 int main()
 {
-	GuiWindow win(vec2(640,480));
-	win.setClearColor(vec4(.3,1));
+	Game g(3,3);
 	
-	auto board = new BoardDisp(win);
-	auto p1 = new HumanPlayer(*board,1,win);
-	auto p2 = new HumanPlayer(*board,2,win);
-	// auto p2 = new NNPlayer(board->getProps().N,2,"ply.nn");
-	auto game = new Game(p1,p2,board,win);
-
-	win.getMainLayout().addChildElement(board);
-	win.getMainLayout().addChildElement(p1);
-	win.getMainLayout().addChildElement(p2);
-	win.getMainLayout().addChildElement(game);
+	g.addPlayer(new HumanPlayer(g,1));
+	g.addPlayer(new HumanPlayer(g,2));
+	g.run();
 	
-	win.runGuiLoop();
+	if (!g.winner()) cout << "its a tie" << endl;
+	else
+		cout << "plyer id " << g.winner() << " won" << endl;
+	
+	fm::Sleep(2);
 }
