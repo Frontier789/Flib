@@ -689,6 +689,8 @@ namespace fw
 						SendMessage(parent->getHandle(),WM_FACTIVATE_TREE,wParam,lParam);
 
 					m_decorActive = wParam;
+					
+					return DefWindowProc(hwnd, WM_NCACTIVATE, wParam, lParam);
 				}
 
 				// custom message (WM_USER+1)

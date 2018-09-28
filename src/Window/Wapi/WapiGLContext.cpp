@@ -119,7 +119,7 @@ namespace fw
 			while (m_settings.majorVersion >= 3)
 			{
 				// Retrieve the neede function pointer
-				HGLRC (*wglCreateContextAttribsARB)(HDC,HGLRC,const int*)  = (HGLRC (*)(HDC,HGLRC,const int*))wglGetProcAddress("wglCreateContextAttribsARB");
+				HGLRC (*wglCreateContextAttribsARB)(HDC,HGLRC,const int*)  = (HGLRC (*)(HDC,HGLRC,const int*))(intptr_t)wglGetProcAddress("wglCreateContextAttribsARB");
 
 				// the function may not be available
 				if (wglCreateContextAttribsARB)
@@ -148,7 +148,7 @@ namespace fw
 				if (!m_hglrc)
 					return fw::WapiGetLastError("wglCreateContext");
 				
-				const unsigned char *(*glGetString_fun)(unsigned int) = (const unsigned char *(*)(unsigned int))wglGetProcAddress("glGetString");
+				const unsigned char *(*glGetString_fun)(unsigned int) = (const unsigned char *(*)(unsigned int))(intptr_t)wglGetProcAddress("glGetString");
 
 				if (glGetString_fun)
 				{
