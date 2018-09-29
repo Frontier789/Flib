@@ -6,70 +6,7 @@ using namespace std;
 
 #include "Triangle.hpp"
 
-void buildDrawData(int depth,DrawData &dd,DrawData &ddWf,DrawData &ddGw)
-{
-	Mesh m;
-	vector<Triangle> triangles;
-	
-	float invSqrt2 = 1 / sqrt(2);
-	vec3 basePts[] = {vec3(1,0,-invSqrt2),vec3(-1,0,-invSqrt2),vec3(0,1,invSqrt2),vec3(0,-1,invSqrt2)};
-	
-	triangles.push_back(Triangle(basePts[0],basePts[1],basePts[2]));
-	triangles.push_back(Triangle(basePts[1],basePts[3],basePts[2]));
-	triangles.push_back(Triangle(basePts[2],basePts[3],basePts[0]));
-	triangles.push_back(Triangle(basePts[3],basePts[1],basePts[0]));
-	
-	C(depth)
-	{
-		int popCount = 0;
-		for (auto &tri : triangles) popCount += tri.getNewPopCount();
-		
-		vector<Triangle> buf(popCount);
-		
-		Triangle *ptr = &buf[0];
-		for (auto &tri : triangles) tri.populate(ptr);
-		
-		buf.swap(triangles);
-	}
-	
-	m.pts.resize(triangles.size()*3);
-	m.clr.resize(triangles.size()*3);
-	
-	vector<vec4> glowColors(triangles.size()*3);
-	
-	auto clrFromPos = [](vec3 p) -> vec4 {
-		return vec4(p.sgn()/2 + vec3(.5,.5,.5),1);
-	};
-	
-	auto glowFromTri = [&](const Triangle &t,int c) -> vec4 {
-		
-		if (t.depth < 2) return vec4::Black;
-		
-		if (c == 0) return clrFromPos(t.a);
-		if (c == 1) return clrFromPos(t.b);
-		if (c == 2) return clrFromPos(t.c);
-		
-		return vec4::White;
-	};
-	
-	C(triangles.size())
-	{
-		m.pts[i*3 + 0] = triangles[i].a; m.clr[i*3 + 0] = clrFromPos(triangles[i].a), glowColors[i*3 + 0] = glowFromTri(triangles[i],0);
-		m.pts[i*3 + 1] = triangles[i].b; m.clr[i*3 + 1] = clrFromPos(triangles[i].b), glowColors[i*3 + 1] = glowFromTri(triangles[i],1);
-		m.pts[i*3 + 2] = triangles[i].c; m.clr[i*3 + 2] = clrFromPos(triangles[i].c), glowColors[i*3 + 2] = glowFromTri(triangles[i],2);
-	}
-	
-	dd = m;
-	
-	m.clr.swap(glowColors);
-	
-	ddGw = m;
-
-	C(m.clr.size()) m.clr[i] = vec4::Black;
-	
-	ddWf = m;
-	
-}
+void buildDrawData(int depth,DrawData &dd,DrawData &ddWf,DrawData &ddGw);
 
 void printUsage()
 {
@@ -79,7 +16,7 @@ void printUsage()
 		 << "\tG: Toggle glow" << endl;
 }
 
-class Roti : public GuiElement, public MouseMoveListener
+class Roti : public GuiElement, public ClickListener, public ScrollListener
 {
 	ShaderManager &m_shader;
 	Camera &m_cam;
@@ -91,19 +28,71 @@ class Roti : public GuiElement, public MouseMoveListener
 	DrawData m_dd,m_ddWire,m_ddGlow;
 	mat4 m_rotMat;
 	
+	Transition<float> m_glowAm;
+	bool m_doBlur;
+	
+	Clock m_fpsClk;
+	size_t m_frames;
+	Delegate<void,string> m_settitle;
+	
 	void init();
 public:
-	Roti(GuiContext &cont);
+	Roti(GuiContext &cont,Delegate<void,string> settitle);
 	
 	void onDraw(ShaderManager &) override;
+	void onMouseMove(vec2 p,vec2 prev) override;
+	void onScroll(float am) override;
+	void onUpdate(const fm::Time &dt) override;
 	
-	void onMouseMoved(vec2 p,vec2 prev) override;
+	bool onEvent(Event &ev) override;
 };
 
-Roti::Roti(GuiContext &cont) : 
+void Roti::onUpdate(const fm::Time &)
+{
+	++m_frames;
+	if (m_fpsClk.getSeconds() > 1) {
+		m_fpsClk.setTime(m_fpsClk.getTime() - seconds(1));
+		
+		m_settitle("Rotx  " + fm::toString(m_frames) + "fps");
+		
+		m_frames = 0;
+	}
+}
+
+bool Roti::onEvent(Event &ev)
+{
+	if (ev.type == Event::KeyPressed) {
+		if (ev.key.code == Keyboard::Enter)
+			m_glowTex.copyToImage().scale(getSize()).flipVertically().saveToFile("glow.png");
+			
+		if (ev.key.code == Keyboard::G)
+		{
+			if (!m_doBlur)
+			{
+				m_doBlur = true;
+				m_glowAm.set(max<float>(m_glowAm.get(),1),50,seconds(.2));
+			}
+			else
+				m_glowAm.set(m_glowAm.get(),0,seconds(.2));
+		}
+	}
+	
+	return false;
+}
+
+void Roti::onScroll(float am)
+{
+	m_cam.setPosition(m_cam.getPosition() * pow(2,-am));
+}
+
+Roti::Roti(GuiContext &cont,fm::Delegate<void,string> settitle) : 
 	GuiElement(cont,cont.getSize()),
 	m_shader(cont.getShader()),
-	m_cam(m_shader.getCamera())
+	m_cam(m_shader.getCamera()),
+	m_glowAm(50,50),
+	m_doBlur(TextureConvolution::isAvailable()),
+	m_frames(0),
+	m_settitle(settitle)
 {
 	init();
 }
@@ -126,227 +115,83 @@ void Roti::init()
 	
 void Roti::onDraw(ShaderManager &)
 {
+	int blurAm = m_glowAm.get();
+	if (m_doBlur && blurAm == 0)
+		m_doBlur = false;
+	
+	glClear(GL_DEPTH_BUFFER_BIT);
 	m_shader.getModelStack().top(m_rotMat);
 	
-	m_glowFBO.bind();
-	m_glowFBO.clear(true,true);
-	m_shader.draw(m_ddGlow);
-	
-	m_blurConv.applyTo(m_glowTex,50);
-	
-	
-	FrameBuffer::bind(nullptr);
-	FrameBuffer::setViewport(rect2s(vec2(),getSize()));
-	FrameBuffer::applyDepthTest(fg::LEqual);
-	glEnable(GL_POLYGON_OFFSET_FILL);
-	glPolygonOffset(1,1);
-	m_shader.draw(m_dd);
-	glDisable(GL_POLYGON_OFFSET_FILL);
-	
-	glDepthMask(GL_FALSE);
-	m_cam.getViewStack().push(mat4());
-	m_cam.getProjStack().push(mat4());
-	m_shader.getModelStack().push(mat4());
-	m_shader.setBlendMode(fg::Additive);
-	m_glowTex.setSmooth(true);
-	m_shader.useTexture(m_glowTex);
-	
-	m_shader.draw(m_glowApplyDD);
-	
-	m_shader.useTexture(nullptr);
-	m_shader.setBlendMode(fg::Alpha);
-	m_shader.getModelStack().pop();
-	m_cam.getProjStack().pop();
-	m_cam.getViewStack().pop();
-	glDepthMask(GL_TRUE);
-	
-	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-	m_shader.draw(m_ddWire);
-	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+	if (m_doBlur) {
+		m_glowFBO.bind();
+		m_glowFBO.clear(true,true);
+		m_shader.draw(m_ddGlow);
+		
+		m_blurConv.applyTo(m_glowTex,blurAm);
+		
+		
+		FrameBuffer::bind(nullptr);
+		FrameBuffer::setViewport(rect2s(vec2(),getSize()));
+		FrameBuffer::applyDepthTest(fg::LEqual);
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(1,1);
+		m_shader.draw(m_dd);
+		glDisable(GL_POLYGON_OFFSET_FILL);
+		
+		glDepthMask(GL_FALSE);
+		m_cam.getViewStack().push(mat4());
+		m_cam.getProjStack().push(mat4());
+		m_shader.getModelStack().push(mat4());
+		m_shader.setBlendMode(fg::Additive);
+		m_glowTex.setSmooth(true);
+		m_shader.useTexture(m_glowTex);
+		
+		m_shader.draw(m_glowApplyDD);
+		
+		m_shader.useTexture(nullptr);
+		m_shader.setBlendMode(fg::Alpha);
+		m_shader.getModelStack().pop();
+		m_cam.getProjStack().pop();
+		m_cam.getViewStack().pop();
+		glDepthMask(GL_TRUE);
+		
+		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+		m_shader.draw(m_ddWire);
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+	} else 
+	{
+		FrameBuffer::applyDepthTest(fg::LEqual);
+		
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(1,1);
+		m_shader.draw(m_dd);
+		glDisable(GL_POLYGON_OFFSET_FILL);
+		
+		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+		m_shader.draw(m_ddWire);
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+	}
 }
 
-void Roti::onMouseMoved(vec2 p,vec2 prev)
+void Roti::onMouseMove(vec2 p,vec2 prev)
 {
-	vec2 delta = p-prev;
-	m_rotMat = Quat(m_cam.u(),-delta.x/80) * Quat(m_cam.r(),-delta.y/80) * m_rotMat;
+	if (isPressed(Mouse::Left)) {
+		vec2 delta = p-prev;
+		m_rotMat = Quat(m_cam.u(),-delta.x/80) * Quat(m_cam.r(),-delta.y/80) * m_rotMat;
+	}
 }
 
 int main()
 {
 	GuiWindow wwin(vec2(640,480),"Rotx");
-	wwin.setClearColor(vec4::Black);
-	wwin.getMainLayout().addChildElement(new Roti(wwin));
-	return wwin.runGuiLoop();
-	
 	printUsage();
 	
-	GuiWindow win(vec2(640,480),"Rotx");
-	win.setDepthTest(LEqual);
-	win.setClearColor(vec4::Black);
-	win.enableKeyRepeat();
+	auto rot = new Roti(wwin,[&](string s){
+		wwin.setTitle(s);
+	});
 	
-	cout << glGetString(GL_VERSION) << endl;
-	cout << glGetString(GL_VENDOR) << endl;
+	wwin.setClearColor(vec4::Black);
+	wwin.getMainLayout().addChildElement(rot);
 	
-	bool running = true;
-	Clock loopClk;
-	Clock rotClk;
-	
-	ShaderManager &shader = win.getShader();
-	
-	Camera &cam = shader.getCamera();
-	cam.set3D(win.getSize(),vec3(3,3,3),vec3());
-	
-	vec2 glowSize = win.getSize() * .5;
-	
-	Texture glowTexture(glowSize);
-	FrameBuffer glowFBO(glowTexture,FrameBuffer::DepthBuffer(glowSize));
-	glowFBO.setDepthTest(LEqual);
-	DrawData glowApplyDD;
-	glowApplyDD.positions = {vec2(-1,-1),vec2(1,-1),vec2(1,1),vec2(-1,-1),vec2(1,1),vec2(-1,1)};
-	glowApplyDD.texPositions = {vec2(0,0),vec2(1,0),vec2(1,1),vec2(0,0),vec2(1,1),vec2(0,1)};
-	
-	TextureConvolution blurConv({0.01598,0.060626,0.241843,0.383103,0.241843,0.060626,0.01598});
-	
-	DrawData dd,ddWf,ddGw;
-	buildDrawData(5,dd,ddWf,ddGw);
-	
-	mat4 rotM;
-	bool leftDown = false;
-	vec2 mouseP;
-	
-	Transition<float> glowAm(50,50);
-	
-	bool renderBlur = TextureConvolution::isAvailable();
-	
-	string title;
-
-	for (int loop=0;running;++loop)
-	{
-		if (loopClk.getSeconds() > 1)
-		{
-			loopClk.restart();
-			
-			title = "Rotx  " + fm::toString(loop/1) + "fps";
-			win.setTitle(title);
-			
-			loop = 0;
-		}
-		
-		Event ev;
-		while (win.popEvent(ev))
-		{
-			win.handleEvent(ev);
-			if (ev.type == Event::Closed) running = false;
-			
-			if (ev.type == Event::KeyPressed)
-			{
-				if (ev.key.code == Keyboard::Enter)
-					glowTexture.copyToImage().scale(win.getSize()).flipVertically().saveToFile("glow.png");
-					
-				if (ev.key.code == Keyboard::G)
-				{
-					if (!renderBlur)
-					{
-						renderBlur = true;
-						glowAm.set(max<float>(glowAm.get(),1),50,seconds(.2));
-					}
-					else
-						glowAm.set(glowAm.get(),0,seconds(.2));
-				}
-			}
-			
-			if (ev.type == Event::ButtonPressed)
-			{
-				leftDown = true;
-				mouseP = vec2i(ev.mouse);
-			}
-			
-			if (ev.type == Event::ButtonReleased)
-			{
-				leftDown = false;
-			}
-			
-			if (ev.type == Event::MouseMoved)
-			{
-				if (leftDown)
-				{
-					vec2 p = vec2i(ev.motion);
-					vec2 delta = p-mouseP;
-					mouseP = p;
-					
-					rotM = Quat(cam.u(),-delta.x/80) * Quat(cam.r(),-delta.y/80) * rotM;
-				}
-			}
-			
-			if (ev.type == Event::MouseWheelMoved)
-			{
-				cam.setPosition(cam.getPosition() * pow(2,-ev.wheel.delta));
-			}
-		}
-		
-		win.clear();
-		
-		int blurAm = glowAm.get();
-		if (renderBlur && blurAm == 0)
-		{
-			renderBlur = false;
-		}
-		
-		if (renderBlur)
-		{
-			shader.getModelStack().top(rotM);
-			
-			glowFBO.bind();
-			glowFBO.clear(true,true);
-			shader.draw(ddGw);
-			
-			blurConv.applyTo(glowTexture,blurAm);
-			
-			
-			win.bindDefaultFrameBuffer();
-			glEnable(GL_POLYGON_OFFSET_FILL);
-			glPolygonOffset(1,1);
-			shader.draw(dd);
-			glDisable(GL_POLYGON_OFFSET_FILL);
-			
-			glDepthMask(GL_FALSE);
-			cam.getViewStack().push(mat4());
-			cam.getProjStack().push(mat4());
-			shader.getModelStack().push(mat4());
-			shader.setBlendMode(fg::Additive);
-			glowTexture.setSmooth(true);
-			shader.useTexture(glowTexture);
-			
-			shader.draw(glowApplyDD);
-			
-			shader.useTexture(nullptr);
-			shader.setBlendMode(fg::Alpha);
-			shader.getModelStack().pop();
-			cam.getProjStack().pop();
-			cam.getViewStack().pop();
-			glDepthMask(GL_TRUE);
-			
-			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-			shader.draw(ddWf);
-			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-		}
-		else
-		{
-			shader.getModelStack().top(rotM);
-			
-			glEnable(GL_POLYGON_OFFSET_FILL);
-			glPolygonOffset(1,1);
-			shader.draw(dd);
-			glDisable(GL_POLYGON_OFFSET_FILL);
-			
-			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-			shader.draw(ddWf);
-			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-		}
-
-		win.swapBuffers();
-		
-		win.applyFpsLimit();
-	}
+	return wwin.runGuiLoop();
 }

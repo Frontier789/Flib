@@ -51,7 +51,7 @@ void Game::handlePlayers()
 			m_winner = ply->getid();
 		}
 
-		for (int i=0;i<m_players.size();++i) {
+		for (int i=0;i<int(m_players.size());++i) {
 			if (i != plyId) {
 				auto enemy = m_players[i];
 				enemy->enemymove(m,ply->getid());

@@ -16,6 +16,9 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Gui/GuiButton.hpp>
 #include <FRONTIER/Window/Event.hpp>
+#include <iostream>
+using namespace std;
+
 
 namespace fgui
 {

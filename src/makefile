@@ -48,7 +48,7 @@ $(F_O_FILES_DIR)/dynamic:
 include module_defs.mk
 
 ####  ####  ####  ## generating targets ##  ####  ####  ####
-	
+
 $(foreach MODULE,$(F_MODULES), \
  $(eval F_CUR_MODULE=$(call F_UPPERCASE,$(MODULE))) \
  $(eval F_CUR_MODULE_LOWERCASE=$(call F_LOWERCASE,$(MODULE))) \

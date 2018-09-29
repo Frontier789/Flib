@@ -16,7 +16,15 @@ else
  endif
 endif
 
+# determine where o files go
+F_BUILD_DIR?=build
+ifeq ($(F_BUILD_DIR),.)
+	F_O_PATH=$(F_O_DIR)
+else
+	F_O_PATH=$(F_BUILD_DIR)/$(F_O_DIR)
+endif
 
+# what tpye of flib build to use
 ifeq ($(F_DYNLINK),1)
  override F_LINK_LIBS:=-lf-shared $(F_DEF_LINK_LIBS) $(F_LINK_LIBS)
  F_NEEDED_LIB=libf-shared$(F_SO_USEDTARGET)
@@ -35,10 +43,11 @@ ifeq ($(wildcard $(FPATH)),)
 endif
 
 # cpp files to compile
-F_CPP_FILES?=$(notdir $(wildcard *.cpp))
+CPP_FILES?=*.cpp
+F_CPP_FILES?=$(wildcard $(CPP_FILES))
 
 TARGET=$(EXEC)$(F_EXEC_EXT)
-O_FILES=$(addprefix $(F_O_DIR)/,$(notdir $(F_CPP_FILES:.cpp=.o)))
+O_FILES=$(addprefix $(F_O_PATH)/,$(notdir $(F_CPP_FILES:.cpp=.o)))
 
 all: $(TARGET)
 
@@ -53,14 +62,16 @@ clean: clean_o_dir clean_exec
 $(TARGET): $(O_FILES) $(FPATH)/$(F_LIB_DIR_NAME)/$(F_NEEDED_LIB)
 	$(CXX) $(LDFLAGS) -L $(FPATH)/$(F_LIB_DIR_NAME) -o $(TARGET) $(O_FILES) $(F_LINK_LIBS)
 
-$(F_O_DIR)/%.o: %.cpp | $(F_O_DIR)
-	$(CXX) $(CXXFLAGS) -I $(FPATH)/include -c $< -o $@ 
+$(foreach TUNIT,$(basename $(F_CPP_FILES)), \
+ $(eval $(F_O_PATH)/$(notdir $(TUNIT)).o: $(TUNIT).cpp | $(F_O_PATH); \
+	$(CXX) $(CXXFLAGS) -I $(FPATH)/include -c $(TUNIT).cpp -o $(F_O_PATH)/$(notdir $(TUNIT)).o) \
+)
 
-$(F_O_DIR):
-	$(call F_MKDIR,$(F_O_DIR))
+$(F_O_PATH):
+	$(call F_MKDIR,$(F_O_PATH))
 
 clean_o_dir:
-	$(call F_DELETE,$(F_O_DIR))
+	$(call F_DELETE,$(F_O_PATH))
 
 clean_exec:
 	$(F_RM) $(TARGET)
