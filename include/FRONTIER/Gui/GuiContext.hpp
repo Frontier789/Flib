@@ -63,7 +63,7 @@ namespace fgui
 	{
 	protected:
 		mutable std::map<fm::String,fg::Font> m_fonts; ///< The loaded fonts
-		fg::SpriteManager  m_spriteManager;    ///< The texture atlas for sprites
+		fg::SpriteManager *m_spriteManager;    ///< The texture atlas for sprites
 		fg::ShaderManager *m_shader; ///< The shader used when drawing
 		fm::Size   m_defCharSize;    ///< Default character size
 		GuiLayout *m_layout; ///< The main layout of the context
@@ -73,7 +73,8 @@ namespace fgui
 		bool m_guiLoop;      ///< Indicates whether the gui loop is running 
 		
 		void setupShader(); ///< Initialises the shader
-
+		void freeGL(); ///< Free up OGL resources
+		
 		virtual void drawElementsGuiLoop(); ///< Draw the elements inside gui loop
 		
 	public:
@@ -82,6 +83,24 @@ namespace fgui
 		///
 		/////////////////////////////////////////////////////////////
 		GuiContext();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Move constructor
+		///
+		/////////////////////////////////////////////////////////////
+		GuiContext(GuiContext &&cont) = default;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Move assignment
+		///
+		/////////////////////////////////////////////////////////////
+		GuiContext &operator=(GuiContext &&cont) = default;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Swap two contexts
+		///
+		/////////////////////////////////////////////////////////////
+		GuiContext &swap(GuiContext &cont);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct with given size

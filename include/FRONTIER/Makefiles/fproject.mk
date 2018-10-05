@@ -55,7 +55,7 @@ run: all
 	$(TARGET)
 
 run_debug: all
-	gdb $(TARGET) -ex sta -ex c
+	gdb $(TARGET) -ex start -ex continue
 
 clean: clean_o_dir clean_exec
 

@@ -96,6 +96,8 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the number children
 		/// 
+		/// Discarded children are deleted, new children are assigned nullptr
+		/// 
 		/// @param childCount The number of children
 		/// 
 		/////////////////////////////////////////////////////////////

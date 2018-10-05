@@ -61,6 +61,12 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
+	Window::Window(Window &&win) : m_window(nullptr)
+	{
+		win.swap(*this);
+	}
+
+	/////////////////////////////////////////////////////////////
 	Window::Window(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings) : m_window(new priv::Window)
 	{
 		open(pos,size,title,style,parent,container,settings);
@@ -81,6 +87,7 @@ namespace fw
 	/////////////////////////////////////////////////////////////
 	void Window::close()
 	{
+		beforeClose();
 		this->destroy();
 		m_window->close();
 	}

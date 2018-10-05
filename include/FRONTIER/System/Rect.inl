@@ -22,16 +22,26 @@ namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline rect<T>::rect() : pos(vector2<T>()),
-							 size(vector2<T>())
+	inline rect<T>::rect() : 
+		pos(vector2<T>()),
+		size(vector2<T>())
 	{
 
+	}
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline rect<T>::rect(const T &x,const T &y,const T &w,const T &h) :
+		pos(x,y),
+		size(w,h)
+	{
+		
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	inline rect<T>::rect(const vector2<T> &pos,const vector2<T> &size) : pos(pos),
-																		 size(size)
+	inline rect<T>::rect(const vector2<T> &pos,const vector2<T> &size) : 
+		pos(pos),
+		size(size)
 	{
 
 	}
@@ -39,8 +49,9 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class T>
 	template<class T2>
-	inline rect<T>::rect(const rect<T2> &copy) : pos(vector2<T>(copy.pos)),
-												 size(vector2<T>(copy.size))
+	inline rect<T>::rect(const rect<T2> &copy) : 
+		pos(vector2<T>(copy.pos)),
+		size(vector2<T>(copy.size))
 	{
 
 	}
@@ -83,6 +94,14 @@ namespace fm
 	inline vector2<T> rect<T>::mid() const
 	{
 		return pos + size / T(2);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline bool rect<T>::intersects(const rect<T> &r) const
+	{
+		return pos.x < r.pos.x + r.size.w && pos.x + size.w > r.pos.x &&
+    		   pos.y < r.pos.y + r.size.h && pos.y + size.h > r.pos.y;
 	}
 }
 

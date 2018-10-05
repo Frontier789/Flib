@@ -41,6 +41,8 @@ namespace fgui
 	{
 	protected:
 		void drawElementsGuiLoop() override; ///< Draw the elements inside gui loop
+		
+		void beforeClose() override; ///< Handle closing of the window
 
 	public:
 		/////////////////////////////////////////////////////////////

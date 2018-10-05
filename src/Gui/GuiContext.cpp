@@ -191,7 +191,7 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiContext::GuiContext(fm::vec2s size) : m_spriteManager(true),
+	GuiContext::GuiContext(fm::vec2s size) : m_spriteManager(new fg::SpriteManager(true)),
 											 m_shader(fg::ShaderManager::getDefaultShader()),
 											 m_defCharSize(13),
 											 m_layout(new GuiLayout(*this)),
@@ -204,10 +204,25 @@ namespace fgui
 		setMaxFps(60);
 		loadDefButtonImg(*this);
 	}
-
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::freeGL()
+	{
+		delete m_spriteManager;
+		delete m_shader;
+		delete m_layout;
+		
+		m_fonts.clear();
+		
+		m_spriteManager = nullptr;
+		m_shader = nullptr;
+		m_layout = nullptr;
+	}
+	
 	/////////////////////////////////////////////////////////////
 	GuiContext::~GuiContext()
 	{
+		delete m_spriteManager;
 		delete m_shader;
 		delete m_layout;
 	}
@@ -420,25 +435,25 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiContext::addSprite(const std::string &name,const fg::Image &spriteImage,const fm::vec2s &frameSize)
 	{
-		m_spriteManager.addImage(spriteImage,name,frameSize);
+		m_spriteManager->addImage(spriteImage,name,frameSize);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	fg::Sprite GuiContext::getSprite(const std::string &name)
 	{
-		return m_spriteManager.getSprite(name);
+		return m_spriteManager->getSprite(name);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	fg::SpriteManager &GuiContext::getSpriteManager()
 	{
-		return m_spriteManager;
+		return *m_spriteManager;
 	}
 	
 	/////////////////////////////////////////////////////////////
 	const fg::SpriteManager &GuiContext::getSpriteManager() const
 	{
-		return m_spriteManager;
+		return *m_spriteManager;
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -482,6 +497,22 @@ namespace fgui
 	fm::Size GuiContext::getDefCharSize() const
 	{
 		return m_defCharSize;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	GuiContext &GuiContext::swap(GuiContext &cont)
+	{
+		m_fonts.swap(cont.m_fonts);
+		std::swap(m_spriteManager,cont.m_spriteManager);
+		std::swap(m_shader,cont.m_shader);
+		std::swap(m_defCharSize,cont.m_defCharSize);
+		std::swap(m_layout,cont.m_layout);
+		std::swap(m_fpsClk,cont.m_fpsClk);
+		std::swap(m_size,cont.m_size);
+		std::swap(m_spf,cont.m_spf);
+		std::swap(m_guiLoop,cont.m_guiLoop);
+		
+		return *this;
 	}
 }
 

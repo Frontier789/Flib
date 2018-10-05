@@ -348,6 +348,8 @@ namespace fw
 	{
 		std::swap(m_context,cont.m_context);
 		std::swap(m_depthTestMode,cont.m_depthTestMode);
+		std::swap(m_clearColor,cont.m_clearColor);
+		std::swap(m_clearDepth,cont.m_clearDepth);
 		
 		return *this;
 	}

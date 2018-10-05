@@ -50,14 +50,21 @@ namespace fgui
 	{
 		setClearColor(fm::vec4::White);
 	}
+	
+	/////////////////////////////////////////////////////////////	
+	void GuiWindow::beforeClose()
+	{
+		freeGL();
+	}
 
 	/////////////////////////////////////////////////////////////
 	GuiWindow &GuiWindow::swap(GuiWindow &win)
 	{
-		std::swap(m_shader,win.m_shader);
 		this->Window::swap(win);
+		this->GuiContext::swap(win);
 		
 		setupShader();
+		win.setupShader();
 		
 		return *this;
 	}

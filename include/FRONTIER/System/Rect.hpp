@@ -55,7 +55,7 @@ namespace fm
 		rect();
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Default constructor
+		/// @brief Construct a rectangle from pos and size
 		///
 		/// Initializes the rectangle with (@a pos,@a size)
 		///
@@ -64,6 +64,17 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		explicit rect(const vector2<T> &pos,const vector2<T> &size = vector2<T>());
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct a rectangle from pos and size
+		///
+		/// @param x The x position of the rectangle
+		/// @param y The y position of the rectangle
+		/// @param w The width of the rectangle
+		/// @param h The height of the rectangle
+		///
+		/////////////////////////////////////////////////////////////
+		rect(const T &x,const T &y,const T &w,const T &h);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Copy constructor
@@ -126,6 +137,14 @@ namespace fm
 		///
 		/////////////////////////////////////////////////////////////
 		vector2<T> mid() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Check if two rectangles intersect
+		///
+		/// @return True iff the two intersect
+		///
+		/////////////////////////////////////////////////////////////
+		bool intersects(const rect<T> &r) const;
     };
 
     typedef rect<float> 		 rect2f;
