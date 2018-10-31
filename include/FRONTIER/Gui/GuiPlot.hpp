@@ -14,104 +14,92 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_MOUSEMOVELISTENER_HPP_INCLUDED
-#define FRONTIER_MOUSEMOVELISTENER_HPP_INCLUDED
-
-#include <FRONTIER/System/CommonTypes.hpp>
-#include <FRONTIER/Gui/GuiCallback.hpp>
+#ifndef FRONTIER_GUIPLOT_HPP_INCLUDED
+#define FRONTIER_GUIPLOT_HPP_INCLUDED
 #include <FRONTIER/System/Vector2.hpp>
-#include <FRONTIER/System/util/API.h>
-
-#define FRONTIER_MOUSEMOVELISTENER
+#include <FRONTIER/Gui/GuiElement.hpp>
+#include <FRONTIER/Gui/GuiWindow.hpp>
+#define FRONTIER_GUIPLOT
+#include <future>
 
 namespace fgui
 {
 	/////////////////////////////////////////////////////////////
-	/// @brief Listener for mouse enter, leave, move
-	///
-	/// @ingroup Gui
-	///
+	/// @brief Basic plot class representing a detached plot window
+	/// 
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API MouseMoveListener : public virtual GuiCallback
+	struct GuiPlot
 	{
+		/////////////////////////////////////////////////////////////
+		/// @brief Default move constructor
+		/// 
+		/////////////////////////////////////////////////////////////
+		GuiPlot(GuiPlot &&) = default;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Create a new guiplot
+		/// 
+		/// @param winSize The initial size of the window
+		/// @param title The title of the plot window
+		/// 
+		/////////////////////////////////////////////////////////////
+		GuiPlot(fm::vec2i winSize,fm::String title = "plot");
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Create a new guiplot based on a guielement allocator
+		/// 
+		/// @param winSize The initial size of the window
+		/// @param title The title of the plot window
+		/// @param allocator The gui element allocator to use
+		/// 
+		/////////////////////////////////////////////////////////////
+		GuiPlot(fm::vec2i winSize,fm::String title,fm::Delegate<GuiElement*,GuiWindow&> allocator);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Desctructor; stops the plot if it is running
+		/// 
+		/////////////////////////////////////////////////////////////
+		~GuiPlot();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Stop the plotting
+		/// 
+		/// Forcefully stops the plot, in a thread-safe manner
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		GuiPlot &stop();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Wait until the plot finishes
+		/// 
+		/// This may happen due to the user closing the plot window or the call of stop
+		/// 
+		/// @return reference to itself
+		/// 
+		/////////////////////////////////////////////////////////////
+		GuiPlot &wait();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Check if the plot is running
+		/// 
+		/// This may happen due to the user closing the plot window or the call of stop
+		/// 
+		/// @return True iff the plot is running
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool running() const;
+		
 	protected:
-		bool m_recheckRecursion; ///< Avoid recursion in recheckSize
-		fm::vec2 m_prevPos; ///< The last position of the mouse inside the gui element
-		bool m_mouseIn; ///< Indicates the mouse being inside the gui element
-		bool m_grabMouse; ///< Indicates whether mouse pointer is grabbed
+		virtual GuiElement *createPlotterElement() {return nullptr;} ///< Should be overwritten by child classes
 		
-	public:
-		/////////////////////////////////////////////////////////////
-		/// @brief Default constructor
-		/// 
-		/////////////////////////////////////////////////////////////
-		MouseMoveListener();
+		GuiWindow &win() {return m_win;} ///< Lets child classes access the window
 		
-		/////////////////////////////////////////////////////////////
-		/// @brief Called when the mouse enters the gui element
-		/// 
-		/// @param p The position of the mouse after entering
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual void onMouseEnter(fm::vec2 p);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Called when the mouse leaves the gui element
-		/// 
-		/// @param p The position of the mouse after leaving
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual void onMouseLeave(fm::vec2 p);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Called when the mouse moves inside the gui element
-		/// 
-		/// @param p The position of the mouse after moving
-		/// @param prevP The position of the mouse before moving
-		/// 
-		/////////////////////////////////////////////////////////////
-		virtual void onMouseMove(fm::vec2 p,fm::vec2 prevP);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Checks whether the mouse is inside the gui element
-		/// 
-		/// @return True iff the mouse is inside
-		/// 
-		/////////////////////////////////////////////////////////////
-		bool mouseInside() const;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Checks whether the mouse is grabbed by the gui element
-		/// 
-		/// @return True iff the mouse is grabbed
-		/// 
-		/////////////////////////////////////////////////////////////
-		bool mouseGrabbed() const;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the last mouse position inside the gui element
-		/// 
-		/// @return The last mouse position
-		/// 
-		/////////////////////////////////////////////////////////////
-		fm::vec2 getLastMousePos() const;
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Adapt to the current size of the gui element
-		/// 
-		/// This function should be called when
-		/// The size of the gui element changes
-		/// 
-		/////////////////////////////////////////////////////////////
-		void recheckMouseInside();
-	
-	protected:
-		/////////////////////////////////////////////////////////////
-		/// @brief Grab or release the mouse for the gui element
-		/// 
-		/////////////////////////////////////////////////////////////
-		void grabMouse(bool grab = true);
+	private:
+		GuiWindow m_win; ///< The window of the plot
+		std::future<void> m_fut; ///< Implementation detail
 	};
 }
 
-#endif // FRONTIER_MOUSEMOVELISTENER_HPP_INCLUDED
+#endif // FRONTIER_GUIPLOT_HPP_INCLUDED

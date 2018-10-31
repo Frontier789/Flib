@@ -20,5 +20,6 @@
 #define FRONTIER_RETTYPE
 
 	#define RETTYPE(T1,T2,op) decltype(std::declval<T1>() op std::declval<T2>())
+	#define RETTYPE_UN(op,T) decltype(op std::declval<T>())
 
 #endif // FRONTIER_C_HPP_INCLUDED

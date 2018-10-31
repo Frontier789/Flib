@@ -25,6 +25,7 @@
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/util/API.h>
+#include <FRONTIER/System/Box.hpp>
 
 #define FRONTIER_MESH
 #include <vector>
@@ -63,6 +64,16 @@ namespace fg
 		public:
 			std::vector<fm::Uint32> indices; ///< The indices in the face
 			fg::Primitive primitive; ///< The used primitive in the face
+			fm::Size beg; ///< The first index to consider in the range if no index is specified
+			fm::Size len; ///< The length of the range if no index is specified
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Construct the face as the range of all the vertices
+			/// 
+			/// @param primitive The primitive
+			/// 
+			/////////////////////////////////////////////////////////////
+			Face(fg::Primitive primitive = fg::Triangles);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Construct the face 
@@ -71,7 +82,23 @@ namespace fg
 			/// @param indexCount The number of indices
 			/// 
 			/////////////////////////////////////////////////////////////
-			Face(fg::Primitive primitive = fg::Triangles,fm::Size indexCount = 0);
+			Face(fg::Primitive primitive,fm::Size indexCount);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Construct the face as a range of the vertices
+			/// 
+			/// @param primitive The primitive
+			/// @param beg The first index to contain
+			/// @param len The number of vertices to contain
+			/// 
+			/////////////////////////////////////////////////////////////
+			Face(fg::Primitive primitive,fm::Size beg,fm::Size len);
+			
+			/////////////////////////////////////////////////////////////
+			/// @brief Check if the face uses indices
+			/// 
+			/////////////////////////////////////////////////////////////
+			bool useIndices() const;
 		};
 		
 		std::deque<Face> faces; ///< The faces that make up the mesh
@@ -127,6 +154,14 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		reference swap(Mesh &target);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the AABB of the mesh
+		/// 
+		/// @return The AABB
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::box3f AABB() const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculate the normal vectors for every vertex
@@ -244,7 +279,17 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		static Mesh getRectangle(float width = 1,float height = 1,fm::Size W = 2,fm::Size H = 2,const fm::Delegate<float,float &,float &> &rfunc = nullptr);
-    };
+	
+		/////////////////////////////////////////////////////////////
+		/// @brief Calculate the number of vertices a face consists of
+		/// 
+		/// @param face The face in question
+		/// 
+		/// @return The number of vertices
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Size faceSize(const Face &face) const; ///< Get the number of vertices in a face
+	};
 }
 
 #endif // FRONTIER_MESH_HPP_INCLUDED

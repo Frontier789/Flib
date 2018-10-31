@@ -37,6 +37,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	class FRONTIER_API TransformListener : public virtual ScrollListener, public virtual ClickListener
 	{
+		fm::Delegate<void, fm::mat4> m_cb; ///< Called when the transformation matrix changes 
 		fm::vec2 m_fstRight; ///< The position where the right button was pressed first
 		float m_rotMinDist;  ///< Minimal distance the mouse needs to travel before rotation kicks is
 		fm::vec2 m_offset;   ///< The transformation offset
@@ -44,6 +45,8 @@ namespace fgui
 		float m_zoomSens; ///< Stores the sensitivity of zoom
 		fm::Anglef m_rot; ///< The rotation
 		float m_zoom;     ///< The zoom
+		
+		void callCb(); ///< Internal function
 		
 	public:
 		/////////////////////////////////////////////////////////////
@@ -249,6 +252,18 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		fm::mat4 getInvTransformMatrix() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the callback of the listener
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setCallback(fm::Delegate<void,fm::mat4> callback);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the callback of the listener
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Delegate<void,fm::mat4> getCallback();
 	};
 	
 }

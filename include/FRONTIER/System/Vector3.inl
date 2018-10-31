@@ -386,38 +386,38 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator*(const vector3<T> &left,const T2 &right) -> vector3<decltype(left.x*right)>
+	auto operator*(const vector3<T> &left,const T2 &right) -> vector3<RETTYPE(T,T2,*)>
 	{
-		return vector3<decltype(left.x*right)>(left.x*right,
-											   left.y*right,
-											   left.z*right);
+		return vector3<RETTYPE(T,T2,*)>(left.x*right,
+										left.y*right,
+										left.z*right);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator*(const T2 &left,const vector3<T> &right) -> vector3<decltype(left*right.x)>
+	auto operator*(const T2 &left,const vector3<T> &right) -> vector3<RETTYPE(T,T2,*)>
 	{
-		return vector3<decltype(left*right.x)>(left*right.x,
-											   left*right.y,
-											   left*right.z);
+		return vector3<RETTYPE(T,T2,*)>(left*right.x,
+										left*right.y,
+										left*right.z);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator/(const vector3<T> &left,const T2 &right) -> vector3<decltype(left.x/right)>
+	auto operator/(const vector3<T> &left,const T2 &right) -> vector3<RETTYPE(T,T2,/)>
 	{
-		return vector3<decltype(left.x/right)>(left.x/right,
-											   left.y/right,
-											   left.z/right);
+		return vector3<RETTYPE(T,T2,/)>(left.x/right,
+										left.y/right,
+										left.z/right);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator%(const vector3<T> &left,const T2 &right) -> vector3<decltype(left.x+right)>
+	auto operator%(const vector3<T> &left,const T2 &right) -> vector3<RETTYPE(T,T2,%)>
 	{
-		return vector3<decltype(left.x+right)>(std::fmod(left.x,right),
-											   std::fmod(left.y,right),
-											   std::fmod(left.z,right));
+		return vector3<RETTYPE(T,T2,%)>(std::fmod(left.x,right),
+										std::fmod(left.y,right),
+										std::fmod(left.z,right));
 	}
 	
 	
@@ -682,20 +682,20 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	auto operator-(const vector3<T> &vec) -> vector3<decltype(-vec.x)>
+	auto operator-(const vector3<T> &vec) -> vector3<RETTYPE_UN(-,T)>
 	{
-		return vector3<decltype(-vec.x)>(-vec.x,
-										 -vec.y,
-										 -vec.z);
+		return vector3<RETTYPE_UN(-,T)>(-vec.x,
+										-vec.y,
+										-vec.z);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	auto operator+(const vector3<T> &vec) -> vector3<decltype(+vec.x)>
+	auto operator+(const vector3<T> &vec) -> vector3<RETTYPE_UN(+,T)>
 	{
-		return vector3<decltype(+vec.x)>(+vec.x,
-										 +vec.y,
-										 +vec.z);
+		return vector3<RETTYPE_UN(+,T)>(+vec.x,
+										+vec.y,
+										+vec.z);
 	}
 }
 

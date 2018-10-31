@@ -59,7 +59,7 @@ run_debug: all
 
 clean: clean_o_dir clean_exec
 
-$(TARGET): $(O_FILES) $(FPATH)/$(F_LIB_DIR_NAME)/$(F_NEEDED_LIB)
+$(TARGET): $(O_FILES) $(FPATH)/$(F_LIB_DIR_NAME)/$(F_NEEDED_LIB) $(DEPS)
 	$(CXX) $(LDFLAGS) -L $(FPATH)/$(F_LIB_DIR_NAME) -o $(TARGET) $(O_FILES) $(F_LINK_LIBS)
 
 $(foreach TUNIT,$(basename $(F_CPP_FILES)), \

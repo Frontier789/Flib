@@ -20,7 +20,8 @@
 namespace fgui
 {
 	MouseMoveListener::MouseMoveListener() : m_recheckRecursion(false),
-											 m_mouseIn(false)
+											 m_mouseIn(false),
+											 m_grabMouse(false)
 	{
 		addEventHandler([&](fw::Event &ev) -> bool {
 			
@@ -28,22 +29,16 @@ namespace fgui
 			{
 				fm::vec2i p = ev.motion;
 				bool in = contains(p);
+				bool oldin = m_mouseIn;
 				
-				if (m_mouseIn)
-				{
-					onMouseMove(p,m_prevPos);
-					
-					if (!in)
-						onMouseLeave(p);
-				}
-				else
-				{
-					if (in)
-						onMouseEnter(p);
-				}
+				m_mouseIn = in;
+				
+				if ( oldin && !in) onMouseLeave(p);
+				if (!oldin &&  in) onMouseEnter(p);
+				
+				onMouseMove(p,m_prevPos);
 				
 				m_prevPos = p;
-				m_mouseIn = in;
 			}
 			
 			if (ev.type == fw::Event::ButtonReleased)
@@ -52,9 +47,7 @@ namespace fgui
 				bool in = contains(p);
 				
 				if (!m_mouseIn && in)
-				{
 					onMouseEnter(p);
-				}
 			}
 			
 			return false;
@@ -78,6 +71,17 @@ namespace fgui
 	{
 		(void)p;
 		(void)prevP;
+	}
+	/////////////////////////////////////////////////////////////
+	bool MouseMoveListener::mouseGrabbed() const
+	{
+		return m_grabMouse;
+	}
+		
+	/////////////////////////////////////////////////////////////
+	void MouseMoveListener::grabMouse(bool grab)
+	{
+		m_grabMouse = grab;
 	}
 
 	/////////////////////////////////////////////////////////////

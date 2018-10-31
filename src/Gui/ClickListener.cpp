@@ -35,6 +35,7 @@ namespace fgui
 				{
 					m_btnPressed[btn] = true;
 					
+					grabMouse();
 					onPress(btn,p);
 					if (m_clickClks[btn].getTime() <= m_dblClickLength)
 					{
@@ -84,7 +85,16 @@ namespace fgui
 					if (mouseInside())
 						onClick(btn,p);
 					
-					setActive(false);
+					bool pressAny = false;
+					
+					for (fm::Size i=0;i<fw::Mouse::ButtonCount;++i)
+						if (m_btnPressed[i])
+							pressAny = true;
+					
+					if (!pressAny) {
+						grabMouse(false);
+						setActive(false);
+					}
 				}
 			}
 			

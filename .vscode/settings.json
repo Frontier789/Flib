@@ -56,6 +56,13 @@
 		"numeric": "cpp",
 		"cinttypes": "cpp",
 		"list": "cpp",
-		"hash_map": "cpp"
+		"hash_map": "cpp",
+		"future": "cpp",
+		"atomic": "cpp",
+		"condition_variable": "cpp",
+		"iomanip": "cpp",
+		"optional": "cpp",
+		"string_view": "cpp",
+		"set": "cpp"
 	}
 }

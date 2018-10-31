@@ -313,34 +313,34 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator*(const vector2<T> &left,const T2 &right) -> vector2<decltype(left.x*right)>
+	auto operator*(const vector2<T> &left,const T2 &right) -> vector2<RETTYPE(T,T2,*)>
 	{
-		return vector2<decltype(left.x*right)>(left.x*right,
-											   left.y*right);
+		return vector2<RETTYPE(T,T2,*)>(left.x*right,
+									    left.y*right);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator*(const T2 &left,const vector2<T> &right) -> vector2<decltype(left*right.x)>
+	auto operator*(const T2 &left,const vector2<T> &right) -> vector2<RETTYPE(T,T2,*)>
 	{
-		return vector2<decltype(left*right.x)>(left*right.x,
-											   left*right.y);
+		return vector2<RETTYPE(T,T2,*)>(left*right.x,
+									    left*right.y);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator/(const vector2<T> &left,const T2 &right) -> vector2<decltype(left.x/right)>
+	auto operator/(const vector2<T> &left,const T2 &right) -> vector2<RETTYPE(T,T2,/)>
 	{
-		return vector2<decltype(left.x/right)>(left.x/right,
-											   left.y/right);
+		return vector2<RETTYPE(T,T2,/)>(left.x/right,
+									    left.y/right);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator%(const vector2<T> &left,const T2 &right) -> vector2<decltype(left.x+right)>
+	auto operator%(const vector2<T> &left,const T2 &right) -> vector2<RETTYPE(T,T2,%)>
 	{
-		return vector2<decltype(left.x+right)>(std::fmod(left.x,right),
-											   std::fmod(left.y,right));
+		return vector2<RETTYPE(T,T2,%)>(std::fmod(left.x,right),
+									    std::fmod(left.y,right));
 	}
 	
 	
@@ -516,18 +516,18 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	auto operator-(const vector2<T> &vec) -> vector2<decltype(-vec.x)>
+	auto operator-(const vector2<T> &vec) -> vector2<RETTYPE_UN(-,T)>
 	{
-		return vector2<decltype(-vec.x)>(-vec.x,
-										 -vec.y);
+		return vector2<RETTYPE_UN(-,T)>(-vec.x,
+										-vec.y);
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	auto operator+(const vector2<T> &vec) -> vector2<decltype(+vec.x)>
+	auto operator+(const vector2<T> &vec) -> vector2<RETTYPE_UN(+,T)>
 	{
-		return vector2<decltype(+vec.x)>(+vec.x,
-										 +vec.y);
+		return vector2<RETTYPE_UN(+,T)>(+vec.x,
+										+vec.y);
 	}
 }
 

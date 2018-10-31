@@ -37,6 +37,7 @@ namespace fgui
 		onZoomChanged(m_zoom);
 		
 		m_offset = m_offset * zoomMul + getLastMousePos() * (1 - zoomMul);
+		callCb();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -47,6 +48,7 @@ namespace fgui
 			m_offset += (p-prevP) * m_dragSens;
 			
 			onOffsetChanged(m_offset);
+			callCb();
 		}
 		
 		auto rot = [](fm::vec2 v,fm::Anglef a) -> fm::vec2 {
@@ -66,6 +68,7 @@ namespace fgui
 				
 				m_rot += dAngle;
 				onRotationChanged(m_rot);
+				callCb();
 				
 				/*
 					o2 == rot(o - p,d) + p
@@ -74,6 +77,7 @@ namespace fgui
 				
 				m_offset = m_fstRight + rot(m_offset - m_fstRight, dAngle);
 				onOffsetChanged(m_offset);
+				callCb();
 			}
 		}
 	}
@@ -107,18 +111,21 @@ namespace fgui
 	void TransformListener::setOffset(fm::vec2 offset)
 	{
 		m_offset = offset;
+		callCb();
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void TransformListener::setZoom(float zoom)
 	{
 		m_zoom = zoom;
+		callCb();
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void TransformListener::setRotation(fm::Anglef rot)
 	{
 		m_rot = rot;
+		callCb();
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -216,5 +223,24 @@ namespace fgui
 		return fm::MATRIX::rotation(-getRotation()) * 
 			   fm::MATRIX::scaling(fm::vec2(1.f/getZoom())) *
 			   fm::MATRIX::translation(-getOffset());
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void TransformListener::setCallback(fm::Delegate<void,fm::mat4> callback)
+	{
+		m_cb = callback;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Delegate<void,fm::mat4> TransformListener::getCallback()
+	{
+		return m_cb;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void TransformListener::callCb()
+	{
+		if (m_cb)
+			m_cb(getTransformMatrix());
 	}
 }

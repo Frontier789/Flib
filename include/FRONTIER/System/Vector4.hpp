@@ -584,7 +584,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator*(const vector4<T> &left,const T2 &right) -> vector4<decltype(left.x*right)>;
+	auto operator*(const vector4<T> &left,const T2 &right) -> vector4<RETTYPE(T,T2,*)>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -597,7 +597,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator*(const T2 &left,const vector4<T> &right) -> vector4<decltype(left*right.x)>;
+	auto operator*(const T2 &left,const vector4<T> &right) -> vector4<RETTYPE(T,T2,*)>;
 	
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -610,7 +610,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator/(const vector4<T> &left,const T2 &right) -> vector4<decltype(left.x/right)>;
+	auto operator/(const vector4<T> &left,const T2 &right) -> vector4<RETTYPE(T,T2,/)>;
 	
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -623,7 +623,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T,class T2>
-	auto operator%(const vector4<T> &left,const T2 &right) -> vector4<decltype(left.x+right)>;
+	auto operator%(const vector4<T> &left,const T2 &right) -> vector4<RETTYPE(T,T2,%)>;
 	
 	
 	
@@ -894,7 +894,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	auto operator-(const vector4<T> &vec) -> vector4<decltype(-vec.x)>;
+	auto operator-(const vector4<T> &vec) -> vector4<RETTYPE_UN(-,T)>;
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::vector4
@@ -906,7 +906,7 @@ namespace fm
 	///
 	/////////////////////////////////////////////////////////////
 	template<class T>
-	auto operator+(const vector4<T> &vec) -> vector4<decltype(+vec.x)>;
+	auto operator+(const vector4<T> &vec) -> vector4<RETTYPE_UN(+,T)>;
 
 	typedef vector4<float> 	       vec4;
 	typedef vector4<int>   	       vec4i;

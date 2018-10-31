@@ -33,10 +33,37 @@ namespace fg
 	using fm::vec2s;
 	
 	/////////////////////////////////////////////////////////////
-	Mesh::Face::Face(fg::Primitive primitive ,fm::Size indexCount) : indices(indexCount,0),
-																	 primitive(primitive)
+	Mesh::Face::Face(fg::Primitive primitive) :
+		primitive(primitive),
+		beg(0),
+		len(fm::Size(-1))
 	{
 		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Mesh::Face::Face(fg::Primitive primitive,fm::Size indexCount) :
+		indices(indexCount,0),
+		primitive(primitive),
+		beg(0),
+		len(fm::Size(-1))
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Mesh::Face::Face(fg::Primitive primitive,fm::Size beg,fm::Size len) : 
+		primitive(primitive),
+		beg(beg),
+		len(len)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool Mesh::Face::useIndices() const
+	{
+		return indices.size();
 	}
 	
 #ifndef FRONTIER_HEAVYCOPY_FORBID
@@ -94,6 +121,19 @@ namespace fg
 		
 		return *this;
 	}
+		
+	/////////////////////////////////////////////////////////////
+	fm::box3f Mesh::AABB() const
+	{
+		fm::box3f aabb;
+		
+		if (pts.empty()) return aabb;
+		
+		aabb.pos = pts[0];
+		for (auto p : pts) aabb.expand(p);
+		
+		return aabb;
+	}
 
 	/////////////////////////////////////////////////////////////
     Mesh Mesh::getSphere(float radius,fm::Size W,fm::Size H,const fm::Delegate<float,float &,float &> &rfunc)
@@ -102,7 +142,7 @@ namespace fg
         ret.pts.resize((W+1)*H);
         ret.uvs.resize((W+1)*H);
       
-        ret.faces.push_back(Mesh::Face(fg::Triangles,W*(2*H-2)*3));
+        ret.faces.push_back(Mesh::Face(fg::Triangles,W*(H-3)*6 + W*2*3));
         
         std::vector<fm::Uint32> &inds = ret.faces[0].indices;
 
@@ -122,15 +162,15 @@ namespace fg
 
 				fm::vec3 p = fm::pol3(radius*r,fm::deg(xp*360),fm::deg(90-yp*180));
 
-				ret.pts[ptsi++]  = p;
+				ret.pts[ptsi++] = p;
 				ret.uvs[uvsi++] = vec2(xpO,ypO);
 
-                if (x<W && y>0)
+                if (x<W && y>0 && y<H-1)
                     inds[indi++] = (x+0)*H+y-1,
                     inds[indi++] = (x+0)*H+y+0,
                     inds[indi++] = (x+1)*H+y+0;
 
-                if (x<W && y<H-1)
+                if (x<W && y<H-1 && y>0)
                     inds[indi++] = (x+1)*H+y+0,
                     inds[indi++] = (x+0)*H+y+0,
                     inds[indi++] = (x+1)*H+y+1;
@@ -153,7 +193,7 @@ namespace fg
         fm::Size uvsi = 0;
         fm::Size indi = 0;
 
-		fm::vec3 u = fm::vec3(fm::pol3(1,fm::deg(0),fm::deg(0))).cross(fm::vec3(fm::pol3(1,fm::deg(0),fm::deg(90))));
+		fm::vec3 u(0,-1,0);
 
         Cx(W+1)
         {
@@ -175,12 +215,10 @@ namespace fg
 				ret.pts[ptsi++] = p;
 				ret.uvs[uvsi++] = vec2(xpO,ypO);
 
-				vec2i offsets[] = {vec2i(0,0),vec2i(1,0),vec2i(1,1),
-									   vec2i(0,0),vec2i(1,1),vec2i(0,1)};
-
 				if (x < W && y < H)
-					C(6)
-						ret.faces[0].indices[indi++] = (x+offsets[i].x)*(H+1) + y+offsets[i].y;
+					for (auto o : {vec2i(0,0),vec2i(1,0),vec2i(1,1),
+								   vec2i(0,0),vec2i(1,1),vec2i(0,1)})
+						ret.faces[0].indices[indi++] = (x+o.x)*(H+1) + y+o.y;
 			}
 		}
 
@@ -323,22 +361,63 @@ namespace fg
     }
 	
 	/////////////////////////////////////////////////////////////
-	class Comparator
+	struct Pind
     {
-    public:
-    	float epsilon;
-    	Comparator(float ep) : epsilon(ep) {}
-
-		bool operator()(const fm::vec3 &l,const fm::vec3 &r) const
-        {
-			if ((l-r).length() < epsilon) return false;
-            if (l.x != r.x) return l.x < r.x;
-            if (l.y != r.y) return l.y < r.y;
-            if (l.z != r.z) return l.z < r.z;
-
-			return false;
-        }
+    	fm::vec3 p;
+		fm::Size i;
+		
+		bool far(const Pind &pind,fm::Size dim,double d) const {
+			return std::abs(double(p[dim]) - pind.p[dim]) >= d;
+		}
+		
+		bool operator<(const Pind &p) const {
+			return i < p.i;
+		}
+		
+		bool operator==(const Pind &p) const {
+			return i == p.i;
+		}
 	};
+	
+	struct PindSorter {
+		PindSorter(fm::Size i) : i(i) {}
+		fm::Size i;
+		
+		bool operator()(const Pind &a,const Pind &b) const {
+			return a.p[i] < b.p[i];
+		}
+	};
+	
+	template<class It>
+	void forEachPindGroup(It beg,It end,double mnDst,fm::Delegate<void,It,It> cb,fm::Size dim = 0)
+	{
+		if (dim == 3) cb(beg, end);
+		else {
+			std::sort(beg,end,PindSorter(dim));
+			
+			It gbeg = beg;
+			for (It cur = beg;cur != end;)
+			{
+				It prev = cur;
+				++cur;
+				
+				if (cur == end || prev->far(*cur,dim,mnDst)) {
+					forEachPindGroup(gbeg, cur, mnDst, cb, dim+1);
+					gbeg = cur;
+				}
+			}
+		}
+	}
+	
+	template<class T>
+	T minButNot0(T a,T b)
+	{
+		if (b != T()) {
+			if (a < T()) return b;
+			return std::min(a,b);
+		}
+		return a;
+	}
 	
 	/////////////////////////////////////////////////////////////
     Mesh::reference Mesh::calcNormals(bool joinIdenticalVertices)
@@ -348,26 +427,23 @@ namespace fg
             
 		norms.resize(pts.size(),fm::vec3());
 		
-		float mnDst = -1;
+		double mnDst = -1;
 		
-		for (fm::Size faceIndex = 0;faceIndex < faces.size();++faceIndex)
+		for (auto &face : faces)
 		{
-			fg::Primitive &primitive = faces[faceIndex].primitive;
-			
-			std::vector<fm::Uint32> &indices = faces[faceIndex].indices;
+			fg::Primitive primitive = face.primitive;
+			std::vector<fm::Uint32> &indices = face.indices;
 		
 			if (primitive != fg::Triangles &&
 				primitive != fg::TriangleStrip &&
 				primitive != fg::TriangleFan)
 				continue;
 
-			bool useInds = (indices.size()!=0);
-
-			C((useInds ? indices.size() : pts.size()) - 2)
+			for (fm::Size i=face.beg;i<face.beg + faceSize(face);++i)
 			{
-				fm::Uint32 ind0 = useInds ? indices[i+0] : i+0;
-				fm::Uint32 ind1 = useInds ? indices[i+1] : i+1;
-				fm::Uint32 ind2 = useInds ? indices[i+2] : i+2;
+				fm::Uint32 ind0 = face.useIndices() ? indices[i+0] : i+0;
+				fm::Uint32 ind1 = face.useIndices() ? indices[i+1] : i+1;
+				fm::Uint32 ind2 = face.useIndices() ? indices[i+2] : i+2;
 
 				if (primitive == fg::Triangles)
 				{
@@ -380,11 +456,9 @@ namespace fg
 
 				fm::vec3 v0 = pts[ind1]-pts[ind0], v1 = pts[ind2]-pts[ind0], v2 = pts[ind2]-pts[ind1];
 				
-				if (mnDst == -1) mnDst = v0.length();
-				
-				mnDst = std::min(mnDst,v0.length());
-				mnDst = std::min(mnDst,v1.length());
-				mnDst = std::min(mnDst,v2.length());
+				mnDst = minButNot0(mnDst,fm::vec3d(v0).LENGTH());
+				mnDst = minButNot0(mnDst,fm::vec3d(v1).LENGTH());
+				mnDst = minButNot0(mnDst,fm::vec3d(v2).LENGTH());
 
 				fm::vec3 N = (v0).cross(v1);
 				norms[ind0] += N;
@@ -395,28 +469,37 @@ namespace fg
 		
 		if (joinIdenticalVertices)
 		{
-			for (fm::Size faceIndex = 0;faceIndex < faces.size();++faceIndex)
+			for (auto &face : faces)
 			{
-				std::map<fm::vec3,std::set<fm::Size>,Comparator > pToInds(Comparator(mnDst*.9));
+				std::vector<Pind> points;
+				points.reserve(faceSize(face));
 				
-				C(faces[faceIndex].indices.size())
-					pToInds[pts[faces[faceIndex].indices[i]]].insert(faces[faceIndex].indices[i]);
-
-				for (const auto &it : pToInds)
+				for (fm::Size i=face.beg;i<face.beg + faceSize(face);++i)
 				{
+					fm::Uint32 ind = face.useIndices() ? face.indices[i] : i;
+					points.push_back(Pind{pts[ind],ind});
+				}
+				
+				std::sort(points.begin(),points.end());
+				points.erase(std::unique(points.begin(),points.end()),points.end());
+				
+				typedef std::vector<Pind>::iterator It;
+				forEachPindGroup<It>(points.begin(), points.end(), std::sqrt(mnDst)/2, [&](It beg,It end){
+					if (beg == end || beg+1 == end) return;
+					
 					fm::vec3 n;
 					
-					for (const auto &pit : it.second)
-						n += norms[pit];
+					for (auto it = beg;it != end;++it)
+						n += norms[it->i];
 					
-					for (const auto &pit : it.second)
-						norms[pit] = n;
-				}
+					for (auto it = beg;it != end;++it)
+						norms[it->i] = n;
+				});
 			}
 		}
-
-		C(norms.size())
-			norms[i] = norms[i].sgn();
+		
+		for (auto &n : norms)
+			n = n.sgn();
 		
 		return *this;
     }
@@ -615,5 +698,15 @@ namespace fg
 		C(H) helper(0,float(i)/(H-1));
         
 		return ret;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Size Mesh::faceSize(const Face &face) const
+	{
+		fm::Size s = (face.useIndices() ? face.indices.size() : pts.size());
+		
+		if (face.beg >= s) return 0;
+		
+		return std::min(face.len, s - face.beg);
 	}
 }

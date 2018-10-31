@@ -33,7 +33,9 @@ namespace fgui
 }
 
 #include <FRONTIER/Gui/Widget.hpp>
+#include <FRONTIER/Gui/GuiPlot.hpp>
 #include <FRONTIER/Gui/GuiText.hpp>
+#include <FRONTIER/Gui/PlotTools.hpp>
 #include <FRONTIER/Gui/ScrollBar.hpp>
 #include <FRONTIER/Gui/GuiWindow.hpp>
 #include <FRONTIER/Gui/GuiLayout.hpp>

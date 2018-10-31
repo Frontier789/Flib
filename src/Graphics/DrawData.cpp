@@ -174,34 +174,45 @@ namespace fg
 		
 		if (mesh.faces.size())
 		{
-			fm::Size counts[]  = {0,0,0,0,0,0,0};
-			fm::Size offsets[] = {0,0,0,0,0,0,0};
-			
-			C(mesh.faces.size())
-			{
-				counts[int(mesh.faces[i].primitive)] += mesh.faces[i].indices.size();
-			}
-			
-			std::vector<fm::Uint32> drawIndices[7];
-			
-			C(sizeof(counts)/sizeof(*counts)) drawIndices[i].resize(counts[i]);
-			
-			C(mesh.faces.size())
-			{
-				int id = int(mesh.faces[i].primitive);
+			for (const auto &face : mesh.faces) {
+				m_drawCalls.push_back(DrawCall());
 				
-				std::memcpy(&drawIndices[id][offsets[id]],&mesh.faces[i].indices[0],sizeof(mesh.faces[i].indices[0])*mesh.faces[i].indices.size());
-				
-				offsets[id] += mesh.faces[i].indices.size();
-			}
-			
-			C(sizeof(counts)/sizeof(*counts))
-				if (counts[i])
-				{
-					m_drawCalls.push_back(DrawCall());
-					m_drawCalls.back().set(&drawIndices[i][0],drawIndices[i].size(),fg::Primitive(i));				
+				if (face.useIndices()) {
+					m_drawCalls.back().set(&face.indices[0],mesh.faceSize(face),face.primitive);	
+				} else {
+					m_drawCalls.back().set(face.beg,mesh.faceSize(face),face.primitive);
 				}
+			}
+			// should it group faces?
+			// 
 			
+			// fm::Size counts[]  = {0,0,0,0,0,0,0};
+			// fm::Size offsets[] = {0,0,0,0,0,0,0};
+			
+			// for (const auto &face : mesh.faces)
+			// {
+			// 	counts[int(face.primitive)] += mesh.faceSize(face);
+			// }
+			
+			// std::vector<fm::Uint32> drawIndices[7];
+			
+			// C(sizeof(counts)/sizeof(*counts)) drawIndices[i].resize(counts[i]);
+			
+			// C(mesh.faces.size())
+			// {
+			// 	int id = int(mesh.faces[i].primitive);
+				
+			// 	std::memcpy(&drawIndices[id][offsets[id]],&mesh.faces[i].indices[0],sizeof(mesh.faces[i].indices[0])*mesh.faces[i].indices.size());
+				
+			// 	offsets[id] += mesh.faces[i].indices.size();
+			// }
+			
+			// C(sizeof(counts)/sizeof(*counts))
+			// 	if (counts[i])
+			// 	{
+			// 		m_drawCalls.push_back(DrawCall());
+			// 		m_drawCalls.back().set(&drawIndices[i][0],drawIndices[i].size(),fg::Primitive(i));				
+			// 	}
 		}
 		else
 		{
