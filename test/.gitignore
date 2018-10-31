@@ -11,4 +11,5 @@
 !computeShader/rose.png
 !phong/*.png
 !*/*.db
+!*/*.txt
 lib*
