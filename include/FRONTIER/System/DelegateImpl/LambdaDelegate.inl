@@ -23,16 +23,28 @@ namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	template<class LambdaT,class R,class... Args>
-	LambdaDelegate<LambdaT,R,Args...>::LambdaDelegate(LambdaT lambda) : m_lambda(lambda)
+	LambdaDelegate<LambdaT,R,Args...>::LambdaDelegate(const LambdaT &lambda) : m_lambda(lambda)
 	{
 		
+	}
+	
+	namespace priv {
+		template<class T>
+		T *to_ptr(T &t) {return &t;}
+		template<class T>
+		const T *to_ptr(const T &t) {return &t;}
+		template<class T>
+		T *to_ptr(T *t) {return t;}
+		template<class T>
+		const T *to_ptr(const T *t) {return t;}
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class LambdaT,class R,class... Args>
 	R LambdaDelegate<LambdaT,R,Args...>::call(Args... callArgs) const
 	{
-		return fm::CallForwarder<typename std::remove_pointer<LambdaT>::type,R,Args...>::call(m_lambda,callArgs...);
+		typedef typename std::remove_pointer<LambdaT>::type F;
+		return fm::CallForwarder<F,R,Args...>::call(priv::to_ptr<F>(m_lambda),callArgs...);
 	}
 	
 	/////////////////////////////////////////////////////////////

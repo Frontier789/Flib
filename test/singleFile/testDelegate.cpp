@@ -3,93 +3,221 @@
 
 using namespace std;
 
-void func01()
-{
-	cout << "void func01() called" << endl;
+int indicator;
+
+void fun_one() {
+	indicator = 1;
 }
 
-int func02()
-{
-	cout << "void func02() called" << endl;
+int int_fun() {
+	indicator = 2;
 	return 42;
 }
 
-int func03(int a)
-{
-	cout << "void func03() called w/ a = " << a << endl;
-	return a*42;
+int par_fun(int a) {
+	indicator = a;
+	return a;
 }
 
-class Cls
+bool success = true;
+
+string check(bool cond) {
+	if (cond)
+		return "true\n";
+	
+	success = false;
+	return "false\n";
+}
+
+struct Functor {
+	int val;
+	
+	Functor() : val(0) {}
+	Functor(const Functor &cpy) : val(cpy.val+1) {}
+	
+	int operator()() {return val++;}
+};
+
+struct CnstFunctor {
+	int val;
+	
+	CnstFunctor() : val(0) {}
+	CnstFunctor(const CnstFunctor &cpy) : val(cpy.val+1) {}
+	
+	int operator()() const {return val;}
+};
+
+struct Ordinary
 {
-public:
-	int mem;
-	Cls(int mem = 0) : mem(mem) {}
-	
-	int func04(int a)
-	{
-		cout << "void Cls::func04() called w/ mem=" << mem << " a = " << a << endl;
-		return mem+a;
-	}
-	
-	void func05(int a,int b) const
-	{
-		cout << "void Cls::func04() const called w/ mem=" << mem << " a = " << a << " b = " << b << endl;
-	}
-	
-	Cls *operator()(int k) const
-	{
-		cout << "Cls::operator() const called w/ mem=" << mem << " k = " << k << endl;
-		return new Cls();
-	}
+	int a;
+	Ordinary(int a = 2) : a(a) {}
+	int get() {return a;}
+	int cget() const {return a;}
 };
 
 int main()
 {
-	cout << "testing some delegate functionalities" << endl;
+	cout << "Testing some delegate functionalities" << endl;
 	
-	Delegate<void> d0 = &func01; d0();
-	d0 = &func02; d0();
+	fm::Delegate<void> d0;
+	fm::Delegate<int,int> d1;
+	fm::Delegate<int> d2;
+	const CnstFunctor ccfunctor;
+	CnstFunctor cfunctor;
+	Functor functor;
+	const Ordinary cordi{7};
+	Ordinary ordi{5};
+	int iret;
+	int five = 5;
 	
-	Delegate<int,int> d1 = &func02; cout << "d1(5) returned " << d1(5) << endl;
-	d1 = &func03; cout << "d1(5) returned " << d1(5) << endl;
-	d1 = &Cls::func04; cout << "d1(5) returned " << d1(5) << endl;
+	cout << "Assigning void()() to Delegate<void> and calling: ";
+	d0 = fun_one;
+	d0();
+	cout << check(indicator == 1);
+	indicator = 0;
 	
-	Cls c1(4);
-	d1 = Delegate<int,int>(&Cls::func04,&c1); cout << "d1(5) returned " << d1(5) << endl;
-	d1 = Delegate<int,int>(&Cls::func04,Cls(42)); cout << "d1(5) returned " << d1(5) << endl;
+	cout << "Assigning void(*)() to Delegate<void> and calling: ";
+	d0 = &fun_one;
+	d0();
+	cout << check(indicator == 1);
+	indicator = 0;
 	
-	Delegate<Cls*,int> d2 = Cls(10);
+	cout << "Assigning int()() to Delegate<void> (discarding return value) and calling: ";
+	d0 = &int_fun;
+	d0();
+	cout << check(indicator == 2);
+	indicator = 0;
 	
-	Cls *ptr = d2(42);
-	cout << ptr << " was returned by d2(42)" << endl;
-	delete ptr;
+	cout << "Assigning int()(int) to Delegate<int,int> and calling: ";
+	d1 = &par_fun;
+	iret = d1(3);
+	cout << check(iret == 3 && indicator == 3);
+	indicator = 0;
 	
-	d2 = &c1;
-	ptr = d2(10);
-	cout << ptr << " was returned by d2(10)" << endl;
-	delete ptr;
+	cout << "Calling Delegate<int,int> with extra parameters: ";
+	iret = d1(3,'a',"kecske",13,0.8);
+	cout << check(iret == 3 && indicator == 3);
+	indicator = 0;
 	
-	const Cls c2(11);
+	cout << "Assigning and calling captureless lambda: ";
+	d1 = [](int v){return v*2;};
+	iret = d1(4);
+	cout << check(iret == 8);
+	indicator = 0;
 	
-	d2 = &c2;
-	ptr = d2(18);
-	cout << ptr << " was returned by d2(18)" << endl;
-	delete ptr;
+	cout << "Assigning and calling reference captured lambda: ";
+	d1 = [&]{indicator = 4; return 11;};
+	iret = d1(400);
+	cout << check(iret == 11 && indicator == 4);
+	indicator = 0;
+	
+	cout << "Assigning and calling value captured lambda: ";
+	d1 = [&,five](int par){indicator = 4; return five + par*10;};
+	iret = d1(13);
+	cout << check(iret == 135 && indicator == 4);
+	indicator = 0;
+	
+	cout << "Assigning non-const object (copying) and calling constant functor: ";
+	d1 = cfunctor;
+	iret = d1(13,"obi");
+	cout << check(iret == 1);
+	indicator = 0;
+	
+	cout << "Assigning const object (copying) and calling constant functor: ";
+	d1 = ccfunctor;
+	iret = d1(13);
+	cout << check(iret == 1);
+	indicator = 0;
+	
+	cout << "Assigning (copying) and calling non-constant functor: ";
+	d1 = functor;
+	iret = d1(13);
+	cout << check(iret == 1);
+	indicator = 0;
+	
+	cout << "Assigning non-const object (storing a pointer) and calling constant functor: ";
+	d1 = &cfunctor;
+	iret = d1(13,"obi");
+	cout << check(iret == 0);
+	indicator = 0;
+	
+	cout << "Assigning const object (storing a pointer) and calling constant functor: ";
+	d1 = &ccfunctor;
+	iret = d1(13);
+	cout << check(iret == 0);
+	indicator = 0;
+	
+	cout << "Assigning (storing a pointer) and calling non-constant functor: ";
+	d1 = &functor;
+	iret = d1(13);
+	cout << check(iret == 0);
+	indicator = 0;
+	
+	cout << "Assigning class member function and using default constructor: ";
+	d2 = &Ordinary::get;
+	iret = d2();
+	cout << check(iret == 2);
+	indicator = 0;
+	
+	cout << "Assigning class member function and using explicit constructor: ";
+	d2 = fm::Delegate<int>(&Ordinary::get,Ordinary(10));
+	iret = d2();
+	cout << check(iret == 10);
+	indicator = 0;
+	
+	cout << "Assigning class member function and using copy constructor: ";
+	d2 = fm::Delegate<int>(&Ordinary::get,ordi);
+	iret = d2();
+	cout << check(iret == ordi.a);
+	indicator = 0;
+	
+	cout << "Assigning class member function and using copy constructor (const): ";
+	d2 = fm::Delegate<int>(&Ordinary::get,cordi);
+	iret = d2();
+	cout << check(iret == cordi.a);
+	indicator = 0;
+	
+	cout << "Assigning const class member function and using explicit constructor: ";
+	d2 = fm::Delegate<int>(&Ordinary::cget,Ordinary(10));
+	iret = d2();
+	cout << check(iret == 10);
+	indicator = 0;
+	
+	cout << "Assigning const class member function and using copy constructor: ";
+	d2 = fm::Delegate<int>(&Ordinary::cget,ordi);
+	iret = d2();
+	cout << check(iret == ordi.a);
+	indicator = 0;
+	
+	cout << "Assigning const class member function and using copy constructor (const): ";
+	d2 = fm::Delegate<int>(&Ordinary::cget,cordi);
+	iret = d2();
+	cout << check(iret == cordi.a);
+	indicator = 0;
 	
 	
-	d2 = [](int a) -> Cls* {
-		cout << "[](int a) -> Cls* lambda was called" << endl;
-		return new Cls(a*2);
-	};
+	cout << "Assigning class member function and using pointer: ";
+	d2 = fm::Delegate<int>(&Ordinary::get,&ordi);
+	iret = d2();
+	cout << check(iret == ordi.a);
+	indicator = 0;
 	
-	delete d2(10);
+	cout << "Assigning const class member function and using pointer: ";
+	d2 = fm::Delegate<int>(&Ordinary::cget,&ordi);
+	iret = d2();
+	cout << check(iret == ordi.a);
+	indicator = 0;
 	
+	cout << "Assigning const class member function and using pointer (const): ";
+	d2 = fm::Delegate<int>(&Ordinary::cget,&cordi);
+	iret = d2();
+	cout << check(iret == cordi.a);
+	indicator = 0;
 	
-	d2 = [&]() -> Cls* {
-		cout << "[&](int a) -> Cls* lambda was called and it knows that c1.mem = " << c1.mem << endl;
-		return new Cls(50);
-	};
-	
-	delete d2(10);
+	if (success) {
+		cout << "All tests succeeded" << endl;
+	} else {
+		cout << "Shit failed" << endl;
+		return 1;
+	}
 }

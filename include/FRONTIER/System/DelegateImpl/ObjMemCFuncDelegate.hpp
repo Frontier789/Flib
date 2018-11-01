@@ -14,11 +14,11 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_OBJMEMFUNCDELEGATE_HPP_INCLUDED
-#define FRONTIER_OBJMEMFUNCDELEGATE_HPP_INCLUDED
+#ifndef FRONTIER_OBJMEMCFUNCDELEGATE_HPP_INCLUDED
+#define FRONTIER_OBJMEMCFUNCDELEGATE_HPP_INCLUDED
 #include <FRONTIER/System/DelegateImpl/BaseDelegate.hpp>
 #include <FRONTIER/System/Ref.hpp>
-#define FRONTIER_OBJMEMFUNCDELEGATE
+#define FRONTIER_OBJMEMCFUNCDELEGATE
 
 namespace fm
 {
@@ -29,15 +29,15 @@ namespace fm
 	/// 
 	/////////////////////////////////////////////////////////////
 	template<class ObjectType,class AltR,class FuncArgList,class R = void,class... Args>
-	class ObjMemFuncDelegate : public priv::BaseDelegateIfCompatible<AltR,FuncArgList,R,Args...>::type
+	class ObjMemCFuncDelegate : public priv::BaseDelegateIfCompatible<AltR,FuncArgList,R,Args...>::type
 	{
 	public:
 		template<class... FuncArgs>
-		using FuncTypeProt = AltR (ObjectType::*)(FuncArgs...);
+		using FuncTypeProt = AltR (ObjectType::*)(FuncArgs...) const;
 		using FuncType = typename FuncArgList::template Apply<FuncTypeProt>;
 		
 		FuncType m_pointer; ///< Holds the pointer to the function
-		ObjectType *m_objptr; ///< Holds the object used on call
+		const ObjectType *m_objptr; ///< Holds the object used on call
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the delegate from a nonconst function pointer
@@ -46,7 +46,7 @@ namespace fm
 		/// @param obj The object to call the function on
 		/// 
 		/////////////////////////////////////////////////////////////
-		ObjMemFuncDelegate(FuncType funcPtr,fm::Ref<ObjectType> obj);
+		ObjMemCFuncDelegate(FuncType funcPtr,fm::Ref<const ObjectType> obj);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Call the assigned function
@@ -76,8 +76,8 @@ namespace fm
 	};
 }
 
-#endif // FRONTIER_OBJMEMFUNCDELEGATE_HPP_INCLUDED
+#endif // FRONTIER_OBJMEMCFUNCDELEGATE_HPP_INCLUDED
 
 #ifndef FRONTIER_DONT_INCLUDE_INL
-	#include <FRONTIER/System/DelegateImpl/ObjMemFuncDelegate.inl>
+	#include <FRONTIER/System/DelegateImpl/ObjMemCFuncDelegate.inl>
 #endif

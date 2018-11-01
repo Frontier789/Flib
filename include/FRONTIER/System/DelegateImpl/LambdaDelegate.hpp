@@ -29,7 +29,7 @@ namespace fm
 	class LambdaDelegate : public BaseDelegate<R,Args...>
 	{
 	public:
-		LambdaT m_lambda; ///< Holds the lambda function
+		mutable LambdaT m_lambda; ///< Holds the lambda function
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the delegate from a lambda function
@@ -37,7 +37,7 @@ namespace fm
 		/// @param lambda The lambda function
 		/// 
 		/////////////////////////////////////////////////////////////
-		LambdaDelegate(LambdaT lambda);
+		LambdaDelegate(const LambdaT &lambda);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Call the assigned function

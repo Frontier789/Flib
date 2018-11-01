@@ -27,15 +27,12 @@ namespace fm
 			class YES {char c[2];};
 			typedef char NO;
 			
-			template<class T>
-			static T instate();
-			
 			template<class T> static YES convertTest(T);
 			template<class  > static NO  convertTest(...);
 			
 		public:
 			enum {
-				value = sizeof(convertTest<RType>((*(FuncType*)nullptr)(instate<ArgTypes>()...))) == sizeof(YES)
+				value = sizeof(convertTest<RType>(std::declval<FuncType>()(std::declval<ArgTypes>()...))) == sizeof(YES)
 			};	
 		};
 		
@@ -71,17 +68,14 @@ namespace fm
 			};
 			
 			template<class TFuncType,class... TArgTypes> 
-			static auto test(TFuncType func,TArgTypes... args) -> typename Second<decltype(func(args...)),YES>::type;
+			static auto test(int) -> typename Second<decltype(std::declval<TFuncType>()(std::declval<TArgTypes>()...)),YES>::type;
 			
 			template<class TFuncType,class... TArgTypes> 
 			static NO test(...);
 			
-			template<class T>
-			static T instate();
-			
 		public:
 			enum {
-				value = DoesReturnMatch<sizeof(test<FuncType,ArgTypes...>((*(FuncType*)nullptr),instate<ArgTypes>()... )) == sizeof(YES),FuncType,RType,ArgTypes...>::value
+				value = DoesReturnMatch<sizeof(test<FuncType,ArgTypes...>(42)) == sizeof(YES),FuncType,RType,ArgTypes...>::value
 			};
 		};
 

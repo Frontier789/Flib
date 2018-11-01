@@ -14,15 +14,15 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_OBJMEMFUNCDELEGATE_INL_INCLUDED
-#define FRONTIER_OBJMEMFUNCDELEGATE_INL_INCLUDED
+#ifndef FRONTIER_OBJMEMCFUNCDELEGATE_INL_INCLUDED
+#define FRONTIER_OBJMEMCFUNCDELEGATE_INL_INCLUDED
 
 namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	template<class ObjectType,class AltR,class FuncArgList,class R,class... Args>
-	inline ObjMemCFuncDelegate<ObjectType,AltR,FuncArgList,R,Args...>::ObjMemCFuncDelegate(typename ObjMemCFuncDelegate<ObjectType,AltR,FuncArgList,R,Args...>::FuncType funcPtr,fm::Ref<ObjectType> obj) : m_pointer(funcPtr),
-																																																		 m_objptr(obj)
+	inline ObjMemCFuncDelegate<ObjectType,AltR,FuncArgList,R,Args...>::ObjMemCFuncDelegate(typename ObjMemCFuncDelegate<ObjectType,AltR,FuncArgList,R,Args...>::FuncType funcPtr,fm::Ref<const ObjectType> obj) : m_pointer(funcPtr),
+																																																		          m_objptr(obj)
 	{
 		
 	}
@@ -34,7 +34,7 @@ namespace fm
 		{
 		public:
 			template<class... ExtraArgs>
-			static inline R call(ObjectType *object,R (ObjectType::*funcPtr)(Args...) const,Args... args,ExtraArgs...)
+			static inline R call(const ObjectType *object,R (ObjectType::*funcPtr)(Args...) const,Args... args,ExtraArgs...)
 			{
 				return (object ->* funcPtr)(args...);
 			}
@@ -73,4 +73,4 @@ namespace fm
 	}
 }
 
-#endif // FRONTIER_OOBJMEMFUNCDELEGATE_INL_INCLUDED
+#endif // FRONTIER_OOBJMEMCFUNCDELEGATE_INL_INCLUDED

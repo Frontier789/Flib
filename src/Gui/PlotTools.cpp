@@ -60,7 +60,7 @@ namespace fgui
 			MeshPlotter(GuiContext &cont,vec2 size,Mesh m,PlotOptions opts) : GuiElement(cont, size),
 				m_cam(m_shader.getCamera()),
 				m_opts(opts),
-				m_wireFrame(true)
+				m_wireFrame(false)
 			{
 				prepShader();
 				setMesh(m);
@@ -68,13 +68,17 @@ namespace fgui
 				
 			void onDraw(ShaderManager &) override
 			{
+				if (m_wireFrame) {
+					glEnable(GL_POLYGON_OFFSET_FILL);
+					glPolygonOffset(1, 1);
+				}
+				
 				m_shader.getModelStack().top(m_rot);
 				m_shader.draw(m_dd);
 				
+				glDisable(GL_POLYGON_OFFSET_FILL);
+				
 				if (m_wireFrame) {
-					glEnable(GL_POLYGON_OFFSET_LINE);
-					glPolygonOffset(1.0, 20);
-					
 					mat4 cm(0);
 					cm[3][3] = 1;
 					m_shader.getColorStack().push(cm);
@@ -82,8 +86,8 @@ namespace fgui
 					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 					m_shader.draw(m_dd);
 					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+					
 					m_shader.getColorStack().pop();
-					glDisable(GL_POLYGON_OFFSET_LINE);
 				}
 			}
 			
@@ -110,6 +114,11 @@ namespace fgui
 				if (ev.type == Event::Resized) {
 					setSize(ev.size);
 					m_shader.getCamera().setCanvasSize(ev.size);
+				}
+				
+				if (ev.type == Event::KeyPressed) {
+					if (ev.key.code == Keyboard::W)
+						m_wireFrame = !m_wireFrame;
 				}
 				
 				return false;
