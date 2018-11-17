@@ -52,7 +52,7 @@ bool bufferTest(ostream &out)
 	// --- //
 	float upd[] = {1,8,9};
 	data[0].y = upd[0]; data[1].x = upd[1]; data[1].y = upd[2];
-	res += buf.updateData(upd,sizeof(upd),sizeof(float));
+	res += buf.updateData(upd,sizeof(float));
 	
 	ptr = buf.map<float>(BufferReadOnly);
 	allmatch = true;
