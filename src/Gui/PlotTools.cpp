@@ -17,6 +17,7 @@ namespace fgui
 		class MeshPlotter : public GuiElement, public ClickListener, public ScrollListener
 		{
 			DrawData m_dd;
+			DrawData m_ntbDD;
 			ShaderManager m_shader;
 			mat4 m_rot;
 			float m_camStartZ;
@@ -24,9 +25,41 @@ namespace fgui
 			fm::box3f m_aabb;
 			PlotOptions m_opts;
 			bool m_wireFrame;
+			bool m_drawNorms;
+			bool m_drawTans;
+			bool m_cullCW;
+			
+			void makeNTB(Mesh &m)
+			{
+				m_ntbDD.reset();
+				
+				Mesh ntb_mesh;
+				ntb_mesh.pts.reserve(m.norms.size()*2 + m.tans.size()*2 + m.bitans.size()*2);
+				ntb_mesh.clr.reserve(ntb_mesh.pts.size());
+				
+				double scl = 1;
+				
+				for (auto desc : {make_pair(&m.norms,  vec4(1,0,0)),
+								  make_pair(&m.tans,   vec4(0,1,0)),
+								  make_pair(&m.bitans, vec4(0,0,1))
+								  })
+				C(desc.first->size()) {
+					ntb_mesh.pts.push_back(m.pts[i]);
+					ntb_mesh.pts.push_back(m.pts[i] + desc.first->at(i) * scl);
+					ntb_mesh.clr.push_back(desc.second);
+					ntb_mesh.clr.push_back(desc.second);
+				}
+				
+				ntb_mesh.faces.push_back(Mesh::Face(fg::Lines,0,m.norms.size()*2));
+				ntb_mesh.faces.push_back(Mesh::Face(fg::Lines,m.norms.size()*2,m.tans.size()*2 + m.bitans.size()*2));
+				
+				m_ntbDD = ntb_mesh;
+			}
 
 			void setMesh(Mesh &m)
 			{
+				makeNTB(m);
+				
 				m_dd = m;
 				m_aabb = m.AABB();
 				
@@ -60,7 +93,10 @@ namespace fgui
 			MeshPlotter(GuiContext &cont,vec2 size,Mesh m,PlotOptions opts) : GuiElement(cont, size),
 				m_cam(m_shader.getCamera()),
 				m_opts(opts),
-				m_wireFrame(false)
+				m_wireFrame(false),
+				m_drawNorms(false),
+				m_drawTans(false),
+				m_cullCW(false)
 			{
 				prepShader();
 				setMesh(m);
@@ -68,7 +104,14 @@ namespace fgui
 				
 			void onDraw(ShaderManager &) override
 			{
-				if (m_wireFrame) {
+				if (m_cullCW) {
+					glEnable(GL_CULL_FACE);
+					glCullFace(GL_BACK);
+				} else {
+					glDisable(GL_CULL_FACE);
+				}
+				
+				if (m_wireFrame || m_drawNorms || m_drawTans) {
 					glEnable(GL_POLYGON_OFFSET_FILL);
 					glPolygonOffset(1, 1);
 				}
@@ -89,6 +132,12 @@ namespace fgui
 					
 					m_shader.getColorStack().pop();
 				}
+				
+				if (m_drawNorms)
+					m_shader.draw(m_ntbDD,0);
+				
+				if (m_drawTans)
+					m_shader.draw(m_ntbDD,1);
 			}
 			
 			void onMouseMove(fm::vec2 p,fm::vec2 prevP) override
@@ -119,6 +168,15 @@ namespace fgui
 				if (ev.type == Event::KeyPressed) {
 					if (ev.key.code == Keyboard::W)
 						m_wireFrame = !m_wireFrame;
+					
+					if (ev.key.code == Keyboard::N)
+						m_drawNorms = !m_drawNorms;
+					
+					if (ev.key.code == Keyboard::T)
+						m_drawTans  = !m_drawTans;
+					
+					if (ev.key.code == Keyboard::C)
+						m_cullCW    = !m_cullCW;
 				}
 				
 				return false;

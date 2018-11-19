@@ -115,7 +115,7 @@ namespace fg
 		/// @param copy The mesh to copy
 		/// 
 		/////////////////////////////////////////////////////////////
-		Mesh(const Mesh &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
+		explicit Mesh(const Mesh &copy);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Move constructor
@@ -124,16 +124,6 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		Mesh(Mesh &&move);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Copy assignment
-		/// 
-		/// @param copy The mesh to copy
-		/// 
-		/// @return Reference to itself
-		/// 
-		/////////////////////////////////////////////////////////////
-		reference operator=(const Mesh &copy) FRONTIER_HEAVYCOPY_QUALIFIER;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Move assignment
@@ -178,12 +168,14 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculate the tangent and bitangent vectors for every vertex
 		/// 
-		/// Needs normals to be able to calculate
+		/// Needs normals to be able to calculate tangents
+		/// 
+		/// @param joinIdenticalVertices Indicates whether the vertices with matching positions are to be considered as one
 		/// 
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		reference calcTangents();
+		reference calcTangents(bool joinIdenticalVertices = true);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Tesselate a linestrip into series of quads (represented as 2 triangles / quad)
@@ -196,7 +188,7 @@ namespace fg
 		/// @param width The thickness of the line
 		/// @param distField If set to true distance field will be processed into the next extra channel in mesh
 		/// 
-		/// @return The mesh calculated
+		/// @return The calculated mesh
 		/// 
 		/////////////////////////////////////////////////////////////
 		static Mesh tesLineStrip(const fm::vec2 *pts,fm::Size N,float width,bool distField = false);
@@ -209,7 +201,7 @@ namespace fg
 		/// @param H The number of vertices on the vertical belt
 		/// @param rfunc A distort function to be applied to the sphere
 		/// 
-		/// @return The mesh calculated
+		/// @return The calculated mesh
 		/// 
 		/////////////////////////////////////////////////////////////
 		static Mesh getSphere(float radius = 1,fm::Size W = 20,fm::Size H = 20,const fm::Delegate<float,float &,float &> &rfunc = nullptr);
@@ -223,7 +215,7 @@ namespace fg
 		/// @param H The number of vertices on the vertical belt
 		/// @param rfunc A distort function to be applied to the torus
 		/// 
-		/// @return The mesh calculated
+		/// @return The calculated mesh
 		/// 
 		/////////////////////////////////////////////////////////////
         static Mesh getTorus(float majorR = 1,float minorR = .5,fm::Size W = 30,fm::Size H = 15,const fm::Delegate<float,float &,float &> &rfunc = nullptr);
@@ -235,7 +227,7 @@ namespace fg
 		/// @param N The number of vertices on the side
 		/// @param rfunc A distort function to be applied to the cube
 		/// 
-		/// @return The mesh calculated
+		/// @return The calculated mesh
 		/// 
 		/////////////////////////////////////////////////////////////
 		static Mesh getCube(float size = 1,fm::Size N = 2,const fm::Delegate<float,float &,float &> &rfunc = nullptr);
@@ -249,7 +241,7 @@ namespace fg
 		/// @param H The number of vertices on the vertical side
 		/// @param rfunc A distort function to be applied to the cylinder
 		/// 
-		/// @return The mesh calculated
+		/// @return The calculated mesh
 		/// 
 		/////////////////////////////////////////////////////////////
         static Mesh getCylinder(float radius = 1,float height = 1,fm::Size W = 20,fm::Size H = 2,const fm::Delegate<float,float &,float &> &rfunc = nullptr);
@@ -261,7 +253,7 @@ namespace fg
 		/// @param N The number of vertices on the circle
 		/// @param rfunc A distort function to be applied to the circle
 		/// 
-		/// @return The mesh calculated
+		/// @return The calculated mesh
 		/// 
 		/////////////////////////////////////////////////////////////
 		static Mesh getCircle(float radius = 1,fm::Size N = 42,const fm::Delegate<float,float &> &rfunc = nullptr);
@@ -275,10 +267,32 @@ namespace fg
 		/// @param H The number of vertices on the vertical axis
 		/// @param rfunc A distort function to be applied to the circle
 		/// 
-		/// @return The mesh calculated
+		/// @return The calculated mesh
 		/// 
 		/////////////////////////////////////////////////////////////
 		static Mesh getRectangle(float width = 1,float height = 1,fm::Size W = 2,fm::Size H = 2,const fm::Delegate<float,float &,float &> &rfunc = nullptr);
+	
+		/////////////////////////////////////////////////////////////
+		/// @brief Calculate the vertices of a diamond mesh
+		/// 
+		/// @param N The number of sides of the diamond
+		/// @param size The scale to apply to the mesh
+		/// 
+		/// @return The calculated mesh
+		/// 
+		/////////////////////////////////////////////////////////////
+		static Mesh getDiamond(fm::Size N = 7,float size = 1);
+	
+		/////////////////////////////////////////////////////////////
+		/// @brief Calculate the vertices of a teapot mesh
+		/// 
+		/// @param N The sqare root of the number of vertices on each bezier patch
+		/// @param size The scale to apply to the mesh
+		/// 
+		/// @return The calculated mesh
+		/// 
+		/////////////////////////////////////////////////////////////
+		static Mesh getTeapot(fm::Size N = 8,float size = 1);
 	
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculate the number of vertices a face consists of
@@ -288,7 +302,23 @@ namespace fg
 		/// @return The number of vertices
 		/// 
 		/////////////////////////////////////////////////////////////
-		fm::Size faceSize(const Face &face) const; ///< Get the number of vertices in a face
+		fm::Size faceSize(const Face &face) const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get a good epsilon
+		/// 
+		/// Guaranteed to be smaller than the smallest trinagle side in the mesh
+		/// 
+		/// @return The number of vertices
+		/// 
+		/////////////////////////////////////////////////////////////
+		double getEpsilon() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Find duplicate points and join their normals
+		/// 
+		/////////////////////////////////////////////////////////////
+		void joinNormals();
 	};
 }
 

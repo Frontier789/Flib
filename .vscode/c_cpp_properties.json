@@ -74,10 +74,10 @@
                 "APIENTRY",
                 "__GNUC__=6",
                 "__cdecl=__attribute__((__cdecl__))",
-                "__stdcall=attribute((stdcall))",
+                "__stdcall=",
                 "__SIZE_TYPE__=long long "
             ],
-            "intelliSenseMode": "clang-x64",
+            "intelliSenseMode": "gcc-x64",
             "browse": {
                 "path": [
                     "${workspaceRoot}",

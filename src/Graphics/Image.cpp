@@ -69,14 +69,16 @@ namespace fg
 		loadFromFile(filename);
 	}
 	
-#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	Image::Image(const Image &copy) : m_texels(nullptr)
 	{
 		FRONTIER_HEAVYCOPY_NOTE;
-		(*this) = copy;
+		
+		m_size = copy.m_size;
+		m_texels = new Color[m_size.area()];
+		
+		std::memcpy(m_texels,copy.m_texels,m_size.area() * sizeof(*m_texels));
 	}
-#endif
 
 	/////////////////////////////////////////////////////////////
 	Image::Image(Image &&move) : m_texels(nullptr)
@@ -700,21 +702,4 @@ namespace fg
 		
 		return (*this);
 	}
-	
-#ifndef FRONTIER_HEAVYCOPY_FORBID
-	/////////////////////////////////////////////////////////////
-	Image::reference Image::operator=(const Image &copy)
-	{
-		FRONTIER_HEAVYCOPY_NOTE;
-		
-		delete[] m_texels;
-		m_size = copy.m_size;
-		
-		m_texels = new Color[m_size.area()];
-		
-		std::memcpy(m_texels,copy.m_texels,m_size.area() * sizeof(*m_texels));
-		
-		return (*this);
-	}
-#endif
 }

@@ -1,4 +1,6 @@
 #include <Frontier.hpp>
+#include <iostream>
+#include <set>
 
 using namespace std;
 
@@ -56,19 +58,23 @@ int main()
 
 	vec3 p,v(0,0,-1),u(0,1,0),r(1,0,0);
 	float focal = 300;
-
+	
 	vec2i s = img.getSize();
 	for (int i=0;i<s.w;++i)
 	for (int j=0;j<s.h;++j) {
 		vec3 pix = v*focal + u*(j - s.h/2.f) + r*(i - s.w/2.f);
+		vec4 col(0,0,0,0);
+		
 		Ray<float> ray(p,pix);
 
 		auto inters = intersect(vec3(-50,-50,-200),vec3(100,50,-200),vec3(-100,100,-200),ray);
 		if (inters.exist) {
-			img.set(vec2i(i,j),Color::White);
+			col += vec4::White;
 		} else {
-			img.set(vec2i(i,j),Color::Black);
+			col += vec4::Black;
 		}
+		
+		img.set(vec2i(i,j),col*255);
 	}
 
 	img.saveToFile("triangle.png");

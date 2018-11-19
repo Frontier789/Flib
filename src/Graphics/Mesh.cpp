@@ -14,10 +14,11 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/BezierCurve.hpp>
 #include <FRONTIER/System/Delegate.hpp>
-#include <FRONTIER/System/util/C.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/util/C.hpp>
 #include <FRONTIER/System/Matrix.hpp>
 #include <FRONTIER/System/Polar2.hpp>
 #include <FRONTIER/System/Polar3.hpp>
@@ -25,10 +26,13 @@
 #include <algorithm>
 #include <map>
 #include <set>
+#include <iostream>
+using namespace std;
 
 namespace fg
 {
 	using fm::vec2;
+	using fm::vec3;
 	using fm::vec2i;
 	using fm::vec2s;
 	
@@ -66,25 +70,8 @@ namespace fg
 		return indices.size();
 	}
 	
-#ifndef FRONTIER_HEAVYCOPY_FORBID
 	/////////////////////////////////////////////////////////////
 	Mesh::Mesh(const Mesh &copy)
-	{
-		FRONTIER_HEAVYCOPY_NOTE;
-		
-		(*this) = copy;
-	}
-#endif
-	
-	/////////////////////////////////////////////////////////////
-	Mesh::Mesh(Mesh &&move)
-	{
-		move.swap(*this);
-	}
-
-#ifndef FRONTIER_HEAVYCOPY_FORBID
-	/////////////////////////////////////////////////////////////
-	Mesh::reference Mesh::operator=(const Mesh &copy)
 	{
 		FRONTIER_HEAVYCOPY_NOTE;
 		
@@ -94,12 +81,14 @@ namespace fg
 		norms  .assign(copy.norms.begin(), copy.norms.end());
 		tans   .assign(copy.tans.begin(),  copy.tans.end());
 		bitans .assign(copy.bitans.begin(),copy.bitans.end());
-	    
-		faces.assign(copy.faces.begin(),copy.faces.end());
-
-	    return *this;
+		faces  .assign(copy.faces.begin(), copy.faces.end());
 	}
-#endif
+	
+	/////////////////////////////////////////////////////////////
+	Mesh::Mesh(Mesh &&move)
+	{
+		move.swap(*this);
+	}
 	
 	/////////////////////////////////////////////////////////////
 	Mesh::reference Mesh::operator=(Mesh &&move)
@@ -398,10 +387,9 @@ namespace fg
 			It gbeg = beg;
 			for (It cur = beg;cur != end;)
 			{
-				It prev = cur;
 				++cur;
 				
-				if (cur == end || prev->far(*cur,dim,mnDst)) {
+				if (cur == end || gbeg->far(*cur,dim,mnDst)) {
 					forEachPindGroup(gbeg, cur, mnDst, cb, dim+1);
 					gbeg = cur;
 				}
@@ -420,14 +408,87 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
+	double Mesh::getEpsilon() const
+	{
+		double mnDst = -1;
+		
+		for (auto &face : faces)
+		{
+			fg::Primitive primitive = face.primitive;
+			auto &indices = face.indices;
+		
+			if (primitive != fg::Triangles &&
+				primitive != fg::TriangleStrip &&
+				primitive != fg::TriangleFan)
+				continue;
+
+			for (fm::Size i=face.beg;i<face.beg + faceSize(face);++i)
+			{
+				fm::Uint32 ind0 = face.useIndices() ? indices[i+0] : i+0;
+				fm::Uint32 ind1 = face.useIndices() ? indices[i+1] : i+1;
+				fm::Uint32 ind2 = face.useIndices() ? indices[i+2] : i+2;
+
+				if (primitive == fg::Triangles) i += 2;
+				else if (primitive == fg::TriangleFan) ind0 = 0;
+
+				fm::vec3 v0 = pts[ind1]-pts[ind0], v1 = pts[ind2]-pts[ind0], v2 = pts[ind2]-pts[ind1];
+				
+				mnDst = minButNot0(mnDst,fm::vec3d(v0).LENGTH());
+				mnDst = minButNot0(mnDst,fm::vec3d(v1).LENGTH());
+				mnDst = minButNot0(mnDst,fm::vec3d(v2).LENGTH());
+			}
+		}
+		
+		if (mnDst == -1) return 0;
+		
+		return std::sqrt(mnDst) / 2;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void Mesh::joinNormals()
+	{
+		double mnDst = getEpsilon();
+			
+		for (auto &face : faces)
+		{
+			std::vector<Pind> points;
+			points.reserve(faceSize(face));
+			
+			for (fm::Size i=face.beg;i<face.beg + faceSize(face);++i)
+			{
+				fm::Uint32 ind = face.useIndices() ? face.indices[i] : i;
+				points.push_back(Pind{pts[ind],ind});
+			}
+			
+			std::sort(points.begin(),points.end());
+			points.erase(std::unique(points.begin(),points.end()),points.end());
+			
+			typedef std::vector<Pind>::iterator It;
+			forEachPindGroup<It>(points.begin(), points.end(), mnDst, [&](It beg,It end){
+				if (beg == end || beg+1 == end) return;
+				
+				fm::vec3 n;
+				double cnt = 0;
+				
+				for (auto it = beg;it != end;++it) {
+					n += norms[it->i];
+					++cnt;
+				}
+				n /= cnt;
+				
+				for (auto it = beg;it != end;++it)
+					norms[it->i] = n;
+			});
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
     Mesh::reference Mesh::calcNormals(bool joinIdenticalVertices)
     {
 		if (pts.size() < 3)
 			return *this;
             
 		norms.resize(pts.size(),fm::vec3());
-		
-		double mnDst = -1;
 		
 		for (auto &face : faces)
 		{
@@ -445,21 +506,11 @@ namespace fg
 				fm::Uint32 ind1 = face.useIndices() ? indices[i+1] : i+1;
 				fm::Uint32 ind2 = face.useIndices() ? indices[i+2] : i+2;
 
-				if (primitive == fg::Triangles)
-				{
-					i += 2;
-				}
-				else if (primitive == fg::TriangleFan)
-				{
-					ind0 = 0;
-				}
+				if (primitive == fg::Triangles) i += 2;
+				else if (primitive == fg::TriangleFan) ind0 = 0;
 
-				fm::vec3 v0 = pts[ind1]-pts[ind0], v1 = pts[ind2]-pts[ind0], v2 = pts[ind2]-pts[ind1];
+				fm::vec3 v0 = pts[ind1]-pts[ind0], v1 = pts[ind2]-pts[ind0];
 				
-				mnDst = minButNot0(mnDst,fm::vec3d(v0).LENGTH());
-				mnDst = minButNot0(mnDst,fm::vec3d(v1).LENGTH());
-				mnDst = minButNot0(mnDst,fm::vec3d(v2).LENGTH());
-
 				fm::vec3 N = (v0).cross(v1);
 				norms[ind0] += N;
 				norms[ind1] += N;
@@ -468,35 +519,7 @@ namespace fg
 		}
 		
 		if (joinIdenticalVertices)
-		{
-			for (auto &face : faces)
-			{
-				std::vector<Pind> points;
-				points.reserve(faceSize(face));
-				
-				for (fm::Size i=face.beg;i<face.beg + faceSize(face);++i)
-				{
-					fm::Uint32 ind = face.useIndices() ? face.indices[i] : i;
-					points.push_back(Pind{pts[ind],ind});
-				}
-				
-				std::sort(points.begin(),points.end());
-				points.erase(std::unique(points.begin(),points.end()),points.end());
-				
-				typedef std::vector<Pind>::iterator It;
-				forEachPindGroup<It>(points.begin(), points.end(), std::sqrt(mnDst)/2, [&](It beg,It end){
-					if (beg == end || beg+1 == end) return;
-					
-					fm::vec3 n;
-					
-					for (auto it = beg;it != end;++it)
-						n += norms[it->i];
-					
-					for (auto it = beg;it != end;++it)
-						norms[it->i] = n;
-				});
-			}
-		}
+			joinNormals();
 		
 		for (auto &n : norms)
 			n = n.sgn();
@@ -505,32 +528,29 @@ namespace fg
     }
 
 	/////////////////////////////////////////////////////////////
-	Mesh::reference Mesh::calcTangents()
+	Mesh::reference Mesh::calcTangents(bool joinIdenticalVertices)
     {
 		if (pts.size() < 3 || uvs.size() < 3)
 			return *this;
 
-		for (fm::Size faceIndex = 0;faceIndex < faces.size();++faceIndex)
+		for (auto &face : faces)
 		{
-			fg::Primitive &primitive = faces[faceIndex].primitive;
-			
-			std::vector<fm::Uint32> &indices = faces[faceIndex].indices;
+			fg::Primitive &primitive = face.primitive;
+			std::vector<fm::Uint32> &indices = face.indices;
 		
 			if (primitive != fg::Triangles &&
 				primitive != fg::TriangleStrip &&
 				primitive != fg::TriangleFan)
 				continue;
 			
-			bool useInds = (indices.size()!=0);
-
 			tans.resize(pts.size(),fm::vec3());
 			bitans.resize(pts.size(),fm::vec3());
 
-			C((useInds ? indices.size() : pts.size()) - 2)
+			for (fm::Size i=face.beg;i<face.beg + faceSize(face);++i)
 			{
-				fm::Uint32 ind0 = useInds ? indices[i+0] : i+0;
-				fm::Uint32 ind1 = useInds ? indices[i+1] : i+1;
-				fm::Uint32 ind2 = useInds ? indices[i+2] : i+2;
+				fm::Uint32 ind0 = face.useIndices() ? indices[i+0] : i+0;
+				fm::Uint32 ind1 = face.useIndices() ? indices[i+1] : i+1;
+				fm::Uint32 ind2 = face.useIndices() ? indices[i+2] : i+2;
 
 				if (primitive == fg::Triangles)
 				{
@@ -567,6 +587,18 @@ namespace fg
 				bitans[ind2] += B;
 			}
         }
+		
+		if (joinIdenticalVertices) {
+			norms.swap(tans);
+			
+			joinNormals();
+			
+			norms.swap(bitans);
+			joinNormals();
+			norms.swap(bitans);
+			
+			norms.swap(tans);
+		}
 
         C(tans.size())
 			tans[i] = tans[i].sgn();
@@ -698,6 +730,110 @@ namespace fg
 		C(H) helper(0,float(i)/(H-1));
         
 		return ret;
+	}
+	
+	namespace {
+		namespace teapot
+		{
+			#include "models/utah.teapot.txt"
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
+	Mesh Mesh::getTeapot(fm::Size N,float size)
+	{
+		Mesh m;
+		m.faces.push_back(Mesh::Face(Triangles,0));
+		auto &inds = m.faces.back().indices;
+		
+		for (fm::Size k=0;k<teapot::nPatches;++k) {
+			fm::BezierSurface<fm::vec3> bezier(4);
+			Cxy(4,4)
+				bezier[x][y] = teapot::vertices[teapot::patches[k][x*4+y]-1];
+			
+			m.pts.reserve(m.pts.size() + N*N);
+			m.uvs.reserve(m.uvs.size() + N*N);
+			
+			fm::Size pbase = m.pts.size();
+			fm::Size ibase = inds.size();
+			
+			inds.resize(inds.size() + (N-1)*(N-1)*6);
+			
+			Cxy(N,N) {
+				fm::vec2d uv = {x/double(N-1),y/double(N-1)};
+				auto p = bezier(uv);
+				m.pts.push_back(p*size);
+				m.uvs.push_back(uv);
+				
+				if (x != N-1 && y != N-1) {
+					inds[(x*(N-1)+y)*6+0+ibase] = pbase+x*N+y;
+					inds[(x*(N-1)+y)*6+1+ibase] = pbase+(x+1)*N+(y+1);
+					inds[(x*(N-1)+y)*6+2+ibase] = pbase+(x+1)*N+y;
+					inds[(x*(N-1)+y)*6+3+ibase] = pbase+x*N+y;
+					inds[(x*(N-1)+y)*6+4+ibase] = pbase+x*N+(y+1);
+					inds[(x*(N-1)+y)*6+5+ibase] = pbase+(x+1)*N+(y+1);
+				}
+			}
+		}
+		
+		return m;
+	}
+	
+	
+	/////////////////////////////////////////////////////////////
+	Mesh Mesh::getDiamond(fm::Size N,float size)
+	{
+		vector<vec2> cps{vec2(.1,0),vec2(.1,.1),vec2(1,.95),vec2(1.1,.96),vec2(1.4,.7),vec2(1.4,0)};
+		fm::Size s = cps.size();
+		
+		Mesh m;
+				
+		for (fm::Size i=0;i<N;++i) // slice
+		{
+			fm::Anglef acur = fm::deg(360*i/float(N));
+			fm::Anglef anxt = fm::deg(360*(i+1)/float(N));
+			vec2 pcur = fm::pol2(1,acur);
+			vec2 pnxt = fm::pol2(1,anxt);
+			
+			float ir = float(i)/N;
+			float irn = float(i+1)/N;
+			
+			for (fm::Size j=0;j+1<s;++j) {
+				vec2 pa0 = pcur * cps[j].y;
+				vec2 pn0 = pnxt * cps[j].y;
+				vec2 pa1 = pcur * cps[j+1].y;
+				vec2 pn1 = pnxt * cps[j+1].y;
+				
+				float jr = float(j)/s;
+				float jrn = float(j+1)/s;
+				
+				if (j+2 != s) {
+					m.faces.push_back(Mesh::Face(fg::Triangles,m.pts.size(),3));
+					m.pts.push_back(vec3(pa0.x,cps[j].x,pa0.y));
+					m.pts.push_back(vec3(pa1.x,cps[j+1].x,pa1.y));
+					m.pts.push_back(vec3(pn1.x,cps[j+1].x,pn1.y));
+					
+					m.uvs.push_back(vec2(ir,jr));
+					m.uvs.push_back(vec2(ir,jrn));
+					m.uvs.push_back(vec2(irn,jrn));
+				}
+				
+				if (j) {
+					m.faces.push_back(Mesh::Face(fg::Triangles,m.pts.size(),3));
+					m.pts.push_back(vec3(pa0.x,cps[j].x,pa0.y));
+					m.pts.push_back(vec3(pn1.x,cps[j+1].x,pn1.y));
+					m.pts.push_back(vec3(pn0.x,cps[j].x,pn0.y));
+					
+					m.uvs.push_back(vec2(ir,jr));
+					m.uvs.push_back(vec2(irn,jrn));
+					m.uvs.push_back(vec2(irn,jr));
+				}
+			}
+		}
+		
+		for (auto &p : m.pts) p *= size;
+		
+		return m;
 	}
 	
 	/////////////////////////////////////////////////////////////

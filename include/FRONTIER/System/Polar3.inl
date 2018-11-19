@@ -22,18 +22,20 @@ namespace fm
 {
 	/////////////////////////////////////////////////////////////
 	template<class T,class A>
-	polar3<T,A>::polar3(const T &length,const Angle<A> &theta,const Angle<A> &phi) : length(length),
-																			   theta(theta),
-																			   phi(phi)
+	polar3<T,A>::polar3(const T &length,const Angle<A> &theta,const Angle<A> &phi) : 
+		length(length),
+		theta(theta),
+		phi(phi)
 	{
 
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<class T,class A>
-	polar3<T,A>::polar3(typename polar3<T,A>::const_reference copy) : length(copy.length),
-																	  theta(copy.theta),
-																	  phi(copy.phi)
+	polar3<T,A>::polar3(typename polar3<T,A>::const_reference copy) : 
+		length(copy.length),
+		theta(copy.theta),
+		phi(copy.phi)
 	{
 
 	}
