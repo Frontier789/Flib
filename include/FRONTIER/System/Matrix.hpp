@@ -30,6 +30,7 @@
 #include <FRONTIER/System/CommonTypes.hpp>
 #include <FRONTIER/System/Angle.hpp>
 #include <type_traits>
+#include <array>
 
 #define FRONTIER_MATRIX
 namespace fm
@@ -43,7 +44,7 @@ namespace fm
 	template<Size W,Size H = W,class T = float>
 	class matrix
 	{
-		T m_data[W][H]; ///< 2D array holding the data of the matrix
+		std::array<std::array<T,H>,W> m_data; ///< 2D array holding the data of the matrix
 	public:
 		typedef T component_type;
 		typedef matrix<W,H,T> &reference;
@@ -55,7 +56,6 @@ namespace fm
 		};
 		
 		static const bool isSquare; ///< True iff the matrix is a square matrix
-
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructor
@@ -92,14 +92,6 @@ namespace fm
 		matrix(const T (&data)[W][H]);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Default constructor
-		///
-		/// Initializes matrix to have @a diagonal on the main diagonal and @a rest on the rest
-		///
-		/////////////////////////////////////////////////////////////
-		matrix(const T &diagonal,const T &rest);
-
-		/////////////////////////////////////////////////////////////
 		/// @brief Copy constructor
 		///
 		/// @param mat The matrix to be copied
@@ -116,100 +108,89 @@ namespace fm
 		matrix(fm::Delegate<T,vec2i> fun);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Create a matrix using an initializer list
-		/// 
-		/// Matrix is filled in row-major order
-		/// Unspecified elements are set to T()
-		/// Extra elements are ignored
-		/// 
-		/// @param data The data to use
-		///
-		/////////////////////////////////////////////////////////////
-		matrix(std::initializer_list<T> data);
-
-#ifdef _MSVC_LANG
-		/////////////////////////////////////////////////////////////
-		/// @brief Construct a matrix<n,n> from n*n values
-		/// 
-		/// This is only a workaround for MSVC 
-		/// for it lacks proper SFINAE support
+		/// @brief Construct a matrix<w,h> from w*h values
 		/// 
 		/// @param args The values to use
 		///
 		/////////////////////////////////////////////////////////////
-		template<class... ArgTypes>
-		matrix(const ArgTypes &... args);
-#else
+		template<class... ArgTypes,
+				 class = typename std::enable_if<
+					sizeof...(ArgTypes) == W*H
+				 >::type>
+		matrix(ArgTypes... args);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct a matrix<2,2> from 4 values
-		///
-		/// @param a00 The element at 0,0
-		/// @param a01 The element at 0,1
-		/// @param a10 The element at 1,0
-		/// @param a11 The element at 1,1
+		/// @brief Construct a matrix<N,h> from h vectorNs
+		/// 
+		/// @param args The column vectors to use
 		///
 		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == H && W == 2,K>::type>
-		matrix(const T &a00,const T &a01,
-			   const T &a10,const T &a11);
+		template<class... ArgTypes,
+				 class = typename std::enable_if<
+					W == 2 && sizeof...(ArgTypes) == H
+				 >::type,class=void>
+		matrix(ArgTypes... args);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct a matrix<3,3> from 9 values
-		///
-		/// @param a00 The element at 0,0
-		/// @param a01 The element at 0,1
-		/// @param a02 The element at 0,2
-		/// @param a10 The element at 1,0
-		/// @param a11 The element at 1,1
-		/// @param a12 The element at 1,2
-		/// @param a20 The element at 2,0
-		/// @param a21 The element at 2,1
-		/// @param a22 The element at 2,2
+		/// @brief Construct a matrix<N,h> from h vectorNs
+		/// 
+		/// @param args The column vectors to use
 		///
 		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == H && W == 3,K>::type>
-		matrix(const T &a00,const T &a01,const T &a02,
-			   const T &a10,const T &a11,const T &a12,
-			   const T &a20,const T &a21,const T &a22);
+		template<class... ArgTypes,
+				 class = typename std::enable_if<
+					W == 3 && sizeof...(ArgTypes) == H
+				 >::type,class=void,class=void>
+		matrix(ArgTypes... args);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct a matrix<4,4> from 16 values
-		///
-		/// @param a00 The element at 0,0
-		/// @param a01 The element at 0,1
-		/// @param a02 The element at 0,2
-		/// @param a03 The element at 0,3
-		/// @param a10 The element at 1,0
-		/// @param a11 The element at 1,1
-		/// @param a12 The element at 1,2
-		/// @param a13 The element at 1,3
-		/// @param a20 The element at 2,0
-		/// @param a21 The element at 2,1
-		/// @param a22 The element at 2,2
-		/// @param a23 The element at 2,3
-		/// @param a30 The element at 3,0
-		/// @param a31 The element at 3,1
-		/// @param a32 The element at 3,2
-		/// @param a33 The element at 3,3
+		/// @brief Construct a matrix<N,h> from h vectorNs
+		/// 
+		/// @param args The column vectors to use
 		///
 		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == H && W == 4,K>::type>
-		matrix(const T &a00,const T &a01,const T &a02,const T &a03,
-			   const T &a10,const T &a11,const T &a12,const T &a13,
-			   const T &a20,const T &a21,const T &a22,const T &a23,
-			   const T &a30,const T &a31,const T &a32,const T &a33);
-		
+		template<class... ArgTypes,
+				 class = typename std::enable_if<
+					W == 4 && sizeof...(ArgTypes) == H
+				 >::type,class=void,class=void,class=void>
+		matrix(ArgTypes... args);
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Convert to scalar if 1x1 matrix
 		///
 		/// @return Value at [0][0]
 		///
 		/////////////////////////////////////////////////////////////
-		template<class K = T,class = typename std::enable_if<W == 1 && H == 1,K>::type>
-		operator T() const;
+		template<class K,class = typename std::enable_if<W == 1 && H == 1 && std::is_convertible<T,K>::value,K>::type>
+		operator K() const;
 		
-#endif
+		/////////////////////////////////////////////////////////////
+		/// @brief Convert to vectorN if Nx1 matrix
+		///
+		/// @return First column vector
+		///
+		/////////////////////////////////////////////////////////////
+		template<class K,class = typename std::enable_if<W==2 && H == 1 && std::is_convertible<T,K>::value,K>::type>
+		operator vector2<K>() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Convert to vectorN if Nx1 matrix
+		///
+		/// @return First column vector
+		///
+		/////////////////////////////////////////////////////////////
+		template<class K,class = typename std::enable_if<W==3 && H == 1 && std::is_convertible<T,K>::value,K>::type>
+		operator vector3<K>() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Convert to vectorN if Nx1 matrix
+		///
+		/// @return First column vector
+		///
+		/////////////////////////////////////////////////////////////
+		template<class K,class = typename std::enable_if<W==4 && H == 1 && std::is_convertible<T,K>::value,K>::type>
+		operator vector4<K>() const;
+		
 		/////////////////////////////////////////////////////////////
 		/// @brief Element access with bound check
 		///
@@ -375,7 +356,15 @@ namespace fm
 		/// @return The inverse
 		///
 		/////////////////////////////////////////////////////////////
-		matrix<W, H, T> inverse() const;
+		matrix<W, W, T> inverse() const;
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Alias to the inverse
+		///
+		/// @return The inverse
+		///
+		/////////////////////////////////////////////////////////////
+		matrix<W, W, T> i() const {return inverse();};
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Calculate the <a href="http://en.wikipedia.org/wiki/Trace_%28linear_algebra%29">trace</a> of a matrix
@@ -386,30 +375,24 @@ namespace fm
 		T trace() const;
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Access(rw) a row of the matrix
-		///
-		/// Because it returns a pointer to the first element of the row
-		/// an element can be acces as m[x][y]
+		/// @brief Access(rw) a column of the matrix
 		///
 		/// @param index Index of the row
 		///
 		/// @return Pointer to the first element of the @a index -th row
 		///
 		/////////////////////////////////////////////////////////////
-		T *operator[](Size index);
+		std::array<T,H> &operator[](Size index);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Access (r only) a row of the matrix
 		///
-		/// Because it returns a pointer to the first element of the row
-		/// an element can be acces as m[x][y]
-		///
 		/// @param index Index of the row
 		///
 		/// @return Pointer to the first element of the @a index -th row
 		///
 		/////////////////////////////////////////////////////////////
-		const T *operator[](Size index) const;
+		const std::array<T,H> &operator[](Size index) const;
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Apply a function to all the elements of the matrix
@@ -432,11 +415,9 @@ namespace fm
 		matrix<W,H,T> &apply(fm::Delegate<T,T,vec2i> fun);
 
 		/////////////////////////////////////////////////////////////
-		/// @brief Fold the matrix, running a fold function on it
+		/// @brief Fold (reduce) the matrix in row-major order
 		///
-		/// folding is done in row-major order
-		///
-		/// @param ffun The folding to calculate
+		/// @param ffun The folding funciton
 		/// @param init The initial value of the fold
 		///
 		/// @return The result of the folding

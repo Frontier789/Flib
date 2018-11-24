@@ -8,17 +8,11 @@
 using namespace std;
 
 // TODO:
-//  integrate utah teapot to Mesh
-//  - Fix calcNormals for torus
-//  - Fix calcTangents
-//  add diamond to Mesh
 //  consider Mesh -> DrawData optimizations
-
-
 
 int main()
 {
-	Mesh m = std::move(Mesh::getDiamond(7,4));
+	Mesh m = std::move(Mesh::getTeapot(7,4));
 	
 	m.calcNormals();
 	m.calcTangents();

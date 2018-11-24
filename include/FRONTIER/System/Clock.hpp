@@ -109,6 +109,17 @@ namespace fm
 		/// If the Clock paused then this function will return the difference between
 		/// the startTime and pauseTime
 		/// 
+		/// @return Elapsed time in milliseconds
+		/// 
+		/////////////////////////////////////////////////////////////
+		double ms() const;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get time since started
+		///
+		/// If the Clock paused then this function will return the difference between
+		/// the startTime and pauseTime
+		/// 
 		/// @return Elapsed time
 		/// 
 		/////////////////////////////////////////////////////////////

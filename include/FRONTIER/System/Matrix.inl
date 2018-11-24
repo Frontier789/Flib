@@ -68,97 +68,80 @@ namespace fm
 	
 	////////////////////////////////////////////////////////////
 	template<Size W,Size H,class T>
-	inline matrix<W,H,T>::matrix(const T &diagonal,const T &rest)
-	{
-		reset(diagonal,rest);
-	}
-	
-	////////////////////////////////////////////////////////////
-	template<Size W,Size H,class T>
 	inline matrix<W,H,T>::matrix(const matrix<W,H,T> &mat)
 	{
 		Cx(W)Cy(H)
 			m_data[x][y] = mat[x][y];
 	}
-	
-	/////////////////////////////////////////////////////////////
-	template<Size W,Size H,class T>
-	inline matrix<W,H,T>::matrix(std::initializer_list<T> data)
-	{
-		T *ptr = &m_data[0][0];
-		auto dpt = data.begin();
-		
-		C(W*H)
-		{
-			if (dpt == data.end())
-			{
-				while (i < W*H)
-				{
-					*ptr = T();
-					++ptr;
-					++i;
-				}
-			}
-			*ptr = *dpt;
-			++ptr;
-			++dpt;
-		}
-	}
 
-#ifdef _MSVC_LANG
 	/////////////////////////////////////////////////////////////
 	template<Size W, Size H, class T>
-	template<class... ArgTypes>
-	inline matrix<W, H, T>::matrix(const ArgTypes &... args) : m_data{(T)args...}
+	template<class... ArgTypes,class>
+	inline matrix<W, H, T>::matrix(ArgTypes... args) : 
+		m_data{T(args)...}
 	{
 
 	}
 
-#else
 	/////////////////////////////////////////////////////////////
-	template<Size W,Size H,class T>
-	template<class,class>
-	inline matrix<W,H,T>::matrix(const T &a00,const T &a01,
-								 const T &a10,const T &a11) : m_data{{a00,a01},
-																	 {a10,a11}}
+	template<Size W, Size H, class T>
+	template<class... ArgTypes,class,class>
+	inline matrix<W, H, T>::matrix(ArgTypes... args) : 
+		m_data{T(args.x)...,T(args.y)...}
 	{
-		
+
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<Size W, Size H, class T>
+	template<class... ArgTypes,class,class,class>
+	inline matrix<W, H, T>::matrix(ArgTypes... args) : 
+		m_data{T(args.x)...,T(args.y)...,T(args.z)...}
+	{
+
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<Size W, Size H, class T>
+	template<class... ArgTypes,class,class,class,class>
+	inline matrix<W, H, T>::matrix(ArgTypes... args) : 
+		m_data{T(args.x)...,T(args.y)...,T(args.z)...,T(args.w)...}
+	{
+
 	}
 
 	/////////////////////////////////////////////////////////////
 	template<Size W,Size H,class T>
-	template<class,class>
-	inline matrix<W,H,T>::matrix(const T &a00,const T &a01,const T &a02,
-								 const T &a10,const T &a11,const T &a12,
-								 const T &a20,const T &a21,const T &a22) : m_data{{a00,a01,a02},
-																				  {a10,a11,a12},
-																				  {a20,a21,a22}}
-	{
-		
-	}
-
-	/////////////////////////////////////////////////////////////
-	template<Size W,Size H,class T>
-	template<class,class>
-	inline matrix<W,H,T>::matrix(const T &a00,const T &a01,const T &a02,const T &a03,
-								 const T &a10,const T &a11,const T &a12,const T &a13,
-								 const T &a20,const T &a21,const T &a22,const T &a23,
-								 const T &a30,const T &a31,const T &a32,const T &a33) : m_data{{a00,a01,a02,a03},
-																							   {a10,a11,a12,a13},
-																							   {a20,a21,a22,a23},
-																							   {a30,a31,a32,a33}}
-	{
-		
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<Size W,Size H,class T>
-	template<class,class>
-	inline matrix<W,H,T>::operator T() const
+	template<class K,class>
+	inline matrix<W,H,T>::operator K() const
 	{
 		return m_data[0][0];
 	}
-#endif
+
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
+	template<class K,class>
+	inline matrix<W,H,T>::operator vector2<K>() const
+	{
+		return vector2<K>(m_data[0][0],m_data[1][0]);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
+	template<class K,class>
+	inline matrix<W,H,T>::operator vector3<K>() const
+	{
+		return vector3<K>(m_data[0][0],m_data[1][0],m_data[2][0]);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<Size W,Size H,class T>
+	template<class K,class>
+	inline matrix<W,H,T>::operator vector4<K>() const
+	{
+		return vector4<K>(m_data[0][0],m_data[1][0],m_data[2][0],m_data[3][0]);
+	}
+	
 	/// functions /////////////////////////////////////////////////////////
 	template<Size W,Size H,class T>
 	inline T matrix<W,H,T>::at(Size x,Size y) const
@@ -276,9 +259,8 @@ namespace fm
 	namespace priv
 	{
 		template<Size N,class T>
-		class getDet
+		struct getDet
 		{
-		public:
 			static T getDeterminant(const matrix<N,N,T> &mat)
 			{
 				if (mat[0][0] == T())
@@ -341,9 +323,8 @@ namespace fm
 		};
 		
 		template<class U>
-		class getDet<0,U>
+		struct getDet<0,U>
 		{
-		public:
 			static U getDeterminant(const matrix<0,0,U> &mat)
 			{
 				(void)mat;
@@ -352,9 +333,8 @@ namespace fm
 		};
 		
 		template<class U>
-		class getDet<1,U>
+		struct getDet<1,U>
 		{
-		public:
 			static U getDeterminant(const matrix<1,1,U> &mat)
 			{
 				return mat[0][0];
@@ -362,9 +342,8 @@ namespace fm
 		};
 		
 		template<class U>
-		class getDet<2,U>
+		struct getDet<2,U>
 		{
-		public:
 			static U getDeterminant(const matrix<2,2,U> &mat)
 			{
 				return mat[0][0]*mat[1][1] - mat[1][0]*mat[0][1];
@@ -372,13 +351,60 @@ namespace fm
 		};
 		
 		template<class U>
-		class getDet<3,U>
+		struct getDet<3,U>
 		{
-		public:
 			static U getDeterminant(const matrix<3,3,U> &mat)
 			{
-				return mat[0][0]*mat[1][1]*mat[2][2] + mat[1][0]*mat[2][1]*mat[0][2] + mat[2][0]*mat[0][1]*mat[1][2] -
-					   mat[2][0]*mat[1][1]*mat[0][2] - mat[1][0]*mat[0][1]*mat[2][2] - mat[0][0]*mat[2][1]*mat[1][2];
+				return mat[0][0]*(mat[1][1]*mat[2][2] - mat[2][1]*mat[1][2]) + 
+				       mat[0][2]*(mat[1][0]*mat[2][1] - mat[2][0]*mat[1][1]) + 
+					   mat[0][1]*(mat[2][0]*mat[1][2] - mat[1][0]*mat[2][2]);
+			}
+		};
+		
+		template<Size N,class T>
+		struct InverseCounter {
+			static matrix<N,N,T> get(const matrix<N,N,T> &mat) {
+				return mat.adjugate() / mat.det();
+			}
+		};
+		
+		template<class T>
+		struct InverseCounter<1,T> {
+			static matrix<1,1,T> get(const matrix<1,1,T> &mat) {
+				return T(1) / mat[0][0];
+			}
+		};
+		
+		template<class T>
+		struct InverseCounter<2,T> {
+			static matrix<2,2,T> get(const matrix<2,2,T> &mat) {
+				return matrix<2,2,T>(mat[1][1],-mat[0][1],-mat[1][0],mat[0][0]) / mat.det();
+			}
+		};
+		
+		template<class T>
+		struct InverseCounter<3,T> {
+			static matrix<3,3,T> get(const matrix<3,3,T> &m) {
+				T cache1 = m[1][1]*m[2][2] - m[2][1]*m[1][2];
+				T cache2 = m[1][0]*m[2][1] - m[2][0]*m[1][1];
+				T cache3 = m[2][0]*m[1][2] - m[1][0]*m[2][2];
+				
+				T det = m[0][0]*cache1 + 
+				        m[0][2]*cache2 + 
+					    m[0][1]*cache3;
+				
+				matrix<3,3,T> minv;
+				minv[0][0] = cache1;
+				minv[0][1] = (m[0][2] * m[2][1] - m[0][1] * m[2][2]);
+				minv[0][2] = (m[0][1] * m[1][2] - m[0][2] * m[1][1]);
+				minv[1][0] = cache3;
+				minv[1][1] = (m[0][0] * m[2][2] - m[0][2] * m[2][0]);
+				minv[1][2] = (m[1][0] * m[0][2] - m[0][0] * m[1][2]);
+				minv[2][0] = cache2;
+				minv[2][1] = (m[2][0] * m[0][1] - m[0][0] * m[2][1]);
+				minv[2][2] = (m[0][0] * m[1][1] - m[1][0] * m[0][1]);
+				
+				return minv / det;
 			}
 		};
 	}
@@ -427,12 +453,12 @@ namespace fm
 			
 		return cofactors.transpose();
 	}
-
+	
 	/////////////////////////////////////////////////////////////
 	template<Size W,Size H,class T>
-	inline matrix<W,H,T> matrix<W,H,T>::inverse() const
+	inline matrix<W,W,T> matrix<W,H,T>::inverse() const
 	{
-		return adjugate()/det();
+		return priv::InverseCounter<W,T>::get(*this);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -448,14 +474,14 @@ namespace fm
 
 	/// operators /////////////////////////////////////////////////////////
 	template<Size W,Size H,class T>
-	inline T *matrix<W,H,T>::operator[](Size index)
+	inline std::array<T,H> &matrix<W,H,T>::operator[](Size index)
 	{
 		return m_data[index];
 	}
 
 	////////////////////////////////////////////////////////////
 	template<Size W,Size H,class T>
-	inline const T *matrix<W,H,T>::operator[](Size index) const
+	inline const std::array<T,H> &matrix<W,H,T>::operator[](Size index) const
 	{
 		return m_data[index];
 	}

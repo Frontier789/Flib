@@ -80,8 +80,10 @@ namespace fm
 			FRONTIER_CONSTEXPR_CPP11_TN std::size_t size() const FRONTIER_NEXCEPT_TN {return sz_;}
 		};
 	}
+	
+	using priv::StaticString;
 
-	inline std::ostream &operator<<(std::ostream& os, priv::StaticString const& s)
+	inline std::ostream &operator<<(std::ostream& os, StaticString const& s)
 	{
 		return os.write(s.data(), s.size());
 	}

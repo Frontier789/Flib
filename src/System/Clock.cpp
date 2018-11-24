@@ -67,13 +67,17 @@ namespace fm
     	return getCurrentTime() - m_startTime;
     }
 
-
     ////////////////////////////////////////////////////////////
     double Clock::s() const
     {
     	return getSeconds();
     }
-
+    
+		/////////////////////////////////////////////////////////////
+		double Clock::ms() const
+    {
+      return getSeconds()*1000;
+    }
 
     ////////////////////////////////////////////////////////////
     Clock::reference Clock::pause()

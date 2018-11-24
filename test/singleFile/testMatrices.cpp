@@ -5,9 +5,24 @@ using namespace std;
 
 int main()
 {
-	cout << "here are some matrices" << endl;
+	static_assert(sizeof(matrix<1,1,int>) == sizeof(int)*1*1, "matrix<1,1,i> failed size check");
+	static_assert(sizeof(matrix<2,1,int>) == sizeof(int)*2*1, "matrix<2,1,i> failed size check");
+	static_assert(sizeof(matrix<1,3,int>) == sizeof(int)*1*3, "matrix<1,3,i> failed size check");
+	static_assert(sizeof(matrix<2,3,int>) == sizeof(int)*2*3, "matrix<2,3,i> failed size check");
+	static_assert(sizeof(matrix<4,3,int>) == sizeof(int)*4*3, "matrix<4,3,i> failed size check");
+	static_assert(sizeof(matrix<4,4,int>) == sizeof(int)*4*4, "matrix<4,4,i> failed size check");
+	static_assert(sizeof(matrix<1,1,float>) == sizeof(float)*1*1, "matrix<1,1,f> failed size check");
+	static_assert(sizeof(matrix<2,1,float>) == sizeof(float)*2*1, "matrix<2,1,f> failed size check");
+	static_assert(sizeof(matrix<1,3,float>) == sizeof(float)*1*3, "matrix<1,3,f> failed size check");
+	static_assert(sizeof(matrix<2,3,float>) == sizeof(float)*2*3, "matrix<2,3,f> failed size check");
+	static_assert(sizeof(matrix<4,3,float>) == sizeof(float)*4*3, "matrix<4,3,f> failed size check");
+	static_assert(sizeof(matrix<4,4,float>) == sizeof(float)*4*4, "matrix<4,4,f> failed size check");
+	
+	cout << "Testing matrix constructors" << endl;
 	cout << mat2() << endl << endl;
 	cout << mat3(1,2,3,4,5,6,7,8,9) << endl << endl;
+	cout << matrix<3,2>(1,2,3,4,5,6) << endl << endl;
+	cout << matrix<3,2>(vec3(1,2,3),vec3(4,7,8)) << endl << endl;
 	cout << mat4(2,0,0,1,
 				 0,5,0,2,
 				 0,0,1,8,
@@ -52,7 +67,7 @@ int main()
 	
 	cout << "what about a matrix of strings?" << endl;
 	
-	matrix<3,3,string> sm("lol","   ");
+	matrix<3,3,string> sm("lol");
 	cout << sm << endl << endl;
 	cout << sm + matrix<3,3,string>(string("_k")) << endl << endl;
 	

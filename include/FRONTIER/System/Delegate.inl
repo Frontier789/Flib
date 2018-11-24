@@ -70,7 +70,8 @@ namespace fm
 	/////////////////////////////////////////////////////////////
 	template<class R,class... Args>
 	template<class LambdaT>
-	inline Delegate<R,Args...>::Delegate(const LambdaT &lambda) : m_impl(new LambdaDelegate<LambdaT,R,Args...>(lambda))
+	inline Delegate<R,Args...>::Delegate(const LambdaT &lambda,typename std::enable_if<fm::is_callable<LambdaT>::value,void>::type*) :
+		m_impl(new LambdaDelegate<LambdaT,R,Args...>(lambda))
 	{
 		
 	}

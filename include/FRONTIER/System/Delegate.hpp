@@ -18,6 +18,7 @@
 #define FRONTIER_DELEGATE_HPP_INCLUDED
 #include <FRONTIER/System/util/RequireCpp11.hpp>
 #include <FRONTIER/System/DelegateImpl/BaseDelegate.hpp>
+#include <FRONTIER/System/util/is_callable.hpp>
 #define FRONTIER_DELEGATE
 
 namespace fm
@@ -92,7 +93,7 @@ namespace fm
 		/// 
 		/////////////////////////////////////////////////////////////
 		template<class LambdaT>
-		Delegate(const LambdaT &lambda);
+		Delegate(const LambdaT &lambda,typename std::enable_if<fm::is_callable<LambdaT>::value,void>::type* = nullptr);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct delegate from a function
