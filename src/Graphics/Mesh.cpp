@@ -408,35 +408,45 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
+	void Mesh::forEachTriangle(const Face &face,fm::Delegate<void,fm::Uint32,fm::Uint32,fm::Uint32> cb) const
+	{
+		fg::Primitive primitive = face.primitive;
+	
+		if (primitive != fg::Triangles &&
+			primitive != fg::TriangleStrip &&
+			primitive != fg::TriangleFan)
+			return;
+		
+		auto &indices = face.indices;
+
+		for (fm::Size i=face.beg;i<face.beg + faceSize(face);++i)
+		{
+			fm::Uint32 ind0 = face.useIndices() ? indices[i+0] : i+0;
+			fm::Uint32 ind1 = face.useIndices() ? indices[i+1] : i+1;
+			fm::Uint32 ind2 = face.useIndices() ? indices[i+2] : i+2;
+
+			if (primitive == fg::Triangles) i += 2;
+			else if (primitive == fg::TriangleFan) ind0 = 0;
+
+			cb(ind0,ind1,ind2);
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////
 	double Mesh::getEpsilon() const
 	{
 		double mnDst = -1;
 		
 		for (auto &face : faces)
 		{
-			fg::Primitive primitive = face.primitive;
-			auto &indices = face.indices;
-		
-			if (primitive != fg::Triangles &&
-				primitive != fg::TriangleStrip &&
-				primitive != fg::TriangleFan)
-				continue;
-
-			for (fm::Size i=face.beg;i<face.beg + faceSize(face);++i)
-			{
-				fm::Uint32 ind0 = face.useIndices() ? indices[i+0] : i+0;
-				fm::Uint32 ind1 = face.useIndices() ? indices[i+1] : i+1;
-				fm::Uint32 ind2 = face.useIndices() ? indices[i+2] : i+2;
-
-				if (primitive == fg::Triangles) i += 2;
-				else if (primitive == fg::TriangleFan) ind0 = 0;
-
+			forEachTriangle(face,[&](fm::Uint32 ind0,fm::Uint32 ind1,fm::Uint32 ind2){
+				
 				fm::vec3 v0 = pts[ind1]-pts[ind0], v1 = pts[ind2]-pts[ind0], v2 = pts[ind2]-pts[ind1];
 				
 				mnDst = minButNot0(mnDst,fm::vec3d(v0).LENGTH());
 				mnDst = minButNot0(mnDst,fm::vec3d(v1).LENGTH());
 				mnDst = minButNot0(mnDst,fm::vec3d(v2).LENGTH());
-			}
+			});
 		}
 		
 		if (mnDst == -1) return 0;
@@ -492,30 +502,15 @@ namespace fg
 		
 		for (auto &face : faces)
 		{
-			fg::Primitive primitive = face.primitive;
-			std::vector<fm::Uint32> &indices = face.indices;
-		
-			if (primitive != fg::Triangles &&
-				primitive != fg::TriangleStrip &&
-				primitive != fg::TriangleFan)
-				continue;
-
-			for (fm::Size i=face.beg;i<face.beg + faceSize(face);++i)
-			{
-				fm::Uint32 ind0 = face.useIndices() ? indices[i+0] : i+0;
-				fm::Uint32 ind1 = face.useIndices() ? indices[i+1] : i+1;
-				fm::Uint32 ind2 = face.useIndices() ? indices[i+2] : i+2;
-
-				if (primitive == fg::Triangles) i += 2;
-				else if (primitive == fg::TriangleFan) ind0 = 0;
-
+			forEachTriangle(face,[&](fm::Uint32 ind0,fm::Uint32 ind1,fm::Uint32 ind2){
+				
 				fm::vec3 v0 = pts[ind1]-pts[ind0], v1 = pts[ind2]-pts[ind0];
 				
 				fm::vec3 N = (v0).cross(v1);
 				norms[ind0] += N;
 				norms[ind1] += N;
 				norms[ind2] += N;
-			}
+			});
 		}
 		
 		if (joinIdenticalVertices)
@@ -533,34 +528,13 @@ namespace fg
 		if (pts.size() < 3 || uvs.size() < 3)
 			return *this;
 
+		tans.resize(pts.size(),fm::vec3());
+		bitans.resize(pts.size(),fm::vec3());
+		
 		for (auto &face : faces)
 		{
-			fg::Primitive &primitive = face.primitive;
-			std::vector<fm::Uint32> &indices = face.indices;
-		
-			if (primitive != fg::Triangles &&
-				primitive != fg::TriangleStrip &&
-				primitive != fg::TriangleFan)
-				continue;
-			
-			tans.resize(pts.size(),fm::vec3());
-			bitans.resize(pts.size(),fm::vec3());
-
-			for (fm::Size i=face.beg;i<face.beg + faceSize(face);++i)
-			{
-				fm::Uint32 ind0 = face.useIndices() ? indices[i+0] : i+0;
-				fm::Uint32 ind1 = face.useIndices() ? indices[i+1] : i+1;
-				fm::Uint32 ind2 = face.useIndices() ? indices[i+2] : i+2;
-
-				if (primitive == fg::Triangles)
-				{
-					i += 2;
-				}
-				else if (primitive == fg::TriangleFan)
-				{
-					ind0 = 0;
-				}
-
+			forEachTriangle(face,[&](fm::Uint32 ind0,fm::Uint32 ind1,fm::Uint32 ind2){
+				
 				fm::vec3 v1 = pts[ind1] - pts[ind0];
 				fm::vec3 v2 = pts[ind2] - pts[ind0];
 
@@ -585,7 +559,7 @@ namespace fg
 				bitans[ind0] += B;
 				bitans[ind1] += B;
 				bitans[ind2] += B;
-			}
+			});
         }
 		
 		if (joinIdenticalVertices) {

@@ -86,6 +86,14 @@ namespace fm
 						  y < T(0) ? y*T(-1) : y);
 	}
 
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline vector2<T> vector2<T>::clamp(T min,T max) const
+	{
+		return vector2<T>(x < min ? min : (x > max ? max : x),
+						  y < min ? min : (y > max ? max : y));
+	}
+
 	////////////////////////////////////////////////////////////
 	template<class T>
 	inline T vector2<T>::length() const

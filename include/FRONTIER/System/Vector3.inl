@@ -109,8 +109,15 @@ namespace fm
 		return vector3<T>(x < T(0) ? x*T(-1) : x,
 						  y < T(0) ? y*T(-1) : y,
 						  z < T(0) ? z*T(-1) : z);
-		
-		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline vector3<T> vector3<T>::clamp(T min,T max) const
+	{
+		return vector3<T>(x < min ? min : (x > max ? max : x),
+						  y < min ? min : (y > max ? max : y),
+						  z < min ? min : (z > max ? max : z));
 	}
 
 	////////////////////////////////////////////////////////////

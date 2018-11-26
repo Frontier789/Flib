@@ -319,6 +319,18 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		void joinNormals();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Run a callback on every triangle of a face
+		/// 
+		/// If the face has lines or points cb is not called
+		/// If the face has triangle strips or fans, they're triangulated 
+		/// 
+		/// @param face The face to use
+		/// @param cb The callback to use
+		/// 
+		/////////////////////////////////////////////////////////////
+		void forEachTriangle(const Face &face,fm::Delegate<void,fm::Uint32,fm::Uint32,fm::Uint32> cb) const;
 	};
 }
 

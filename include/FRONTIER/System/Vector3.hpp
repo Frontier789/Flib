@@ -224,6 +224,17 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		vector3<T> unsign() const;
 
+        /////////////////////////////////////////////////////////////
+        /// @brief Clamp every componenet of the vector to given range
+        ///
+        /// @param min The minimum value
+        /// @param max The maximum value
+        ///
+        /// @return A new vector, clamped
+        ///
+        /////////////////////////////////////////////////////////////
+        vector3<T> clamp(T min,T max) const;
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the length of the 3D vector
 		///

@@ -180,6 +180,17 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		vector2<T> unsign() const;
 
+        /////////////////////////////////////////////////////////////
+        /// @brief Clamp every componenet of the vector to given range
+        ///
+        /// @param min The minimum value
+        /// @param max The maximum value
+        ///
+        /// @return A new vector, clamped
+        ///
+        /////////////////////////////////////////////////////////////
+        vector2<T> clamp(T min,T max) const;
+
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the length of the 2D vector
 		///

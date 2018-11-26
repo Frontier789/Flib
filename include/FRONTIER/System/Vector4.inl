@@ -155,7 +155,16 @@ namespace fm
 						  y < T(0) ? y*T(-1) : y,
 						  z < T(0) ? z*T(-1) : z,
 						  w < T(0) ? w*T(-1) : w);
-		return *this;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline vector4<T> vector4<T>::clamp(T min,T max) const
+	{
+		return vector4<T>(x < min ? min : (x > max ? max : x),
+						  y < min ? min : (y > max ? max : y),
+						  z < min ? min : (z > max ? max : z),
+						  w < min ? min : (w > max ? max : w));
 	}
 
 	////////////////////////////////////////////////////////////
