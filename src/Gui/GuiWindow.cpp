@@ -40,7 +40,7 @@ namespace fgui
 		Window(pos,size,title,style,nullptr,0,settings),
 		GuiContext(size)																																					
 	{
-		setClearColor(fm::vec4::White);
+		
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -48,13 +48,21 @@ namespace fgui
 		Window(size,title,style,nullptr,0,settings),
 		GuiContext(size)
 	{
-		setClearColor(fm::vec4::White);
+		
 	}
 	
 	/////////////////////////////////////////////////////////////	
 	void GuiWindow::beforeClose()
 	{
 		freeGL();
+	}
+	
+	/////////////////////////////////////////////////////////////	
+	void GuiWindow::afterOpen()
+	{
+		initGL(getSize());
+		
+		setClearColor(fm::vec4::White);
 	}
 
 	/////////////////////////////////////////////////////////////

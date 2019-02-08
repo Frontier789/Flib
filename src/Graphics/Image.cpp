@@ -192,7 +192,7 @@ namespace fg
 				return fm::Result();
 
 			if (error == 1)
-				return fm::Result("STBIError",fm::Result::OPFailed,"stbi_failure","saveToFile",__FILE__,__LINE__,filename);
+				return fm::Result("STBIError",fm::Result::OPFailed,"stbi_failure","saveToFile",__FILE__,__LINE__,filename,"Possibly run out of memory");
 
 			if (error == 2)
 				return fm::Result("IOError",fm::Result::OPFailed,"FileNotWritable","saveToFile",__FILE__,__LINE__,filename);
@@ -317,6 +317,10 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	fm::Result Image::loadFromFile(const std::string &filename)
 	{
+		// avoid some crashes
+		if (!getSize().area())
+			create(fm::vec2s(1,1));
+		
 		// ask stbi to load the file
 		FILE *f = fopen(filename.c_str(), "rb");
 		if (!f) return fm::Result("IOError",fm::Result::OPFailed,"FileNotFound","loadFromFile",__FILE__,__LINE__,filename);

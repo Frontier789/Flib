@@ -96,9 +96,10 @@ namespace fw
 	fm::Result Window::open(const fm::vec2i &pos,const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings)
 	{
 		fm::Result res;
-		res += m_window->open(pos.x,pos.y,size.w,size.h,title,style,(parent ? &parent->getOSWindow() : NULL),(priv::Window::Handle)container);
+		res += m_window->open(pos.x,pos.y,size.w,size.h,title,style,(parent ? &parent->getOSWindow() : nullptr),(priv::Window::Handle)container);
 		res += this->create((priv::Window::Handle)m_window->getHandle(),settings);
 		res += this->setActive();
+		afterOpen();
 
 		return res;
 	}
@@ -107,9 +108,10 @@ namespace fw
 	fm::Result Window::open(const fm::vec2u &size,const fm::String &title,fw::Window::WindowStyle style,Window *parent,Handle container,fw::GLContext::Settings settings)
 	{
 		fm::Result res;
-		res += m_window->open(size.w,size.h,title,style,(parent ? &parent->getOSWindow() : NULL),(priv::Window::Handle)container);
+		res += m_window->open(size.w,size.h,title,style,(parent ? &parent->getOSWindow() : nullptr),(priv::Window::Handle)container);
 		res += this->create((priv::Window::Handle)m_window->getHandle(),settings);
 		res += this->setActive();
+		afterOpen();
 
 		return res;
 	}

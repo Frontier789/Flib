@@ -577,6 +577,40 @@ namespace fm
 		
 		return left;
 	}
+	
+	
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector4<T> &operator*=(vector4<T> &left,const T2 &right)
+	{
+		left.x*=right;
+		left.y*=right;
+		left.z*=right;
+		left.w*=right;
+		return left;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector4<T> &operator/=(vector4<T> &left,const T2 &right)
+	{
+		left.x/=right;
+		left.y/=right;
+		left.z/=right;
+		left.w/=right;
+		return left;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T,class T2>
+	inline vector4<T> &operator%=(vector4<T> &left,const T2 &right)
+	{
+		left.x=std::fmod(left.x,right);
+		left.y=std::fmod(left.y,right);
+		left.z=std::fmod(left.z,right);
+		left.w=std::fmod(left.w,right);
+		return left;
+	}
 
 	
 	

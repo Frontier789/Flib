@@ -52,6 +52,7 @@ namespace fm
 namespace fgui
 {
 	class GuiLayout;
+	class GuiElement;
 	
 	/////////////////////////////////////////////////////////////
 	/// @brief Holds data for gui elements such as fonts
@@ -74,6 +75,7 @@ namespace fgui
 		
 		void setupShader(); ///< Initialises the shader
 		void freeGL(); ///< Free up OGL resources
+		void initGL(fm::vec2s size); ///< Allocate OGL resources
 		
 		virtual void drawElementsGuiLoop(); ///< Draw the elements inside gui loop
 		
@@ -289,6 +291,24 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		GuiLayout &getMainLayout();
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Add a new gui element to the main layout
+		///
+		/// @param elem The new element
+		/// 
+		/////////////////////////////////////////////////////////////
+		void addElement(fgui::GuiElement *elem);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Add a drawable to the drawn elements
+		///
+		/// A proxy gui element will be created as a placeholder
+		///
+		/// @param object The drawable object to add
+		/// 
+		/////////////////////////////////////////////////////////////
+		void addDrawable(fg::Drawable &object);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Handle an event

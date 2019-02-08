@@ -105,9 +105,7 @@ namespace fg
 		/// This function sends the client-side data (the image)
 		/// to OpenGL
 		///
-		/// If @a img has an invalid size (w or h is 0) or its width or height
-		/// is bigger than getMaximumSize() then an error is prompted to fg_log
-		/// and the texture is leaved invalid
+		/// Erros are silently ignored and the texture is left invalid
 		///
 		/// @param img The image to send to OpenGL
 		///

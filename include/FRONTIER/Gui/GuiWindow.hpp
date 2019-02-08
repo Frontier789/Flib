@@ -43,6 +43,7 @@ namespace fgui
 		void drawElementsGuiLoop() override; ///< Draw the elements inside gui loop
 		
 		void beforeClose() override; ///< Handle closing of the window
+		void afterOpen() override; ///< Handle opening of the window
 
 	public:
 		/////////////////////////////////////////////////////////////

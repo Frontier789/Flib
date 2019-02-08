@@ -97,6 +97,12 @@ namespace fgui
 		virtual void onRotationChanged(fm::Anglef rot);
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Called when the the transformation changes in any way
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void onTransform() {};
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Called when a mouse button is pressed while inside the gui element
 		/// 
 		/// @param button The button that was pressed

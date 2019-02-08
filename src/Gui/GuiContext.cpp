@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Graphics/ShaderManager.hpp>
 #include <FRONTIER/Graphics/Drawable.hpp>
+#include <FRONTIER/Gui/GuiDrawable.hpp>
 #include <FRONTIER/Gui/GuiContext.hpp>
 #include <FRONTIER/Gui/GuiLayout.hpp>
 #include <FRONTIER/Graphics/Font.hpp>
@@ -185,19 +186,31 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiContext::GuiContext() : GuiContext(fm::vec2s())
+	GuiContext::GuiContext() : 
+		m_spriteManager(nullptr),
+		m_shader(nullptr),
+		m_defCharSize(13),
+		m_layout(nullptr),
+		m_guiLoop(false)
 	{
 		
 	}
 
 	/////////////////////////////////////////////////////////////
-	GuiContext::GuiContext(fm::vec2s size) : m_spriteManager(new fg::SpriteManager(true)),
-											 m_shader(fg::ShaderManager::getDefaultShader()),
-											 m_defCharSize(13),
-											 m_layout(new GuiLayout(*this)),
-											 m_size(size),
-											 m_guiLoop(false)
+	GuiContext::GuiContext(fm::vec2s size) : GuiContext()
 	{
+		initGL(size);
+	}
+
+	/////////////////////////////////////////////////////////////
+	void GuiContext::initGL(fm::vec2s size) {
+		freeGL();
+		
+		m_spriteManager = new fg::SpriteManager(true);
+		m_shader = fg::ShaderManager::getDefaultShader();
+		m_layout = new GuiLayout(*this);
+		m_size = size;
+		
 		if (size.area())
 			setupShader();
 		
@@ -371,7 +384,19 @@ namespace fgui
 		
 		return *m_layout;
 	}
-		
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::addElement(fgui::GuiElement *elem)
+	{
+		getMainLayout().addChildElement(elem);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::addDrawable(fg::Drawable &object)
+	{
+		addElement(new fgui::GuiDrawable(*this,object));
+	}
+	
 	/////////////////////////////////////////////////////////////
 	void GuiContext::handleEvent(fw::Event &ev)
 	{

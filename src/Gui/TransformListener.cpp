@@ -33,23 +33,16 @@ namespace fgui
 	void TransformListener::onScroll(float amount)
 	{
 		float zoomMul = std::pow(m_zoomSens,amount);
-		m_zoom *= zoomMul;
-		onZoomChanged(m_zoom);
-		
 		m_offset = m_offset * zoomMul + getLastMousePos() * (1 - zoomMul);
-		callCb();
+		
+		setZoom(m_zoom * zoomMul);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void TransformListener::onMouseMove(fm::vec2 p,fm::vec2 prevP)
 	{
 		if (isPressed(fw::Mouse::Left))
-		{
-			m_offset += (p-prevP) * m_dragSens;
-			
-			onOffsetChanged(m_offset);
-			callCb();
-		}
+			setOffset(m_offset + (p-prevP) * m_dragSens);
 		
 		auto rot = [](fm::vec2 v,fm::Anglef a) -> fm::vec2 {
 			fm::pol2 p = v;
@@ -66,18 +59,8 @@ namespace fgui
 			{
 				fm::Anglef dAngle = fm::pol2(vCur).angle - fm::pol2(vPrev).angle;
 				
-				m_rot += dAngle;
-				onRotationChanged(m_rot);
-				callCb();
-				
-				/*
-					o2 == rot(o - p,d) + p
-					r2 == d + r
-				*/
-				
-				m_offset = m_fstRight + rot(m_offset - m_fstRight, dAngle);
-				onOffsetChanged(m_offset);
-				callCb();
+				setRotation(m_rot + dAngle);
+				setOffset(m_fstRight + rot(m_offset - m_fstRight, dAngle));
 			}
 		}
 	}
@@ -111,6 +94,8 @@ namespace fgui
 	void TransformListener::setOffset(fm::vec2 offset)
 	{
 		m_offset = offset;
+		onTransform();
+		onOffsetChanged(m_offset);
 		callCb();
 	}
 	
@@ -118,6 +103,8 @@ namespace fgui
 	void TransformListener::setZoom(float zoom)
 	{
 		m_zoom = zoom;
+		onTransform();
+		onZoomChanged(m_zoom);
 		callCb();
 	}
 	
@@ -125,6 +112,8 @@ namespace fgui
 	void TransformListener::setRotation(fm::Anglef rot)
 	{
 		m_rot = rot;
+		onTransform();
+		onRotationChanged(m_rot);
 		callCb();
 	}
 	
@@ -240,7 +229,6 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void TransformListener::callCb()
 	{
-		if (m_cb)
-			m_cb(getTransformMatrix());
+		if (m_cb) m_cb(getTransformMatrix());
 	}
 }

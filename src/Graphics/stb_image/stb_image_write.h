@@ -569,13 +569,13 @@ int stbi_write_png(char const *filename, int x, int y, int comp, const void *dat
    FILE *f;
    int len;
    unsigned char *png = stbi_write_png_to_mem((const unsigned char *) data, stride_bytes, x, y, comp, &len);
-   if (!png) return 0;
+   if (!png) return 1;
    f = fopen(filename, "wb");
    if (!f) { free(png); return 2; }
    fwrite(png, 1, len, f);
    fclose(f);
    free(png);
-   return 1;
+   return 0;
 }
 #endif // STB_IMAGE_WRITE_IMPLEMENTATION
 
