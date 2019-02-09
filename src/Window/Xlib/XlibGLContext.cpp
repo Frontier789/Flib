@@ -280,7 +280,7 @@ namespace fw
 			fm::Size sum = 0;
 			fm::Size inCount = 0;
 
-			image.forEach([&](fm::vec2s /*p*/,fg::Color &c) {
+			image.forEach([&](fm::vec2s /*p*/,fg::Color c) {
 				if (c.a >= transparencyLimit)
 				{
 					fm::Size grey = 0.2126*c.r + 0.7152*c.g + 0.0722*c.b;
@@ -322,7 +322,7 @@ namespace fw
 
 			C(scanline * s.h) cur_bits[i] = 0, mask_bits[i] = 0;
 
-			image.forEach([&](fm::vec2s p,fg::Color &c) {
+			image.forEach([&](fm::vec2s p,fg::Color c) {
 				
 				fm::Size byteOffset = p.y * scanline + p.x / 8;
 				fm::Size bitOffset  = p.x % 8;

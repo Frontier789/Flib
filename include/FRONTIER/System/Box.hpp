@@ -157,5 +157,5 @@ namespace fm
 #endif // FRONTIER_BOX_HPP
 
 #ifndef FRONTIER_DONT_INCLUDE_INL
-	#include <FRONTIER/System/box.inl>
+	#include <FRONTIER/System/Box.inl>
 #endif
