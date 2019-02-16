@@ -35,14 +35,14 @@ namespace fgui
 		float zoomMul = std::pow(m_zoomSens,amount);
 		m_offset = m_offset * zoomMul + getLastMousePos() * (1 - zoomMul);
 		
-		setZoom(m_zoom * zoomMul);
+		applyZoom(m_zoom * zoomMul,true);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void TransformListener::onMouseMove(fm::vec2 p,fm::vec2 prevP)
 	{
 		if (isPressed(fw::Mouse::Left))
-			setOffset(m_offset + (p-prevP) * m_dragSens);
+			applyOffset(m_offset + (p-prevP) * m_dragSens,true);
 		
 		auto rot = [](fm::vec2 v,fm::Anglef a) -> fm::vec2 {
 			fm::pol2 p = v;
@@ -59,8 +59,8 @@ namespace fgui
 			{
 				fm::Anglef dAngle = fm::pol2(vCur).angle - fm::pol2(vPrev).angle;
 				
-				setRotation(m_rot + dAngle);
-				setOffset(m_fstRight + rot(m_offset - m_fstRight, dAngle));
+				applyRotation(m_rot + dAngle,true);
+				applyOffset(m_fstRight + rot(m_offset - m_fstRight, dAngle),true);
 			}
 		}
 	}
@@ -89,30 +89,48 @@ namespace fgui
 		if (button == fw::Mouse::Right)
 			m_fstRight = p;
 	}
-		
+	
 	/////////////////////////////////////////////////////////////
 	void TransformListener::setOffset(fm::vec2 offset)
 	{
-		m_offset = offset;
-		onTransform();
-		onOffsetChanged(m_offset);
-		callCb();
+		applyOffset(offset,false);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void TransformListener::setZoom(float zoom)
 	{
-		m_zoom = zoom;
-		onTransform();
-		onZoomChanged(m_zoom);
-		callCb();
+		applyZoom(zoom,false);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void TransformListener::setRotation(fm::Anglef rot)
 	{
+		applyRotation(rot,false);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void TransformListener::applyOffset(fm::vec2 offset,bool userAction)
+	{
+		m_offset = offset;
+		onTransform(userAction);
+		onOffsetChanged(m_offset);
+		callCb();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void TransformListener::applyZoom(float zoom,bool userAction)
+	{
+		m_zoom = zoom;
+		onTransform(userAction);
+		onZoomChanged(m_zoom);
+		callCb();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void TransformListener::applyRotation(fm::Anglef rot,bool userAction)
+	{
 		m_rot = rot;
-		onTransform();
+		onTransform(userAction);
 		onRotationChanged(m_rot);
 		callCb();
 	}

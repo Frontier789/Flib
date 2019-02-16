@@ -396,6 +396,11 @@ bool compShaderTest(ostream &out,bool createPics = true)
 {
 	out << "--- -- --- ComputeShader test --- -- ---" << endl;
 	
+	if (!ComputeShader::isAvailable()) {
+		out << "Compute shaders are not supported!" << endl;
+		return true;
+	}
+	
 	ComputeShader cshader;
 	fm::Result res;
 	bool ok = true;

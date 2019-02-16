@@ -69,9 +69,18 @@ namespace fm
 	
 	/////////////////////////////////////////////////////////////
 	template<class R,class... Args>
-	template<class LambdaT>
-	inline Delegate<R,Args...>::Delegate(const LambdaT &lambda,typename std::enable_if<fm::is_callable<LambdaT>::value,void>::type*) :
-		m_impl(new LambdaDelegate<LambdaT,R,Args...>(lambda))
+	template<class FunctorT>
+	inline Delegate<R,Args...>::Delegate(const FunctorT &functor,typename std::enable_if<fm::is_callable<FunctorT>::value,void>::type*) :
+		m_impl(new LambdaDelegate<FunctorT,R,Args...>(functor))
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class R,class... Args>
+	template<class FunctorT>
+	inline Delegate<R,Args...>::Delegate(FunctorT *functor,typename std::enable_if<fm::is_callable<FunctorT>::value,void>::type*) :
+		Delegate(&FunctorT::operator(),functor)
 	{
 		
 	}

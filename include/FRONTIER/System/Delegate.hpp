@@ -85,15 +85,26 @@ namespace fm
 		~Delegate();
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Construct delegate from a lambda
+		/// @brief Construct delegate from a functor
 		/// 
 		/// Copies the object
 		/// 
-		/// @param lambda The function to assign
+		/// @param functor The functor to assign
 		/// 
 		/////////////////////////////////////////////////////////////
-		template<class LambdaT>
-		Delegate(const LambdaT &lambda,typename std::enable_if<fm::is_callable<LambdaT>::value,void>::type* = nullptr);
+		template<class FunctorT>
+		Delegate(const FunctorT &functor,typename std::enable_if<fm::is_callable<FunctorT>::value,void>::type* = nullptr);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct delegate from a lambda
+		/// 
+		/// Doas not copy the object
+		/// 
+		/// @param functor The functor to assign
+		/// 
+		/////////////////////////////////////////////////////////////
+		template<class FunctorT>
+		Delegate(FunctorT *functor,typename std::enable_if<fm::is_callable<FunctorT>::value,void>::type* = nullptr);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct delegate from a function

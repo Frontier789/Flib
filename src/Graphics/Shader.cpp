@@ -14,6 +14,7 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/System/util/file_content.hpp>
 #include <FRONTIER/Graphics/ShaderSource.hpp>
 #include <FRONTIER/Graphics/CubeTexture.hpp>
 #include <FRONTIER/Graphics/Texture.hpp>
@@ -119,23 +120,15 @@ namespace fg
 	////////////////////////////////////////////////////////////
     fm::Result Shader::compileSubShaderFromFile(const std::string &file,unsigned int type,unsigned int &ret)
     {
-		// open file
-        std::ifstream in(file.c_str(), std::ios::in | std::ios::binary);
-		if (in)
-		{
-			// read whole file
-			std::string contents;
-			in.seekg(0, std::ios::end);
-			contents.resize(in.tellg());
-			in.seekg(0, std::ios::beg);
-			in.read(&contents[0], contents.size());
-			in.close();
-
-			// compile
-			return compileSubShader(contents,type,ret);
-		}
+		std::string cont;
+		auto res = fm::file_content(file, cont);
 		
-		return fm::Result("IOError",fm::Result::OPFailed,"FileNotFound","compileSubShaderFromFile",__FILE__,__LINE__,file);
+		if (res) return compileSubShader(cont,type,ret);
+		
+		res.func = "compileSubShaderFromFile";
+		res.file = __FILE__;
+		res.line = __LINE__;
+		return res;
     }
 
     ////////////////////////////////////////////////////////////
@@ -315,19 +308,14 @@ namespace fg
 		
 		C(count)
 		{
-			std::ifstream in(files[i].c_str(), std::ios::in | std::ios::binary);
-			if (in)
-			{
-				// read whole file
-				std::string &contents = data[i];
-				in.seekg(0, std::ios::end);
-				contents.resize(in.tellg());
-				in.seekg(0, std::ios::beg);
-				in.read(&contents[0], contents.size());
-				in.close();
+			auto res = fm::file_content(files[i], data[i]);
+			
+			if (!res) {
+				res.func = "loadFromFiles";
+				res.file = __FILE__;
+				res.line = __LINE__;
+				return res;
 			}
-			else
-				return fm::Result("IOError",fm::Result::OPFailed,"FileNotFound","loadFromFiles",__FILE__,__LINE__,files[i]);
 		}
 		
 		

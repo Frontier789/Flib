@@ -400,14 +400,13 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiContext::handleEvent(fw::Event &ev)
 	{
-		if (!m_layout->handleEvent(ev))
+		(void)m_layout->handleEvent(ev);
+		
+		if (m_guiLoop)
 		{
-			if (m_guiLoop)
-			{
-				if (ev.type == fw::Event::Closed) m_guiLoop = false;
-				if (ev.type == fw::Event::KeyPressed)
-					if (ev.key.code == fw::Keyboard::F4 && ev.key.alt) m_guiLoop = false;
-			}
+			if (ev.type == fw::Event::Closed) m_guiLoop = false;
+			if (ev.type == fw::Event::KeyPressed)
+				if (ev.key.code == fw::Keyboard::F4 && ev.key.alt) m_guiLoop = false;
 		}
 	}
 	

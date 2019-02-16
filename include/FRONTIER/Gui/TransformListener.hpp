@@ -47,6 +47,9 @@ namespace fgui
 		float m_zoom;     ///< The zoom
 		
 		void callCb(); ///< Internal function
+		void applyOffset(fm::vec2 offset,bool userAction); ///< Internally handle state change 
+		void applyZoom(float zoom,bool userAction); ///< Internally handle state change
+		void applyRotation(fm::Anglef rot,bool userAction); ///< Internally handle state change
 		
 	public:
 		/////////////////////////////////////////////////////////////
@@ -99,8 +102,10 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief Called when the the transformation changes in any way
 		/// 
+		/// @param userAction Indicates whether the transform was caused by an event or by a direct call
+		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void onTransform() {};
+		virtual void onTransform(bool userAction) {(void)userAction;}
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Called when a mouse button is pressed while inside the gui element
