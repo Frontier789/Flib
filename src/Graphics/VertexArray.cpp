@@ -32,6 +32,18 @@ namespace fg
 		
 		return fm::Result();
 	}
+
+	/////////////////////////////////////////////////////////////
+	fm::Result VertexArray::destroy()
+	{
+		if (getGlId()) {
+			auto res = glCheck(glDeleteVertexArrays(1,&getGlId()));
+			getGlId() = 0;
+			return res;
+		}
+		
+		return fm::Result();
+	}
 	
 	/////////////////////////////////////////////////////////////
 	VertexArray::VertexArray(VertexArray &&mv)
@@ -70,8 +82,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	VertexArray::~VertexArray()
 	{
-		if (getGlId())
-			glCheck(glDeleteVertexArrays(1,&getGlId()));
+		destroy();
 	}
 
 	////////////////////////////////////////////////////////////

@@ -227,6 +227,14 @@ namespace fg
         virtual ~Shader();
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Destroy the shader object
+		///
+		/// Releases all OGL data
+		///
+		/////////////////////////////////////////////////////////////
+        fm::Result destroy();
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Load the shader program from files
 		///
 		/// @param files A pointer to the names of files to be compiled

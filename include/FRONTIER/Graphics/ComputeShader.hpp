@@ -72,6 +72,14 @@ namespace fg
         virtual ~ComputeShader();
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Destroy the shader object
+		///
+		/// Releases all OGL data
+		///
+		/////////////////////////////////////////////////////////////
+        fm::Result destroy();
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Load the compute shader program a file
 		///
 		/// @param file The name of the file to load from

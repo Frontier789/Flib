@@ -202,7 +202,13 @@ namespace fg
 	{
 		return m_shader.getVao();
 	}
-	
+
+	/////////////////////////////////////////////////////////////
+	fm::Result ComputeShader::destroy()
+	{
+		return m_shader.destroy();
+	}
+
 	/////////////////////////////////////////////////////////////
 	const Shader &ComputeShader::getShader() const
 	{

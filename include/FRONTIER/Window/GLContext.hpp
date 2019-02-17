@@ -226,6 +226,8 @@ namespace fw
 		/////////////////////////////////////////////////////////////
 		/// @brief Destroys the GL context
 		///
+		/// It is an error to destroy a context that is current in another thread
+		///
 		/// @return The result of the call
 		///
 		/////////////////////////////////////////////////////////////

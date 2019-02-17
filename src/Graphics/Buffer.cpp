@@ -40,6 +40,18 @@ namespace fg
 		}
 	}
 	
+	/////////////////////////////////////////////////////////////
+	fm::Result Buffer::destroy()
+	{
+		if (getGlId()) {
+			auto res = glCheck(glDeleteBuffers(1,&getGlId()));
+			getGlId() = 0;
+			return res;
+		}
+		
+		return fm::Result();
+	}
+	
 	////////////////////////////////////////////////////////////
 	Buffer::Buffer() : m_type(ArrayBuffer),
 					   m_usage(StaticDraw),
@@ -125,8 +137,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	Buffer::~Buffer()
 	{
-		if (getGlId())
-			glCheck(glDeleteBuffers(1,&getGlId()));
+		destroy();
 	}
 
 	////////////////////////////////////////////////////////////

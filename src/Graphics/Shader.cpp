@@ -243,17 +243,7 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	Shader::~Shader()
 	{
-		if (getGlId() && glIsProgram(getGlId()))
-		{
-			GLint program;
-			glGetIntegerv(GL_CURRENT_PROGRAM,&program);
-			
-			if (fm::Uint32(program) == getGlId())
-				glUseProgram(0);
-			
-			freeSubShaders();
-			glDeleteProgram(getGlId());
-		}
+		destroy();
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -267,6 +257,30 @@ namespace fg
 	{
 		return this->swap(shader);
 	}
+
+    ////////////////////////////////////////////////////////////
+	fm::Result Shader::destroy()
+    {
+        if (getGlId() && glIsProgram(getGlId()))
+		{
+			GLint program;
+			auto res = glCheck(glGetIntegerv(GL_CURRENT_PROGRAM,&program));
+			
+			if (fm::Uint32(program) == getGlId())
+				glUseProgram(0);
+			
+			res += freeSubShaders();
+			res += glCheck(glDeleteProgram(getGlId()));
+			
+			getGlId() = 0;
+			
+			res += m_vao.destroy();
+            
+            return res;
+		}
+        
+        return fm::Result();
+    }
 
 	/////////////////////////////////////////////////////////////
 	Shader &Shader::swap(Shader &shader)
