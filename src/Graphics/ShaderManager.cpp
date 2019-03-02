@@ -30,8 +30,8 @@ namespace fg
 {
 	////////////////////////////////////////////////////////////
 	ShaderManager::ShaderManager() : m_stacks(3,fm::MatrixStack<4,4,float>(fm::mat4())),
-									 m_matNames(9,std::string()),
-									 m_matState(9,UnknownMat)
+									 m_uniNames(10,std::string()),
+									 m_uniState(10,UnknownUni)
 	{
 
 	}
@@ -57,8 +57,8 @@ namespace fg
 		m_assocPoints.swap(manager.m_assocPoints);
 		m_texUseNames.swap(manager.m_texUseNames);
 		m_texNames   .swap(manager.m_texNames   );
-		m_matNames   .swap(manager.m_matNames   );
-		m_matState   .swap(manager.m_matState   );
+		m_uniNames   .swap(manager.m_uniNames   );
+		m_uniState   .swap(manager.m_uniState   );
 		
 		std::swap(m_cam,manager.m_cam);
 		
@@ -80,8 +80,8 @@ namespace fg
 		m_texNames    = std::vector<std::string>();
 		m_texUseNames = std::vector<std::string>();
 
-		C(m_matState.size())
-			m_matState[i] = UnknownMat;
+		C(m_uniState.size())
+			m_uniState[i] = UnknownUni;
 
 		Shader::clearData();
 	}
@@ -127,18 +127,18 @@ namespace fg
 												  const std::string &plyView,
 												  const std::string &time)
 	{
-		m_matNames[0] = projMat;
-		m_matNames[1] = viewMat;
-		m_matNames[2] = plyPos;
-		m_matNames[3] = plyView;
-		m_matNames[4] = modelMat;
-		m_matNames[5] = normalMat;
-		m_matNames[6] = colorMat;
-		m_matNames[7] = texUVMat;
-		m_matNames[8] = time;
+		m_uniNames[0] = projMat;
+		m_uniNames[1] = viewMat;
+		m_uniNames[2] = plyPos;
+		m_uniNames[3] = plyView;
+		m_uniNames[4] = modelMat;
+		m_uniNames[5] = normalMat;
+		m_uniNames[6] = colorMat;
+		m_uniNames[7] = texUVMat;
+		m_uniNames[8] = time;
 
-		C(m_matState.size())
-			m_matState[i] = (m_matNames[i].length() ? UnknownMat : MissingMat);
+		C(m_uniState.size())
+			m_uniState[i] = (m_uniNames[i].length() ? UnknownUni : MissingUni);
 		
 		return *this;
 	}
@@ -210,166 +210,154 @@ namespace fg
 	////////////////////////////////////////////////////////////
 	fm::Result ShaderManager::update()
 	{
-		C(m_matState.size())
-			if (m_matState[i] == UnknownMat)
-				m_matState[i] = (hasUniform(m_matNames[i]) ? FoundMat : MissingMat);
+		C(m_uniState.size())
+			if (m_uniState[i] == UnknownUni)
+				m_uniState[i] = (hasUniform(m_uniNames[i]) ? FoundUni : MissingUni);
 		
 		fm::Result res;
 		
-		if (m_matState[0] == FoundMat)
-			res += glCheck(setUniform(m_matNames[0],m_cam.getProjMat()));
+		if (m_uniState[0] == FoundUni)
+			res += glCheck(setUniform(m_uniNames[0],m_cam.getProjMat()));
 
-		if (m_matState[1] == FoundMat)
-			res += glCheck(setUniform(m_matNames[1],m_cam.getViewMat()));
+		if (m_uniState[1] == FoundUni)
+			res += glCheck(setUniform(m_uniNames[1],m_cam.getViewMat()));
 
-		if (m_matState[2] == FoundMat)
-			res += glCheck(setUniform(m_matNames[2],m_cam.getPosition()));
+		if (m_uniState[2] == FoundUni)
+			res += glCheck(setUniform(m_uniNames[2],m_cam.getPosition()));
 
-		if (m_matState[3] == FoundMat)
-			res += glCheck(setUniform(m_matNames[3],m_cam.getViewDir()));
+		if (m_uniState[3] == FoundUni)
+			res += glCheck(setUniform(m_uniNames[3],m_cam.getViewDir()));
 
-		if (m_matState[4] == FoundMat)
-			res += glCheck(setUniform(m_matNames[4],m_stacks[0].top()));
+		if (m_uniState[4] == FoundUni)
+			res += glCheck(setUniform(m_uniNames[4],m_stacks[0].top()));
 
-		if (m_matState[5] == FoundMat)
-			res += glCheck(setUniform(m_matNames[5],m_stacks[0].top().inverse().transpose()));
+		if (m_uniState[5] == FoundUni)
+			res += glCheck(setUniform(m_uniNames[5],m_stacks[0].top().inverse().transpose()));
 
-		if (m_matState[6] == FoundMat)
-			res += glCheck(setUniform(m_matNames[6],m_stacks[1].top()));
+		if (m_uniState[6] == FoundUni)
+			res += glCheck(setUniform(m_uniNames[6],m_stacks[1].top()));
 
-		if (m_matState[7] == FoundMat)
-			res += glCheck(setUniform(m_matNames[7],m_stacks[2].top()));
+		if (m_uniState[7] == FoundUni)
+			res += glCheck(setUniform(m_uniNames[7],m_stacks[2].top()));
 
-		if (m_matState[8] == FoundMat)
-			res += glCheck(setUniform(m_matNames[8],float(m_clk.getSeconds())));
+		if (m_uniState[8] == FoundUni)
+			res += glCheck(setUniform(m_uniNames[8],float(m_clk.getSeconds())));
+
+		if (m_uniState[9] == FoundUni)
+			res += glCheck(setUniform(m_uniNames[9],m_cam.getVPMat() * m_stacks[0].top()));
 		
 		return res;
 	}
-	
-	////////////////////////////////////////////////////////////
+
+	namespace {	
+		bool starts_with_frntr(const std::string &word)
+		{
+			std::string s;
+			
+			for (auto c : word) if (c != '_') s += toupper(c);
+			
+			return s.find("FRONTIER") == 0 || s.find("FRNTR") == 0;
+		}
+		
+		std::string canonize(const std::string &name)
+		{
+			std::string s;
+			
+			for (auto c : name) if (c != '_') s += toupper(c);
+			
+			if (s.find("FRONTIER") == 0) return s.substr(8);
+			if (s.find("FRNTR") == 0)    return s.substr(5);
+			
+			return s;
+		}
+		
+		const std::vector<std::string> uniform_names[]{
+			{"PROJ","PROJMAT","PROJECTION","PROJECTIONMAT"},
+			{"VIEW","VIEWMAT"},
+			{"PLYPOS","PLAYERPOS","CAMPOS","CAMERAPOS"},
+			{"DIR","VIEWDIR","DIRECTION","VIEWDIRECTION"},
+			{"MODEL","MODELMAT"},
+			{"NORMMAT","NRMMAT","NORMALMAT"},
+			{"CLRMAT","COLORMAT"},
+			{"TEXTUREMAT","TEXMAT"},
+			{"TIME","SECS","SECONDS","CLOCK"},
+			{"MVP","MODELVIEWPROJ","MODELVIEWPROJECTION"}
+		};
+		
+		const std::vector<std::string> attr_names[]{
+			{"POS","POSITION","PTS"},
+			{"CLR","COLOR"},
+			{"NRM","NORM","NORMAL"},
+			{"TEXUV","TEXCOORD","TEXPOS","TEXTUREUV","TEXTURECOORD","TEXTUREPOS"},
+			{"TAN","TANGENT"},
+			{"BITAN","BITANGENT"}
+		};
+		
+		template<size_t N>
+		size_t find_name_id(std::string name,const std::vector<std::string> (&arr)[N])
+		{
+			C(N)
+				for (auto s : arr[i]) 
+					if (s == name)
+						return i;
+			
+			if (name.find("CUSTOM") == 0 || name.find("ARBITRARY") == 0) {
+				return N + std::stoi(name.substr(name.find_first_of("0123456789")));
+			}
+			
+			return size_t(-1);
+		}
+	}
+
+	//////////////////////////////////////////////////////////
 	fm::Result ShaderManager::postProcess(const std::string *data,const unsigned int *types,unsigned int count)
 	{
 		(void)types;
 		
-		std::vector<std::string> names[] = {{"proj","projmat","proj_mat","projection","projectionmat","projection_mat"},
-											{"view","viewmat","view_mat"},
-											{"plypos","ply_pos","playerpos","player_pos","campos","cam_pos","camera_pos"},
-											{"dir","viewdir","view_dir","direction","viewdirection","view_direction"},
-											{"model","modelmat","model_mat"},
-											{"normmat","norm_mat","nrmmat","nrm_mat","normalmat","normal_mat"},
-											{"clrmat","clr_mat","colormat","color_mat"},
-											{"texturemat","texture_mat","texmat","tex_mat"},
-											{"time","secs","seconds","clock"},
-											
-											{"pos","position","pts"},
-											{"clr","color"},
-											{"nrm","norm","normal"},
-											{"texuv","texcoord","texpos","textureuv","texturecoord","texturepos","tex_uv","tex_coord","tex_pos","texture_uv","texture_coord","texture_pos"},
-											{"tan","tangent"},
-											{"bitan","bitangent"},
-											{"custom","arbitrary"}};
-		
-		fm::Size matCount = 9;
-		
-		auto findName = [&](const std::string &source,fm::Size offset,fm::Size &matId,fm::Size &delta) -> bool
-		{
-			for (fm::Size nameClass = 0;nameClass < sizeof(names)/sizeof(*names);++nameClass)
-			{
-				for (auto &name : names[nameClass])
-				{
-					if (offset + name.size() < source.size())
-					{
-						bool match = true;
-						for (fm::Size i=0;i<name.size() && match;++i)
-						{
-							char c = source[i+offset];
-							if (c <= 'Z' && c >= 'A') c += 'a'-'A';
-							match = match && c == name[i];
-						}
-						
-						if (match)
-						{
-							auto isWhiteSpace = [](char c) -> bool {
-								return c == ' ' || c == '\t' || c == '\r' || c == '\n';
-							};
-							
-							bool custom = (nameClass+1 == sizeof(names)/sizeof(*names));
-							
-							if (custom)
-							{
-								int customId = 0;
-								
-								fm::Size k;
-								for (k=0;k+offset+name.size() < source.size() && !isWhiteSpace(source[k+offset+name.size()]);++k)
-								{
-									char c = source[k+offset+name.size()];
-									
-									if (c <= '9' && c >= '0')
-									{
-										customId = customId*10 + c - '0';
-									}
-								}
-								
-								matId = nameClass + customId;
-								delta = name.size() + k;
-								return true;
-							}
-							else if (offset+name.size() == source.size() || isWhiteSpace(source[offset+name.size()]))
-							{
-								matId = nameClass;
-								delta = name.size();
-								return true;							
-							}
-						}
-					}
-				}
+		for (auto it = data;it != data + count;++it) {
+			const std::string &source = *it;
+			
+			std::string spacers = " \t\r\n;(){}=";
+			size_t c = source.find_first_not_of(spacers,0);
+			
+			std::vector<std::string> words;
+			
+			while (c != std::string::npos) {
+				size_t e = source.find_first_of(spacers,c);
+				
+				std::string word = source.substr(c,e-c);
+				words.push_back(word);
+				
+				c = source.find_first_not_of(spacers,e);
 			}
-			return false;
-		};
-		
-		auto findAssoc = [](const std::string &source,fm::Size offset,std::string &assoc) -> bool
-		{
-			while (offset < source.size() && (source[offset] == ' ' || source[offset] == '\t')) ++offset;
 			
-			std::string excl = " \t\r\n;";
-			
-			while (offset < source.size() && excl.find(source[offset]) == std::string::npos) assoc += source[offset],++offset;
-			
-			return assoc.length();
-		};
-		
-		std::string frontierTag = "FRONTIER_";
-		
-		for (auto str = data;str != data+count;++str)
-		{
-			const std::string &source = *str;
-			
-			fm::Size pos = source.find(frontierTag,0);
-			while (pos != std::string::npos)
-			{
-				fm::Size matId,delta;
-				if (findName(source,pos + frontierTag.size(),matId,delta))
-				{
-					std::string assoc;
-					if (findAssoc(source,pos + frontierTag.size() + delta,assoc))
-					{
-						if (matId < matCount)
-						{
-							// cout << "found matrix " << names[matId][0] << " as " << assoc << endl;
-							m_matNames[matId] = assoc;
-							m_matState[matId] = UnknownMat;							
-						}
-						else
-						{
-							// cout << "found attr " << names[matId][0] << " as " << assoc << endl;
-							associate(assoc,Assoc::Unused + int(matId - matCount + 1));
+			for (size_t i=0;i<words.size();++i) {
+				
+				if ((words[i] == "uniform" || words[i] == "in") && i+3 < words.size()) {
+					std::string name;
+					if (starts_with_frntr(words[i+1])) name = canonize(words[i+1]);
+					if (starts_with_frntr(words[i+2])) name = canonize(words[i+2]);
+					
+					if (name != "") {
+						if (words[i] == "uniform") {
+							size_t id = find_name_id(name,uniform_names);
+							if (id != size_t(-1)) {
+								// cout << "Found uniform of type " << id << " with name " << words[i+3] << endl;
+								m_uniNames[id] = words[i+3];
+								m_uniState[id] = UnknownUni;
+							}
+						} else {
+							size_t id = find_name_id(name,attr_names);
+							if (id != size_t(-1)) {
+								// cout << "Found attribute of type " << id << " with name " << words[i+3] << endl;
+								associate(words[i+3],Assoc::Unused + int(id + 1));
+							}
 						}
 					}
 				}
-				pos = source.find(frontierTag,pos+1);
 			}
 		}
-		
+	
 		return fm::Result();
 	}
 

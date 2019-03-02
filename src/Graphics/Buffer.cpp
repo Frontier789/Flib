@@ -161,7 +161,7 @@ namespace fg
 		res += glCheck(glGetIntegerv(typeToGetBinding(m_type),&boundBuffer));
 		res += bind();
 
-		glBufferData(m_type,byteCount,ptr,m_usage);
+		res += glCheck(glBufferData(m_type,byteCount,ptr,m_usage));
 
 		unsigned int errCode = glGetError();
 		if (errCode)
@@ -226,6 +226,33 @@ namespace fg
 		ptr = glMapBuffer(m_type,access);
 		
 		return glCheck((void)0);
+	}
+
+	namespace {
+		GLbitfield convert_access(BufferAccess acc) {
+			if (acc == fg::BufferReadOnly)  return GL_MAP_READ_BIT;
+			if (acc == fg::BufferWriteOnly) return GL_MAP_WRITE_BIT;
+			if (acc == fg::BufferReadWrite) return GL_MAP_READ_BIT | GL_MAP_WRITE_BIT;
+			return 0;
+		}
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::Result Buffer::mapData(void *&ptr,fm::Size beg,fm::Size len,BufferAccess access)
+	{
+		bind();
+
+		ptr = glMapBufferRange(m_type,beg,len,convert_access(access));
+		
+		return glCheck((void)0);
+	}
+
+	/////////////////////////////////////////////////////////////
+	fm::Result Buffer::cpyData(void *ptr,fm::Size beg,fm::Size len)
+	{
+		bind();
+
+		return glCheck(glGetBufferSubData(m_type,beg,len,ptr));
 	}
 
 	/////////////////////////////////////////////////////////////

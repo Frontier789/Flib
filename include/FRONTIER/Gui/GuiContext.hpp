@@ -304,7 +304,8 @@ namespace fgui
 		/// @brief Add a drawable to the drawn elements
 		///
 		/// A proxy gui element will be created as a placeholder
-		///
+		/// The caller owns the drawable and it shall not be destructed before the window is
+		/// 
 		/// @param object The drawable object to add
 		/// 
 		/////////////////////////////////////////////////////////////

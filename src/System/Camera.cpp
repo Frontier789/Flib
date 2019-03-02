@@ -79,6 +79,12 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
+	mat4 Camera::getVPMat() const
+	{
+		return getProjMat() * getViewMat();
+	}
+
+	/////////////////////////////////////////////////////////////
 	mat4 Camera::getProjMat() const
 	{
 		return m_projStack.top();

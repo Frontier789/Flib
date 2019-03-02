@@ -89,6 +89,14 @@ namespace fm
 		Camera(const vec2 &canvasSize,const vec3 &pos,const vec3 &target = vec3(0,0,-1),const Anglef &fov = fm::deg(90),float znear = .1,float zfar = 100);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the current view * projection (VP) matrix
+		///
+		/// @return The current VP matrix
+		///
+		/////////////////////////////////////////////////////////////
+		mat4 getVPMat() const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Get the current projection matrix
 		///
 		/// @return The current projection matrix

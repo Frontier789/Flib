@@ -79,6 +79,8 @@ namespace fg
 		void init(); ///< Internal function used to create the OpenGL id
 		
 		fm::Result mapData(void *&ptr,BufferAccess access); ///< Internal helper map function
+		fm::Result mapData(void *&ptr,fm::Size beg,fm::Size len,BufferAccess access); ///< Internal helper map function
+		fm::Result cpyData(void *ptr,fm::Size beg,fm::Size len); ///< Internal helper copy function
 
 	public:
 		typedef Buffer &reference;
@@ -242,6 +244,22 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		template<class T>
 		fm::Result setData(const T *data,fm::Size dataCount);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Get data from the buffer
+		///
+		/// Downloads data from the GPU
+		/// The caller must allocate the memory
+		///
+		/// @param data The data returned
+		/// @param offset The offset of the read in items
+		/// @param length The length of the read in items
+		///
+		/// @return the error-state of the function
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T>
+		fm::Result getData(const T *data,fm::Size offset,fm::Size length);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set part of the data in the buffer
@@ -315,6 +333,40 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		template<class T = void>
 		fm::Result map(T *&ptr,BufferAccess access = BufferReadWrite);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Map a range of the buffer for read/write
+		///
+		/// Returns nullptr on error
+		///
+		/// @param beg The number of items to skip at the beginning
+		/// @param end The number of items to map
+		/// @param access The access policy for the mapping
+		///
+		/// @return A pointer to the mapped memory (nullptr on error)
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T = void>
+		T *map(fm::Size beg,fm::Size len,BufferAccess access = BufferReadWrite);
+
+		/////////////////////////////////////////////////////////////
+		/// @brief Map a range of the buffer for read/write
+		///
+		/// If read is false the data is not copied from GPU
+		/// If write is false the data is not copied to GPU
+		///
+		/// Returns nullptr on error
+		///
+		/// @param ptr The pointer returned (not mdified on error)
+		/// @param beg The number of items to skip at the beginning
+		/// @param end The number of items to map
+		/// @param access The access policy for the mapping
+		///
+		/// @return The result of the operation
+		///
+		/////////////////////////////////////////////////////////////
+		template<class T = void>
+		fm::Result map(T *&ptr,fm::Size beg,fm::Size len,BufferAccess access = BufferReadWrite);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Unmap the mapped buffer

@@ -53,6 +53,7 @@ namespace fm
 #include <FRONTIER/System/Polar2.hpp>
 #include <FRONTIER/System/Polar3.hpp>
 #include <FRONTIER/System/KDTree.hpp>
+#include <FRONTIER/System/Random.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector4.hpp>

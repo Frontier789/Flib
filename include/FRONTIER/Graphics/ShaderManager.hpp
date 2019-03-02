@@ -48,19 +48,19 @@ namespace fg
 	class FRONTIER_API ShaderManager : public fg::Shader
     {
     public:
-		enum MatrixState ///< Internal type used to indicate a matrix name's state
+		enum UniformState ///< Internal type used to indicate a uniform name's state
 		{
-			UnknownMat, ///< The matrix name is not known to exist
-			MissingMat, ///< The matrix name is known not to exist
-			FoundMat    ///< The matrix name is known to exist
+			UnknownUni, ///< The uniform name is not known to exist
+			MissingUni, ///< The uniform name is known not to exist
+			FoundUni    ///< The uniform name is known to exist
 		};
 		
 		std::vector<fm::MatrixStack<4,4,float> > m_stacks; ///< Stores the matrix stacks
 		std::map<AssocPoint,std::string> m_assocPoints;    /// Maps assocpoints to shader attribute names
 		std::vector<std::string> m_texUseNames; ///< Stores the shader attribute names of the variables that indicate whether a texture is in use
 		std::vector<std::string> m_texNames;    ///< Stores the shader attribute names of textures
-		std::vector<std::string> m_matNames;    ///< Stores the shader attribute names of matrices
-		std::vector<MatrixState> m_matState;    ///< Stores the state of the named matrices
+		std::vector<std::string> m_uniNames;    ///< Stores the shader attribute names of uniforms
+		std::vector<UniformState> m_uniState;    ///< Stores the state of the named uniforms
 		fm::Camera m_cam; ///< The camera
 		fm::Clock m_clk;  ///< The internal clock
         

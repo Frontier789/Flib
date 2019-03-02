@@ -74,5 +74,31 @@ namespace fg
 		ptr = (T*)vptr;
 		return res;
 	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline T *Buffer::map(fm::Size beg,fm::Size len,BufferAccess access)
+	{
+		void *ptr = nullptr;
+		mapData(ptr,beg*sizeof(T),len*sizeof(T),access);
+		return (T*)ptr;
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline fm::Result Buffer::map(T *&ptr,fm::Size beg,fm::Size len,BufferAccess access)
+	{
+		void *vptr = nullptr;
+		fm::Result res = mapData(vptr,beg*sizeof(T),len*sizeof(T),access);
+		ptr = (T*)vptr;
+		return res;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	fm::Result Buffer::getData(const T *data,fm::Size offset,fm::Size length)
+	{
+		return cpyData((void*)data,offset*sizeof(T),length*sizeof(T));
+	}
 }
 #endif //FRONTIER_BUFFER_INL_INCLUDED
