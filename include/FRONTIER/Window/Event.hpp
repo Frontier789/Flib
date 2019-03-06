@@ -491,7 +491,7 @@ namespace fw
 			ButtonReleased,  ///< A mouse button is released (The mouse field can be used to track further information)
 			TextEntered,     ///< A character is entered (not the same as KeyPressed)
 			MouseWheelMoved, ///< The mouse wheel was moved (The wheel field can be used to track further information)
-			MouseMoved,      ///< The cursor is moved inside the window is released (The pos field can be used to track further information)
+			MouseMoved,      ///< The cursor is moved inside the window is released (The motion field can be used to track further information)
 			FileDrop,        ///< The user dropped file(s) into the window
 			MouseLeft,       ///< The mouse left the window (the motion field can be used to track further information)
 			MouseEntered     ///< The mouse entered the window (the motion field can be used to track further information)

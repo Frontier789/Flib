@@ -14,35 +14,45 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_COMMONTYPES_HPP_INCLUDED
-#define FRONTIER_COMMONTYPES_HPP_INCLUDED
-#include <FRONTIER/System/util/RequireCpp11.hpp>
-#include <cstddef>
-#include <cstdint>
+#ifndef FRONTIER_CRYPTO_HPP_INCLUDED
+#define FRONTIER_CRYPTO_HPP_INCLUDED
+
+#include <FRONTIER/System/String.hpp>
+
+#define FRONTIER_CRYPTO
 
 namespace fm
 {
-	typedef unsigned char Byte;
-	typedef std::size_t   Size;
-	typedef std::uint8_t  Uint8;
-	typedef std::uint16_t Uint16;
-	typedef std::uint32_t Uint32;
-	typedef std::uint64_t Uint64;
-	typedef std::int8_t   Int8;
-	typedef std::int16_t  Int16;
-	typedef std::int32_t  Int32;
-	typedef std::int64_t  Int64;
+	/////////////////////////////////////////////////////////////
+	/// @brief Create an SHA-256 hash of a given byte array
+	///
+	/// The result is a hexadecimal number represented with 64 characters of the set [a-z0-9]
+	///
+	/// @param data Pointer to the data to hash
+	/// @param bytes The number of bytes in the input
+	///
+	/// @return The hash value computed
+	///
+	/////////////////////////////////////////////////////////////
+	std::string sha256(const void *data,fm::Size bytes);
 	
-	typedef std::intptr_t  IntPtr;
-	typedef std::uintptr_t UintPtr;
-	
-	template<class T> class vector2;
-	template<class T> class vector3;
-	template<class T> class vector4;
-	
-	typedef vector2<Size> vec2s;
-	typedef vector3<Size> vec3s;
-	typedef vector3<Size> vec4s;
+	/////////////////////////////////////////////////////////////
+	/// @brief Create an SHA-256 hash of a given range
+	///
+	/// Copies the data into a temporary buffer
+	///
+	/// @param beg The beginning of the range
+	/// @param end The ending of the range
+	///
+	/// @return The hash value computed
+	///
+	/////////////////////////////////////////////////////////////
+	template<class InputIt>
+	std::string sha256(InputIt beg,InputIt end);
 }
 
-#endif // FRONTIER_COMMONTYPES_HPP_INCLUDED
+#endif // FRONTIER_CRYPTO_HPP_INCLUDED
+
+#ifndef FRONTIER_DONT_INCLUDE_INL
+	#include <FRONTIER/System/Crypto.inl>
+#endif

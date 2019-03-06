@@ -42,7 +42,7 @@ Testing done via AutoTester (https://github.com/Frontier789/AutoTester)
 
 <p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
 <h2>Citation</h2>
-The source uses two public domain libraries:
+The fllowing public domain libraries are used by Flib:
 <ol>
 	<li>
 		<p>stb (http://github.com/nothings/stb and http://nothings.org)</p>
@@ -64,6 +64,12 @@ The source uses two public domain libraries:
 		<ul type="*">
 			<li>jpge.h</li>
 			<li>jpge.cpp</li>
+		</ul>
+	</li>
+	<li>
+		<p>PicoSHA2 (https://github.com/okdshin/PicoSHA2)</p>
+		<ul type="*">
+			<li>picosha2.h</li>
 		</ul>
 	</li>
 </ol>

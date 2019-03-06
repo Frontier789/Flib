@@ -49,6 +49,7 @@ namespace fm
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/System/Matrix.hpp>
+#include <FRONTIER/System/Crypto.hpp>
 #include <FRONTIER/System/Camera.hpp>
 #include <FRONTIER/System/Polar2.hpp>
 #include <FRONTIER/System/Polar3.hpp>
