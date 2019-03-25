@@ -103,6 +103,20 @@ namespace fm
 		return pos.x < r.pos.x + r.size.w && pos.x + size.w > r.pos.x &&
     		   pos.y < r.pos.y + r.size.h && pos.y + size.h > r.pos.y;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	inline rect<T> rect<T>::intersection(const rect<T> &r) const
+	{
+		if (!intersects(r)) return rect<T>();
+		
+		float x1 = std::max(pos.x, r.pos.x);
+		float y1 = std::max(pos.y, r.pos.y);
+		float x2 = std::min(pos.x + size.w, r.pos.x + r.size.w);
+		float y2 = std::min(pos.y + size.h, r.pos.y + r.size.h);
+		
+		return rect<T>(x1,y1,x2-x1,y2-y1);
+	}
 }
 
 #include <iosfwd>

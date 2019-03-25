@@ -54,6 +54,8 @@ else
  CXXFLAGS+=-g
 endif
 
+CXXFLAGS+= $(F_EXTRA_CXXFLAGS)
+
 # common tools
 MAKE=make
 MKDIR=mkdir

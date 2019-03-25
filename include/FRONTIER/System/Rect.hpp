@@ -141,16 +141,30 @@ namespace fm
 		/////////////////////////////////////////////////////////////
 		/// @brief Check if two rectangles intersect
 		///
+		/// @param r The rectangle to check intersection with
+		///
 		/// @return True iff the two intersect
 		///
 		/////////////////////////////////////////////////////////////
 		bool intersects(const rect<T> &r) const;
+        
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the intersection of two rectangles
+		///
+		/// If the rectangles do not intersect, returns a zeros size rectangle
+		///
+		/// @param r The rectangle to check intersection with
+		///
+		/// @return The intersection rectangle
+		///
+		/////////////////////////////////////////////////////////////
+		rect<T> intersection(const rect<T> &r) const;
     };
 
     typedef rect<float> 		 rect2f;
     typedef rect<int>   		 rect2i;
     typedef rect<unsigned int>   rect2u;
-    typedef rect<fm::Size>  	 rect2s;
+    typedef rect<::fm::Size>  	 rect2s;
 }
 #endif // FRONTIER_RECT_HPP
 

@@ -21,14 +21,6 @@
 #include <algorithm>
 #include <mutex>
 
-#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-	#define FRONTIER_LOCK_MUTEX(m) m.lock();
-	#define FRONTIER_UNLOCK_MUTEX(m) m.unlock();
-#else 
-	#define FRONTIER_LOCK_MUTEX(m) (void)0;
-	#define FRONTIER_UNLOCK_MUTEX(m) (void)0;
-#endif
-
 /*
 #include <iostream>
 
@@ -719,11 +711,8 @@ namespace fw
 		////////////////////////////////////////////////////////////
 		unsigned int Window::m_windowCount = 0;
 
-	#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 		////////////////////////////////////////////////////////////
 		std::mutex Window::m_windowCountMutex;
-	#endif
-
 
 		////////////////////////////////////////////////////////////
 		Window::Window() : m_hwnd(NULL),
@@ -792,12 +781,11 @@ namespace fw
 			// decrease window count
 			if (m_isOpened)
 			{
-				FRONTIER_LOCK_MUTEX(m_windowCountMutex);
+				std::lock_guard<std::mutex> guard(m_windowCountMutex);
+
 				m_windowCount--;
 				if (!m_windowCount) // unregister class if no more windows
 					UnregisterClassA(FRONTIER_WINDOWS_CLASS_NAME, GetModuleHandle(NULL));
-
-				FRONTIER_UNLOCK_MUTEX(m_windowCountMutex);
 
 				m_isOpened = false;
 			}
@@ -879,12 +867,14 @@ namespace fw
 				m_ownedParent = CreateWindowExA(0,FRONTIER_WINDOWS_CLASS_NAME,"invisible window",0,0,0,1,1,NULL,NULL,NULL,NULL);
 
 			// update windowCount
-			FRONTIER_LOCK_MUTEX(m_windowCountMutex);
-			if (m_windowCount == 0)
-				createClass();
-				
-			m_windowCount++;
-			FRONTIER_UNLOCK_MUTEX(m_windowCountMutex);
+			{
+				std::lock_guard<std::mutex> guard(m_windowCountMutex);
+
+				if (m_windowCount == 0)
+					createClass();
+					
+				m_windowCount++;
+			}
 
 
 			// initialize the window
@@ -909,7 +899,6 @@ namespace fw
 
 			if(!m_hwnd)
 			{
-				// upon fail...
 				m_isOpened = false;
 
 				return fw::WapiGetLastError("CreateWindowExW");

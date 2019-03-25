@@ -54,8 +54,8 @@ namespace fm
 	Angle<T> Angle<T>::standardize() const
 	{
 		T f = std::fmod(m_amount,T(F_PI * 2));
-		if (f < -F_PI) f += T(F_PI);
-		if (f >  F_PI) f -= T(F_PI);
+		if (f < -F_PI) f += F_PI;
+		if (f >  F_PI) f -= F_PI;
 		
 		return fm::deg(f);
 	}
@@ -197,7 +197,7 @@ namespace fm
 	template<class T>
 	auto deg(const T &amount) -> Angle<decltype(amount / 180.f * F_PI)>
 	{
-		return Angle<decltype(amount / 180.f * F_PI)>(decltype(amount / 180.f * F_PI)(F_PI) * amount / T(180.0));
+		return Angle<decltype(amount / 180.f * F_PI)>(F_PI * amount / T(180.0));
 	}
 
 	/////////////////////////////////////////////////////////////

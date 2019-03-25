@@ -39,13 +39,6 @@ namespace fg
 
 namespace fw
 {
-	namespace priv
-	{
-		Display *FRONTIER_API getGlobDisp();
-		void FRONTIER_API freeGlobDisp(Display *disp);
-		fm::Result FRONTIER_API getFBConfig(Display *disp,void *fbconfptr,bool window);
-	}
-	
 	/////////////////////////////////////////////////////////////
 	/// @brief Classes related to xlib are held in this namespace
 	///

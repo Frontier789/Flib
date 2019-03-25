@@ -21,10 +21,7 @@
 #include <FRONTIER/System/String.hpp>
 #include <FRONTIER/System/Result.hpp>
 #include <FRONTIER/Window/Event.hpp>
-
-#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-	#include <mutex>
-#endif
+#include <mutex>
 
 #define FRONTIER_WAPI_WINDOW
 
@@ -67,10 +64,8 @@ namespace fw
 			typedef bool (*EventCallback)(Window *,unsigned int,fm::UintPtr,fm::IntPtr,fm::IntPtr*);
 			
 		private:
-		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-			static std::mutex m_windowCountMutex;      ///< Protects the m_windowCount to be accessed at the same time
-		#endif
-			static unsigned int m_windowCount;        ///< The number of windows open
+			static std::mutex m_windowCountMutex; ///< Protects the m_windowCount to be accessed at the same time
+			static unsigned int m_windowCount;    ///< The number of windows open
 			void cleanUp();      ///< Internal function used to free resources
 			fm::Result createClass();  ///< Internal function used at initialization
 			HWND m_hwnd;         ///< The id (handle) of the window

@@ -14,8 +14,12 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Window/Xlib/XlibCommon.hpp>
 #include <FRONTIER/Window/Xlib/XlibGLContext.hpp>
 #include <FRONTIER/System/Delegate.hpp>
+#include <FRONTIER/System/util/C.hpp>
+#include <FRONTIER/Window/Event.hpp>
+#include <FRONTIER/Graphics/Image.hpp>
 #include <X11/cursorfont.h>
 #include <mutex>
 #include <string>
@@ -26,186 +30,143 @@
 #define GLX_CONTEXT_CORE_PROFILE_BIT_ARB          0x00000001
 #define GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
 
-#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-	#define FRONTIER_LOCK_MUTEX(m) m.lock()
-	#define FRONTIER_UNLOCK_MUTEX(m) m.unlock()
-#else
-	#define FRONTIER_LOCK_MUTEX(m) ((void)0)
-	#define FRONTIER_UNLOCK_MUTEX(m) ((void)0)
-#endif
-
 namespace fw
 {
 	namespace priv
 	{
-		Display *globDisp = 0;
-		unsigned int globDispN = 0;
-		
-		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-		std::mutex globDispMutex;
-		#endif
-
-		Display *getGlobDisp()
+		GlobDispHolder::GlobDispHolder() :
+			disp(nullptr),
+			n(0)
 		{
-			FRONTIER_LOCK_MUTEX(globDispMutex);
-			
-			if (globDispN > 0) globDispN++;
+			XInitThreads();
+		}
+
+		Display *GlobDispHolder::get() {
+			std::lock_guard<std::mutex> guard(mut);
+			if (n > 0) n++;
 			else
 			{
-				globDisp = XOpenDisplay(NULL);
-				globDispN = 1;
+				disp = XOpenDisplay(NULL);
+				n = 1;
 			}
 			
-			FRONTIER_UNLOCK_MUTEX(globDispMutex);
-			
-			return globDisp;
+			return disp;
 		}
 
-		void freeGlobDisp(Display *disp)
-		{
-			FRONTIER_LOCK_MUTEX(globDispMutex);
-			
-			if (globDispN > 0 && globDisp == disp) 
+		void GlobDispHolder::free(Display *d) {
+			std::lock_guard<std::mutex> guard(mut);
+			if (n > 0 && disp == d) 
 			{
-				globDispN--;
-				if (globDispN == 0)
+				n--;
+				if (n == 0)
 				{
-					XCloseDisplay(globDisp);
-					globDisp = 0;
+					XCloseDisplay(disp);
+					disp = 0;
 				}
 			}
-			
-			FRONTIER_UNLOCK_MUTEX(globDispMutex);
 		}
-		
-		
-		
-		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-		std::mutex globXwinMutex;
-		#endif
-		
-		std::deque< ::Window> xwins;
-		std::deque< ::Cursor> xCurrCursors;
-		
-		void regXWin(::Window win)
-		{
-			FRONTIER_LOCK_MUTEX(priv::globXwinMutex);
+
+		void GlobalWinHolder::reg(::Window win) {
+			std::lock_guard<std::mutex> guard(mut);
 			
 			xwins.push_back(win);
 			xCurrCursors.push_back(None);
+		}
+
+		void GlobalWinHolder::del(::Window win) {
+			std::lock_guard<std::mutex> guard(mut);
 			
-			FRONTIER_UNLOCK_MUTEX(priv::globXwinMutex);
+			C(xwins.size()) if (xwins[i] == win)
+			{
+				xwins[i] = xwins.back();
+				xwins.pop_back();
+				
+				xCurrCursors[i] = xCurrCursors.back();
+				xCurrCursors.pop_back();
+				
+				break;
+			}
 		}
 		
-		void unregXWin(::Window win)
+		GlobDispHolder gdisp;
+		GlobalWinHolder gwin;
+		GlobalCurHolder gcur;
+	
+		GlobalCurHolder::GlobalCurHolder() : disp(0)
 		{
-			FRONTIER_LOCK_MUTEX(priv::globXwinMutex);
-			
-			C(xwins.size())
-				if (xwins[i] == win)
-				{
-					xwins[i] = xwins.back();
-					xwins.pop_back();
-					
-					xCurrCursors[i] = xCurrCursors.back();
-					xCurrCursors.pop_back();
-					
-					break;
-				}
-			
-			FRONTIER_UNLOCK_MUTEX(priv::globXwinMutex);
+			C(sizeof(curs)/sizeof(*curs))
+				curs[i] = 0;
 		}
 		
-		class CurHolder
+		GlobalCurHolder::~GlobalCurHolder()
 		{
-		public:
-			::Cursor curs[(fm::Size)Mouse::CursorCount];
-			::Display *disp;
-			
-			CurHolder() : disp(0)
+			if (disp)
 			{
-				C(sizeof(curs)/sizeof(*curs))
-					curs[i] = 0;
+				C(sizeof(curs)/sizeof(*curs))	
+					if (curs[i])
+						XFreeCursor(disp,curs[i]);
+					
+				fw::priv::gdisp.free(disp);
 			}
-			
-			~CurHolder()
-			{
-				if (disp)
-				{
-					C(sizeof(curs)/sizeof(*curs))	
-						if (curs[i])
-							XFreeCursor(disp,curs[i]);
-						
-					fw::priv::freeGlobDisp(disp);
-				}
-			}
-			
-			::Cursor fetch(Mouse::Cursor cursor)
-			{
-				if (!disp)
-					disp = fw::priv::getGlobDisp();
-
-				FRONTIER_LOCK_MUTEX(priv::globDispMutex);
-				
-				fm::Size index = (int)cursor;
-				
-				if (index >= (fm::Size)Mouse::CursorCount) index = 0;
-				
-				::Cursor &cur = curs[index];
-				
-				if (!cur)
-				{
-					int data[(fm::Size)Mouse::CursorCount] = 
-					{
-						XC_left_ptr,
-						XC_xterm,
-						XC_hand2,
-						XC_X_cursor,
-						XC_watch,
-						XC_top_side,
-						XC_left_side,
-						XC_bottom_side,
-						XC_right_side,
-						XC_top_right_corner,
-						XC_top_left_corner,
-						XC_bottom_left_corner,
-						XC_bottom_right_corner
-					};
-				
-					cur = XCreateFontCursor(disp,data[index]);
-				}
-
-				FRONTIER_UNLOCK_MUTEX(priv::globDispMutex);
-				
-				return cur;
-			}
-		};
+		}
 		
-		CurHolder curHolder;
+		::Cursor GlobalCurHolder::fetch(Mouse::Cursor cursor)
+		{
+			if (!disp)
+				disp = fw::priv::gdisp.get();
+
+			std::lock_guard<std::mutex> guard(gdisp.mut);
+			
+			fm::Size index = (int)cursor;
+			
+			if (index >= (fm::Size)Mouse::CursorCount) index = 0;
+			
+			::Cursor &cur = curs[index];
+			
+			if (!cur)
+			{
+				int data[(fm::Size)Mouse::CursorCount] = 
+				{
+					XC_left_ptr,
+					XC_xterm,
+					XC_hand2,
+					XC_X_cursor,
+					XC_watch,
+					XC_top_side,
+					XC_left_side,
+					XC_bottom_side,
+					XC_right_side,
+					XC_top_right_corner,
+					XC_top_left_corner,
+					XC_bottom_left_corner,
+					XC_bottom_right_corner
+				};
+			
+				cur = XCreateFontCursor(disp,data[index]);
+			}
+			
+			return cur;
+		}
 	}
 
 	void setCursorXlib(::Cursor cursor)
 	{
-		FRONTIER_LOCK_MUTEX(priv::globXwinMutex);
-		FRONTIER_LOCK_MUTEX(priv::globDispMutex);
+		std::lock_guard<std::mutex> guardw(priv::gwin.mut);
+		std::lock_guard<std::mutex> guardd(priv::gdisp.mut);
 		
-		if (priv::globDisp)
-			C(priv::xwins.size())
-				if (priv::xCurrCursors[i] != cursor)
+		if (priv::gdisp.disp != nullptr)
+			C(priv::gwin.xwins.size())
+				if (priv::gwin.xCurrCursors[i] != cursor)
 				{
-					priv::xCurrCursors[i] = cursor;
+					priv::gwin.xCurrCursors[i] = cursor;
 					
-					XDefineCursor(priv::globDisp,priv::xwins[i],cursor);
+					XDefineCursor(priv::gdisp.disp,priv::gwin.xwins[i],cursor);
 				}
-		
-		
-		FRONTIER_UNLOCK_MUTEX(priv::globDispMutex);
-		FRONTIER_UNLOCK_MUTEX(priv::globXwinMutex);
 	}
 	
 	void Mouse::setCursor(Mouse::Cursor cursor)
 	{
-		setCursorXlib(priv::curHolder.fetch(cursor));
+		setCursorXlib(priv::gcur.fetch(cursor));
 	}
 	
 	
@@ -228,7 +189,7 @@ namespace fw
 			{
 				MouseCursorData &data = *(MouseCursorData*)dataPtr;
 				XFreeCursor(data.display,data.cursor),
-				fw::priv::freeGlobDisp(data.display);
+				fw::priv::gdisp.free(data.display);
 				
 				delete (MouseCursorData*)dataPtr;
 				dataPtr = nullptr;
@@ -253,7 +214,7 @@ namespace fw
 		Xlib::freeMouseCursorData(m_impl);
 		
 		Xlib::MouseCursorData *ptr = new Xlib::MouseCursorData;
-		ptr->display = fw::priv::getGlobDisp();
+		ptr->display = fw::priv::gdisp.get();
 		ptr->cursor  = Xlib::imageToCursor(img,clickSpot,transparencyLimit,ptr->display);
 		
 		m_impl = ptr;
@@ -521,10 +482,10 @@ namespace fw
 			m_win = window;
 
 			// connect to X
-			m_disp = priv::getGlobDisp();
+			m_disp = priv::gdisp.get();
 			
 			if (!m_disp)
-				return fm::Result("XError",fm::Result::OPFailed,"NoDisplay","getGlobDisp",__FILE__,__LINE__);
+				return fm::Result("XError",fm::Result::OPFailed,"NoDisplay","gdisp.get",__FILE__,__LINE__);
 
 			// choose best configuration available
 			GLXFBConfig config;
@@ -545,10 +506,10 @@ namespace fw
 			m_settings = settings;
 
 			// open our own Display
-			m_disp = priv::getGlobDisp();
+			m_disp = priv::gdisp.get();
 			
 			if (!m_disp)
-				return fm::Result("XError",fm::Result::OPFailed,"NoDisplay","getGlobDisp",__FILE__,__LINE__);
+				return fm::Result("XError",fm::Result::OPFailed,"NoDisplay","gdisp.get",__FILE__,__LINE__);
 
 			// choose best configuration available
 			GLXFBConfig config;
@@ -594,7 +555,7 @@ namespace fw
 			// close the connection with X
 			if (m_disp)
 			{
-				priv::freeGlobDisp(m_disp);
+				priv::gdisp.free(m_disp);
 				m_disp = NULL;
 			}
 

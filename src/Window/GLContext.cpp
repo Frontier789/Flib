@@ -61,26 +61,21 @@ namespace fw
 					delete cont;
 			}
 		};
+		namespace {
+			ContextHolder ch;
 
-		ContextHolder ch;
-
-		#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-		std::mutex theSharedContextMutex;
-		#endif
+			std::mutex theSharedContextMutex;
+		}
 
 		fw::GLContext &getSharedContext()
 		{
-			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-			theSharedContextMutex.lock();
-			#endif
+			std::lock_guard<std::mutex> guard(theSharedContextMutex);
 
 			if (!ch.cont)
 				ch.cont = new fw::GLContext,
 				ch.cont->getOSContext().create(NULL,128,128,fw::GLContext::Settings());
 
-			#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
 			theSharedContextMutex.unlock();
-			#endif
 
 			return *ch.cont;
 		}

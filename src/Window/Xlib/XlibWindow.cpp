@@ -14,14 +14,11 @@
 /// You should have recieved a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
+#include <FRONTIER/Window/Xlib/XlibCommon.hpp>
 #include <FRONTIER/Window/Xlib/XlibWindow.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <FRONTIER/Graphics/Image.hpp> 
 #include <FRONTIER/Window/Window.hpp>
-
-#ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-#include <mutex>
-#endif
 
 #include <GL/glx.h>
 #include <string>
@@ -143,9 +140,6 @@ namespace fw
 			
 			return fm::Result();
 		}
-		
-		void regXWin(::Window win);
-		void unregXWin(::Window win);
 	}
 	
 	namespace Xlib 
@@ -595,7 +589,7 @@ namespace fw
 			if (m_disp) 
 				return true;
 
-			m_disp = priv::getGlobDisp();
+			m_disp = priv::gdisp.get();
 
 			if (!m_disp)
 				return false;
@@ -657,7 +651,7 @@ namespace fw
 			close();
 
 			if (m_disp)
-				priv::freeGlobDisp(m_disp);
+				priv::gdisp.free(m_disp);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -806,7 +800,7 @@ namespace fw
 				  
 				XSetICFocus(m_xic);
 				
-				priv::regXWin(m_win);
+				priv::gwin.reg(m_win);
 				
 				return fm::Result();
 			}
@@ -974,7 +968,7 @@ namespace fw
 				if (m_emptyCursor != None)
 					XFreeCursor(m_disp,m_emptyCursor);
 				
-				priv::unregXWin(m_win);
+				priv::gwin.del(m_win);
 
 				XDestroyWindow(m_disp,m_win);
 				XFreeColormap(m_disp, m_cmap);

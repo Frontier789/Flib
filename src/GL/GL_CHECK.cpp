@@ -24,13 +24,7 @@ namespace fg
 {
 	namespace GL
 	{
-	    #ifdef FRONTIER_PROTECT_SHARED_VARIABLES
-			#define GL_ERRORS_THREAD_LOCAL thread_local 
-		#else
-			#define GL_ERRORS_THREAD_LOCAL 
-		#endif
-		
-		GL_ERRORS_THREAD_LOCAL std::deque<fm::Result> glErrors;
+		thread_local std::deque<fm::Result> glErrors;
 		
 		namespace priv
 		{
