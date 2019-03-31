@@ -327,6 +327,16 @@ namespace fg
 		/// 
 		/////////////////////////////////////////////////////////////
 		static ShaderManager *getDefaultShader(fm::Delegate<void,ShaderSource&> transf = nullptr);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the source of a ShaderManager capable of drawing simple gui elements
+		/// 
+		/// @param type The type of subshader to get
+		/// 
+		/// @return The source of given type
+		/// 
+		/////////////////////////////////////////////////////////////
+		static ShaderSource getDefaultShaderSource(ShaderType type);
     };
 }
 
