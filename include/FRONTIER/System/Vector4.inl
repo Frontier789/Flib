@@ -266,6 +266,18 @@ namespace fm
 		return *((T*)this+index);
 	}
 	
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	vector3<T> &vector4<T>::xyz() {
+		return *((vector3<T>*)this);
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
+	const vector3<T> &vector4<T>::xyz() const {
+		return *((const vector3<T>*)this);
+	}
+	
 	template<class T> vector4<T> vector4<T>::White      = vector4<T>::fromHex(0xFFFFFFFF);
 	template<class T> vector4<T> vector4<T>::Silver     = vector4<T>::fromHex(0xBFBFBFFF);
 	template<class T> vector4<T> vector4<T>::Gray       = vector4<T>::fromHex(0x7B7B7BFF);
