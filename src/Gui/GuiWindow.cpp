@@ -20,6 +20,8 @@
 #include <FRONTIER/Gui/GuiWindow.hpp>
 #include <FRONTIER/Window/Event.hpp>
 #include <FRONTIER/System/Rect.hpp>
+#include <iostream>
+using namespace std;
 
 namespace fgui
 {
@@ -40,7 +42,7 @@ namespace fgui
 		Window(pos,size,title,style,nullptr,0,settings),
 		GuiContext(size)																																					
 	{
-		
+		setClearColor(fm::vec4::White);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -48,7 +50,7 @@ namespace fgui
 		Window(size,title,style,nullptr,0,settings),
 		GuiContext(size)
 	{
-		
+		setClearColor(fm::vec4::White);
 	}
 	
 	/////////////////////////////////////////////////////////////	

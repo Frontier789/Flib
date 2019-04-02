@@ -294,6 +294,14 @@ namespace fw
 		void setClearColor(const fm::vec4 &color);
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the value of the clearing color used by this context
+		///
+		/// @return The current clear-color
+		///
+		/////////////////////////////////////////////////////////////
+		fm::vec4 getClearColor() const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Set the clearing depth used by this context
 		///
 		/// @param depth The new clearing depth

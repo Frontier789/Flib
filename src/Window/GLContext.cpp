@@ -255,6 +255,12 @@ namespace fw
 	{
 		m_clearColor = color;
 	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::vec4 GLContext::getClearColor() const
+	{
+		return m_clearColor;
+	}
 
 	/////////////////////////////////////////////////////////////
 	void GLContext::setClearDepth(float depth)

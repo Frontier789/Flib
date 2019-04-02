@@ -480,54 +480,65 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
+	ShaderSource ShaderManager::getDefaultShaderSource(ShaderType type)
+	{
+		if (type == fg::VertexShader)
+			return ShaderSource{130,{{"FRONTIER_MODEL ",""},
+									 {"FRONTIER_VIEW  ",""},
+									 {"FRONTIER_PROJ  ",""},
+									 {"FRONTIER_POS   ",""},
+									 {"FRONTIER_CLR   ",""},
+									 {"FRONTIER_CLRMAT",""},
+									 {"FRONTIER_TEXPOS",""},
+									 {"FRONTIER_TEXMAT",""}},
+									{{"mat4 FRONTIER_TEXMAT","u_texUVMat"},
+									 {"mat4 FRONTIER_MODEL ","u_modelMat"},
+									 {"mat4 FRONTIER_VIEW  ","u_viewMat "},
+									 {"mat4 FRONTIER_CLRMAT","u_colorMat"},
+									 {"mat4 FRONTIER_PROJ  ","u_projMat "}},
+									{{"vec3 FRONTIER_POS     ","in_pos   "},
+									 {"vec2 FRONTIER_TEXPOS  ","in_texpos"},
+									 {"vec4 FRONTIER_CLR     ","in_color "}},
+									{{"vec4","va_color "},
+									 {"vec2","va_texpos"}},
+									 "",
+									 {},
+									 R"(
+				gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos,1.0);
+				
+				va_color  = u_colorMat * in_color;
+				va_texpos = (u_texUVMat * vec4(in_texpos,0.0,1.0)).xy;
+										)",
+									fg::VertexShader};
+			
+		if (type == fg::FragmentShader)
+			return ShaderSource{130,{},
+									{{"sampler2D","u_tex"},
+									 {"bool","u_useTex"}},
+									{{"vec4","va_color "},
+									 {"vec2","va_texpos"}},
+									{{"vec4","out_color"}},
+									"",
+									{},
+									R"(
+				out_color = va_color;
+				if (u_useTex)
+					out_color *= texture2D(u_tex,va_texpos);
+										)",
+									fg::FragmentShader};
+		
+		return {};
+	}
+	
+	/////////////////////////////////////////////////////////////
 	ShaderManager *ShaderManager::getDefaultShader(fm::Delegate<void,ShaderSource&> transf)
 	{
 		if (Shader::isAvailable())
 		{
 			ShaderManager *shader = new ShaderManager;
 			
-			ShaderSource vertSource{130,{{"FRONTIER_MODEL ",""},
-										 {"FRONTIER_VIEW  ",""},
-										 {"FRONTIER_PROJ  ",""},
-										 {"FRONTIER_POS   ",""},
-										 {"FRONTIER_CLR   ",""},
-										 {"FRONTIER_CLRMAT",""},
-										 {"FRONTIER_TEXPOS",""},
-										 {"FRONTIER_TEXMAT",""}},
-										{{"mat4 FRONTIER_TEXMAT","u_texUVMat"},
-										 {"mat4 FRONTIER_MODEL ","u_modelMat"},
-										 {"mat4 FRONTIER_VIEW  ","u_viewMat "},
-										 {"mat4 FRONTIER_CLRMAT","u_colorMat"},
-										 {"mat4 FRONTIER_PROJ  ","u_projMat "}},
-										{{"vec3 FRONTIER_POS     ","in_pos   "},
-										 {"vec2 FRONTIER_TEXPOS  ","in_texpos"},
-										 {"vec4 FRONTIER_CLR     ","in_color "}},
-										{{"vec4","va_color "},
-										 {"vec2","va_texpos"}},
-										"",
-										{},
-										R"(
-				gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(in_pos,1.0);
-				
-				va_color  = u_colorMat * in_color;
-				va_texpos = (u_texUVMat * vec4(in_texpos,0.0,1.0)).xy;
-										   )",
-										fg::VertexShader};
-			
-			ShaderSource fragSource{130,{},
-										{{"sampler2D","u_tex"},
-										 {"bool","u_useTex"}},
-										{{"vec4","va_color "},
-										 {"vec2","va_texpos"}},
-										{{"vec4","out_color"}},
-										"",
-										{},
-										R"(
-				out_color = va_color;
-				if (u_useTex)
-					out_color *= texture2D(u_tex,va_texpos);
-										   )",
-										fg::FragmentShader};
+			auto vertSource = getDefaultShaderSource(fg::VertexShader);
+			auto fragSource = getDefaultShaderSource(fg::FragmentShader);
 			
 			transf(vertSource);
 			transf(fragSource);
