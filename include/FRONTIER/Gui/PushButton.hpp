@@ -34,6 +34,7 @@ namespace fgui
 	class FRONTIER_API PushButton : public GuiButton
 	{
 		fg::Sprite m_bckgSprite; ///< The background sprite
+		fm::vec4 m_bckgClr; ///< The background color
 		
 	protected:
 		/////////////////////////////////////////////////////////////
@@ -86,6 +87,25 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual void setPosition(fm::vec2i pos) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the color of the background of the button
+		/// 
+		/// Sets the color of the background sprite
+		/// To change the text settings, use getGuiText()
+		/// 
+		/// @param size The size
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setBgColor(fm::vec4 color);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Get the color of the background of the button
+		/// 
+		/// @return The background color
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::vec4 getBgColor() const;
 	};
 }
 

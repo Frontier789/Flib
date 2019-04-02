@@ -43,6 +43,12 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
+	GuiFont::GuiFont(const char *fontName) : fontName(fontName)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
 	fg::Font GuiFont::getFont(fm::Ref<const GuiContext> owner) const
 	{
 		if (font) return font;

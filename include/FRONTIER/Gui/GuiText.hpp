@@ -80,10 +80,22 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct the gui font from a font name
 		/// 
+		/// Fontname can refer to a file or an os built-in font such as arial
+		/// 
 		/// @param fontName The name of the font to use
 		/// 
 		/////////////////////////////////////////////////////////////
 		GuiFont(fm::String fontName);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Construct the gui font from a font name
+		/// 
+		/// Fontname can refer to a file or an os built-in font such as arial
+		/// 
+		/// @param fontName The name of the font to use
+		/// 
+		/////////////////////////////////////////////////////////////
+		GuiFont(const char *fontName);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Retrieve the font from the gui font
