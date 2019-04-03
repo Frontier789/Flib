@@ -23,6 +23,14 @@ namespace fg
 {
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
+	SpriteBase<ImageID>::SpriteBase() : m_manager(nullptr),
+										m_id(0)
+	{
+		
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ImageID>
 	inline SpriteBase<ImageID>::~SpriteBase()
 	{
 		if (getManager())
@@ -65,7 +73,8 @@ namespace fg
 	template<class ImageID>
 	inline SpriteBase<ImageID> &SpriteBase<ImageID>::setImageID(ImageID imgID)
 	{
-		getManager()->handleImageIDChange(*this,imgID);
+		if (getManager())
+			getManager()->handleImageIDChange(*this,imgID);
 		
 		return *this;
 	}
@@ -74,7 +83,10 @@ namespace fg
 	template<class ImageID>
 	inline ImageID SpriteBase<ImageID>::getImageID() const
 	{
-		return getManager()->fetchImgID(*this);
+		if (getManager())
+			return getManager()->fetchImgID(*this);
+		
+		return {};
 	}
 	
 	
@@ -82,16 +94,20 @@ namespace fg
 	template<class ImageID>
 	inline SpriteBase<ImageID> &SpriteBase<ImageID>::operator=(const SpriteBase<ImageID> &sprite)
 	{
-		getManager()->handleDestroy(*this);
+		if (getManager()) {
+			getManager()->handleDestroy(*this);
+		}
 		
 		setManager(sprite.getManager());
 		
-		getManager()->handleCreate(*this,
-									sprite.getImageID(),
-									sprite.getPosition(),
-									sprite.getSize(),
-									sprite.getDirection(),
-									sprite.getColor());
+		if (getManager())
+			getManager()->handleCreate(
+				*this,
+				sprite.getImageID(),
+				sprite.getPosition(),
+				sprite.getSize(),
+				sprite.getDirection(),
+				sprite.getColor());
 		
 		return *this;
 	}
@@ -100,26 +116,21 @@ namespace fg
 	template<class ImageID>
 	inline SpriteBase<ImageID> &SpriteBase<ImageID>::operator=(SpriteBase<ImageID> &&sprite)
 	{
-		getManager()->handleDestroy(*this);
-		setManager(nullptr);
-		
-		sprite.swap(*this);
-		
-		return *this;
+		return swap(sprite);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
 	inline SpriteBase<ImageID> &SpriteBase<ImageID>::swap(SpriteBase<ImageID> &sprite)
 	{
-		if (getManager() == sprite.getManager() && getManager())
+		if (getManager() == sprite.getManager())
 		{
-			fm::Size tmpId = getId();
-			setId(sprite.getId());
-			sprite.setId(tmpId);
+			std::swap(m_id, sprite.m_id);
 			
-			getManager()->handleEmplace(*this);
-			getManager()->handleEmplace(sprite);
+			if (getManager()) {
+				getManager()->handleEmplace(*this);
+				getManager()->handleEmplace(sprite);
+			}
 		}
 		else if (getManager() && !sprite.getManager())
 		{
@@ -130,6 +141,15 @@ namespace fg
 			
 			sprite.getManager()->handleEmplace(sprite);
 		}
+		else if (!getManager() && sprite.getManager())
+		{
+			setId(sprite.getId());
+			setManager(sprite.getManager());
+			
+			sprite.setManager(nullptr);
+			
+			getManager()->handleEmplace(*this);
+		}
 		
 		return *this;
 	}
@@ -138,7 +158,8 @@ namespace fg
 	template<class ImageID>
 	SpriteBase<ImageID> &SpriteBase<ImageID>::setPosition(const fm::vec3 &pos)
 	{
-		getManager()->handlePosChange(getId(),pos);
+		if (getManager())
+			getManager()->handlePosChange(getId(),pos);
 		
 		return *this;
 	}
@@ -147,6 +168,8 @@ namespace fg
 	template<class ImageID>
 	fm::vec3 SpriteBase<ImageID>::getPosition() const
 	{
+		if (!getManager()) return fm::vec3();
+		
 		return getManager()->fetchPos(getId());
 	}
 	
@@ -154,6 +177,8 @@ namespace fg
 	template<class ImageID>
 	SpriteBase<ImageID> &SpriteBase<ImageID>::setColor(const fm::vec4 &clr)
 	{
+		if (!getManager()) return *this;
+		
 		getManager()->handleColorChange(getId(),clr);
 		
 		return *this;
@@ -163,6 +188,8 @@ namespace fg
 	template<class ImageID>
 	fm::vec4 SpriteBase<ImageID>::getColor() const
 	{
+		if (!getManager()) return fm::vec4::White;
+		
 		return getManager()->fetchColor(getId());
 	}
 
@@ -170,6 +197,8 @@ namespace fg
 	template<class ImageID>
 	SpriteBase<ImageID> &SpriteBase<ImageID>::setDirection(const fm::vec2 &dir)
 	{
+		if (!getManager()) return *this;
+		
 		getManager()->handleDirChange(getId(),dir);
 		
 		return *this;
@@ -179,6 +208,8 @@ namespace fg
 	template<class ImageID>
 	fm::vec2 SpriteBase<ImageID>::getDirection() const
 	{
+		if (!getManager()) return fm::vec2();
+		
 		return getManager()->fetchDir(getId());
 	}
 
@@ -186,6 +217,8 @@ namespace fg
 	template<class ImageID>
 	SpriteBase<ImageID> &SpriteBase<ImageID>::setSize(const fm::vec2 &size)
 	{
+		if (!getManager()) return *this;
+		
 		getManager()->handleSizeChange(getId(),size);
 		
 		return *this;
@@ -195,6 +228,8 @@ namespace fg
 	template<class ImageID>
 	fm::vec2 SpriteBase<ImageID>::getSize() const
 	{
+		if (!getManager()) return fm::vec2();
+		
 		return getManager()->fetchSize(getId());
 	}
 	
@@ -202,6 +237,8 @@ namespace fg
 	template<class ImageID>
 	fm::vec2 SpriteBase<ImageID>::getFrameSize() const
 	{
+		if (!getManager()) return fm::vec2();
+		
 		return getManager()->getAtlas().fetch(getImageID()).leftdown;
 	}
 	
@@ -218,6 +255,8 @@ namespace fg
 	{
 		return m_manager;
 	}
+	
+	/// Internals
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
@@ -238,14 +277,6 @@ namespace fg
 	SpriteBase<ImageID> SpriteBase<ImageID>::getUnboundSprite()
 	{
 		return SpriteBase<ImageID>();
-	}
-	
-	/////////////////////////////////////////////////////////////
-	template<class ImageID>
-	SpriteBase<ImageID>::SpriteBase() : m_manager(nullptr),
-										m_id(0)
-	{
-		
 	}
 }
 

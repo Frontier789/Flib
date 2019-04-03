@@ -119,24 +119,52 @@ namespace fgui
 		virtual ~GuiContext();
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Store a sprite in the context
+		/// @brief Store an image in the context for sprites
 		/// 
-		/// @param name The name of the sprite
-		/// @param spriteImage The image of the sprite
+		/// @param id The id of the image wich can be used later for querying
+		/// @param img The image to add
 		/// @param frameSize The frame size
 		/// 
 		/////////////////////////////////////////////////////////////
-		void addSprite(const std::string &name,const fg::Image &spriteImage,const fm::vec2s &frameSize = fm::vec2s());
+		void addImage(const std::string &id,const fg::Image &img,const fm::vec2s &frameSize = fm::vec2s());
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Retrieve a named sprite from the context
+		/// @brief Load and store an image in the context for sprites
 		/// 
-		/// @param name The name of the sprite
+		/// Loads the file pointed to by imgFile as an Image
+		/// Returns the error if Image::loadFromFile fails
+		/// 
+		/// @param id The id of the image wich can be used later for querying
+		/// @param imgFile The file to load the image from
+		/// @param frameSize The frame size
+		/// 
+		/////////////////////////////////////////////////////////////
+		fm::Result addImage(const std::string &id,const std::string &imgFile,const fm::vec2s &frameSize = fm::vec2s());
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Create a new sprite from image of given id stored in the context
+		/// 
+		/// If no image with the given id could be found, this function tries to load
+		/// an image into the context with the given imgId as filename.
+		/// If such a file cannot be loaded, an error is returned in result and results in an empty sprite
+		/// 
+		/// @param name The name of the id of the image of the sprite
+		/// @param result Error is returned in this variable if given
 		/// 
 		/// @return The sprite
 		/// 
 		/////////////////////////////////////////////////////////////
-		fg::Sprite getSprite(const std::string &name);
+		fg::Sprite getSprite(const std::string &imgId,fm::Ref<fm::Result> result = nullptr);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Test if an image with given has been added previously
+		/// 
+		/// @param id The of to test
+		/// 
+		/// @return True iff the image is present
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool hasImage(const std::string &id) const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Access the sprite manager of the context

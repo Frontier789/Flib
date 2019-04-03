@@ -210,6 +210,13 @@ namespace fg
 	{
 		return priv::SpriteManagerBaseNonTemplate::onDrawTex(shader,m_atlas.getTexture());
 	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ImageID>
+	inline bool SpriteManagerBase<ImageID>::hasImage(const ImageID &id) const
+	{
+		return m_atlas.isUploaded(id);
+	}
 }
 
 #endif // FRONTIER_SPRITEMANAGER_INL_INCLUDED

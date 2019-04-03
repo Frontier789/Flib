@@ -44,36 +44,41 @@ namespace fm
 			components = 4u ///< Public value indicating the amount of component_types in the class
 		};
 
-		static vector4<T> White;     ///< The color that's hex code matches 0xFFFFFFFF
-		static vector4<T> Silver;    ///< The color that's hex code matches 0xBFBFBFFF
-		static vector4<T> Gray;      ///< The color that's hex code matches 0x7B7B7BFF
-		static vector4<T> Grey;      ///< The color that's hex code matches 0x7B7B7BFF
-		static vector4<T> Black;     ///< The color that's hex code matches 0x000000FF
-		static vector4<T> Red;       ///< The color that's hex code matches 0xFF0000FF
-		static vector4<T> Brown;     ///< The color that's hex code matches 0x7B4000FF
-		static vector4<T> Yellow;    ///< The color that's hex code matches 0xFFFF00FF
-		static vector4<T> Lime;      ///< The color that's hex code matches 0x00FF00FF
-		static vector4<T> Green;     ///< The color that's hex code matches 0x218C21FF
-		static vector4<T> Teal;      ///< The color that's hex code matches 0x007B7BFF
-		static vector4<T> Blue;      ///< The color that's hex code matches 0x0000FFFF
-		static vector4<T> Navy;      ///< The color that's hex code matches 0x00007BFF
-		static vector4<T> Purple;    ///< The color that's hex code matches 0x8F00D6FF
-		static vector4<T> Maroon;    ///< The color that's hex code matches 0x7B0000FF
-		static vector4<T> Pink;      ///< The color that's hex code matches 0xFF00FFFF
-		static vector4<T> Olive;     ///< The color that's hex code matches 0x7B7B00FF
-		static vector4<T> Orange;    ///< The color that's hex code matches 0xFFA300FF
-		static vector4<T> Aqua;      ///< The color that's hex code matches 0x00FFFFFF
-		static vector4<T> Bone;      ///< The color that's hex code matches 0xF2F2E6FF
-		static vector4<T> Tan;       ///< The color that's hex code matches 0xD1B28CFF
-		static vector4<T> Charcoal;  ///< The color that's hex code matches 0x444444FF
-		static vector4<T> Royal;     ///< The color that's hex code matches 0x074C9EFF
-		static vector4<T> Azure;     ///< The color that's hex code matches 0x007FFFFF
-		static vector4<T> Aquamarine;///< The color that's hex code matches 0x7FFFD2FF
-		static vector4<T> Forest;    ///< The color that's hex code matches 0x218921FF
-		static vector4<T> Gold;      ///< The color that's hex code matches 0xFFD600FF
-		static vector4<T> Coral;     ///< The color that's hex code matches 0xFF7F4FFF
-		static vector4<T> Lavender;  ///< The color that's hex code matches 0xB57FDBFF
-		static vector4<T> Indigo;    ///< The color that's hex code matches 0x490082FF
+		static vector4<T> White;       ///< The color that's hex code matches 0xFFFFFFFF
+		static vector4<T> Silver;      ///< The color that's hex code matches 0xBFBFBFFF
+		static vector4<T> Gray;        ///< The color that's hex code matches 0x7B7B7BFF
+		static vector4<T> Grey;        ///< The color that's hex code matches 0x7B7B7BFF
+		static vector4<T> Black;       ///< The color that's hex code matches 0x000000FF
+		static vector4<T> Red;         ///< The color that's hex code matches 0xFF0000FF
+		static vector4<T> Brown;       ///< The color that's hex code matches 0x7B4000FF
+		static vector4<T> Yellow;      ///< The color that's hex code matches 0xFFFF00FF
+		static vector4<T> Lime;        ///< The color that's hex code matches 0x00FF00FF
+		static vector4<T> Green;       ///< The color that's hex code matches 0x218C21FF
+		static vector4<T> Teal;        ///< The color that's hex code matches 0x007B7BFF
+		static vector4<T> Blue;        ///< The color that's hex code matches 0x0000FFFF
+		static vector4<T> Navy;        ///< The color that's hex code matches 0x00007BFF
+		static vector4<T> Purple;      ///< The color that's hex code matches 0x8F00D6FF
+		static vector4<T> Maroon;      ///< The color that's hex code matches 0x7B0000FF
+		static vector4<T> Pink;        ///< The color that's hex code matches 0xFF00FFFF
+		static vector4<T> Olive;       ///< The color that's hex code matches 0x7B7B00FF
+		static vector4<T> Orange;      ///< The color that's hex code matches 0xFFA300FF
+		static vector4<T> Aqua;        ///< The color that's hex code matches 0x00FFFFFF
+		static vector4<T> Bone;        ///< The color that's hex code matches 0xF2F2E6FF
+		static vector4<T> Tan;         ///< The color that's hex code matches 0xD1B28CFF
+		static vector4<T> Charcoal;    ///< The color that's hex code matches 0x444444FF
+		static vector4<T> Royal;       ///< The color that's hex code matches 0x074C9EFF
+		static vector4<T> Azure;       ///< The color that's hex code matches 0x007FFFFF
+		static vector4<T> Aquamarine;  ///< The color that's hex code matches 0x7FFFD2FF
+		static vector4<T> Forest;      ///< The color that's hex code matches 0x218921FF
+		static vector4<T> Gold;        ///< The color that's hex code matches 0xFFD600FF
+		static vector4<T> Coral;       ///< The color that's hex code matches 0xFF7F4FFF
+		static vector4<T> Lavender;    ///< The color that's hex code matches 0xB57FDBFF
+		static vector4<T> Indigo;      ///< The color that's hex code matches 0x490082FF
+		static vector4<T> Magenta;     ///< The color that's hex code matches 0xFF00FFFF
+		static vector4<T> Fuchsia;     ///< The color that's hex code matches 0xFF00FFFF
+		static vector4<T> Darkmagenta; ///< The color that's hex code matches 0x8B008BFF
+		static vector4<T> Ivory;       ///< The color that's hex code matches 0xFFFFF0FF
+		static vector4<T> Rose;        ///< The color that's hex code matches 0xFF007FFF
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Anonymous union holding the value of first dimension

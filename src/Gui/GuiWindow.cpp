@@ -43,6 +43,7 @@ namespace fgui
 		GuiContext(size)																																					
 	{
 		setClearColor(fm::vec4::White);
+		setDepthTest(fg::LEqual);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -51,6 +52,7 @@ namespace fgui
 		GuiContext(size)
 	{
 		setClearColor(fm::vec4::White);
+		setDepthTest(fg::LEqual);
 	}
 	
 	/////////////////////////////////////////////////////////////	
@@ -65,6 +67,7 @@ namespace fgui
 		initGL(getSize());
 		
 		setClearColor(fm::vec4::White);
+		setDepthTest(fg::LEqual);
 	}
 
 	/////////////////////////////////////////////////////////////

@@ -165,9 +165,9 @@ namespace fgui
 */
 		void loadDefButtonImg(GuiContext &cont)
 		{
-			cont.addSprite("Button_Bckg_Norm" ,getDefButtonImgNorm (),vec2(4,3));
-			cont.addSprite("Button_Bckg_Hover",getDefButtonImgHover(),vec2(4,3));
-			cont.addSprite("Button_Bckg_Press",getDefButtonImgPress(),vec2(4,3));
+			cont.addImage("Button_Bckg_Norm" ,getDefButtonImgNorm (),vec2(4,3));
+			cont.addImage("Button_Bckg_Hover",getDefButtonImgHover(),vec2(4,3));
+			cont.addImage("Button_Bckg_Press",getDefButtonImgPress(),vec2(4,3));
 		}
 	}
 	
@@ -457,15 +457,38 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void GuiContext::addSprite(const std::string &name,const fg::Image &spriteImage,const fm::vec2s &frameSize)
+	void GuiContext::addImage(const std::string &id,const fg::Image &spriteImage,const fm::vec2s &frameSize)
 	{
-		m_spriteManager->addImage(spriteImage,name,frameSize);
+		m_spriteManager->addImage(spriteImage,id,frameSize);
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fg::Sprite GuiContext::getSprite(const std::string &name)
+	fm::Result GuiContext::addImage(const std::string &id,const std::string &imgFile,const fm::vec2s &frameSize)
 	{
-		return m_spriteManager->getSprite(name);
+		Image img;
+		auto res = img.loadFromFile(imgFile);
+		if (!res) return res;
+		
+		m_spriteManager->addImage(img,id,frameSize);
+		
+		return {};
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fg::Sprite GuiContext::getSprite(const std::string &id,fm::Ref<fm::Result> result)
+	{
+		if (!m_spriteManager->hasImage(id)) {
+			fg::Image img;
+			auto res = img.loadFromFile(id);
+			
+			if (result) *result = res;
+			
+			if (res) {
+				addImage(id,img);
+			}
+		}
+		
+		return m_spriteManager->getSprite(id);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -537,6 +560,12 @@ namespace fgui
 		std::swap(m_guiLoop,cont.m_guiLoop);
 		
 		return *this;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool GuiContext::hasImage(const std::string &id) const
+	{
+		return getSpriteManager().hasImage(id);
 	}
 }
 
