@@ -20,6 +20,7 @@
 #include <FRONTIER/Graphics/Sprite.hpp>
 #include <FRONTIER/Gui/GuiButton.hpp>
 #include <FRONTIER/System/util/API.h>
+#include <array>
 
 #define FRONTIER_PUSHBUTTON
 
@@ -36,14 +37,14 @@ namespace fgui
 		fg::Sprite m_bckgSprite; ///< The background sprite
 		fm::vec4 m_bckgClr; ///< The background color
 		
+		std::array<std::string,3> m_bckImgs; /// IDs of background images
+		
 	protected:
 		/////////////////////////////////////////////////////////////
 		/// @brief Apply a state to the button
 		/// 
-		/// @param state The state to apply
-		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void applyState(InnerState state) override;
+		virtual void applyState() override;
 		
 	public:
 		/////////////////////////////////////////////////////////////
@@ -98,6 +99,54 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		void setBgColor(fm::vec4 color);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the background image of the button
+		/// 
+		/// All three states of the button will have the same image after the call
+		/// 
+		/// @param id The id of the image, stored in the owner context
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setBgImage(const std::string &id);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the background image of the button
+		/// 
+		/// Sets the background image for both three states 
+		/// Images are loaded from the owner context
+		/// 
+		/// @param normal The image to diplay when the mouse is not over the button
+		/// @param hover  The image to diplay when the mouse is over the button
+		/// @param press  The image to diplay when the mouse is pressing the button
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setBgImage(const std::string &normal,const std::string &hover,const std::string &press);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the background image of the button with given framesize
+		/// 
+		/// All three states of the button will have the same image after the call
+		/// 
+		/// @param id The id of the image, stored in the owner context
+		/// @param frameSize The frame size to apply to the loaded image
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setBgImage(const std::string &id,fm::vec2 framSize);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the background image of the button with given framesize
+		/// 
+		/// Sets the background image for both three states 
+		/// Images are loaded from the owner context
+		/// 
+		/// @param normal The image to diplay when the mouse is not over the button
+		/// @param hover  The image to diplay when the mouse is over the button
+		/// @param press  The image to diplay when the mouse is pressing the button
+		/// @param frameSize The frame size to apply to the loaded image
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setBgImage(const std::string &normal,const std::string &hover,const std::string &press,fm::vec2 framSize);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the color of the background of the button

@@ -19,16 +19,11 @@
 
 namespace fgui
 {
-	void PushButton::applyState(InnerState state)
+	void PushButton::applyState()
 	{
-		if (state == Normal)
-			m_bckgSprite.setImageID("Button_Bckg_Norm");
-			
-		if (state == Hovered)
-			m_bckgSprite.setImageID("Button_Bckg_Hover");
-			
-		if (state == Pressed)
-			m_bckgSprite.setImageID("Button_Bckg_Press");
+		auto img = m_bckImgs[int(m_state)];
+		
+		m_bckgSprite.setImageID(img);
 		
 		setSize(getSize());
 		setPosition(getPosition());
@@ -36,24 +31,59 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	PushButton::PushButton(GuiContext &cont) : 
-		GuiButton(cont),
-		m_bckgSprite(cont.getSpriteManager(),"Button_Bckg_Norm"),
-		m_bckgClr(fm::vec4::White)
+	PushButton::PushButton(GuiContext &cont) : PushButton(cont, "")
 	{
-		setSize(getSize());
-		setPosition(getPosition());
+		
 	}
 	
 	/////////////////////////////////////////////////////////////
 	PushButton::PushButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback) : 
-		GuiButton(cont,text),
-		m_bckgSprite(cont.getSpriteManager(),"Button_Bckg_Norm"),
-		m_bckgClr(fm::vec4::White)
+		GuiButton(cont,text,callback),
+		m_bckgSprite(cont.getSpriteManager()),
+		m_bckgClr(fm::vec4::White),
+		m_bckImgs{
+			"Button_Bckg_Norm" ,
+			"Button_Bckg_Hover",
+			"Button_Bckg_Press"
+		}
 	{
-		setSize(getSize());
-		setPosition(getPosition());
-		setCallback(callback);
+		applyState();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void PushButton::setBgImage(const std::string &id)
+	{
+		setBgImage(id,id,id);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void PushButton::setBgImage(const std::string &normal,const std::string &hover,const std::string &press)
+	{
+		setBgImage(normal,hover,press,fm::vec2());
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void PushButton::setBgImage(const std::string &id,fm::vec2 frameSize)
+	{
+		setBgImage(id,id,id,frameSize);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void PushButton::setBgImage(const std::string &normal,const std::string &hover,const std::string &press,fm::vec2 frameSize)
+	{
+		std::string prev = m_bckImgs[int(m_state)];
+		m_bckImgs = {normal, hover, press};
+		
+		auto &cont = getOwnerContext();
+		for (auto img : m_bckImgs) {
+			if (!cont.hasImage(img)) {
+				cont.addImage(img,img,frameSize);
+			}
+		}
+		
+		if (prev != m_bckImgs[int(m_state)]) {
+			applyState();
+		}
 	}
 	
 	/////////////////////////////////////////////////////////////

@@ -134,8 +134,10 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	GridLayout::GridLayout(GuiContext &owner) : GuiLayout(owner),
-												m_columnCount(1)
+	GridLayout::GridLayout(GuiContext &owner) : 
+		GuiLayout(owner),
+		m_columnCount(1),
+		m_allPadding(1,1)
 	{
 		
 	}

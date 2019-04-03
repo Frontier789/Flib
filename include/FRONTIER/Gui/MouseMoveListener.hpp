@@ -37,6 +37,7 @@ namespace fgui
 	protected:
 		bool m_recheckRecursion; ///< Avoid recursion in recheckSize
 		fm::vec2 m_prevPos; ///< The last position of the mouse inside the gui element
+		fm::vec2 m_recheckPos; ///< The position to recheck against
 		bool m_mouseIn; ///< Indicates the mouse being inside the gui element
 		bool m_grabMouse; ///< Indicates whether mouse pointer is grabbed
 		

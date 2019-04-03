@@ -218,9 +218,9 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		enum InnerState {
-			Normal,  ///< The mouse is not over the button
-			Hovered, ///< The mouse is on the button
-			Pressed  ///< The button is pressed
+			Normal  = 0, ///< The mouse is not over the button
+			Hovered = 1, ///< The mouse is on the button
+			Pressed = 2  ///< The button is pressed
 		};
 		
 		/////////////////////////////////////////////////////////////
@@ -228,15 +228,17 @@ namespace fgui
 		/// 
 		/// To be implemented by derived classes
 		/// 
-		/// @param state The state to apply
-		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void applyState(InnerState state);
+		virtual void applyState();
+		
+		InnerState m_state; ///< Stores current state
 		
 	private:
 		fm::Delegate<void,GuiButton &,Action> m_actionCb; ///< Callback for actions
 		fm::vec2s m_prevTextSize; ///< Last size of the gui text
 		GuiText m_text; ///< The gui elem for text display on the button
+		
+		void setState(InnerState state) {m_state = state; applyState();}
 	};
 }
 

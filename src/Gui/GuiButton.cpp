@@ -16,29 +16,30 @@
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/Gui/GuiButton.hpp>
 #include <FRONTIER/Window/Event.hpp>
-#include <iostream>
-using namespace std;
 
 
 namespace fgui
 {
 	
 	/////////////////////////////////////////////////////////////
-	void GuiButton::applyState(InnerState)
+	void GuiButton::applyState()
 	{
 		
 	}
 	
 	/////////////////////////////////////////////////////////////
 	GuiButton::GuiButton(GuiContext &cont) : GuiElement(cont),
+											 m_state(Normal),
 											 m_text(cont)
 	{
 		
 	}
 	
 	/////////////////////////////////////////////////////////////
-	GuiButton::GuiButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback) : GuiElement(cont),
-																											m_text(cont,text)
+	GuiButton::GuiButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback) : 
+		GuiElement(cont),
+		m_state(Normal),
+		m_text(cont,text)
 	{
 		setSize(m_text.getSize());
 		setCallback(callback);
@@ -147,15 +148,15 @@ namespace fgui
 	void GuiButton::onMouseEnter(fm::vec2)
 	{
 		if (!isPressed(fw::Mouse::Left))
-			applyState(Hovered);
+			setState(Hovered);
 		else
-			applyState(Pressed);
+			setState(Pressed);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	void GuiButton::onMouseLeave(fm::vec2)
 	{
-		applyState(Normal);
+		setState(Normal);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -163,7 +164,7 @@ namespace fgui
 	{
 		if (button == fw::Mouse::Left)
 		{
-			applyState(Pressed);
+			setState(Pressed);
 			
 			m_actionCb(*this,GuiButton::Press);
 		}
@@ -175,9 +176,9 @@ namespace fgui
 		if (button == fw::Mouse::Left)
 		{
 			if (mouseInside())
-				applyState(Hovered);
+				setState(Hovered);
 			else
-				applyState(Normal);	
+				setState(Normal);	
 			
 			m_actionCb(*this,GuiButton::Release);		
 		}

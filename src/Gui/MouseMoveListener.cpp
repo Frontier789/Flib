@@ -28,6 +28,8 @@ namespace fgui
 			if (ev.type == fw::Event::MouseMoved)
 			{
 				fm::vec2i p = ev.motion;
+				m_recheckPos = p;
+				
 				bool in = contains(p);
 				bool oldin = m_mouseIn;
 				
@@ -99,7 +101,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void MouseMoveListener::recheckMouseInside()
 	{
-		bool in = contains(m_prevPos);
+		bool in = contains(m_recheckPos);
 		
 		if (m_mouseIn && !in)
 		{
@@ -109,7 +111,7 @@ namespace fgui
 			{
 				m_recheckRecursion = true;
 				
-				onMouseLeave(m_prevPos);
+				onMouseLeave(m_recheckPos);
 				
 				m_recheckRecursion = false;
 			}
@@ -123,7 +125,7 @@ namespace fgui
 			{
 				m_recheckRecursion = true;
 				
-				onMouseEnter(m_prevPos);
+				onMouseEnter(m_recheckPos);
 				
 				m_recheckRecursion = false;
 			}
