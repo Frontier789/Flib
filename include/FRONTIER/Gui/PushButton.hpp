@@ -35,8 +35,8 @@ namespace fgui
 	class FRONTIER_API PushButton : public GuiButton
 	{
 		fg::Sprite m_bckgSprite; ///< The background sprite
-		fm::vec4 m_bckgClr; ///< The background color
 		
+		std::array<fm::vec4,3> m_bckgClrs; ///< The background color
 		std::array<std::string,3> m_bckImgs; /// IDs of background images
 		
 	protected:
@@ -95,10 +95,23 @@ namespace fgui
 		/// Sets the color of the background sprite
 		/// To change the text settings, use getGuiText()
 		/// 
-		/// @param size The size
+		/// @param color The new background color
 		/// 
 		/////////////////////////////////////////////////////////////
 		void setBgColor(fm::vec4 color);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the color of the background of the button for each state
+		/// 
+		/// Sets the colors of the background sprites
+		/// To change the text settings, use getGuiText()
+		/// 
+		/// @param normal The color to use when the mouse is not over the button
+		/// @param hover  The color to use when the mouse is over the button
+		/// @param press  The color to use when the mouse is pressing the button
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setBgColor(fm::vec4 normal,fm::vec4 hover,fm::vec4 press);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the background image of the button
@@ -147,14 +160,6 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		void setBgImage(const std::string &normal,const std::string &hover,const std::string &press,fm::vec2 framSize);
-		
-		/////////////////////////////////////////////////////////////
-		/// @brief Get the color of the background of the button
-		/// 
-		/// @return The background color
-		/// 
-		/////////////////////////////////////////////////////////////
-		fm::vec4 getBgColor() const;
 	};
 }
 

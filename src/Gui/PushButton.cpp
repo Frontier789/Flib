@@ -27,7 +27,7 @@ namespace fgui
 		
 		setSize(getSize());
 		setPosition(getPosition());
-		m_bckgSprite.setColor(m_bckgClr);
+		m_bckgSprite.setColor(m_bckgClrs[int(m_state)]);
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -40,7 +40,11 @@ namespace fgui
 	PushButton::PushButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback) : 
 		GuiButton(cont,text,callback),
 		m_bckgSprite(cont.getSpriteManager()),
-		m_bckgClr(fm::vec4::White),
+		m_bckgClrs{
+			fm::vec4::White,
+			fm::vec4::White,
+			fm::vec4::White
+		},
 		m_bckImgs{
 			"Button_Bckg_Norm" ,
 			"Button_Bckg_Hover",
@@ -116,15 +120,18 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void PushButton::setBgColor(fm::vec4 color)
+	void PushButton::setBgColor(fm::vec4 normal,fm::vec4 hover,fm::vec4 press)
 	{
-		m_bckgSprite.setColor(color);
-		m_bckgClr = color;
+		m_bckgClrs = {normal, hover, press};
+		
+		m_bckgSprite.setColor(m_bckgClrs[int(m_state)]);
 	}
 	
 	/////////////////////////////////////////////////////////////
-	fm::vec4 PushButton::getBgColor() const
+	void PushButton::setBgColor(fm::vec4 color)
 	{
-		return m_bckgClr;
+		m_bckgClrs = {color, color, color};
+		
+		m_bckgSprite.setColor(m_bckgClrs[int(m_state)]);
 	}
 }
