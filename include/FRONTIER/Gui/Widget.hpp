@@ -19,7 +19,7 @@ namespace fgui
         fm::Delegate<void,fm::vec2,fw::Mouse::Button> onbuttonpress; ///< Callback used when the user presses a button
         fm::Delegate<void,fm::vec2,fw::Mouse::Button> onbuttonrelease; ///< Callback used when the user releases a button
         fm::Delegate<void,fm::vec2,fm::vec2> onmousemove; ///< Callback used when mouse moves
-        fm::Delegate<void,float> onscroll; ///< Callback used when scrolling happens
+        fm::Delegate<void,float,bool> onscroll; ///< Callback used when scrolling happens
         fm::Delegate<void,fw::Event> onevent; ///< Callback used when any event happens
         fm::Delegate<void,fw::Keyboard::Key> onkeypress; ///< Callback used when a key is started being pressed
         fm::Delegate<void,fw::Keyboard::Key> onkeyrelease; ///< Callback used when a key is no longer pressed
@@ -56,9 +56,10 @@ namespace fgui
         /// @brief Called when the element is scrolled
         /// 
         /// @param amount The amount the element is scrolled
+		/// @param horizontal Indicates whether vertical or horizontal scroll happened
         /// 
         /////////////////////////////////////////////////////////////
-        virtual void onScroll(float amount) override;
+        void onScroll(float amount,bool horizontal) override;
 
         /////////////////////////////////////////////////////////////
         /// @brief Handle an event

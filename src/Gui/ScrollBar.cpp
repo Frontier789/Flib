@@ -129,9 +129,11 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void ScrollBar::onScroll(float amount)
+	void ScrollBar::onScroll(float amount,bool horizontal)
 	{
-		GuiScrollBar::onScroll(amount);
+		if (getScrollDirection() == ScrollVertical && horizontal) return;
+		
+		GuiScrollBar::onScroll(amount,horizontal);
 	}
 	
 	/////////////////////////////////////////////////////////////

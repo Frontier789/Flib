@@ -382,7 +382,7 @@ namespace fg
 		/// @return The sprite
 		///
 		/////////////////////////////////////////////////////////////
-		SpriteBase<Identifier> getSprite(fm::Uint32 letter,Glyph::Style style = Glyph::Regular);
+		SpriteBase<Identifier> getSprite(fm::Uint32 letter,Glyph::Style style);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get many sprites for a code point
@@ -393,7 +393,7 @@ namespace fg
 		/// @return The sprite
 		///
 		/////////////////////////////////////////////////////////////
-		std::vector<SpriteBase<Identifier>> getSprites(fm::String letters,Glyph::Style style);
+		std::vector<SpriteBase<Identifier>> getSprites(fm::String letters,Glyph::Style style = Glyph::Regular);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the image of a glyph manually

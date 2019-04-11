@@ -81,6 +81,11 @@ namespace fgui
 		{
 			return getStdButtonImage(vec2(128,128),Color(0,0),Color(124),Color(180),Color(240),Color(180),Color(248));
 		}
+
+		Image getDefTextBckgImg()
+		{
+			return getStdButtonImage(vec2(128,128),Color(0,0),Color(124),Color(180),Color(240),Color(240),Color(250));
+		}
 		/*
 		template<class T>
 		T mix(T a,T b,float r)
@@ -168,6 +173,7 @@ namespace fgui
 			cont.addImage("Button_Bckg_Norm" ,getDefButtonImgNorm (),vec2(4,3));
 			cont.addImage("Button_Bckg_Hover",getDefButtonImgHover(),vec2(4,3));
 			cont.addImage("Button_Bckg_Press",getDefButtonImgPress(),vec2(4,3));
+			cont.addImage("Text_Bckg",getDefTextBckgImg(),vec2(4,3));
 		}
 	}
 	
@@ -395,6 +401,18 @@ namespace fgui
 	void GuiContext::addDrawable(fg::Drawable &object)
 	{
 		addElement(new fgui::GuiDrawable(*this,object));
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::clearElements()
+	{
+		getMainLayout().clearChildElements();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiContext::clearSprites()
+	{
+		m_spriteManager->clear();
 	}
 	
 	/////////////////////////////////////////////////////////////

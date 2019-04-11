@@ -85,9 +85,10 @@ namespace fgui
 			}
 			
 		public:
-			void onScroll(float delta) override
+			void onScroll(float delta,bool hori) override
 			{
-				camp(m_cam.getPosition() * std::pow(.7,delta));
+				if (!hori)
+					camp(m_cam.getPosition() * std::pow(.7,delta));
 			}
 
 			MeshPlotter(GuiContext &cont,vec2 size,Mesh m,PlotOptions opts) : GuiElement(cont, size),

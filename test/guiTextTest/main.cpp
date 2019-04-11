@@ -15,6 +15,7 @@ int main()
 	t.setPosition(win.getSize()/2 - t.getSize()/2);
 	t.setWrap(fgui::TextWrapOff);
 	t.setAlign(fgui::TextAlignCenter);
+	t.setCharacterSize(20);
 
 	Sizer sizer(t);
 	

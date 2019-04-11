@@ -93,7 +93,6 @@ namespace fgui
 					
 					if (!pressAny) {
 						grabMouse(false);
-						setActive(false);
 					}
 				}
 			}

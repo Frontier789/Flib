@@ -25,7 +25,9 @@ namespace fgui
 	{
 		addEventHandler([&](fw::Event &ev) -> bool {
 			
-			if (ev.type == fw::Event::MouseMoved)
+			if (ev.type == fw::Event::MouseMoved || 
+				ev.type == fw::Event::MouseEntered || 
+				ev.type == fw::Event::MouseLeft)
 			{
 				fm::vec2i p = ev.motion;
 				m_recheckPos = p;

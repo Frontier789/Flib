@@ -621,14 +621,17 @@ namespace fw
 				}
 
 				// mouse wheel moved
+				case WM_MOUSEHWHEEL:
 				case WM_MOUSEWHEEL:
 				{
+					auto keystate = GET_KEYSTATE_WPARAM(wParam); 
 					fm::vec2i pos = Mouse::getPosition(*this);
 					Event ev(Event::MouseWheelMoved);
+					ev.wheel.horizontal = (msg == WM_MOUSEHWHEEL);
 					ev.wheel.delta = GET_WHEEL_DELTA_WPARAM(wParam)/float(WHEEL_DELTA);
-					ev.wheel.ctrl  = (GetKeyState(VK_CONTROL) & 0x8000);
-					ev.wheel.alt   = (GetKeyState(VK_MENU)    & 0x8000);
-					ev.wheel.shift = (GetKeyState(VK_SHIFT)   & 0x8000);
+					ev.wheel.ctrl  = (keystate & MK_CONTROL);
+					ev.wheel.alt   = (GetKeyState(VK_MENU) & 0x8000);
+					ev.wheel.shift = (keystate & MK_SHIFT);
 					ev.wheel.x     = pos.x;
 					ev.wheel.y     = pos.y;
 					postEvent(ev);

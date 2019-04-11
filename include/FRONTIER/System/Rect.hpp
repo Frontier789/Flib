@@ -139,6 +139,16 @@ namespace fm
 		vector2<T> mid() const;
 
 		/////////////////////////////////////////////////////////////
+		/// @brief Get the area of the reactangle
+		///
+		/// Equals to size.area()
+		///
+		/// @return The area
+		///
+		/////////////////////////////////////////////////////////////
+		T area() const;
+
+		/////////////////////////////////////////////////////////////
 		/// @brief Check if two rectangles intersect
 		///
 		/// @param r The rectangle to check intersection with

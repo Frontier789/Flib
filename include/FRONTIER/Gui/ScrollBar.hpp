@@ -122,9 +122,10 @@ namespace fgui
 		/// @brief Called when the element is scrolled
 		/// 
 		/// @param amount The amount the element is scrolled
+		/// @param horizontal Indicates whether vertical or horizontal scroll happened
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void onScroll(float amount) override;
+		void onScroll(float amount,bool horizontal) override;
 	
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the size of the gui element

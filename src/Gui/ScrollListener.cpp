@@ -28,7 +28,7 @@ namespace fgui
 			{
 				if (mouseInside() || mouseGrabbed())
 				{
-					onScroll(ev.wheel.delta);
+					onScroll(ev.wheel.delta,ev.wheel.horizontal);
 					
 					return true;
 				}
@@ -39,7 +39,7 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	void ScrollListener::onScroll(float)
+	void ScrollListener::onScroll(float,bool)
 	{
 		
 	}

@@ -364,16 +364,20 @@ namespace fw
 			{
 				// mouse wheel
 				if (xev.xbutton.button == Button4 || 
-					xev.xbutton.button == Button5)
+					xev.xbutton.button == Button5 ||
+					xev.xbutton.button == Button5+1 || 
+					xev.xbutton.button == Button5+2)
 				{
 					// handle it only once (since it gets posted as release too)
 					if (xev.type == ButtonPress)
 					{
 						Event ev(Event::MouseWheelMoved);
-						if (xev.xbutton.button == Button4)
+						if (xev.xbutton.button == Button4 || xev.xbutton.button == Button5+1)
 							ev.wheel.delta = 1;
-						if (xev.xbutton.button == Button5)
+						if (xev.xbutton.button == Button5 || xev.xbutton.button == Button5+2)
 							ev.wheel.delta = -1;
+							
+						ev.wheel.horizontal = xev.xbutton.button == Button5+1 || xev.xbutton.button == Button5+2;
 
 						// get mod states
 						ev.wheel.shift = fw::Keyboard::isKeyHeld(fw::Keyboard::LShift) || fw::Keyboard::isKeyHeld(fw::Keyboard::RShift);

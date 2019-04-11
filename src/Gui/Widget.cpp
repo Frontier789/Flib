@@ -23,10 +23,10 @@ namespace fgui
     }
 
     /////////////////////////////////////////////////////////////
-    void Widget::onScroll(float amount)
+    void Widget::onScroll(float amount,bool horizontal)
     {
-        ScrollListener::onScroll(amount);
-        onscroll(amount);
+        ScrollListener::onScroll(amount,horizontal);
+        onscroll(amount,horizontal);
     }
 
     /////////////////////////////////////////////////////////////

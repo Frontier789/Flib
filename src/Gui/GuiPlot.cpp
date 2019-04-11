@@ -1,7 +1,6 @@
 #include <FRONTIER/Gui/GuiPlot.hpp>
 #include <FRONTIER/Gui/GuiLayout.hpp>
 
-
 namespace fgui
 {
 	/////////////////////////////////////////////////////////////

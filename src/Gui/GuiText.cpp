@@ -55,10 +55,12 @@ namespace fgui
 		
 		if (owner && fontName.size())
 		{
-			return font = owner->getFont(fontName);
+			font = owner->getFont(fontName);
+			
+			if (!font) fontName = "";
 		}
 		
-		return fg::Font();
+		return font;
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -78,6 +80,7 @@ namespace fgui
 		fm::vec2 maxView;
 		fm::vec2 pos;
 		int tabwidth;
+		bool kerning;
 		
 		std::vector<fg::FontSprite> &sprites;
 		std::vector<fm::Size> wordBegs,wordEnds;
@@ -96,7 +99,9 @@ namespace fgui
 						fm::vec2 &viewSize,
 						fm::vec2 viewOffset,
 						fm::vec4 color,
-						fm::vec2 pos) : 
+						fm::vec2 pos,
+						int tabwidth,
+						bool kerning) : 
 						 str(str),
 						 style(style),
 						 font(font), 
@@ -107,7 +112,8 @@ namespace fgui
 						 viewOffset(viewOffset), 
 						 color(color),
 						 pos(pos),
-						 tabwidth(4),
+						 tabwidth(tabwidth),
+						 kerning(kerning),
 						 sprites(sprites)
 		{
 			monospacing = false;
@@ -140,8 +146,8 @@ namespace fgui
 			fm::rect2i grect = font.getGlyphRect(monospacing ? 'm' : cp,style);
 			float width = grect.size.w + grect.pos.x;
 			
-			if (prevcp)
-				width += font.getKerning(prevcp,cp) * 0;
+			if (prevcp && kerning)
+				width += font.getKerning(prevcp,cp);
 			
 			return width;
 		}
@@ -379,7 +385,7 @@ namespace fgui
 		{
 			fm::vec2 viewSize = m_viewSize;
 			
-			SpritesFromText(m_sprites,m_string,m_style,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr,getPosition()).updateSprites();
+			SpritesFromText(m_sprites,m_string,m_style,getFont(),m_charSize,m_align,m_wrapMode,viewSize,m_viewOffset,m_clr,getPosition(),4,false).updateSprites();
 			
 			GuiElement::setSize(viewSize);		
 		}

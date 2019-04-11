@@ -53,6 +53,9 @@ namespace fgui
 	{
 		GuiElement *element = setChildElement(index, nullptr);
 		
+		if (m_activeElement == element)
+			m_activeElement = nullptr;
+		
 		if (del)
 		{
 			delete element;
@@ -166,6 +169,9 @@ namespace fgui
 		
 		std::swap(m_elements[index],element);
 		
+		if (m_activeElement == element)
+			m_activeElement = nullptr;
+		
 		if (m_elements[index])
 			m_elements[index]->setLayout(this);
 		
@@ -178,11 +184,28 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	fm::Size GuiLayout::addChildElement(GuiElement *element)
 	{
-		fm::Size index = getChildCount(); 
+		auto s = getChildCount();
 		
-		setChildElement(index,element);
+		C(s)
+			if (getChildElement(i) == nullptr) {
+				setChildElement(i,element);
+				
+				return s; 
+			}
 		
-		return index+1;
+		setChildElement(s,element);
+		
+		return s+1;
+	}
+	
+	/////////////////////////////////////////////////////////////
+	fm::Size GuiLayout::appendChildElement(GuiElement *element)
+	{
+		auto s = getChildCount();
+		
+		setChildElement(s,element);
+		
+		return s+1;
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -194,8 +217,14 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiLayout::setChildCount(fm::Size childCount)
 	{
-		for (fm::Size i = childCount;i < getChildCount();++i)
-			delete getChildElement(i);
+		for (fm::Size i = childCount;i < getChildCount();++i) {
+			auto chl = getChildElement(i);
+			
+			if (chl == m_activeElement)
+				m_activeElement = nullptr;
+			
+			delete chl;
+		}
 		
 		m_elements.resize(childCount,nullptr);
 	}

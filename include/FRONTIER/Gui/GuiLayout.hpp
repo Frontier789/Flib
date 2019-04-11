@@ -193,7 +193,9 @@ namespace fgui
 		virtual GuiElement *findById(const fm::String &id) override;
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Add a child element to the Layout
+		/// @brief Add a child element to the Layout, to the first empty slot
+		/// 
+		/// If no empty entry found, a new one is created
 		/// 
 		/// @param element The new element
 		/// 
@@ -201,6 +203,16 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		virtual fm::Size addChildElement(GuiElement *element);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Add a new slot filled with a given child element to the Layout
+		/// 
+		/// @param element The new element
+		/// 
+		/// @return The number of children the layout has
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual fm::Size appendChildElement(GuiElement *element);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set owner gui context

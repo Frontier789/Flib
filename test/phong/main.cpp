@@ -83,9 +83,10 @@ public:
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void onScroll(float d) override
+	void onScroll(float d,bool hori) override
 	{
-		m_cam.setPosition(m_cam.getPosition() * pow(.5,d));
+		if (!hori)
+			m_cam.setPosition(m_cam.getPosition() * pow(.5,d));
 	}
 };
 

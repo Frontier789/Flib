@@ -28,8 +28,11 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	void GuiScrollBar::onScroll(float amount)
+	void GuiScrollBar::onScroll(float amount,bool horizontal)
 	{
+		// if (horizontal) return;
+		(void)horizontal;
+		
 		float delta = amount * m_scrollSize;
 		
 		setScrollState(getScrollState() + delta);

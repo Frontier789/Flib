@@ -60,7 +60,7 @@ namespace fgui
 	class FRONTIER_API GuiFont
 	{
 	public:
-		fm::String fontName; ///< The name of the font
+		mutable fm::String fontName; ///< The name of the font
 		mutable fg::Font font; ///< Direct pointer to the font
 		
 		/////////////////////////////////////////////////////////////
@@ -173,6 +173,14 @@ namespace fgui
 		/// 
 		/////////////////////////////////////////////////////////////
 		void setSize(fm::vec2s size) override;
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Set the height of the text element based on the number of rows to show
+		/// 
+		/// @param size The new size
+		/// 
+		/////////////////////////////////////////////////////////////
+		void setRows(fm::Size rows);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the position of the gui text

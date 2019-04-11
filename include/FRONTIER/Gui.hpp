@@ -47,6 +47,7 @@ namespace fgui
 #include <FRONTIER/Gui/GuiDrawable.hpp>
 #include <FRONTIER/Gui/GuiScrollBar.hpp>
 #include <FRONTIER/Gui/CallbackUser.hpp>
+#include <FRONTIER/Gui/ElementBounds.hpp>
 #include <FRONTIER/Gui/ClickListener.hpp>
 #include <FRONTIER/Gui/ScrollListener.hpp>
 #include <FRONTIER/Gui/TransformListener.hpp>

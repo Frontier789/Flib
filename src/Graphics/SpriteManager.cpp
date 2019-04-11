@@ -152,6 +152,25 @@ namespace fg
 			
 			updateDrawCall();
 		}
+		
+		/////////////////////////////////////////////////////////////
+		void SpriteManagerBaseNonTemplate::handleClear()
+		{
+			m_posProp.clear();
+			m_dirProp.clear();
+			m_sizProp.clear();
+			m_uvpProp.clear();
+			m_uvsProp.clear();
+			m_frmProp.clear();
+			m_clrProp.clear();
+
+			m_vertPtsProp.clear();
+			m_vertUVsProp.clear();
+			m_vertClrProp.clear();
+			
+			m_drawData.reset();
+			m_spriteCount = 0;
+		}
 			
 		/////////////////////////////////////////////////////////////
 		void SpriteManagerBaseNonTemplate::handleMoveFrom(fm::Size index,fm::Size oldIndex)
@@ -650,20 +669,20 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		SpriteManagerBaseNonTemplate::SpriteManagerBaseNonTemplate(bool useFrames,
 																   fg::Glyph (*glyphGetterFunc)(SpriteManagerBaseNonTemplate*,fm::Size)) : 
-																		m_useFrames(useFrames),
-																		m_posProp(m_drawData[fg::Assoc::Custom+0],3),
-																		m_dirProp(m_drawData[fg::Assoc::Custom+1],2),
-																		m_sizProp(m_drawData[fg::Assoc::Custom+2],2),
-																		m_uvpProp(m_drawData[fg::Assoc::Custom+3],2),
-																		m_uvsProp(m_drawData[fg::Assoc::Custom+4],2),
-																		m_frmProp(m_drawData[fg::Assoc::Custom+6],2),
-																		m_clrProp(m_drawData[fg::Assoc::Custom+5],4),
-																		m_vertPtsProp(m_drawData[fg::Assoc::Position ],3,m_useFrames ? 54 : 6),
-																		m_vertUVsProp(m_drawData[fg::Assoc::TextureUV],2,m_useFrames ? 54 : 6),
-																		m_vertClrProp(m_drawData[fg::Assoc::Color    ],4,m_useFrames ? 54 : 6),
-																		m_spriteCount(0),
-																		m_useInstancing(false),
-																		m_glyphGetterFunc(glyphGetterFunc)
+			m_useFrames(useFrames),
+			m_posProp(m_drawData[fg::Assoc::Custom+0],3),
+			m_dirProp(m_drawData[fg::Assoc::Custom+1],2),
+			m_sizProp(m_drawData[fg::Assoc::Custom+2],2),
+			m_uvpProp(m_drawData[fg::Assoc::Custom+3],2),
+			m_uvsProp(m_drawData[fg::Assoc::Custom+4],2),
+			m_frmProp(m_drawData[fg::Assoc::Custom+6],2),
+			m_clrProp(m_drawData[fg::Assoc::Custom+5],4),
+			m_vertPtsProp(m_drawData[fg::Assoc::Position ],3,m_useFrames ? 54 : 6),
+			m_vertUVsProp(m_drawData[fg::Assoc::TextureUV],2,m_useFrames ? 54 : 6),
+			m_vertClrProp(m_drawData[fg::Assoc::Color    ],4,m_useFrames ? 54 : 6),
+			m_spriteCount(0),
+			m_useInstancing(false),
+			m_glyphGetterFunc(glyphGetterFunc)
 		{
 			
 		}

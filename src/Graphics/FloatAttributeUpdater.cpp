@@ -40,6 +40,18 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
+	void FloatAttributeUpdater::clear()
+	{
+		if (m_mappedPtr) unMap();
+		
+		m_firstUpdated = 0;
+		m_lastUpdated = 0;
+		m_capacity = 0;
+		m_uploads = 0;
+		m_mappedPtr = nullptr;
+	}
+	
+	/////////////////////////////////////////////////////////////
 	void FloatAttributeUpdater::update(fm::Size index,const float *value)
 	{
 		update(index,value,1);

@@ -41,7 +41,7 @@ public:
 	
 	void onDraw(ShaderManager &) override;
 	void onMouseMove(vec2 p,vec2 prev) override;
-	void onScroll(float am) override;
+	void onScroll(float am,bool hori) override;
 	void onUpdate(const fm::Time &dt) override;
 	
 	bool onEvent(Event &ev) override;
@@ -80,9 +80,10 @@ bool Roti::onEvent(Event &ev)
 	return false;
 }
 
-void Roti::onScroll(float am)
+void Roti::onScroll(float am,bool hori)
 {
-	m_cam.setPosition(m_cam.getPosition() * pow(2,-am));
+	if (!hori)
+		m_cam.setPosition(m_cam.getPosition() * pow(2,-am));
 }
 
 Roti::Roti(GuiContext &cont,fm::Delegate<void,string> settitle) : 

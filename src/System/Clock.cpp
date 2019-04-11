@@ -115,6 +115,12 @@ namespace fm
       return ret;
     }
 
+    /////////////////////////////////////////////////////////////
+    double Clock::r()
+    {
+      return restart();
+    }
+
 		/////////////////////////////////////////////////////////////
 		bool Clock::togglePause()
     {
@@ -145,6 +151,12 @@ namespace fm
     fm::Time Clock::getTime() const
     {
       return fm::seconds(getSeconds());
+    }
+    
+		/////////////////////////////////////////////////////////////
+		fm::Time Clock::t() const
+    {
+      return getTime();
     }
 
     ////////////////////////////////////////////////////////////

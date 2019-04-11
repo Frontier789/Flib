@@ -14,80 +14,79 @@
 /// You should have received a copy of GNU GPL with this software      ///
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
-#ifndef FRONTIER_GUISCROLLBAR_HPP_INCLUDED
-#define FRONTIER_GUISCROLLBAR_HPP_INCLUDED
-
-#include <FRONTIER/Gui/ScrollListener.hpp>
-#include <FRONTIER/System/CommonTypes.hpp>
-#include <FRONTIER/Gui/CallbackUser.hpp>
+#ifndef FRONTIER_ELEMENTBOUNDARIES_HPP_INCLUDED
+#define FRONTIER_ELEMENTBOUNDARIES_HPP_INCLUDED
+#include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/Gui/GuiElement.hpp>
-#include <FRONTIER/System/util/API.h>
+#include <FRONTIER/Gui/GuiWindow.hpp>
+#define FRONTIER_ELEMENTBOUNDARIES
+#include <future>
 
-#define FRONTIER_GUISCROLLBAR
-
-namespace fgui
-{
+namespace fgui {
 	/////////////////////////////////////////////////////////////
-	/// @brief Base class for gui classes that can be scrolled
-	///
-	/// @ingroup Gui
-	///
+	/// @brief Gui element for visualizing gui element boundaries
+	/// 
+	/// Draws colored rectangles around gui elements
+	/// 
 	/////////////////////////////////////////////////////////////
-	class FRONTIER_API GuiScrollBar : public GuiElement, public ScrollListener, public CallbackUser<GuiScrollBar>
+	class ElementBounds : public GuiElement
 	{
-		float m_scrollState; ///< The current state in range [0,1]
-		float m_scrollSize;  ///< The amount to change the state when scrolled
-		
+		fm::vec4 m_col; ///< The color to use for the rectangels
+		fg::DrawData m_dd; ///< Internal data
+		bool m_enabled; ///< Enabeld flags
+		GuiElement *m_target; ///< The target hierarchy
 	public:
 		/////////////////////////////////////////////////////////////
-		/// @brief Default constructor
+		/// @brief Construct the element
 		/// 
 		/// @param cont The owner context
+		/// @param target The hierarchy to traverse (null to inlude the whole context)
+		/// @param col The drawing color
 		/// 
 		/////////////////////////////////////////////////////////////
-		GuiScrollBar(GuiContext &cont);
+		ElementBounds(GuiContext &cont,GuiElement *target = nullptr,fm::vec4 col = fm::vec4::Red);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Called when the element is scrolled
+		/// @brief Set the drawing color
 		/// 
-		/// @param amount The amount the element is scrolled
-		/// @param horizontal Indicates whether vertical or horizontal scroll happened
+		/// @param col The new drawing color
 		/// 
 		/////////////////////////////////////////////////////////////
-		void onScroll(float amount,bool horizontal) override;
+		void setColor(fm::vec4 col);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the size of one scroll
+		/// @brief Get the current drawing color
 		/// 
-		/// @param scrollSize The new scroll size
+		/// @return The drawing color
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void setScrollSize(float scrollSize);
+		fm::vec4 getColor() const;
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Set the current state
+		/// @brief Enable or disable the drawing
 		/// 
-		/// @param state The new current state (will be clamped to [0,1])
+		/// @param enabled Tru to enable, false to disable
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void setScrollState(float state);
+		void enable(bool enabled = true);
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the size of one scroll
+		/// @brief Check if the drawing is enabled
 		/// 
-		/// @return The scroll size
+		/// @return True iff the drawing is enabled
 		/// 
 		/////////////////////////////////////////////////////////////
-		float getScrollSize() const;
+		bool enabled() const;
 		
 		/////////////////////////////////////////////////////////////
-		/// @brief Get the current state
-		/// 
-		/// @return The current current state (will be clamped to [0,1])
-		/// 
+		/// @brief draw the gui element
+		///
+		/// @param shader The shader to use
+		///
 		/////////////////////////////////////////////////////////////
-		float getScrollState() const;
+		void onDraw(fg::ShaderManager &shader) override;
 	};
 }
 
-#endif // FRONTIER_GUISCROLLBAR_HPP_INCLUDED
+#endif // FRONTIER_ELEMENTBOUNDARIES_HPP_INCLUDED

@@ -83,6 +83,12 @@ namespace fg
 		FloatAttributeUpdater(fg::Attribute &attrib,fm::Size floatPerVec,fm::Size vecsPerItem = 1);
 		
 		/////////////////////////////////////////////////////////////
+		/// @brief Reset the attribute uploader's data
+		/// 
+		/////////////////////////////////////////////////////////////
+		void clear();
+		
+		/////////////////////////////////////////////////////////////
 		/// @brief Register an update
 		/// 
 		/// @param index The index of the updated item

@@ -412,7 +412,8 @@ namespace fw
 		bool ctrl;   ///< Indicates that control was held when the event occured
 		bool alt;    ///< Indicates that alt was held when the event occured
 		float delta; ///< The amount the wheel moved (+1 means it was rotated once, forward, away from the user)
-
+		bool horizontal; ///< True for horizontal scroll, false for vertical scroll
+		
 		template<class T>
 		operator fm::vector2<T>() const; ///< convert to vector2
 	};

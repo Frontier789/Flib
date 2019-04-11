@@ -30,8 +30,10 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void TransformListener::onScroll(float amount)
+	void TransformListener::onScroll(float amount,bool horizontal)
 	{
+		if (horizontal) return;
+		
 		float zoomMul = std::pow(m_zoomSens,amount);
 		m_offset = m_offset * zoomMul + getLastMousePos() * (1 - zoomMul);
 		

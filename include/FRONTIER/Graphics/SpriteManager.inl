@@ -97,6 +97,20 @@ namespace fg
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
+	inline void SpriteManagerBase<ImageID>::clear()
+	{
+		for (auto spr : m_spriteDatas) {
+			spr.ptr->setManager(nullptr);
+			spr.ptr->setId(0);
+		}
+		
+		m_spriteDatas.clear();
+		
+		priv::SpriteManagerBaseNonTemplate::handleClear();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	template<class ImageID>
 	void SpriteManagerBase<ImageID>::handleEmplace(SpriteBase<ImageID> &sprite)
 	{
 		m_spriteDatas[sprite.getId()].ptr = &sprite;

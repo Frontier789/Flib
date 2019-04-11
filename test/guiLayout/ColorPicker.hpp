@@ -16,7 +16,7 @@ public:
 	void onPress(fw::Mouse::Button button,fm::vec2 p) override;
 	bool contains(fm::vec2 p) const override;
 	void onMouseMove(fm::vec2 p,fm::vec2 prevP) override;
-	void onScroll(float amount) override;
+	void onScroll(float amount,bool horizontal) override;
 	
 	void raiseBrightness(float amount);
 };

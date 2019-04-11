@@ -209,7 +209,7 @@ namespace fg
 		if (!stbtt_InitFont((stbtt_fontinfo*)m_stbFontInfo, m_fileContent, stbtt_GetFontOffsetForIndex(m_fileContent,0)))
 		{
 			clean();
-			return fm::Result("FTError",fm::Result::OPFailed,"InvalidFont","loadFromFile",__FILE__,__LINE__,fileName);
+			return fm::Result("TTFError",fm::Result::OPFailed,"InvalidFont","loadFromFile",__FILE__,__LINE__,fileName);
 		}
 		
 		setCharacterSize(size);
@@ -220,12 +220,16 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	fm::Result FontRenderer::loadSysFont(const std::string &fileName,unsigned int characterSize)
 	{
+		std::string file_ttf = fileName;
+		if (file_ttf.size() < 4 || file_ttf.find(".ttf",file_ttf.size()-4) == std::string::npos)
+			file_ttf += ".ttf";
+		
 	#ifdef FRONTIER_OS_WINDOWS
 	
 		char buffer[MAX_PATH];
 		::GetWindowsDirectoryA(buffer, MAX_PATH);
 		
-		return loadFromFile(std::string(buffer) + "\\fonts\\" + fileName,characterSize);
+		return loadFromFile(std::string(buffer) + "\\fonts\\" + file_ttf,characterSize);
 	
 	#elif defined(FRONTIER_OS_LINUX)
 		
@@ -247,7 +251,7 @@ namespace fg
 		
 	#endif
 		
-		return fm::Result("IOError",fm::Result::OPFailed,"FontNotFound","loadSysFont",__FILE__,__LINE__,fileName);
+		return fm::Result("IOError",fm::Result::OPFailed,"FontNotFound","loadSysFont",__FILE__,__LINE__,file_ttf);
 	}
 	
 	/////////////////////////////////////////////////////////////

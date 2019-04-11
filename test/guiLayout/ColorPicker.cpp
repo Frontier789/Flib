@@ -116,9 +116,10 @@ void ColorPicker::onMouseMove(fm::vec2 p,fm::vec2)
 	}
 } 
 
-void ColorPicker::onScroll(float amount)
+void ColorPicker::onScroll(float amount,bool hori)
 {
-	raiseBrightness(m_sat + amount / 10.0);
+	if (!hori)
+		raiseBrightness(m_sat + amount / 10.0);
 }
 	
 void ColorPicker::raiseBrightness(float amount)

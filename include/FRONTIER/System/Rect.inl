@@ -98,6 +98,13 @@ namespace fm
 
 	/////////////////////////////////////////////////////////////
 	template<class T>
+	inline T rect<T>::area() const
+	{
+		return size.area();
+	}
+
+	/////////////////////////////////////////////////////////////
+	template<class T>
 	inline bool rect<T>::intersects(const rect<T> &r) const
 	{
 		return pos.x < r.pos.x + r.size.w && pos.x + size.w > r.pos.x &&
