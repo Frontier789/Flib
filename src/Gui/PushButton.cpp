@@ -27,7 +27,14 @@ namespace fgui
 		
 		setSize(getSize());
 		setPosition(getPosition());
-		m_bckgSprite.setColor(m_bckgClrs[int(m_state)]);
+		
+		auto clr = m_bckgClrs[int(m_state)];
+		
+		if (!getEnabled()) {
+			clr.a *= .7;
+		}
+		
+		m_bckgSprite.setColor(clr);
 	}
 	
 	/////////////////////////////////////////////////////////////

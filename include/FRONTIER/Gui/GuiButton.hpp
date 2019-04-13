@@ -139,7 +139,7 @@ namespace fgui
 		/// @brief Set the displayed text on the button
 		/// 
 		/// @param text The new text
-		/// @param adaptSize Specifies whether the size of the button should shring to fit if needed
+		/// @param adaptSize Specifies whether the size of the button should shrink to fit if needed
 		/// 
 		/////////////////////////////////////////////////////////////
 		void setText(const fm::String &text,bool adaptSize = true);
@@ -212,6 +212,25 @@ namespace fgui
 		/////////////////////////////////////////////////////////////
 		virtual void onMouseMove(fm::vec2 p,fm::vec2 prevP) override;
 		
+		/////////////////////////////////////////////////////////////
+		/// @brief Change whether the button is enabled or disabled
+		/// 
+		/// Only enabled button reacts to pressing
+		/// Default is enabled
+		/// 
+		/// @param enabled True to enable, false to disable
+		/// 
+		/////////////////////////////////////////////////////////////
+		virtual void setEnabled(bool enabled);
+		
+		/////////////////////////////////////////////////////////////
+		/// @brief Check whether the button is enabled or disabled
+		/// 
+		/// @retun True if enabled, false if disabled
+		/// 
+		/////////////////////////////////////////////////////////////
+		bool getEnabled() const;
+		
 	protected:
 		/////////////////////////////////////////////////////////////
 		/// @brief States of a button
@@ -237,6 +256,7 @@ namespace fgui
 		fm::Delegate<void,GuiButton &,Action> m_actionCb; ///< Callback for actions
 		fm::vec2s m_prevTextSize; ///< Last size of the gui text
 		GuiText m_text; ///< The gui elem for text display on the button
+		bool m_enabled; ///< Indicates whether the button is enabled
 		
 		void setState(InnerState state) {m_state = state; applyState();}
 	};

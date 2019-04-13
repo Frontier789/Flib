@@ -42,13 +42,17 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	void FloatAttributeUpdater::clear()
 	{
-		if (m_mappedPtr) unMap();
+		unMap();
 		
 		m_firstUpdated = 0;
 		m_lastUpdated = 0;
 		m_capacity = 0;
 		m_uploads = 0;
-		m_mappedPtr = nullptr;
+		m_data.clear();
+		
+		if (m_attrib.ownBuffer) delete m_attrib.buf;
+		m_attrib.buf = nullptr;
+		m_attrib.ownBuffer = false;
 	}
 	
 	/////////////////////////////////////////////////////////////
@@ -123,12 +127,13 @@ namespace fg
 	/////////////////////////////////////////////////////////////
 	void FloatAttributeUpdater::push(const float *value,fm::Size amount)
 	{
-		m_data.resize(m_data.size() + getFloatsPerItem()*amount);
+		auto oldSize = m_data.size(); 
+		m_data.resize(oldSize + getFloatsPerItem()*amount);
 		
 		if (m_data.size() > m_capacity * getFloatsPerItem())
 		{
 			for (fm::Size i=0;i<amount;++i)
-				std::memcpy(&m_data[m_data.size() - getFloatsPerItem()*(amount-i)],value,getBytesPerItem());
+				std::memcpy(&m_data[oldSize + getFloatsPerItem()*i],value,getBytesPerItem());
 			
 			fm::Size newCapactiy = 5;
 			newCapactiy = std::max<fm::Size>(m_capacity*2,newCapactiy);

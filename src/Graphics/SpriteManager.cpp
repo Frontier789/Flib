@@ -168,8 +168,9 @@ namespace fg
 			m_vertUVsProp.clear();
 			m_vertClrProp.clear();
 			
-			m_drawData.reset();
+			// m_drawData.reset();
 			m_spriteCount = 0;
+			m_drawData.clearDraws();
 		}
 			
 		/////////////////////////////////////////////////////////////
@@ -231,6 +232,8 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		void SpriteManagerBaseNonTemplate::updateDrawCall()
 		{
+			if (m_drawData.getDrawCount() == 0) return;
+			
 			if (useInstancing())
 			{
 				m_drawData.getDraw(0).instances = m_spriteCount;

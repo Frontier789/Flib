@@ -287,7 +287,20 @@ namespace fg
     //////////////////////////////////////////////////////////////////////////
 	DrawData &DrawData::reset()
 	{
-		return *this = DrawData();
+		m_drawCalls.clear();
+		positions    = fg::Attribute();
+		colors       = fg::Attribute();
+		normals      = fg::Attribute();
+		tangents     = fg::Attribute();
+		bitangents   = fg::Attribute();
+		texPositions = fg::Attribute();
+		
+		for (auto &it : m_extraAttrs)
+			if (it.second)
+				*it.second = fg::Attribute();
+		
+		
+		return *this;
 	}
 
     //////////////////////////////////////////////////////////////////////////

@@ -196,6 +196,7 @@ namespace fgui
         ////////////////////////////////////////////////////////////
         void setSize(fm::vec2s size) override;
 		void setPosition(fm::vec2i pos) override;
+		void setRows(size_t rows);
 
         ////////////////////////////////////////////////////////////
 		void setBackground(fg::Sprite bckg,bool setFrame = true);

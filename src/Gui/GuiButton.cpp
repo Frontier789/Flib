@@ -28,9 +28,11 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	GuiButton::GuiButton(GuiContext &cont) : GuiElement(cont),
-											 m_state(Normal),
-											 m_text(cont)
+	GuiButton::GuiButton(GuiContext &cont) : 
+		GuiElement(cont),
+		m_state(Normal),
+		m_text(cont),
+		m_enabled(true)
 	{
 		
 	}
@@ -39,7 +41,8 @@ namespace fgui
 	GuiButton::GuiButton(GuiContext &cont,const fm::String &text,fm::Delegate<void,GuiButton &> callback) : 
 		GuiElement(cont),
 		m_state(Normal),
-		m_text(cont,text)
+		m_text(cont,text),
+		m_enabled(true)
 	{
 		setSize(m_text.getSize());
 		setCallback(callback);
@@ -162,7 +165,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiButton::onPress(fw::Mouse::Button button,fm::vec2)
 	{
-		if (button == fw::Mouse::Left)
+		if (button == fw::Mouse::Left && m_enabled)
 		{
 			setState(Pressed);
 			
@@ -173,7 +176,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiButton::onRelease(fw::Mouse::Button button,fm::vec2)
 	{
-		if (button == fw::Mouse::Left)
+		if (button == fw::Mouse::Left && m_enabled)
 		{
 			if (mouseInside())
 				setState(Hovered);
@@ -187,7 +190,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void GuiButton::onClick(fw::Mouse::Button button,fm::vec2)
 	{
-		if (button == fw::Mouse::Left)
+		if (button == fw::Mouse::Left && m_enabled)
 		{
 			m_actionCb(*this,GuiButton::Click);
 			
@@ -199,5 +202,18 @@ namespace fgui
 	void GuiButton::onMouseMove(fm::vec2,fm::vec2)
 	{
 		m_actionCb(*this,GuiButton::Drag);
+	}
+	
+	/////////////////////////////////////////////////////////////
+	void GuiButton::setEnabled(bool enabled)
+	{
+		m_enabled = enabled;
+		applyState();
+	}
+	
+	/////////////////////////////////////////////////////////////
+	bool GuiButton::getEnabled() const
+	{
+		return m_enabled;
 	}
 }

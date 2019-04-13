@@ -1419,6 +1419,12 @@ namespace fgui
     }
     
 	////////////////////////////////////////////////////////////
+    void EditText::setRows(size_t rows)
+    {
+        setSize(fm::vec2(getSize().w,rows * m_metrics.lineGap + getFrameSize().h*2));
+    }
+    
+	////////////////////////////////////////////////////////////
     void EditText::setPosition(fm::vec2i pos)
     {
         GuiElement::setPosition(pos);

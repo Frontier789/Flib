@@ -19,9 +19,11 @@
 
 namespace fgui
 {
-	MouseMoveListener::MouseMoveListener() : m_recheckRecursion(false),
-											 m_mouseIn(false),
-											 m_grabMouse(false)
+	MouseMoveListener::MouseMoveListener() : 
+		m_recheckRecursion(false),
+		// m_prevPos(-1000000),
+		m_mouseIn(false),
+		m_grabMouse(false)
 	{
 		addEventHandler([&](fw::Event &ev) -> bool {
 			
