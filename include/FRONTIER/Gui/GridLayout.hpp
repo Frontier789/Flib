@@ -109,7 +109,7 @@ namespace fgui
 		/// @param pos The position
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void setPosition(fm::vec2i pos) override;
+		virtual void setPosition(fm::vec3 pos) override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the child at given 2d index 

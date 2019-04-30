@@ -21,6 +21,7 @@
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Gui/GuiCallback.hpp>
 #include <FRONTIER/System/Vector2.hpp>
+#include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/util/API.h>
 #include <FRONTIER/System/String.hpp>
 
@@ -53,7 +54,7 @@ namespace fgui
 		GuiLayout  *m_layout;  ///< The layout that owns the element
 		fm::String m_id; ///< The id of the element
 		fm::vec2 m_size; ///< The size of the element
-		fm::vec2 m_pos;  ///< The position of the element
+		fm::vec3 m_pos;  ///< The position of the element
 	public:
 		/////////////////////////////////////////////////////////////
 		/// @brief Default constructr
@@ -136,7 +137,7 @@ namespace fgui
 		/// @return The position
 		/// 
 		/////////////////////////////////////////////////////////////
-		fm::vec2i getPosition() const;
+		fm::vec3 getPosition() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the position of the gui element
@@ -144,7 +145,7 @@ namespace fgui
 		/// @param pos The position
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void setPosition(fm::vec2i pos);
+		virtual void setPosition(fm::vec3 pos);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set owner gui context

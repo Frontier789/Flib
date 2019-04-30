@@ -562,7 +562,7 @@ namespace fgui
                 fm::vec2 v = fm::vec2(0,m_metrics.lineGap * -ev.wheel.delta * am);
                 
                 if (ev.wheel.horizontal || ev.wheel.shift)
-                    v = fm::vec2(v.y,v.x);
+                    v = fm::vec2(-v.y,v.x);
                 
                 moveViewPos(v);
             }
@@ -1425,7 +1425,7 @@ namespace fgui
     }
     
 	////////////////////////////////////////////////////////////
-    void EditText::setPosition(fm::vec2i pos)
+    void EditText::setPosition(fm::vec3 pos)
     {
         GuiElement::setPosition(pos);
         

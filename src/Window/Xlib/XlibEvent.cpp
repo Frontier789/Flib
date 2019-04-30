@@ -193,7 +193,7 @@ namespace fw
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void Mouse::setPosition(const fm::vec2i &pos)
+	void Mouse::setPosition(fm::vec3 pos)
 	{
 		if (!priv::xCon) 
 			return;
@@ -204,7 +204,7 @@ namespace fw
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void Mouse::setPosition(const fm::vec2i &pos,const fw::priv::Window &window)
+	void Mouse::setPosition(fm::vec3 pos,const fw::priv::Window &window)
 	{
 		fm::vec2i winPos;
 		window.getPosition(winPos.w,winPos.h);

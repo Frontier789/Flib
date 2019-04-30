@@ -193,7 +193,7 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
-	fm::Result Window::setPosition(const fm::vec2i &pos)
+	fm::Result Window::setPosition(fm::vec2i pos)
 	{
 		return m_window->setPosition(pos.x,pos.y);
 	}

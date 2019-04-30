@@ -47,14 +47,14 @@ namespace fg
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
-	inline void SpriteManagerBase<ImageID>::handleCreate(SpriteBase<ImageID> &sprite,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr)
+	inline void SpriteManagerBase<ImageID>::handleCreate(SpriteBase<ImageID> &sprite,ImageID imgID,fm::vec3 pos,fm::vec2 size,fm::vec2 dir,fm::vec4 clr)
 	{
 		handleCreate(&sprite,1,imgID,pos,size,dir,clr);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
-	inline void SpriteManagerBase<ImageID>::handleCreate(SpriteBase<ImageID> *sprites,fm::Size spriteCount,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr)
+	inline void SpriteManagerBase<ImageID>::handleCreate(SpriteBase<ImageID> *sprites,fm::Size spriteCount,ImageID imgID,fm::vec3 pos,fm::vec2 size,fm::vec2 dir,fm::vec4 clr)
 	{
 		fm::Size siz = m_spriteDatas.size();
 		fm::Size id = siz;
@@ -135,14 +135,14 @@ namespace fg
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
-	inline void SpriteManagerBase<ImageID>::addImage(const fg::Image &img,ImageID id,const fm::vec2 &frameSize)
+	inline void SpriteManagerBase<ImageID>::addImage(const fg::Image &img,ImageID id,fm::vec2 frameSize)
 	{
 		m_atlas.upload(img,id,frameSize);
 	}
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
-	inline void SpriteManagerBase<ImageID>::addImage(const fg::Texture &tex,ImageID id,const fm::vec2 &frameSize)
+	inline void SpriteManagerBase<ImageID>::addImage(const fg::Texture &tex,ImageID id,fm::vec2 frameSize)
 	{
 		m_atlas.upload(tex,id,frameSize);
 	}

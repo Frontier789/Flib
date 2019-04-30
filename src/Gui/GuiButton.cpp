@@ -96,7 +96,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void GuiButton::setPosition(fm::vec2i pos)
+	void GuiButton::setPosition(fm::vec3 pos)
 	{
 		m_text.setPosition(pos + getSize() / 2 - m_text.getSize() / 2);
 		

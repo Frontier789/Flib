@@ -323,7 +323,7 @@ namespace fw
 		/// @param pos The new position of the cursor
 		///
 		/////////////////////////////////////////////////////////////
-		static void setPosition(const fm::vec2i &pos);
+		static void setPosition(fm::vec3 pos);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the cursor's position relative to a specific window
@@ -334,7 +334,7 @@ namespace fw
 		/// @param window The target window
 		///
 		/////////////////////////////////////////////////////////////
-		static void setPosition(const fm::vec2i &pos,const fw::priv::Window &window);
+		static void setPosition(fm::vec3 pos,const fw::priv::Window &window);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the cursor's position relative to a specific window
@@ -345,7 +345,7 @@ namespace fw
 		/// @param window The target window
 		///
 		/////////////////////////////////////////////////////////////
-		static void setPosition(const fm::vec2i &pos,const fw::Window &window);
+		static void setPosition(fm::vec3 pos,const fw::Window &window);
 	};
 
 	/////////////////////////////////////////////////////////////

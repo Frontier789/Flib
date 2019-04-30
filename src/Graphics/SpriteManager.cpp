@@ -91,10 +91,10 @@ namespace fg
 		/////////////////////////////////////////////////////////////
 		void SpriteManagerBaseNonTemplate::handleCreate(fm::Size spriteIndex,
 														const fg::Glyph &shape,
-														const fm::vec3 &pos,
-														const fm::vec2 &size,
-														const fm::vec2 &dir,
-														const fm::vec4 &clr)
+														fm::vec3 pos,
+														fm::vec2 size,
+														fm::vec2 dir,
+														fm::vec4 clr)
 		{
 			handleCreate(spriteIndex,spriteIndex+1,
 						 shape,pos,size,dir,clr);
@@ -104,10 +104,10 @@ namespace fg
 		void SpriteManagerBaseNonTemplate::handleCreate(fm::Size spriteIndexBeg,
 														fm::Size spriteIndexEnd,
 														const fg::Glyph &shape,
-														const fm::vec3 &pos,
-														const fm::vec2 &size,
-														const fm::vec2 &dir,
-														const fm::vec4 &clr)
+														fm::vec3 pos,
+														fm::vec2 size,
+														fm::vec2 dir,
+														fm::vec4 clr)
 		{
 			if (!m_shader.isLoaded() && m_shaderResult)
 				loadShader();
@@ -248,7 +248,7 @@ namespace fg
 		}
 		
 		/////////////////////////////////////////////////////////////
-		void SpriteManagerBaseNonTemplate::handlePosChange(fm::Size spriteIndex,const fm::vec3 &pos)
+		void SpriteManagerBaseNonTemplate::handlePosChange(fm::Size spriteIndex,fm::vec3 pos)
 		{
 			if (useInstancing())
 			{
@@ -269,7 +269,7 @@ namespace fg
 		}
 		
 		/////////////////////////////////////////////////////////////
-		void SpriteManagerBaseNonTemplate::handleDirChange(fm::Size spriteIndex,const fm::vec2 &dir)
+		void SpriteManagerBaseNonTemplate::handleDirChange(fm::Size spriteIndex,fm::vec2 dir)
 		{
 			if (useInstancing())
 			{
@@ -290,7 +290,7 @@ namespace fg
 		}
 		
 		/////////////////////////////////////////////////////////////
-		void SpriteManagerBaseNonTemplate::handleSizeChange(fm::Size spriteIndex,const fm::vec2 &size)
+		void SpriteManagerBaseNonTemplate::handleSizeChange(fm::Size spriteIndex,fm::vec2 size)
 		{
 			fm::vec2 cpySize = size;
 			
@@ -321,7 +321,7 @@ namespace fg
 		}
 		
 		/////////////////////////////////////////////////////////////
-		void SpriteManagerBaseNonTemplate::handleColorChange(fm::Size spriteIndex,const fm::vec4 &clr)
+		void SpriteManagerBaseNonTemplate::handleColorChange(fm::Size spriteIndex,fm::vec4 clr)
 		{
 			if (useInstancing())
 			{

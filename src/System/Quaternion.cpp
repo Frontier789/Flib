@@ -42,7 +42,7 @@ namespace fm
 	}
 
 	////////////////////////////////////////////////////////////
-	Quat::Quat(const vec3 &axis,const Angle<float> &angle)
+	Quat::Quat(vec3 axis,const Angle<float> &angle)
 	{
 		float sinA = std::sin(angle*.5f);
 		x = sinA*axis.x;
@@ -153,7 +153,7 @@ namespace fm
 	}
 
 	////////////////////////////////////////////////////////////
-	Quat Quat::fromTo(const vec3 &from,const vec3 &to)
+	Quat Quat::fromTo(vec3 from,vec3 to)
 	{
 		if (from == to)
 			return identity;
@@ -264,7 +264,7 @@ namespace fm
 	}
 
 	////////////////////////////////////////////////////////////
-	vec3 operator* (const Quat &left,const vec3 &right)
+	vec3 operator* (const Quat &left,vec3 right)
 	{
 		vec3 uv, uuv;
 		vec3 axis(left.x, left.y, left.z);
@@ -277,7 +277,7 @@ namespace fm
 	}
 
 	////////////////////////////////////////////////////////////
-	vec4 operator* (const Quat &left,const vec4 &right)
+	vec4 operator* (const Quat &left,vec4 right)
 	{
 		return left*vec3(right);
 	}

@@ -450,7 +450,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setUniform(const std::string &name,const fm::vec2i &v);
+		fm::Result setUniform(const std::string &name,fm::vec2i v);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an vec3i uniform
@@ -464,7 +464,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setUniform(const std::string &name,const fm::vec3i &v);
+		fm::Result setUniform(const std::string &name,fm::vec3i v);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an vec4i uniform
@@ -478,7 +478,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setUniform(const std::string &name,const fm::vec4i &v);
+		fm::Result setUniform(const std::string &name,fm::vec4i v);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of a float uniform
@@ -506,7 +506,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setUniform(const std::string &name,const fm::vec2 &v);
+		fm::Result setUniform(const std::string &name,fm::vec2 v);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an vec3 uniform
@@ -520,7 +520,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setUniform(const std::string &name,const fm::vec3 &v);
+		fm::Result setUniform(const std::string &name,fm::vec3 v);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an vec4 uniform
@@ -534,7 +534,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setUniform(const std::string &name,const fm::vec4 &v);
+		fm::Result setUniform(const std::string &name,fm::vec4 v);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the value of an mat2 uniform

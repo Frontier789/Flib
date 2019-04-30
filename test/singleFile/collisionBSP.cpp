@@ -199,7 +199,7 @@ int main()
 			}
 		}
 		
-		if (addClk.getSeconds() > 0.3 + rockCount/10.0)
+		if (addClk.getSeconds() > 0.3 + rockCount/10.0 || Mouse::isButtonHeld(Mouse::Left))
 		{
 			tester.addRock(win.getSize()/2,pol2(50,rad(rockCount / 10.0)));
 			++rockCount;

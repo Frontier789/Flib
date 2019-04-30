@@ -109,7 +109,7 @@ namespace fgui
 		/// @param pos The new position
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void setPosition(fm::vec2i pos) override;
+		virtual void setPosition(fm::vec3 pos) override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the text element owned by the button

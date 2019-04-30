@@ -243,7 +243,7 @@ namespace fg
 		/// @param color The new clear-color
 		///
 		/////////////////////////////////////////////////////////////
-		void setClearColor(const fm::vec4 &color);
+		void setClearColor(fm::vec4 color);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the clearing depth

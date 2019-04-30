@@ -142,8 +142,9 @@ namespace fg
 	}
 
 	////////////////////////////////////////////////////////////
-	Texture::Texture(fm::vec2s size,const fm::vec4 &color) : m_isRepeated(false),
-															 m_isSmooth(false)
+	Texture::Texture(fm::vec2s size,fm::vec4 color) : 
+		m_isRepeated(false),
+		m_isSmooth(false)
 
 	{
 		create(size,color);
@@ -199,7 +200,7 @@ namespace fg
 	}
 	
 	////////////////////////////////////////////////////////////
-	fm::Result Texture::create(fm::vec2s size,const fm::vec4 &color)
+	fm::Result Texture::create(fm::vec2s size,fm::vec4 color)
 	{
 		Image tmpImg;
 		tmpImg.create(size,color*255);

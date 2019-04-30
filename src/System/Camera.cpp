@@ -68,9 +68,9 @@ namespace fm
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Camera::Camera(const vec2 &canvasSize,
-				   const vec3 &pos,
-				   const vec3 &target,
+	Camera::Camera(vec2 canvasSize,
+				   vec3 pos,
+				   vec3 target,
 				   const Anglef &fov,
 				   float znear,
 				   float zfar) : m_limitPitch(true)
@@ -97,13 +97,13 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::lookAt(const vec3 &target)
+	Camera::reference Camera::lookAt(vec3 target)
 	{
 		return setViewDir(target - getPosition());
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::setViewDir(const vec3 &viewDir)
+	Camera::reference Camera::setViewDir(vec3 viewDir)
 	{
 		m_viewDir = viewDir.sgn();
 		
@@ -126,7 +126,7 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::setPosition(const vec3 &pos)
+	Camera::reference Camera::setPosition(vec3 pos)
 	{
 		m_pos = pos;
 		
@@ -136,13 +136,13 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::movePosition(const vec3 &delta)
+	Camera::reference Camera::movePosition(vec3 delta)
 	{
 		return setPosition(getPosition() + delta);
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::setCanvasSize(const vec2 &canvasSize)
+	Camera::reference Camera::setCanvasSize(vec2 canvasSize)
 	{
 		m_canvasSize = canvasSize;
 		
@@ -199,9 +199,9 @@ namespace fm
 	}
 
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::set3D(const vec2 &canvasSize,
-									const vec3 &pos,
-									const vec3 &target,
+	Camera::reference Camera::set3D(vec2 canvasSize,
+									vec3 pos,
+									vec3 target,
 									const Anglef &fov,
 									float znear,
 									float zfar)
@@ -221,7 +221,7 @@ namespace fm
 	}
 	
 	/////////////////////////////////////////////////////////////
-	Camera::reference Camera::set2D(const vec2 &canvasSize,
+	Camera::reference Camera::set2D(vec2 canvasSize,
 									float znear,
 									float zfar)
 	{

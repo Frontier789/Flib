@@ -84,12 +84,12 @@ Glyph::Style Particle::particleStyle = Glyph::Regular;
 
 #include <random>
 
-class Random
+class RandomGen
 {
 	std::mt19937 m_gen;
     std::uniform_real_distribution<> m_dis;
 public:
-	Random() : m_gen(42), m_dis(0, 1) {}
+	RandomGen() : m_gen(42), m_dis(0, 1) {}
 
 	double operator()() {return m_dis(m_gen);}
 
@@ -110,7 +110,7 @@ int main()
 	f.setCharacterSize(13);
 	auto &sprMgr = f.getSpriteManager(Particle::particleStyle);
 	
-	Random rand;
+	RandomGen rand;
 	
 	if (!sprMgr.getShaderLoadResult())
 	{

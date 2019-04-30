@@ -48,7 +48,7 @@ public:
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void setPosition(fm::vec2i pos) override
+	void setPosition(fm::vec3 pos) override
 	{
 		elem.setPosition(pos);
 		GuiElement::setPosition(pos);

@@ -32,7 +32,7 @@ namespace fgui
 		fm::vec2  maxDist;
 		fm::vec2  pixPos;
 		fm::vec2s cellc = getCellCount();
-		fm::vec2  pos = getPosition();
+		fm::vec3  pos = getPosition();
 		
 		std::vector<float> realColWs = m_colWidths;
 		std::vector<float> realRowHs = m_rowHeights;
@@ -119,9 +119,9 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void GridLayout::setPosition(fm::vec2i pos)
+	void GridLayout::setPosition(fm::vec3 pos)
 	{
-		fm::vec2 oldPos = getPosition();
+		fm::vec3 oldPos = getPosition();
 		
 		Cv(getCellCount())
 		{

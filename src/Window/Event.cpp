@@ -116,7 +116,7 @@ namespace fw
 	}
 
 	/////////////////////////////////////////////////////////////
-	void Mouse::setPosition(const fm::vec2i &pos,const fw::Window &window)
+	void Mouse::setPosition(fm::vec3 pos,const fw::Window &window)
 	{
 		setPosition(pos,window.getOSWindow());
 	}

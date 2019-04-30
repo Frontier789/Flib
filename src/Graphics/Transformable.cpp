@@ -25,26 +25,26 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	Transformable &Transformable::setPosition(const fm::vec2 &pos)
+	Transformable &Transformable::setPosition(fm::vec3 pos)
 	{
 		m_pos = pos;
 		return *this;
 	}
 
-	const fm::vec2 &Transformable::getPosition() const
+	fm::vec3 Transformable::getPosition() const
 	{
 		return m_pos;
 	}
 
 
 	/////////////////////////////////////////////////////////////
-	Transformable &Transformable::setSize(const fm::vec2 &size)
+	Transformable &Transformable::setSize(fm::vec2 size)
 	{
 		m_size = size;
 		return *this;
 	}
 
-	const fm::vec2 &Transformable::getSize() const
+	fm::vec2 Transformable::getSize() const
 	{
 		return m_size;
 	}

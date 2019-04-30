@@ -32,7 +32,7 @@ namespace fg
 	class FRONTIER_API Transformable
 	{
 		fm::vec2 m_size; ///< Current size
-		fm::vec2 m_pos;  ///< Current position
+		fm::vec3 m_pos;  ///< Current position
 
 	public:
 		/////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual Transformable &setPosition(const fm::vec2 &pos);
+		virtual Transformable &setPosition(fm::vec3 pos);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the onscreen size of the transformable
@@ -65,7 +65,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual Transformable &setSize(const fm::vec2 &size);
+		virtual Transformable &setSize(fm::vec2 size);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the onscreen position of the transformable
@@ -73,7 +73,7 @@ namespace fg
 		/// @return The onscreen position
 		/// 
 		/////////////////////////////////////////////////////////////
-		const fm::vec2 &getPosition() const;
+		fm::vec3 getPosition() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the onscreen size of the transformable
@@ -81,7 +81,7 @@ namespace fg
 		/// @return The onscreen size
 		/// 
 		/////////////////////////////////////////////////////////////
-		const fm::vec2 &getSize() const;
+		fm::vec2 getSize() const;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the matrix for the current transform

@@ -156,7 +156,7 @@ namespace fg
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
-	SpriteBase<ImageID> &SpriteBase<ImageID>::setPosition(const fm::vec3 &pos)
+	SpriteBase<ImageID> &SpriteBase<ImageID>::setPosition(fm::vec3 pos)
 	{
 		if (getManager())
 			getManager()->handlePosChange(getId(),pos);
@@ -175,7 +175,7 @@ namespace fg
 	
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
-	SpriteBase<ImageID> &SpriteBase<ImageID>::setColor(const fm::vec4 &clr)
+	SpriteBase<ImageID> &SpriteBase<ImageID>::setColor(fm::vec4 clr)
 	{
 		if (!getManager()) return *this;
 		
@@ -195,7 +195,7 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
-	SpriteBase<ImageID> &SpriteBase<ImageID>::setDirection(const fm::vec2 &dir)
+	SpriteBase<ImageID> &SpriteBase<ImageID>::setDirection(fm::vec2 dir)
 	{
 		if (!getManager()) return *this;
 		
@@ -215,7 +215,7 @@ namespace fg
 
 	/////////////////////////////////////////////////////////////
 	template<class ImageID>
-	SpriteBase<ImageID> &SpriteBase<ImageID>::setSize(const fm::vec2 &size)
+	SpriteBase<ImageID> &SpriteBase<ImageID>::setSize(fm::vec2 size)
 	{
 		if (!getManager()) return *this;
 		

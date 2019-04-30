@@ -338,7 +338,7 @@ namespace fw
 		/// @return The result of the call
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result setPosition(const fm::vec2i &pos);
+		fm::Result setPosition(fm::vec2i pos);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Retrieve the position of the window

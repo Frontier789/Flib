@@ -28,20 +28,9 @@ int main()
 	win.setDefaultFont(win.getFont("consola.ttf"));
 	win.setMainLayout(new GridLayout(win));
 
-	// sorok számát beállíthatni
 	// ne lógjon ki
-
-	auto btn = new PushButton(win,"hello there",[&]{cout << "hy" << endl;});
-	auto btn2 = new PushButton(win,"Disable",[&](GuiButton &b){
-		btn->setEnabled(!btn->getEnabled());
-		b.setText(btn->getEnabled() ? "Disable" : "Enable",false);
-	});
-	btn->setSize(btn->getSize()*1.5);
-	btn2->setSize(btn->getSize()*1.5);
-	btn->setBgColor(vec4::Red);
-	win.addElement(btn);
-	win.addElement(btn2);
-
+	// Ha felfele rántom az egeret se váltson vissza mutatóra, az I-ről
+	
 	get(win,true,50)->setActive();
 	get(win,false,vec2(300,50));
 

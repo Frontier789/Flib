@@ -748,7 +748,7 @@ namespace fm
 		}
 
 		////////////////////////////////////////////////////////////
-		inline matrix<4,4,float> translation(const vec3 &translate)
+		inline matrix<4,4,float> translation(vec3 translate)
 		{
 			return translation(translate.x,translate.y,translate.z);
 		}
@@ -769,13 +769,13 @@ namespace fm
 		}
 
 		////////////////////////////////////////////////////////////
-		inline matrix<4,4,float> scaling(const vec2 &scale)
+		inline matrix<4,4,float> scaling(vec2 scale)
 		{
 			return scaling(scale.x,scale.y,1);
 		}
 
 		////////////////////////////////////////////////////////////
-		inline matrix<4,4,float> scaling(const vec3 &scale)
+		inline matrix<4,4,float> scaling(vec3 scale)
 		{
 			return scaling(scale.x,scale.y,scale.z);
 		}
@@ -815,7 +815,7 @@ namespace fm
 
 
 		////////////////////////////////////////////////////////////
-		inline matrix<4,4,float> lookAt(const vec3 &cam_pos,const vec3 &target_pos,const vec3 &up_dir)
+		inline matrix<4,4,float> lookAt(vec3 cam_pos,vec3 target_pos,vec3 up_dir)
 		{
 			mat4 t = translation(-cam_pos);
 			vec3 f = (target_pos - cam_pos).sgn();
@@ -829,7 +829,7 @@ namespace fm
 		}
 
 		////////////////////////////////////////////////////////////
-		inline matrix<4,4,float> lookAt(const vec3 &cam_pos,const vec3 &target_pos)
+		inline matrix<4,4,float> lookAt(vec3 cam_pos,vec3 target_pos)
 		{
 			return lookAt(cam_pos,target_pos,vec3(0,1,0));
 		}

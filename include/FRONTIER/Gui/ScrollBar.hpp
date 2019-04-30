@@ -71,7 +71,7 @@ namespace fgui
 		/// @return True iff p is in the drag area
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual bool inDragArea(const fm::vec2 &p) const;
+		virtual bool inDragArea(fm::vec2 p) const;
 		
 	public:
 		/////////////////////////////////////////////////////////////
@@ -141,7 +141,7 @@ namespace fgui
 		/// @param pos The position
 		/// 
 		/////////////////////////////////////////////////////////////
-		virtual void setPosition(fm::vec2i pos) override;
+		virtual void setPosition(fm::vec3 pos) override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Called when the mouse moves inside the gui element

@@ -291,7 +291,7 @@ namespace fw
 		/// @param color The new clear-color
 		///
 		/////////////////////////////////////////////////////////////
-		void setClearColor(const fm::vec4 &color);
+		void setClearColor(fm::vec4 color);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the value of the clearing color used by this context

@@ -559,8 +559,11 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void GuiText::setPosition(fm::vec2i pos)
+	void GuiText::setPosition(fm::vec3 pos)
 	{
+		pos.x = int(pos.x);
+		pos.y = int(pos.y);
+		
 		if (pos == getPosition()) return;
 
 		fm::vec2 diff = pos - getPosition();

@@ -125,7 +125,7 @@ namespace fg
 					best = this;
 			}
 
-			void split(const fm::vec2 &rctSize,const fm::vec2s &imgSize)
+			void split(fm::vec2 rctSize,const fm::vec2s &imgSize)
 			{
 				fm::vec2 freeSpace = getRealSize(imgSize);
 
@@ -216,7 +216,7 @@ namespace fg
 		}
 		
 		/////////////////////////////////////////////////////////////
-		Glyph TextureAtlasImpl::upload(const fg::Image &img,const fm::vec2 &leftdown)
+		Glyph TextureAtlasImpl::upload(const fg::Image &img,fm::vec2 leftdown)
 		{
 			Node *inserted = recursiveInsert(img.getSize());
 			m_tex.update(img,inserted->rct.pos);
@@ -225,7 +225,7 @@ namespace fg
 		}
 		
 		/////////////////////////////////////////////////////////////
-		Glyph TextureAtlasImpl::upload(const fg::Texture &tex,const fm::vec2 &leftdown)
+		Glyph TextureAtlasImpl::upload(const fg::Texture &tex,fm::vec2 leftdown)
 		{
 			Node *inserted = recursiveInsert(tex.getSize());
 				

@@ -261,7 +261,7 @@ namespace fg
 		/// @return The face of the cube
 		/// 
 		/////////////////////////////////////////////////////////////
-		CubeTextureFace getFace(const fm::vec3 &normal);
+		CubeTextureFace getFace(fm::vec3 normal);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get a reference to one of the cube's six faces
@@ -273,7 +273,7 @@ namespace fg
 		/// @return The face of the cube
 		/// 
 		/////////////////////////////////////////////////////////////
-		CubeTextureFace operator[](const fm::vec3 &normal);
+		CubeTextureFace operator[](fm::vec3 normal);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the repeate flag

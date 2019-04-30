@@ -78,7 +78,7 @@ namespace fg
 			/// @param leftdown The associated offset
 			/// 
 			/////////////////////////////////////////////////////////////
-			MapPoint(const fg::Image *img = nullptr,MappedType point = MappedType(),const fm::vec2 &leftdown = fm::vec2());
+			MapPoint(const fg::Image *img = nullptr,MappedType point = MappedType(),fm::vec2 leftdown = fm::vec2());
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief The internal comparation function that is used when sorting MapPoints
@@ -109,7 +109,7 @@ namespace fg
 			/// @param point The key value
 			/// 
 			/////////////////////////////////////////////////////////////
-			GlyphPoint(const fm::rect2s &rct = fm::rect2s(),const fm::vec2 &leftdown = fm::vec2(),MappedType point = MappedType());
+			GlyphPoint(const fm::rect2s &rct = fm::rect2s(),fm::vec2 leftdown = fm::vec2(),MappedType point = MappedType());
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief The internal comparation function that is used when sorting GlyphPoints
@@ -165,7 +165,7 @@ namespace fg
 		/// @return The properties of the uploaded Texture in a Glyph
 		/// 
 		/////////////////////////////////////////////////////////////
-		Glyph upload(const fg::Image &img,const MappedType &point,const fm::vec2 &leftdown = fm::vec2());
+		Glyph upload(const fg::Image &img,const MappedType &point,fm::vec2 leftdown = fm::vec2());
 		
 		
 		/////////////////////////////////////////////////////////////
@@ -178,7 +178,7 @@ namespace fg
 		/// @return The properties of the uploaded Texture in a Glyph
 		/// 
 		/////////////////////////////////////////////////////////////
-		Glyph upload(const fg::Texture &tex,const MappedType &point,const fm::vec2 &leftdown = fm::vec2());
+		Glyph upload(const fg::Texture &tex,const MappedType &point,fm::vec2 leftdown = fm::vec2());
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Add new Textures to the atlas

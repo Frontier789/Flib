@@ -119,7 +119,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void PushButton::setPosition(fm::vec2i pos)
+	void PushButton::setPosition(fm::vec3 pos)
 	{
 		GuiButton::setPosition(pos);
 		

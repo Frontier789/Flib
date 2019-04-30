@@ -86,7 +86,7 @@ namespace fm
 		/// @param zfar The distance of the far clipping plane
 		///
 		/////////////////////////////////////////////////////////////
-		Camera(const vec2 &canvasSize,const vec3 &pos,const vec3 &target = vec3(0,0,-1),const Anglef &fov = fm::deg(90),float znear = .1,float zfar = 100);
+		Camera(vec2 canvasSize,vec3 pos,vec3 target = vec3(0,0,-1),const Anglef &fov = fm::deg(90),float znear = .1,float zfar = 100);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the current view * projection (VP) matrix
@@ -120,7 +120,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference lookAt(const vec3 &target);
+		reference lookAt(vec3 target);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the view direction
@@ -130,7 +130,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference setViewDir(const vec3 &viewDir);
+		reference setViewDir(vec3 viewDir);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the position
@@ -140,7 +140,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference setPosition(const vec3 &pos);
+		reference setPosition(vec3 pos);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Move the camera
@@ -150,7 +150,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference movePosition(const vec3 &delta);
+		reference movePosition(vec3 delta);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Change the virtual canvas size
@@ -160,7 +160,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference setCanvasSize(const vec2 &canvasSize);
+		reference setCanvasSize(vec2 canvasSize);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the virtual canvas size
@@ -231,7 +231,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference set3D(const vec2 &canvasSize,const vec3 &pos,const vec3 &target = vec3(0,0,-1),const Anglef &fov = fm::deg(90),float znear = .1,float zfar = 100);
+		reference set3D(vec2 canvasSize,vec3 pos,vec3 target = vec3(0,0,-1),const Anglef &fov = fm::deg(90),float znear = .1,float zfar = 100);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create a default 2D setup
@@ -243,7 +243,7 @@ namespace fm
 		/// @return Reference to itself
 		///
 		/////////////////////////////////////////////////////////////
-		reference set2D(const vec2 &canvasSize,float znear = -1,float zfar = 100);
+		reference set2D(vec2 canvasSize,float znear = -1,float zfar = 100);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the projection stack

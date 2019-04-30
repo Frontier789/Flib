@@ -745,7 +745,7 @@ namespace fm
 		/// @return The translation matrix
 		///
 		/////////////////////////////////////////////////////////////
-		matrix<4,4,float> translation(const vec3 &translate);
+		matrix<4,4,float> translation(vec3 translate);
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -781,7 +781,7 @@ namespace fm
 		/// @return The scaling matrix
 		///
 		/////////////////////////////////////////////////////////////
-		matrix<4,4,float> scaling(const vec2 &scale);
+		matrix<4,4,float> scaling(vec2 scale);
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -792,7 +792,7 @@ namespace fm
 		/// @return The scaling matrix
 		///
 		/////////////////////////////////////////////////////////////
-		matrix<4,4,float> scaling(const vec3 &scale);
+		matrix<4,4,float> scaling(vec3 scale);
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -878,7 +878,7 @@ namespace fm
 		/// @return The look-at matrix
 		///
 		/////////////////////////////////////////////////////////////
-		matrix<4,4,float> lookAt(const vec3 &cam_pos,const vec3 &target_pos);
+		matrix<4,4,float> lookAt(vec3 cam_pos,vec3 target_pos);
 
 		/////////////////////////////////////////////////////////////
 		/// @relates fm::matrix
@@ -894,7 +894,7 @@ namespace fm
 		/// @return The look-at matrix
 		///
 		/////////////////////////////////////////////////////////////
-        matrix<4,4,float> lookAt(const vec3 &cam_pos,const vec3 &target_pos,const vec3 &up_dir);
+        matrix<4,4,float> lookAt(vec3 cam_pos,vec3 target_pos,vec3 up_dir);
 	}
 	using namespace MATRIX;
 	

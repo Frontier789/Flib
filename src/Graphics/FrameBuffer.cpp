@@ -318,7 +318,7 @@ namespace fg
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void FrameBuffer::setClearColor(const fm::vec4 &color)
+	void FrameBuffer::setClearColor(fm::vec4 color)
 	{
 		m_clearColor = color;
 	}

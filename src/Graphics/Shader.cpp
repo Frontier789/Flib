@@ -607,15 +607,15 @@ namespace fg
 	
 	FRONTIER_CREATE_SET_UNIFORM(int v,GL_INT,true,glUniform1i(dat.location,v))
 	
-	FRONTIER_CREATE_SET_UNIFORM(const fm::vec2i &v,GL_INT_VEC2,true,glUniform2i(dat.location,v.x,v.y))
-	FRONTIER_CREATE_SET_UNIFORM(const fm::vec3i &v,GL_INT_VEC3,true,glUniform3i(dat.location,v.x,v.y,v.z))
-	FRONTIER_CREATE_SET_UNIFORM(const fm::vec4i &v,GL_INT_VEC4,true,glUniform4i(dat.location,v.x,v.y,v.z,v.w))
+	FRONTIER_CREATE_SET_UNIFORM(fm::vec2i v,GL_INT_VEC2,true,glUniform2i(dat.location,v.x,v.y))
+	FRONTIER_CREATE_SET_UNIFORM(fm::vec3i v,GL_INT_VEC3,true,glUniform3i(dat.location,v.x,v.y,v.z))
+	FRONTIER_CREATE_SET_UNIFORM(fm::vec4i v,GL_INT_VEC4,true,glUniform4i(dat.location,v.x,v.y,v.z,v.w))
 	
 	FRONTIER_CREATE_SET_UNIFORM(float v,GL_FLOAT,true,glUniform1f(dat.location,v))
 	
-	FRONTIER_CREATE_SET_UNIFORM(const fm::vec2f &v,GL_FLOAT_VEC2,true,glUniform2f(dat.location,v.x,v.y))
-	FRONTIER_CREATE_SET_UNIFORM(const fm::vec3f &v,GL_FLOAT_VEC3,true,glUniform3f(dat.location,v.x,v.y,v.z))
-	FRONTIER_CREATE_SET_UNIFORM(const fm::vec4f &v,GL_FLOAT_VEC4,true,glUniform4f(dat.location,v.x,v.y,v.z,v.w))
+	FRONTIER_CREATE_SET_UNIFORM(fm::vec2f v,GL_FLOAT_VEC2,true,glUniform2f(dat.location,v.x,v.y))
+	FRONTIER_CREATE_SET_UNIFORM(fm::vec3f v,GL_FLOAT_VEC3,true,glUniform3f(dat.location,v.x,v.y,v.z))
+	FRONTIER_CREATE_SET_UNIFORM(fm::vec4f v,GL_FLOAT_VEC4,true,glUniform4f(dat.location,v.x,v.y,v.z,v.w))
 	
 	fm::Result Shader::setUniform(const std::string &name,const fg::Color &c)
 	{

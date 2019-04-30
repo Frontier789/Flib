@@ -26,7 +26,7 @@ namespace fgui
 	/////////////////////////////////////////////////////////////
 	void ScrollBar::setupDraws()
 	{
-		fm::vec2 p = getPosition();
+		fm::vec3 p = getPosition();
 		fm::vec2 s = getSize();
 		float scrollSize = getScrollSize();
 		fm::vec2 sprS = s * scrollSize;
@@ -74,7 +74,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	bool ScrollBar::inDragArea(const fm::vec2 &p) const
+	bool ScrollBar::inDragArea(fm::vec2 p) const
 	{
 		return m_handle.contains(p);
 	}
@@ -145,7 +145,7 @@ namespace fgui
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void ScrollBar::setPosition(fm::vec2i pos)
+	void ScrollBar::setPosition(fm::vec3 pos)
 	{
 		GuiScrollBar::setPosition(pos);
 		

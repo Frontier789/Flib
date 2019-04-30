@@ -188,7 +188,7 @@ namespace fgui
 		/// @param pos The new position
 		/// 
 		/////////////////////////////////////////////////////////////
-		void setPosition(fm::vec2i pos) override;
+		void setPosition(fm::vec3 pos) override;
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Set the text of the gui text

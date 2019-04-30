@@ -251,7 +251,7 @@ namespace fw
 	}
 	
 	/////////////////////////////////////////////////////////////
-	void GLContext::setClearColor(const fm::vec4 &color)
+	void GLContext::setClearColor(fm::vec4 color)
 	{
 		m_clearColor = color;
 	}

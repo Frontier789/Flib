@@ -24,6 +24,7 @@
 #include <FRONTIER/Graphics/Drawable.hpp>
 #include <FRONTIER/Graphics/DrawData.hpp>
 #include <FRONTIER/Graphics/Glyph.hpp>
+#include <FRONTIER/System/Vector4.hpp>
 #include <FRONTIER/System/Vector3.hpp>
 #include <FRONTIER/System/Vector2.hpp>
 #include <string>
@@ -117,7 +118,7 @@ namespace fg
 			/// @param clr The color of the new sprite
 			/// 
 			/////////////////////////////////////////////////////////////
-			void handleCreate(fm::Size spriteIndex,const fg::Glyph &shape,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr);
+			void handleCreate(fm::Size spriteIndex,const fg::Glyph &shape,fm::vec3 pos,fm::vec2 size,fm::vec2 dir,fm::vec4 clr);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Handle creating s sprite
@@ -131,7 +132,7 @@ namespace fg
 			/// @param clr The color of the new sprite
 			/// 
 			/////////////////////////////////////////////////////////////
-			void handleCreate(fm::Size spriteIndexBeg,fm::Size spriteIndexEnd,const fg::Glyph &shape,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr);
+			void handleCreate(fm::Size spriteIndexBeg,fm::Size spriteIndexEnd,const fg::Glyph &shape,fm::vec3 pos,fm::vec2 size,fm::vec2 dir,fm::vec4 clr);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Handle moving a sorites' data
@@ -199,7 +200,7 @@ namespace fg
 			/// @param pos The new position of the sprite
 			/// 
 			/////////////////////////////////////////////////////////////
-			void handlePosChange(fm::Size spriteIndex,const fm::vec3 &pos);
+			void handlePosChange(fm::Size spriteIndex,fm::vec3 pos);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Handle changing the direction of a sprite
@@ -208,7 +209,7 @@ namespace fg
 			/// @param dir The new direction of the sprite
 			/// 
 			/////////////////////////////////////////////////////////////
-			void handleDirChange(fm::Size spriteIndex,const fm::vec2 &dir);
+			void handleDirChange(fm::Size spriteIndex,fm::vec2 dir);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Handle changing the size of a sprite
@@ -217,7 +218,7 @@ namespace fg
 			/// @param size The new size of the sprite
 			/// 
 			/////////////////////////////////////////////////////////////
-			void handleSizeChange(fm::Size spriteIndex,const fm::vec2 &size);
+			void handleSizeChange(fm::Size spriteIndex,fm::vec2 size);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Handle changing the color of a sprite
@@ -226,7 +227,7 @@ namespace fg
 			/// @param color The new color of the sprite
 			/// 
 			/////////////////////////////////////////////////////////////
-			void handleColorChange(fm::Size spriteIndex,const fm::vec4 &color);
+			void handleColorChange(fm::Size spriteIndex,fm::vec4 color);
 			
 			/////////////////////////////////////////////////////////////
 			/// @brief Handle clearing all sprites
@@ -370,7 +371,7 @@ namespace fg
 		/// @param clr The color of the new sprite
 		/// 
 		/////////////////////////////////////////////////////////////
-		void handleCreate(SpriteBase<ImageID> &sprite,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr);
+		void handleCreate(SpriteBase<ImageID> &sprite,ImageID imgID,fm::vec3 pos,fm::vec2 size,fm::vec2 dir,fm::vec4 clr);
 		
 		
 		/////////////////////////////////////////////////////////////
@@ -385,7 +386,7 @@ namespace fg
 		/// @param clr The color of the new sprite
 		/// 
 		/////////////////////////////////////////////////////////////
-		void handleCreate(SpriteBase<ImageID> *sprites,fm::Size spriteCount,ImageID imgID,const fm::vec3 &pos,const fm::vec2 &size,const fm::vec2 &dir,const fm::vec4 &clr);
+		void handleCreate(SpriteBase<ImageID> *sprites,fm::Size spriteCount,ImageID imgID,fm::vec3 pos,fm::vec2 size,fm::vec2 dir,fm::vec4 clr);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Handle destroying a sprite
@@ -444,7 +445,7 @@ namespace fg
 		/// @param frameSize The frame size for the image
 		/// 
 		/////////////////////////////////////////////////////////////
-		void addImage(const fg::Image &img,ImageID id,const fm::vec2 &frameSize = fm::vec2());
+		void addImage(const fg::Image &img,ImageID id,fm::vec2 frameSize = fm::vec2());
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Register an image with given id for use
@@ -454,7 +455,7 @@ namespace fg
 		/// @param frameSize The frame size for the image
 		/// 
 		/////////////////////////////////////////////////////////////
-		void addImage(const fg::Texture &tex,ImageID id,const fm::vec2 &frameSize = fm::vec2());
+		void addImage(const fg::Texture &tex,ImageID id,fm::vec2 frameSize = fm::vec2());
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the size of a registered image

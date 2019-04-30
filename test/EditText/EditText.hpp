@@ -195,7 +195,7 @@ namespace fgui
 
         ////////////////////////////////////////////////////////////
         void setSize(fm::vec2s size) override;
-		void setPosition(fm::vec2i pos) override;
+		void setPosition(fm::vec3 pos) override;
 		void setRows(size_t rows);
 
         ////////////////////////////////////////////////////////////

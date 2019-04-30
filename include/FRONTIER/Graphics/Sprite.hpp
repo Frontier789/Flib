@@ -137,7 +137,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		SpriteBase<ImageID> &setPosition(const fm::vec3 &pos);
+		SpriteBase<ImageID> &setPosition(fm::vec3 pos);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the onscreen position of the sprite
@@ -155,7 +155,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		SpriteBase<ImageID> &setColor(const fm::vec4 &clr);
+		SpriteBase<ImageID> &setColor(fm::vec4 clr);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the color of the sprite
@@ -173,7 +173,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		SpriteBase<ImageID> &setDirection(const fm::vec2 &dir);
+		SpriteBase<ImageID> &setDirection(fm::vec2 dir);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the direction the sprite is facing
@@ -191,7 +191,7 @@ namespace fg
 		/// @return Reference to itself
 		/// 
 		/////////////////////////////////////////////////////////////
-		SpriteBase<ImageID> &setSize(const fm::vec2 &size);
+		SpriteBase<ImageID> &setSize(fm::vec2 size);
 		
 		/////////////////////////////////////////////////////////////
 		/// @brief Get the onscreen size of the sprite

@@ -250,7 +250,7 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	CubeTextureFace CubeTexture::getFace(const fm::vec3 &normal)
+	CubeTextureFace CubeTexture::getFace(fm::vec3 normal)
 	{
 		fm::vec3 n = normal.unsign();
 
@@ -264,7 +264,7 @@ namespace fg
 	}
 
 	/////////////////////////////////////////////////////////////
-	CubeTextureFace CubeTexture::operator[](const fm::vec3 &normal)
+	CubeTextureFace CubeTexture::operator[](fm::vec3 normal)
 	{
 		return getFace(normal);
 	}

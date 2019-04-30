@@ -91,15 +91,15 @@ namespace fgui
 	}
 
 	/////////////////////////////////////////////////////////////
-	fm::vec2i GuiElement::getPosition() const
+	fm::vec3 GuiElement::getPosition() const
 	{
 		return m_pos;
 	}
 
 	/////////////////////////////////////////////////////////////
-	void GuiElement::setPosition(fm::vec2i pos)
+	void GuiElement::setPosition(fm::vec3 pos)
 	{
-		m_pos = pos;
+		m_pos = fm::vec3(int(pos.x),int(pos.y),pos.z);
 	}
 
 	/////////////////////////////////////////////////////////////

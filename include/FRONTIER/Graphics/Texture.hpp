@@ -146,7 +146,7 @@ namespace fg
 		/// @param color The color to fill with
 		///
 		/////////////////////////////////////////////////////////////
-		explicit Texture(fm::vec2s size,const fm::vec4 &color);
+		explicit Texture(fm::vec2s size,fm::vec4 color);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Default destructor
@@ -185,7 +185,7 @@ namespace fg
 		/// @return The error-state of the function
 		///
 		/////////////////////////////////////////////////////////////
-		fm::Result create(fm::vec2s size,const fm::vec4 &color);
+		fm::Result create(fm::vec2s size,fm::vec4 color);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Create a OpenGL texture from image

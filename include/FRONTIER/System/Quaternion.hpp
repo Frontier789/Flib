@@ -76,7 +76,7 @@ namespace fm
 		/// @param angle The angle of the rotation
 		///
 		/////////////////////////////////////////////////////////////
-		Quat(const vec3 &axis,const Angle<float> &angle);
+		Quat(vec3 axis,const Angle<float> &angle);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Construct quaternion directly from the values of the imaginary and real part
@@ -189,7 +189,7 @@ namespace fm
 		/// @return The constructed quaternion
 		///
 		/////////////////////////////////////////////////////////////
-		static Quat fromTo(const vec3 &from,const vec3 &to);
+		static Quat fromTo(vec3 from,vec3 to);
 
 		/////////////////////////////////////////////////////////////
 		/// @brief Perform L_inear int_ERP_olation between two quaternions
@@ -301,7 +301,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	vec3 FRONTIER_API operator* (const Quat &left,const vec3 &right);
+	vec3 FRONTIER_API operator* (const Quat &left,vec3 right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat fm::vector4
@@ -313,7 +313,7 @@ namespace fm
 	/// @return Result of the operation
 	///
 	/////////////////////////////////////////////////////////////
-	vec4 FRONTIER_API operator* (const Quat &left,const vec4 &right);
+	vec4 FRONTIER_API operator* (const Quat &left,vec4 right);
 
 	/////////////////////////////////////////////////////////////
 	/// @relates fm::Quat fm::matrix
