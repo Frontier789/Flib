@@ -79,6 +79,6 @@ Screenshots of demos from the `test` folder.
 
 
 ![](screenshots/ball.png)
-<center>
+<p align="center">
 Raytraced balls
-</center>
+</p>
