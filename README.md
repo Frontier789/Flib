@@ -1,22 +1,20 @@
-<h1>Flib v1.1</h1>
-<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
-<h2>Description</h2>
-
+# Flib v1.1
 Classes for managing windows and creating OpenGL contexts (for Windows and Linux)
 Automatic OpenGL functions loading
 Wrapper classes for OpenGL objects (Texture, FrameBuffer, Shader etc)
 Template classes (Vectors, Matrices, Polar vectors, Delegates)
 
-<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
-<h2>Compilation</h2>
+## Compilation
 
 The library requires OpenGL development library to compile
-On Linux systems this means you need glx development library (e.g. from `mesa-common-dev`)<br>
-A `makefile` is loacted in `src/`
-Open a terminal in `src/` and call make
+On Linux systems this means you need glx development library (e.g. from `mesa-common-dev`) \
+Executing `make` in the `src` folder compiles the library.
+Building only the static or dynamic linkage can be done using `make dynamic` and `make static`. \
+To compile the tests call `make all` in the `test` folder.
 
-<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
-<h2>Troubleshooting</h2>
+Requirements: The library core requires only OpenGL 3.0 to work. OpenGL 4.4 preferred for more efficient implementations. Some tests use compute shaders and therefore require OpenGL 4.3. Tested all tests on Windows and Linux X11.
+
+## Troubleshooting
 
 When compiling on Linux systems the following errors may arise
 
@@ -29,19 +27,14 @@ Please note that the actual command may differ on your system,
 refer to your distribution's forum how to install the required
 development libraries
 
-<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
-<h2>API Documentation</h2>
+## API Documentation
 
-The source code uses selfdocumentation in doxygen style
-A compiled html version can be found on my site:
-http://makom789.web.elte.hu/docs/index.html
-<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
-<h2>Automatic testing</h2>
-Testing done via AutoTester (https://github.com/Frontier789/AutoTester)
+The source code uses selfdocumentation in doxygen style, compiled html version can be found [here](http://makom789.web.elte.hu/docs/index.html)
+## Automatic testing
+Testing done via my [AutoTester](https://github.com/Frontier789/AutoTester)
 <p align="center"><img src="https://raw.githubusercontent.com/Frontier789/AutoTester/master/result.png"/></p>
 
-<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
-<h2>Citation</h2>
+## Citation
 The following public domain libraries are used by Flib:
 <ol>
 	<li>
@@ -73,4 +66,17 @@ The following public domain libraries are used by Flib:
 		</ul>
 	</li>
 </ol>
-<p align="center"><b>====<img src="https://rorytrotter.files.wordpress.com/2013/03/red-circle.jpg" width="17"/>====</b></p>
+
+## Gallery
+Screenshots of demos from the `test` folder.
+|               |               |
+:-----:|:----:
+![](screenshots/frac1.png) Modulated Menger Sponge| ![](screenshots/hexgen.png) Hexagon terrain generator
+![](screenshots/early_water.png) First attempt on water| ![](screenshots/mandelbrot.png) Taxicab Mandelbrot set 
+![](screenshots/brick.png) Texmapped Phong| ![](screenshots/ant.png) NN + Evolutionary algorithm
+![](screenshots/tetRot.png) Bloom on fractal| ![](screenshots/sand2.png) Large particle system sand
+![](screenshots/gui.png) Dynamic GUI test| ![](screenshots/bsp.png) Binary space Partitioning collision
+![](screenshots/ball.png)
+<center>
+Raytraced balls
+</center>

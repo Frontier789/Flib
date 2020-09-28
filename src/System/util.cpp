@@ -15,11 +15,12 @@
 ///                                                                    ///
 ////////////////////////////////////////////////////////////////////////// -->
 #include <FRONTIER/System/util/file_content.hpp>
+#include <FRONTIER/System/util/API.h>
 #include <fstream>
 
 namespace fm
 {
-	fm::Result file_content(std::string file,std::string &content)
+	fm::Result FRONTIER_API file_content(std::string file,std::string &content)
     {
         std::ifstream in(file.c_str(), std::ios::in | std::ios::binary);
         if (in)

@@ -50,6 +50,12 @@ float torus_dist(vec3 p,float R,float r)
 	return length(q)-r;
 }
 
+float plane_dist(vec3 p,vec3 n,vec3 q)
+{
+	vec3 l = p-q;
+	return dot(n,l);
+}
+
 vec3 rotateX(vec3 p,float a)
 {
 	return vec3(p.x,p.y * cos(a) - p.z * sin(a),
@@ -115,6 +121,8 @@ float dist_func(vec3 p)
 		r /= 3.01 + r*0.1;
 	}
 	
+	d = Substract(d,plane_dist(-vec3(1.2),normalize(vec3(1)),p));
+	
 	return d;
 }
 
@@ -131,6 +139,8 @@ vec2 dist_func_mat(vec3 p)
 									   Modulate(p.z+13.0,r*6.0)),r),dmat.y,float(i+1));
 		r /= 3.01 + r*0.1;
 	}
+	
+	dmat = SubstractMat(dmat.x,plane_dist(-vec3(1.2),normalize(vec3(1)),p),dmat.y,12.0);
 	
 	return dmat;
 }

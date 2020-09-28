@@ -59,7 +59,7 @@ namespace fg
 		/// @brief Simple class describing a face of the mesh
 		///
 		/////////////////////////////////////////////////////////////
-		class Face
+		class FRONTIER_API Face
 		{
 		public:
 			std::vector<fm::Uint32> indices; ///< The indices in the face
